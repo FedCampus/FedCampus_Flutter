@@ -17,6 +17,7 @@ class Record(models.Model):
     endTime = models.IntegerField(null = True, blank= True)
     data = models.JSONField(null = True, blank = True)
     dataType = models.CharField(max_length=10, null=True, blank = True)
+    value = models.FloatField(null=True, blank=True) 
 
     def saveRecord(user, startTime, endTime, dataType, data):
         try:
@@ -24,6 +25,7 @@ class Record(models.Model):
             value = record.data.get("value")
             if not value == data.get("value"):
                 record.data = data
+                record.value = int(data.get("value"))
                 record.save()
         except:
             record = Record.objects.create(user=user, startTime = startTime, endTime = endTime, data = data, dataType = dataType)
@@ -40,6 +42,7 @@ class RecordDP(models.Model):
     endTime = models.IntegerField(null = True, blank= True)
     data = models.JSONField(null = True, blank = True)
     dataType = models.CharField(max_length=10, null=True, blank = True)
+    value = models.FloatField(null=True, blank=True) 
 
     def saveRecord(user, startTime, endTime, dataType, data):
         try:
@@ -47,13 +50,14 @@ class RecordDP(models.Model):
             value = record.data.get("value")
             if not value == data.get("value"):
                 record.data = data
+                record.value = int(data.get("value"))
                 record.save()
         except:
             record = RecordDP.objects.create(user=user, startTime = startTime, endTime = endTime, data = data, dataType = dataType)
             logger.info(f"record created {data}")
             
     def __str__(self):
-        return str(self.startTime)[0:9] +" "+str(self.dataType)
+        return str(self.startTime)[0:8] +" "+str(self.dataType) + " "+ str(self.user)
         
 
 class SleepTime(models.Model):

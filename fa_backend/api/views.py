@@ -8,6 +8,8 @@ from .models import RecordDP
 
 from django.contrib.auth import login
 from django.contrib.auth import logout
+from django.db.models import Q
+from django.db.models import Avg
 
 # Create your views here.
 from rest_framework.authtoken.serializers import AuthTokenSerializer
@@ -15,6 +17,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework.authentication import SessionAuthentication
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -151,3 +154,45 @@ class Account(APIView):
         logger.info("change account information successfully")
 
         return Response(None)
+    
+
+class FedAnalysis(APIView):
+
+    authentication_classes=[SessionAuthentication]
+    permission_classes=(permissions.IsAuthenticated,)
+
+    def post(self,request):
+
+        exerciseType = request.data.get("type")
+        dateTime = int(request.data.get("date")) * 1000000
+        logger.info(f"get {exerciseType} and {dateTime}")
+
+        ## TODO: check if the current user is in the list or not
+        if not RecordDP.objects.filter(Q(startTime = dateTime)&Q(user = request.user)&Q(dataType=exerciseType)).exists():
+            ## let the user send the data to the backend server
+            return Response(None, status= 101)
+        
+        querySet = RecordDP.objects.filter(Q(startTime =dateTime) & Q(dataType = exerciseType)).order_by("-value")
+        avg = querySet.aggregate(Avg('value')).get("value__avg")
+        query = querySet.get(user=request.user)
+        index = querySet.filter(value__gt=query.value).count() # ranking = index + 1
+        similarUsers = getSimilarUser(querySet, index, 1)
+        print(similarUsers)
+
+        return Response({"avg":avg,"rank":index+1,"similar_user": similarUsers})
+
+def getSimilarUser(querySet, index, length = 1):
+    ## get the similar user that is similar to the current user
+    result = []
+    indexLength = querySet.count() - 1 
+    lowerBound = max(index - length,0)
+    upperBound = min(index + length,indexLength)
+    
+    for i in range(lowerBound, upperBound+1):
+        if i == index:
+            continue
+        user =querySet[i].user
+        result.append(f"{user.customer.nickname}, {user.email}")
+    
+    return result
+    pass

@@ -11,5 +11,6 @@ urlpatterns=[
     path("health_data", views.HealthData.as_view(), name='healthdata'),
     path('test', views.TestView.as_view(), name='test'),
     path("logout", views.Logout.as_view(), name='logout'),
-    path("account", views.Account.as_view(), name="account")
+    path("account", views.Account.as_view(), name="account"),
+    path("fedanalysis", views.FedAnalysis.as_view(), name="fedanalysis")
 ]
