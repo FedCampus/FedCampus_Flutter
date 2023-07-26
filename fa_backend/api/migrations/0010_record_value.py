@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('api', '0009_alter_customer_avator_recorddp'),
+        ("api", "0009_alter_customer_avator_recorddp"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='record',
-            name='value',
+            model_name="record",
+            name="value",
             field=models.FloatField(blank=True, null=True),
         ),
     ]

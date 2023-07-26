@@ -6,21 +6,34 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('api', '0004_record_healthdata'),
+        ("api", "0004_record_healthdata"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SleepTime',
+            name="SleepTime",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('startTime', models.IntegerField()),
-                ('endTime', models.IntegerField()),
-                ('data', models.JSONField(blank=True, null=True)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("startTime", models.IntegerField()),
+                ("endTime", models.IntegerField()),
+                ("data", models.JSONField(blank=True, null=True)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

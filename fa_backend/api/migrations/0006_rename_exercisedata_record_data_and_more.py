@@ -4,29 +4,28 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('api', '0005_sleeptime'),
+        ("api", "0005_sleeptime"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='record',
-            old_name='exercisedata',
-            new_name='data',
+            model_name="record",
+            old_name="exercisedata",
+            new_name="data",
         ),
         migrations.RenameField(
-            model_name='record',
-            old_name='date',
-            new_name='endTime',
+            model_name="record",
+            old_name="date",
+            new_name="endTime",
         ),
         migrations.RemoveField(
-            model_name='record',
-            name='healthdata',
+            model_name="record",
+            name="healthdata",
         ),
         migrations.AddField(
-            model_name='record',
-            name='startTime',
+            model_name="record",
+            name="startTime",
             field=models.IntegerField(blank=True, null=True),
         ),
     ]

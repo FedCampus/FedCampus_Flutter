@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('api', '0003_rename_data_record_exercisedata'),
+        ("api", "0003_rename_data_record_exercisedata"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='record',
-            name='healthdata',
+            model_name="record",
+            name="healthdata",
             field=models.JSONField(blank=True, null=True),
         ),
     ]

@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('api', '0001_initial'),
+        ("api", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='record',
-            name='data',
+            model_name="record",
+            name="data",
             field=models.JSONField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='record',
-            name='date',
+            model_name="record",
+            name="date",
             field=models.IntegerField(blank=True, null=True),
         ),
     ]
