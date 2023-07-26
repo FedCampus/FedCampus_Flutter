@@ -1,0 +1,38 @@
+on:
+  push:
+    paths:
+      - '.github/workflows/flutter-android.yml'
+      - '**.dart'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+      - name: Cache Flutter Android
+        id: cache-flutter-android
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pub-cache/
+            fedcampus/build/
+            fedcampus/.dart_tool/
+          key: ${{ runner.os }}-flutter-android
+      - name: Install dependencies
+        run: |
+          cd fedcampus/
+          flutter pub get
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed .
+      - name: Test
+        run: |
+          cd fedcampus/
+          flutter test
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '18'
+      - name: Build APK
+        run: |
+          cd fedcampus/
+          flutter build apk
