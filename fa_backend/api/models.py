@@ -30,7 +30,7 @@ class Record(models.Model):
             value = record.data.get("value")
             if not value == data.get("value"):
                 record.data = data
-                record.value = int(data.get("value"))
+                record.value = float(data.get("value"))
                 record.save()
         except:
             record = Record.objects.create(
@@ -39,6 +39,7 @@ class Record(models.Model):
                 endTime=endTime,
                 data=data,
                 dataType=dataType,
+                value=data.get("value"),
             )
             logger.info(f"record created {data}")
 
@@ -66,7 +67,7 @@ class RecordDP(models.Model):
             value = record.data.get("value")
             if not value == data.get("value"):
                 record.data = data
-                record.value = int(data.get("value"))
+                record.value = float(data.get("value"))
                 record.save()
         except:
             record = RecordDP.objects.create(
@@ -75,6 +76,7 @@ class RecordDP(models.Model):
                 endTime=endTime,
                 data=data,
                 dataType=dataType,
+                value=data.get("value"),
             )
             logger.info(f"record created {data}")
 

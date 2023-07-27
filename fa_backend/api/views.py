@@ -196,7 +196,8 @@ class FedAnalysis(APIView):
             Q(startTime=dateTime) & Q(user=request.user) & Q(dataType=exerciseType)
         ).exists():
             ## let the user send the data to the backend server
-            return Response(None, status=101)
+            print("no")
+            return Response(None, status=452)
 
         querySet = RecordDP.objects.filter(
             Q(startTime=dateTime) & Q(dataType=exerciseType)
