@@ -1,5 +1,5 @@
-import time
-
-times = 1685980800
-
-print(int(time.strftime("%Y%m%d%H%M%S", time.localtime(times))))
+# test.py
+def application(env, start_response):
+    start_response("200 OK", [("Content-Type", "text/html")])
+    return [b"Hello World"]  # python3
+    # return ["Hello World"] # python2
