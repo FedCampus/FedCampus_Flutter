@@ -6,3 +6,5 @@ __pycache__
 **.sqlite3*
 **build/
 **desktop.ini
+fa_backend/fa_backend.sock
+fa_backend/static
