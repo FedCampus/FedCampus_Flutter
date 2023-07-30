@@ -6,7 +6,10 @@ import 'package:logger/logger.dart';
 final logger = Logger();
 
 void main() {
-  runApp(const MyApp());
+  runApp(const MaterialApp(
+    title: 'Fedcampus Flutter',
+    home: FirstRoute(),
+  ));
 }
 
 class MyApp extends StatefulWidget {
@@ -183,6 +186,12 @@ class _MyAppState extends State<MyApp> {
           child: const Text('Train'),
         ),
       ]),
+      ElevatedButton(
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        child: const Text('Go back!'),
+      ),
       Expanded(
         child: ListView.builder(
           controller: scrollController,
@@ -195,14 +204,36 @@ class _MyAppState extends State<MyApp> {
       ),
     ];
 
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('FedCampus'),
-        ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: children,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('FedCampus'),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: children,
+      ),
+    );
+  }
+}
+
+class FirstRoute extends StatelessWidget {
+  const FirstRoute({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Home'),
+      ),
+      body: Center(
+        child: ElevatedButton(
+          child: const Text('Open training page'),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const MyApp()),
+            );
+          },
         ),
       ),
     );
