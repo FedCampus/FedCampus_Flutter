@@ -16,3 +16,4 @@
 **gradlew.bat
 fa_backend/fa_backend.sock
 fa_backend/static
+.vscode
