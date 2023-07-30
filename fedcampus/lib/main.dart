@@ -1,125 +1,210 @@
+import 'package:fedcampus/platform_channel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:logger/logger.dart';
+
+final logger = Logger();
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  String _platformVersion = 'Unknown';
+  final _channel = PlatformChannel();
+  var canConnect = true;
+  var canTrain = false;
+  var startFresh = false;
+
+  @override
+  void initState() {
+    super.initState();
+    initPlatformState();
   }
-}
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  Future<void> initPlatformState() async {
+    String platformVersion;
+    try {
+      platformVersion =
+          await _channel.getPlatformVersion() ?? 'Unknown platform version';
+    } on PlatformException {
+      platformVersion = 'Failed to get platform version.';
+    }
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
 
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _platformVersion = platformVersion;
+      appendLog('Running on: $_platformVersion.');
+    });
+
+    const EventChannel('fed_kit_flutter_events')
+        .receiveBroadcastStream()
+        .listen((event) {
+      appendLog('$event');
+    });
+  }
+
+  late int partitionId;
+  late Uri host;
+  late int backendPort;
+
+  final logs = [const Text('Logs will be shown here.')];
+  final clientPartitionIdController = TextEditingController();
+  final flServerIPController = TextEditingController();
+  final flServerPortController = TextEditingController();
+  final scrollController = ScrollController();
+
+  appendLog(String message) {
+    logger.d('appendLog: $message');
+    setState(() {
+      logs.add(Text(message));
+    });
+  }
+
+  connect() async {
+    try {
+      partitionId = int.parse(clientPartitionIdController.text);
+    } catch (e) {
+      return appendLog('Invalid client partition id!');
+    }
+    try {
+      host = Uri.parse('http://${flServerIPController.text}');
+      if (!host.hasEmptyPath || host.host.isEmpty || host.hasPort) {
+        throw Exception();
+      }
+    } catch (e) {
+      return appendLog('Invalid backend server host!');
+    }
+    Uri backendUrl;
+    try {
+      backendPort = int.parse(flServerPortController.text);
+      backendUrl = host.replace(port: backendPort);
+    } catch (e) {
+      return appendLog('Invalid backend server port!');
+    }
+
+    canConnect = false;
+    appendLog(
+        'Connecting with Partition ID: $partitionId, Server IP: $host, Port: $backendPort');
+
+    try {
+      final serverPort = await _channel.connect(partitionId, host, backendUrl,
+          startFresh: startFresh);
+      canTrain = true;
+      return appendLog(
+          'Connected to Flower server on port $serverPort and loaded data set.');
+    } on PlatformException catch (error, stacktrace) {
+      appendLog('Request failed: ${error.message}.');
+      logger.e('$error\n$stacktrace.');
+    } catch (error, stacktrace) {
+      appendLog('Request failed: $error.');
+      logger.e(stacktrace);
+    }
+
+    setState(() {
+      canConnect = true;
+    });
+  }
+
+  train() async {
+    setState(() {
+      canTrain = false;
+    });
+    try {
+      await _channel.train();
+      return appendLog('Started training.');
+    } on PlatformException catch (error, stacktrace) {
+      appendLog('Training failed: ${error.message}.');
+      logger.e('$error\n$stacktrace.');
+    } catch (error, stacktrace) {
+      appendLog('Failed to start training: $error.');
+      logger.e(stacktrace);
+    }
+    setState(() {
+      canTrain = true;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+    final children = [
+      TextFormField(
+        controller: clientPartitionIdController,
+        decoration: const InputDecoration(
+          labelText: 'Client Partition ID (1-10)',
+          filled: true,
+        ),
+        keyboardType: TextInputType.number,
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+      TextFormField(
+        controller: flServerIPController,
+        decoration: const InputDecoration(
+          labelText: 'Backend Server Host',
+          filled: true,
+        ),
+        keyboardType: TextInputType.text,
+      ),
+      TextFormField(
+        controller: flServerPortController,
+        decoration: const InputDecoration(
+          labelText: 'Backend Server Port',
+          filled: true,
+        ),
+        keyboardType: TextInputType.number,
+      ),
+      Row(
+        children: [
+          Checkbox(
+              value: startFresh,
+              onChanged: (checked) {
+                setState(() => startFresh = checked!);
+              }),
+          const Text('Start Fresh')
+        ],
+      ),
+      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        ElevatedButton(
+          onPressed: canConnect ? connect : null,
+          child: const Text('Connect'),
+        ),
+        ElevatedButton(
+          onPressed: canTrain ? train : null,
+          child: const Text('Train'),
+        ),
+      ]),
+      Expanded(
+        child: ListView.builder(
+          controller: scrollController,
+          reverse: true,
+          padding: const EdgeInsets.only(
+              top: 16.0, bottom: 32.0, left: 12.0, right: 12.0),
+          itemCount: logs.length,
+          itemBuilder: (context, index) => logs[logs.length - index - 1],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    ];
+
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('FedCampus'),
+        ),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: children,
+        ),
+      ),
     );
   }
 }
