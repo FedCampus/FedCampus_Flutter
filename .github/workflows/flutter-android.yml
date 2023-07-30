@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: FedCampus/FedKit@v1
       - uses: subosito/flutter-action@v2
       - name: Cache Flutter Android
         id: cache-flutter-android
