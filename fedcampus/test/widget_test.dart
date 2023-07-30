@@ -13,7 +13,10 @@ import 'package:fedcampus/main.dart';
 void main() {
   testWidgets('Verify Platform version', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(const MaterialApp(
+      title: 'Fedcampus Flutter',
+      home: MyApp(),
+    ));
     expect(
       find.byWidgetPredicate(
         (Widget widget) => widget is Text && widget.data!.startsWith('Logs'),
