@@ -3,6 +3,25 @@ import 'package:fedcampus/utility/api.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => MyAppState(),
+      child: const TrainPage(),
+    );
+  }
+}
+
+class MyAppState extends ChangeNotifier {
+  get clientPartitionIdController => TextEditingController();
+  get flServerIPController => TextEditingController();
+  get flServerPortController => TextEditingController();
+}
 
 class TrainPage extends StatefulWidget {
   const TrainPage({super.key});
@@ -166,32 +185,12 @@ class _MyAppState extends State<TrainPage> {
           const Text('Start Fresh')
         ],
       ),
-      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        ElevatedButton(
-          onPressed: canConnect ? connect : null,
-          child: const Text('Connect'),
-        ),
-        ElevatedButton(
-          onPressed: canTrain ? train : null,
-          child: const Text('Train'),
-        ),
-      ]),
-      ElevatedButton(
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        child: const Text('Go back!'),
-      ),
-      Expanded(
-        child: ListView.builder(
-          controller: scrollController,
-          reverse: true,
-          padding: const EdgeInsets.only(
-              top: 16.0, bottom: 32.0, left: 12.0, right: 12.0),
-          itemCount: logs.length,
-          itemBuilder: (context, index) => logs[logs.length - index - 1],
-        ),
-      ),
+      Buttons(
+          canConnect: canConnect,
+          canTrain: canTrain,
+          connect: connect,
+          train: train),
+      LogView(scrollController: scrollController, logs: logs),
     ];
 
     return LayoutBuilder(builder: (context, constraints) {
@@ -205,5 +204,67 @@ class _MyAppState extends State<TrainPage> {
         ),
       );
     });
+  }
+}
+
+class Buttons extends StatelessWidget {
+  const Buttons(
+      {super.key,
+      required this.canConnect,
+      required this.canTrain,
+      required this.connect,
+      required this.train});
+  final bool canConnect;
+  final bool canTrain;
+  final Function() connect;
+  final Function() train;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          ElevatedButton(
+            onPressed: canConnect ? connect : null,
+            child: const Text('Connect'),
+          ),
+          ElevatedButton(
+            onPressed: canTrain ? train : null,
+            child: const Text('Train'),
+          ),
+        ]),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).pop(context);
+          },
+          child: const Text('Go back!'),
+        ),
+      ],
+    );
+  }
+}
+
+class LogView extends StatelessWidget {
+  const LogView({
+    super.key,
+    required this.scrollController,
+    required this.logs,
+  });
+
+  final ScrollController scrollController;
+  final List<Text> logs;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: ListView.builder(
+        controller: scrollController,
+        reverse: true,
+        padding: const EdgeInsets.only(
+            top: 16.0, bottom: 32.0, left: 12.0, right: 12.0),
+        itemCount: logs.length,
+        itemBuilder: (context, index) => logs[logs.length - index - 1],
+      ),
+    );
   }
 }

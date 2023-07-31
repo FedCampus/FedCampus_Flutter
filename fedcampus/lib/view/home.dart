@@ -16,7 +16,7 @@ class FirstRoute extends StatelessWidget {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const TrainPage()),
+              MaterialPageRoute(builder: (context) => const MyApp()),
             );
           },
         ),
