@@ -49,31 +49,27 @@ class _TrainAppState extends State<TrainApp> {
     });
   }
 
-  late int partitionId;
-  late Uri host;
-  late int backendPort;
-
   final scrollController = ScrollController();
   final clientPartitionIdController = TextEditingController();
   final flServerIPController = TextEditingController();
   final flServerPortController = TextEditingController();
-  final logs = [
-    StatefulText(text: 'Logs will be shown here.', key: UniqueKey())
-  ];
+  final logs = [const Text('Logs will be shown here.')];
 
   appendLog(String message) {
     logger.d('appendLog: $message');
     setState(() {
-      logs.add(StatefulText(text: message, key: UniqueKey()));
+      logs.add(Text(message));
     });
   }
 
   connect() async {
+    int partitionId;
     try {
       partitionId = int.parse(clientPartitionIdController.text);
     } catch (e) {
       return appendLog('Invalid client partition id!');
     }
+    Uri host;
     try {
       host = Uri.parse('http://${flServerIPController.text}');
       if (!host.hasEmptyPath || host.host.isEmpty || host.hasPort) {
@@ -82,6 +78,7 @@ class _TrainAppState extends State<TrainApp> {
     } catch (e) {
       return appendLog('Invalid backend server host!');
     }
+    int backendPort;
     Uri backendUrl;
     try {
       backendPort = int.parse(flServerPortController.text);
@@ -148,7 +145,16 @@ class _TrainAppState extends State<TrainApp> {
           canTrain: canTrain,
           connectCallback: connect,
           trainCallback: train),
-      LogView(scrollController: scrollController, logs: logs),
+      Expanded(
+        child: ListView.builder(
+          controller: scrollController,
+          reverse: true,
+          padding: const EdgeInsets.only(
+              top: 16.0, bottom: 32.0, left: 12.0, right: 12.0),
+          itemCount: logs.length,
+          itemBuilder: (context, index) => logs[logs.length - index - 1],
+        ),
+      ),
     ];
 
     return LayoutBuilder(builder: (context, constraints) {
@@ -162,25 +168,6 @@ class _TrainAppState extends State<TrainApp> {
         ),
       );
     });
-  }
-}
-
-class StatefulText extends StatefulWidget {
-  //when manupulating a collection of stateful widgets, if you are going to add,
-  //remove, or reorder the widgets, it is recommended to add a key.
-  //state is not necessary here, while for more complex use case, a local state is needed.
-  //https://youtu.be/kn0EOS-ZiIc
-  //https://book.flutterchina.club/chapter2/flutter_widget_intro.html
-  const StatefulText({required Key key, required this.text}) : super(key: key);
-  final String text;
-  @override
-  State<StatefulText> createState() => _StatefulTextState();
-}
-
-class _StatefulTextState extends State<StatefulText> {
-  @override
-  Widget build(BuildContext context) {
-    return Text(widget.text);
   }
 }
 
@@ -271,31 +258,6 @@ class InputView extends StatelessWidget {
           ],
         ),
       ],
-    );
-  }
-}
-
-class LogView extends StatelessWidget {
-  const LogView({
-    super.key,
-    required this.scrollController,
-    required this.logs,
-  });
-
-  final ScrollController scrollController;
-  final List<StatefulText> logs;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: ListView.builder(
-        controller: scrollController,
-        reverse: true,
-        padding: const EdgeInsets.only(
-            top: 16.0, bottom: 32.0, left: 12.0, right: 12.0),
-        itemCount: logs.length,
-        itemBuilder: (context, index) => logs[logs.length - index - 1],
-      ),
     );
   }
 }
