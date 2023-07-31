@@ -1,4 +1,4 @@
-import 'package:fedcampus/view/app.dart';
+import 'package:fedcampus/view/train_app.dart';
 import 'package:flutter/material.dart';
 
 class FirstRoute extends StatelessWidget {
@@ -16,7 +16,7 @@ class FirstRoute extends StatelessWidget {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const MyApp()),
+              MaterialPageRoute(builder: (context) => const TrainApp()),
             );
           },
         ),

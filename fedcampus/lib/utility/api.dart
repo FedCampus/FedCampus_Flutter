@@ -3,7 +3,7 @@ import 'package:fedcampus/utility/platform_channel.dart';
 import 'package:flutter/services.dart';
 
 class FedAPI {
-  final _channel = PlatformChannel();
+  final _channel = TrainChannel();
   final List<String> logs = ['logs from FedAPI'];
 
   appendLog(String message) {
@@ -19,8 +19,7 @@ class FedAPI {
       int partitionId, Uri host, int backendPort, bool startFresh) async {
     var canConnect = true;
     var canTrain = false;
-    Uri backendUrl;
-    backendUrl = host.replace(port: backendPort);
+    final backendUrl = host.replace(port: backendPort);
 
     appendLog(
         'Connecting with Partition ID: $partitionId, Server IP: $host, Port: $backendPort');

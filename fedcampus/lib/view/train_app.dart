@@ -5,19 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class TrainApp extends StatelessWidget {
+  const TrainApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => MyAppState(),
+      create: (context) => TrainAppState(),
       child: const TrainPage(),
     );
   }
 }
 
-class MyAppState extends ChangeNotifier {
+class TrainAppState extends ChangeNotifier {
   get clientPartitionIdController => TextEditingController();
   get flServerIPController => TextEditingController();
   get flServerPortController => TextEditingController();
@@ -27,12 +27,12 @@ class TrainPage extends StatefulWidget {
   const TrainPage({super.key});
 
   @override
-  State<TrainPage> createState() => _MyAppState();
+  State<TrainPage> createState() => _TrainPageState();
 }
 
-class _MyAppState extends State<TrainPage> {
+class _TrainPageState extends State<TrainPage> {
   String _platformVersion = 'Unknown';
-  final _channel = PlatformChannel();
+  final _channel = TrainChannel();
   final fedAPI = FedAPI();
   var canConnect = true;
   var canTrain = false;

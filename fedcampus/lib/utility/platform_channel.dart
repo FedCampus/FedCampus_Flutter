@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-class PlatformChannel {
+class TrainChannel {
   @visibleForTesting
   final methodChannel = const MethodChannel('fed_kit_flutter');
 
