@@ -14,7 +14,7 @@ void main() {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const MaterialApp(
       title: 'Fedcampus Flutter',
-      home: TrainPage(),
+      home: TrainApp(),
     ));
     expect(
       find.byWidgetPredicate(

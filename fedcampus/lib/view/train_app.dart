@@ -1,39 +1,18 @@
 import 'package:fedcampus/utility/platform_channel.dart';
-import 'package:fedcampus/utility/api.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 
-class TrainApp extends StatelessWidget {
+class TrainApp extends StatefulWidget {
   const TrainApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => TrainAppState(),
-      child: const TrainPage(),
-    );
-  }
+  State<TrainApp> createState() => _TrainAppState();
 }
 
-class TrainAppState extends ChangeNotifier {
-  get clientPartitionIdController => TextEditingController();
-  get flServerIPController => TextEditingController();
-  get flServerPortController => TextEditingController();
-}
-
-class TrainPage extends StatefulWidget {
-  const TrainPage({super.key});
-
-  @override
-  State<TrainPage> createState() => _TrainPageState();
-}
-
-class _TrainPageState extends State<TrainPage> {
+class _TrainAppState extends State<TrainApp> {
   String _platformVersion = 'Unknown';
   final _channel = TrainChannel();
-  final fedAPI = FedAPI();
   var canConnect = true;
   var canTrain = false;
   var startFresh = false;
@@ -78,7 +57,6 @@ class _TrainPageState extends State<TrainPage> {
   final clientPartitionIdController = TextEditingController();
   final flServerIPController = TextEditingController();
   final flServerPortController = TextEditingController();
-
   final logs = [const Text('Logs will be shown here.')];
 
   appendLog(String message) {
@@ -102,29 +80,34 @@ class _TrainPageState extends State<TrainPage> {
     } catch (e) {
       return appendLog('Invalid backend server host!');
     }
+    Uri backendUrl;
     try {
       backendPort = int.parse(flServerPortController.text);
+      backendUrl = host.replace(port: backendPort);
     } catch (e) {
       return appendLog('Invalid backend server port!');
     }
 
-    bool canConnectLocal;
-    bool canTrainLocal;
-    List<String> logsLocal;
-    (canConnectLocal, canTrainLocal, logsLocal) = switch (
-        await fedAPI.connectAPI(partitionId, host, backendPort, startFresh)) {
-      (bool b1, bool b2, List<String> i) => (b1, b2, i),
-      final v => throw Exception('$v did not match'),
-    };
+    canConnect = false;
+    appendLog(
+        'Connecting with Partition ID: $partitionId, Server IP: $host, Port: $backendPort');
+
+    try {
+      final serverPort = await _channel.connect(partitionId, host, backendUrl,
+          startFresh: startFresh);
+      canTrain = true;
+      return appendLog(
+          'Connected to Flower server on port $serverPort and loaded data set.');
+    } on PlatformException catch (error, stacktrace) {
+      appendLog('Request failed: ${error.message}.');
+      logger.e('$error\n$stacktrace.');
+    } catch (error, stacktrace) {
+      appendLog('Request failed: $error.');
+      logger.e(stacktrace);
+    }
 
     setState(() {
-      canConnect = canConnectLocal;
-      canTrain = canTrainLocal;
-
-      for (String debugMessage in logsLocal) {
-        logs.add(Text(debugMessage));
-      }
-      fedAPI.clearLog();
+      canConnect = true;
     });
   }
 
@@ -150,42 +133,15 @@ class _TrainPageState extends State<TrainPage> {
   @override
   Widget build(BuildContext context) {
     final children = [
-      // input,
-      TextFormField(
-        controller: clientPartitionIdController,
-        decoration: const InputDecoration(
-          labelText: 'Client Partition ID (1-10)',
-          filled: true,
-        ),
-        keyboardType: TextInputType.number,
-      ),
-      TextFormField(
-        controller: flServerIPController,
-        decoration: const InputDecoration(
-          labelText: 'Backend Server Host',
-          filled: true,
-        ),
-        keyboardType: TextInputType.text,
-      ),
-      TextFormField(
-        controller: flServerPortController,
-        decoration: const InputDecoration(
-          labelText: 'Backend Server Port',
-          filled: true,
-        ),
-        keyboardType: TextInputType.number,
-      ),
-      Row(
-        children: [
-          Checkbox(
-              value: startFresh,
-              onChanged: (checked) {
-                setState(() => startFresh = checked!);
-              }),
-          const Text('Start Fresh')
-        ],
-      ),
-      Buttons(
+      InputView(
+          clientPartitionIdController: clientPartitionIdController,
+          flServerIPController: flServerIPController,
+          flServerPortController: flServerPortController,
+          startFresh: startFresh,
+          callback: (checked) {
+            setState(() => startFresh = checked!);
+          }),
+      ButtonsView(
           canConnect: canConnect,
           canTrain: canTrain,
           connect: connect,
@@ -207,8 +163,8 @@ class _TrainPageState extends State<TrainPage> {
   }
 }
 
-class Buttons extends StatelessWidget {
-  const Buttons(
+class ButtonsView extends StatelessWidget {
+  const ButtonsView(
       {super.key,
       required this.canConnect,
       required this.canTrain,
@@ -238,6 +194,60 @@ class Buttons extends StatelessWidget {
             Navigator.of(context).pop(context);
           },
           child: const Text('Go back!'),
+        ),
+      ],
+    );
+  }
+}
+
+class InputView extends StatelessWidget {
+  const InputView(
+      {super.key,
+      required this.clientPartitionIdController,
+      required this.flServerIPController,
+      required this.flServerPortController,
+      required this.startFresh,
+      required this.callback});
+
+  final TextEditingController clientPartitionIdController;
+  final TextEditingController flServerIPController;
+  final TextEditingController flServerPortController;
+  final bool startFresh;
+  final void Function(bool?) callback;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        TextFormField(
+          controller: clientPartitionIdController,
+          decoration: const InputDecoration(
+            labelText: 'Client Partition ID (1-10)',
+            filled: true,
+          ),
+          keyboardType: TextInputType.number,
+        ),
+        TextFormField(
+          controller: flServerIPController,
+          decoration: const InputDecoration(
+            labelText: 'Backend Server Host',
+            filled: true,
+          ),
+          keyboardType: TextInputType.text,
+        ),
+        TextFormField(
+          controller: flServerPortController,
+          decoration: const InputDecoration(
+            labelText: 'Backend Server Port',
+            filled: true,
+          ),
+          keyboardType: TextInputType.number,
+        ),
+        Row(
+          children: [
+            Checkbox(value: startFresh, onChanged: callback),
+            const Text('Start Fresh')
+          ],
         ),
       ],
     );
