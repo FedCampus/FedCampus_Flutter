@@ -57,8 +57,6 @@ class _TrainAppState extends State<TrainApp> {
   final clientPartitionIdController = TextEditingController();
   final flServerIPController = TextEditingController();
   final flServerPortController = TextEditingController();
-
-  // final logs = [const Text('Logs will be shown here.')];
   final logs = [
     StatefulText(text: 'Logs will be shown here.', key: UniqueKey())
   ];
@@ -148,8 +146,8 @@ class _TrainAppState extends State<TrainApp> {
       ButtonsView(
           canConnect: canConnect,
           canTrain: canTrain,
-          connect: connect,
-          train: train),
+          connectCallback: connect,
+          trainCallback: train),
       LogView(scrollController: scrollController, logs: logs),
     ];
 
@@ -168,6 +166,11 @@ class _TrainAppState extends State<TrainApp> {
 }
 
 class StatefulText extends StatefulWidget {
+  //when manupulating a collection of stateful widgets, if you are going to add,
+  //remove, or reorder the widgets, it is recommended to add a key.
+  //state is not necessary here, while for more complex use case, a local state is needed.
+  //https://youtu.be/kn0EOS-ZiIc
+  //https://book.flutterchina.club/chapter2/flutter_widget_intro.html
   const StatefulText({required Key key, required this.text}) : super(key: key);
   final String text;
   @override
@@ -186,12 +189,12 @@ class ButtonsView extends StatelessWidget {
       {super.key,
       required this.canConnect,
       required this.canTrain,
-      required this.connect,
-      required this.train});
+      required this.connectCallback,
+      required this.trainCallback});
   final bool canConnect;
   final bool canTrain;
-  final Function() connect;
-  final Function() train;
+  final Function() connectCallback;
+  final Function() trainCallback;
 
   @override
   Widget build(BuildContext context) {
@@ -199,11 +202,11 @@ class ButtonsView extends StatelessWidget {
       children: [
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           ElevatedButton(
-            onPressed: canConnect ? connect : null,
+            onPressed: canConnect ? connectCallback : null,
             child: const Text('Connect'),
           ),
           ElevatedButton(
-            onPressed: canTrain ? train : null,
+            onPressed: canTrain ? trainCallback : null,
             child: const Text('Train'),
           ),
         ]),
