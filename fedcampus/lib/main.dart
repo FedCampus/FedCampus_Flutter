@@ -6,6 +6,6 @@ void main() {
   //https://stackoverflow.com/a/51292613
   runApp(const MaterialApp(
     title: 'Fedcampus Flutter',
-    home: FirstRoute(),
+    home: HomeRoute(),
   ));
 }

@@ -1,4 +1,4 @@
-import 'package:fedcampus/utility/platform_channel.dart';
+import 'package:fedcampus/utility/train_channel.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,41 +7,25 @@ class TrainApp extends StatefulWidget {
   const TrainApp({super.key});
 
   @override
-  State<TrainApp> createState() => _TrainAppState();
+  createState() => _TrainAppState();
 }
 
 class _TrainAppState extends State<TrainApp> {
-  String _platformVersion = 'Unknown';
   final _channel = TrainChannel();
-  var canConnect = true;
-  var canTrain = false;
-  var startFresh = false;
+  final _scrollController = ScrollController();
+  final _clientPartitionIdController = TextEditingController();
+  final _flServerIPController = TextEditingController();
+  final _flServerPortController = TextEditingController();
+  final _logs = [const Text('Logs will be shown here.')];
+  var _platformVersion = 'Unknown';
+  var _canConnect = true;
+  var _canTrain = false;
+  var _startFresh = false;
 
   @override
-  void initState() {
+  initState() {
     super.initState();
     initPlatformState();
-  }
-
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    try {
-      platformVersion =
-          await _channel.getPlatformVersion() ?? 'Unknown platform version';
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-      appendLog('Running on: $_platformVersion.');
-    });
-
     const EventChannel('fed_kit_flutter_events')
         .receiveBroadcastStream()
         .listen((event) {
@@ -49,29 +33,40 @@ class _TrainAppState extends State<TrainApp> {
     });
   }
 
-  final scrollController = ScrollController();
-  final clientPartitionIdController = TextEditingController();
-  final flServerIPController = TextEditingController();
-  final flServerPortController = TextEditingController();
-  final logs = [const Text('Logs will be shown here.')];
+  initPlatformState() async {
+    String platformVersion;
+    try {
+      platformVersion =
+          await _channel.getPlatformVersion() ?? 'Unknown platform version';
+    } on PlatformException {
+      platformVersion = 'Failed to get platform version.';
+    }
+    setState(() {
+      _platformVersion = platformVersion;
+      appendLog('Running on: $_platformVersion.');
+    });
+  }
 
   appendLog(String message) {
     logger.d('appendLog: $message');
     setState(() {
-      logs.add(Text(message));
+      _logs.add(Text(message));
     });
   }
+
+  @override
+  build(BuildContext context) => LayoutBuilder(builder: buildLayout);
 
   connect() async {
     int partitionId;
     try {
-      partitionId = int.parse(clientPartitionIdController.text);
+      partitionId = int.parse(_clientPartitionIdController.text);
     } catch (e) {
       return appendLog('Invalid client partition id!');
     }
     Uri host;
     try {
-      host = Uri.parse('http://${flServerIPController.text}');
+      host = Uri.parse('http://${_flServerIPController.text}');
       if (!host.hasEmptyPath || host.host.isEmpty || host.hasPort) {
         throw Exception();
       }
@@ -79,22 +74,21 @@ class _TrainAppState extends State<TrainApp> {
       return appendLog('Invalid backend server host!');
     }
     int backendPort;
-    Uri backendUrl;
     try {
-      backendPort = int.parse(flServerPortController.text);
-      backendUrl = host.replace(port: backendPort);
+      backendPort = int.parse(_flServerPortController.text);
     } catch (e) {
       return appendLog('Invalid backend server port!');
     }
+    Uri backendUrl = host.replace(port: backendPort);
 
-    canConnect = false;
+    _canConnect = false;
     appendLog(
         'Connecting with Partition ID: $partitionId, Server IP: $host, Port: $backendPort');
 
     try {
       final serverPort = await _channel.connect(partitionId, host, backendUrl,
-          startFresh: startFresh);
-      canTrain = true;
+          startFresh: _startFresh);
+      _canTrain = true;
       return appendLog(
           'Connected to Flower server on port $serverPort and loaded data set.');
     } on PlatformException catch (error, stacktrace) {
@@ -106,13 +100,13 @@ class _TrainAppState extends State<TrainApp> {
     }
 
     setState(() {
-      canConnect = true;
+      _canConnect = true;
     });
   }
 
   train() async {
     setState(() {
-      canTrain = false;
+      _canTrain = false;
     });
     try {
       await _channel.train();
@@ -125,50 +119,44 @@ class _TrainAppState extends State<TrainApp> {
       logger.e(stacktrace);
     }
     setState(() {
-      canTrain = true;
+      _canTrain = true;
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final children = [
-      InputView(
-          clientPartitionIdController: clientPartitionIdController,
-          flServerIPController: flServerIPController,
-          flServerPortController: flServerPortController,
-          startFresh: startFresh,
-          callback: (checked) {
-            setState(() => startFresh = checked!);
-          }),
-      ButtonsView(
-          canConnect: canConnect,
-          canTrain: canTrain,
-          connectCallback: connect,
-          trainCallback: train),
-      Expanded(
-        child: ListView.builder(
-          controller: scrollController,
-          reverse: true,
-          padding: const EdgeInsets.only(
-              top: 16.0, bottom: 32.0, left: 12.0, right: 12.0),
-          itemCount: logs.length,
-          itemBuilder: (context, index) => logs[logs.length - index - 1],
-        ),
-      ),
-    ];
-
-    return LayoutBuilder(builder: (context, constraints) {
-      return Scaffold(
+  Widget buildLayout(BuildContext _, BoxConstraints __) => Scaffold(
         appBar: AppBar(
           title: const Text('FedCampus'),
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: children,
+          children: [
+            InputView(
+                clientPartitionIdController: _clientPartitionIdController,
+                flServerIPController: _flServerIPController,
+                flServerPortController: _flServerPortController,
+                startFresh: _startFresh,
+                callback: (checked) {
+                  setState(() => _startFresh = checked!);
+                }),
+            ButtonsView(
+                canConnect: _canConnect,
+                canTrain: _canTrain,
+                connectCallback: connect,
+                trainCallback: train),
+            Expanded(
+              child: ListView.builder(
+                controller: _scrollController,
+                reverse: true,
+                padding: const EdgeInsets.only(
+                    top: 16.0, bottom: 32.0, left: 12.0, right: 12.0),
+                itemCount: _logs.length,
+                itemBuilder: (context, index) =>
+                    _logs[_logs.length - index - 1],
+              ),
+            ),
+          ],
         ),
       );
-    });
-  }
 }
 
 class ButtonsView extends StatelessWidget {
@@ -184,28 +172,26 @@ class ButtonsView extends StatelessWidget {
   final Function() trainCallback;
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+  build(BuildContext context) => Column(
+        children: [
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            ElevatedButton(
+              onPressed: canConnect ? connectCallback : null,
+              child: const Text('Connect'),
+            ),
+            ElevatedButton(
+              onPressed: canTrain ? trainCallback : null,
+              child: const Text('Train'),
+            ),
+          ]),
           ElevatedButton(
-            onPressed: canConnect ? connectCallback : null,
-            child: const Text('Connect'),
+            onPressed: () {
+              Navigator.of(context).pop(context);
+            },
+            child: const Text('Go back!'),
           ),
-          ElevatedButton(
-            onPressed: canTrain ? trainCallback : null,
-            child: const Text('Train'),
-          ),
-        ]),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.of(context).pop(context);
-          },
-          child: const Text('Go back!'),
-        ),
-      ],
-    );
-  }
+        ],
+      );
 }
 
 class InputView extends StatelessWidget {
@@ -221,43 +207,41 @@ class InputView extends StatelessWidget {
   final TextEditingController flServerIPController;
   final TextEditingController flServerPortController;
   final bool startFresh;
-  final void Function(bool?) callback;
+  final Function(bool?) callback;
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        TextFormField(
-          controller: clientPartitionIdController,
-          decoration: const InputDecoration(
-            labelText: 'Client Partition ID (1-10)',
-            filled: true,
+  build(BuildContext context) => Column(
+        children: [
+          TextFormField(
+            controller: clientPartitionIdController,
+            decoration: const InputDecoration(
+              labelText: 'Client Partition ID (1-10)',
+              filled: true,
+            ),
+            keyboardType: TextInputType.number,
           ),
-          keyboardType: TextInputType.number,
-        ),
-        TextFormField(
-          controller: flServerIPController,
-          decoration: const InputDecoration(
-            labelText: 'Backend Server Host',
-            filled: true,
+          TextFormField(
+            controller: flServerIPController,
+            decoration: const InputDecoration(
+              labelText: 'Backend Server Host',
+              filled: true,
+            ),
+            keyboardType: TextInputType.text,
           ),
-          keyboardType: TextInputType.text,
-        ),
-        TextFormField(
-          controller: flServerPortController,
-          decoration: const InputDecoration(
-            labelText: 'Backend Server Port',
-            filled: true,
+          TextFormField(
+            controller: flServerPortController,
+            decoration: const InputDecoration(
+              labelText: 'Backend Server Port',
+              filled: true,
+            ),
+            keyboardType: TextInputType.number,
           ),
-          keyboardType: TextInputType.number,
-        ),
-        Row(
-          children: [
-            Checkbox(value: startFresh, onChanged: callback),
-            const Text('Start Fresh')
-          ],
-        ),
-      ],
-    );
-  }
+          Row(
+            children: [
+              Checkbox(value: startFresh, onChanged: callback),
+              const Text('Start Fresh')
+            ],
+          ),
+        ],
+      );
 }
