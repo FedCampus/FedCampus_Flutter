@@ -57,12 +57,16 @@ class _TrainAppState extends State<TrainApp> {
   final clientPartitionIdController = TextEditingController();
   final flServerIPController = TextEditingController();
   final flServerPortController = TextEditingController();
-  final logs = [const Text('Logs will be shown here.')];
+
+  // final logs = [const Text('Logs will be shown here.')];
+  final logs = [
+    StatefulText(text: 'Logs will be shown here.', key: UniqueKey())
+  ];
 
   appendLog(String message) {
     logger.d('appendLog: $message');
     setState(() {
-      logs.add(Text(message));
+      logs.add(StatefulText(text: message, key: UniqueKey()));
     });
   }
 
@@ -160,6 +164,20 @@ class _TrainAppState extends State<TrainApp> {
         ),
       );
     });
+  }
+}
+
+class StatefulText extends StatefulWidget {
+  const StatefulText({required Key key, required this.text}) : super(key: key);
+  final String text;
+  @override
+  State<StatefulText> createState() => _StatefulTextState();
+}
+
+class _StatefulTextState extends State<StatefulText> {
+  @override
+  Widget build(BuildContext context) {
+    return Text(widget.text);
   }
 }
 
@@ -262,7 +280,7 @@ class LogView extends StatelessWidget {
   });
 
   final ScrollController scrollController;
-  final List<Text> logs;
+  final List<StatefulText> logs;
 
   @override
   Widget build(BuildContext context) {
