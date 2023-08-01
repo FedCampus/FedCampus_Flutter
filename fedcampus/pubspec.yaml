@@ -37,6 +37,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   logger: ^2.0.1
   provider: ^6.0.5
+  flutter_svg: ^2.0.7
+  google_fonts: ^5.1.0
 
 dev_dependencies:
   flutter_test:
@@ -61,9 +63,62 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  # TODO: rename assets
+  assets:
+    - assets/title.svg
+    - assets/title.png
+    - assets/circle.svg
+    - assets/page-1/images/vector.png
+    - assets/page-1/images/vector-bqB.png
+    - assets/page-1/images/vector-hJy.png
+    - assets/page-1/images/vector-z89.png
+    - assets/page-1/images/vector-CTj.png
+    - assets/page-1/images/group.png
+    - assets/page-1/images/vector-3iR.png
+    - assets/page-1/images/.png
+    - assets/page-1/images/vector-wH3.png
+    - assets/page-1/images/noun-sleep-4541090-1.png
+    - assets/page-1/images/vector-zoB.png
+    - assets/page-1/images/group-aLh.png
+    - assets/page-1/images/edge-intelligence-logo-1.png
+    - assets/page-1/images/vector-wDj.png
+    - assets/page-1/images/vector-U57.png
+    - assets/page-1/images/-QjT.png
+    - assets/page-1/images/vector-8xh.png
+    - assets/page-1/images/noun-calorie-burn-512375-1.png
+    - assets/page-1/images/vector-qp5.png
+    - assets/page-1/images/noun-heart-59-0272-2-1.png
+    - assets/page-1/images/vector-YTb.png
+    - assets/page-1/images/rectangle-10.png
+    - assets/page-1/images/vector-ShP.png
+    - assets/page-1/images/vector-ySR.png
+    - assets/page-1/images/rectangle-11.png
+    - assets/page-1/images/vector-6X3.png
+    - assets/page-1/images/vector-FPw.png
+    - assets/page-1/images/vector-StH.png
+    - assets/page-1/images/edge-intelligence-logo-1-LCy.png
+    - assets/page-1/images/noun-heart-590-2272-1.png
+    - assets/page-1/images/noun-heart-590-2272-1-Mvh.png
+    - assets/page-1/images/-gnM.png
+    - assets/page-1/images/-2LR.png
+    - assets/page-1/images/-N9P.png
+    - assets/page-1/images/noun-heart-59-0272-2-1-5Pf.png
+    - assets/page-1/images/-nYy.png
+    - assets/page-1/images/-kEu.png
+    - assets/page-1/images/edge-intelligence-logo-1-guF.png
+    - assets/page-1/images/noun-heart-59-0272-2-1-7td.png
+    - assets/page-1/images/edge-intelligence-logo-1-Bn9.png
+    - assets/page-1/images/vector-xXK.png
+    - assets/page-1/images/-Q8H.png
+    - assets/page-1/images/noun-heart-59-0272-2-2.png
+    - assets/page-1/images/noun-heart-590-2272-1-CaD.png
+    - assets/page-1/images/edge-intelligence-logo-1-kdP.png
+    - assets/page-1/images/edge-intelligence-logo-1-5vZ.png
+    - assets/page-1/images/noun-heart-590-2272-1-jD3.png
+    - assets/page-1/images/noun-heart-590-2272-1-8iu.png
+    - assets/page-1/images/noun-heart-59-0272-2-1-tLh.png
+    - assets/page-1/images/noun-heart-59-0272-2-1-PHT.png
+    - assets/page-1/images/noun-heart-590-2272-2.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

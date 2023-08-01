@@ -1,3 +1,4 @@
+import 'package:fedcampus/view/health.dart';
 import 'package:fedcampus/view/train_app.dart';
 import 'package:flutter/material.dart';
 
@@ -7,18 +8,32 @@ class HomeRoute extends StatelessWidget {
   @override
   build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: const Text('Home'),
+          title: Image.asset(
+            'assets/title.png',
+            height: 35,
+          ),
         ),
         body: Center(
-          child: ElevatedButton(
-            child: const Text('Open training page'),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const TrainApp()),
-              );
-            },
-          ),
+          child: Column(children: [
+            ElevatedButton(
+              child: const Text('Open training page'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const TrainApp()),
+                );
+              },
+            ),
+            ElevatedButton(
+              child: const Text('Open Health page'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HealthPage()),
+                );
+              },
+            ),
+          ]),
         ),
       );
 }
