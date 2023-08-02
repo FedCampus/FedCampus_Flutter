@@ -79,10 +79,7 @@ flutter {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-<<<<<<< HEAD
     implementation 'com.huawei.hms:health:6.5.0.300'
-=======
     // Local dependencies.
     implementation project(':fed_kit')
->>>>>>> d441c941b4a49734b78a5f72417b80cf18e67ac0
 }

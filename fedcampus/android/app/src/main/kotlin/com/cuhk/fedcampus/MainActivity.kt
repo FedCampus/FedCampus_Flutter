@@ -1,8 +1,11 @@
 package com.cuhk.fedcampus
 
+import android.content.Intent
 import android.util.Log
+import com.cuhk.fedcampus.health.health.auth.HealthKitAuthActivity
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.EventChannel.EventSink
 import io.flutter.plugin.common.MethodCall
@@ -24,6 +27,7 @@ class MainActivity : FlutterActivity() {
     lateinit var train: Train<Float3DArray, FloatArray>
     lateinit var flowerClient: FlowerClient<Float3DArray, FloatArray>
     var events: EventSink? = null
+    lateinit var result:Result
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -47,6 +51,7 @@ class MainActivity : FlutterActivity() {
     }
 
     fun handle(call: MethodCall, result: Result) = scope.launch {
+        this@MainActivity.result = result;
         try {
             when (call.method) {
                 "getPlatformVersion" -> result.success("Android ${android.os.Build.VERSION.RELEASE}")
@@ -59,10 +64,25 @@ class MainActivity : FlutterActivity() {
                 }
 
                 "train" -> train(result)
+                "huawei_authenticate" -> {
+                    val intent = Intent(this@MainActivity, HealthKitAuthActivity::class.java)
+                    startActivityForResult(intent,1000)
+                }
+
+
                 else -> result.notImplemented()
             }
         } catch (err: Throwable) {
-            result.error(TAG, "$err", err.stackTraceToString())
+            result.error("shit", "$err", err.stackTraceToString())
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 1000){
+            if (resultCode == 200){
+                result.success("user authenticated")
+            }
         }
     }
 
