@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'health.dart';
 
-class TrueHome extends StatefulWidget {
-  const TrueHome({super.key});
+class BottomNavigator extends StatefulWidget {
+  const BottomNavigator({super.key});
 
   @override
-  State<TrueHome> createState() => _TrueHomeState();
+  State<BottomNavigator> createState() => _BottomNavigatorState();
 }
 
-class _TrueHomeState extends State<TrueHome> {
+class _BottomNavigatorState extends State<BottomNavigator> {
   int _selectedIndex = 0;
   static final List<Widget> _widgetOptions = <Widget>[
     const Healthy(),

@@ -1,5 +1,5 @@
 import 'package:fedcampus/view/train_app.dart';
-import 'package:fedcampus/view/true_home.dart';
+import 'package:fedcampus/view/navigator.dart';
 import 'package:flutter/material.dart';
 
 class HomeRoute extends StatelessWidget {
@@ -29,7 +29,8 @@ class HomeRoute extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const TrueHome()),
+                  MaterialPageRoute(
+                      builder: (context) => const BottomNavigator()),
                 );
               },
             ),
