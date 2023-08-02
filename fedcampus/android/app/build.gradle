@@ -57,10 +57,8 @@ android {
         applicationId "com.cuhk.fedcampus"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        // minSdkVersion flutter.minSdkVersion
         minSdkVersion 24
-        // targetSdkVersion flutter.targetSdkVersion
-        targetSdkVersion 23
+        targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -81,5 +79,10 @@ flutter {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
+<<<<<<< HEAD
     implementation 'com.huawei.hms:health:6.5.0.300'
+=======
+    // Local dependencies.
+    implementation project(':fed_kit')
+>>>>>>> d441c941b4a49734b78a5f72417b80cf18e67ac0
 }
