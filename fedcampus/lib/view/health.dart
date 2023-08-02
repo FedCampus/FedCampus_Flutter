@@ -1,6 +1,5 @@
 //TODO:find better way do adapt different screen size
 import 'package:flutter/material.dart';
-import 'package:fedcampus/utils.dart';
 
 class Healthy extends StatelessWidget {
   const Healthy({
@@ -16,7 +15,6 @@ class Healthy extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
-          // autogrouprnv5KqK (2RBzXWd3zKDPkcmZ7Grnv5)
           margin: EdgeInsets.fromLTRB(32 * fem, 19 * fem, 26 * fem, 11 * fem),
           width: double.infinity,
           height: 650 * fem,
@@ -28,7 +26,6 @@ class Healthy extends StatelessWidget {
             ],
           ),
         ),
-        // BottomBar(fem: fem, ffem: ffem),
       ],
     );
   }
@@ -53,97 +50,7 @@ class LeftColumn extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-            height: 70,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.background,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Theme.of(context).colorScheme.shadow,
-                  offset: Offset(0 * fem, 4 * fem),
-                  blurRadius: 2 * fem,
-                ),
-                BoxShadow(
-                  color: Theme.of(context).colorScheme.outline,
-                  offset: Offset(0 * fem, -1 * fem),
-                  blurRadius: 1 * fem,
-                ),
-                BoxShadow(
-                  color: Theme.of(context).colorScheme.outline,
-                  offset: Offset(0 * fem, 4 * fem),
-                  blurRadius: 2 * fem,
-                ),
-              ],
-            ),
-            child:
-                // GestureDetector(
-                //   onTap: () {},
-                //   behavior: ,
-                //   child: Text(
-                //     'Create Account',
-                //     textAlign: TextAlign.left,
-                //     style: TextStyle(
-                //       fontFamily: "Netflix",
-                //       fontWeight: FontWeight.w600,
-                //       fontSize: 18,
-                //       letterSpacing: 0.0,
-                //       color: Colors.white,
-                //     ),
-                //   ),
-                // )
-                TextButton(
-              onPressed: () {},
-              style: TextButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.background,
-                padding:
-                    EdgeInsets.fromLTRB(14 * fem, 18 * fem, 14 * fem, 17 * fem),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12), // <-- Radius
-                ),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  FedIcon(
-                      fem: fem,
-                      imagePath:
-                          'assets/page-1/images/noun-heart-59-0272-2-2.png'),
-                  SizedBox(
-                    width: 11 * fem,
-                  ),
-                  SizedBox(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.fromLTRB(
-                              0 * fem, 0 * fem, 0 * fem, 5 * fem),
-                          child: Text(
-                            'Jan 1',
-                            style: TextStyle(
-                                color: Theme.of(context).colorScheme.tertiary),
-                          ),
-                        ),
-                        Text(
-                          '2023',
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.tertiary),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // ElevatedButton(
-          //   onPressed: () {},
-          //   style: ElevatedButton.styleFrom(
-          //       padding: EdgeInsets.zero, backgroundColor: Colors.amber),
-          //   child: Text("111"),
-          // ),
-          // Date(fem: fem, ffem: ffem),
+          Date(fem: fem),
           SizedBox(
             height: 20 * fem,
           ),
@@ -158,6 +65,83 @@ class LeftColumn extends StatelessWidget {
           ),
           Stress(fem: fem, ffem: ffem),
         ],
+      ),
+    );
+  }
+}
+
+class Date extends StatelessWidget {
+  const Date({
+    super.key,
+    required this.fem,
+  });
+
+  final double fem;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.background,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.shadow,
+            offset: Offset(0 * fem, 4 * fem),
+            blurRadius: 2 * fem,
+          ),
+          BoxShadow(
+            color: Theme.of(context).colorScheme.outline,
+            offset: Offset(0 * fem, -1 * fem),
+            blurRadius: 1 * fem,
+          ),
+          BoxShadow(
+            color: Theme.of(context).colorScheme.outline,
+            offset: Offset(0 * fem, 4 * fem),
+            blurRadius: 2 * fem,
+          ),
+        ],
+      ),
+      child: TextButton(
+        onPressed: () {},
+        style: TextButton.styleFrom(
+          backgroundColor: Theme.of(context).colorScheme.background,
+          padding: EdgeInsets.fromLTRB(14 * fem, 18 * fem, 14 * fem, 17 * fem),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            FedIcon(
+                fem: fem,
+                imagePath: 'assets/page-1/images/noun-heart-59-0272-2-2.png'),
+            SizedBox(
+              width: 11 * fem,
+            ),
+            SizedBox(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    margin:
+                        EdgeInsets.fromLTRB(0 * fem, 0 * fem, 0 * fem, 5 * fem),
+                    child: Text(
+                      'Jan 1',
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.tertiary),
+                    ),
+                  ),
+                  Text(
+                    '2023',
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.tertiary),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -626,97 +610,6 @@ class Distance extends StatelessWidget {
                       color: Theme.of(context).colorScheme.primaryContainer))
             ],
           )
-        ],
-      ),
-    );
-  }
-}
-
-class Date extends StatelessWidget {
-  const Date({
-    super.key,
-    required this.fem,
-    required this.ffem,
-  });
-
-  final double fem;
-  final double ffem;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.fromLTRB(17 * fem, 20 * fem, 20 * fem, 16 * fem),
-      width: double.infinity,
-      height: 88 * fem,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.background,
-        borderRadius: BorderRadius.circular(24 * fem),
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(context).colorScheme.background,
-            offset: Offset(0 * fem, 4 * fem),
-            blurRadius: 2 * fem,
-          ),
-          BoxShadow(
-            color: Theme.of(context).colorScheme.outline,
-            offset: Offset(0 * fem, -1 * fem),
-            blurRadius: 1 * fem,
-          ),
-          BoxShadow(
-            color: Theme.of(context).colorScheme.outline,
-            offset: Offset(0 * fem, 4 * fem),
-            blurRadius: 2 * fem,
-          ),
-        ],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            // nounheart59027222xvD (34:169)
-            margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 11 * fem, 0 * fem),
-            width: 51 * fem,
-            height: 46 * fem,
-            child: Image.asset(
-              'assets/page-1/images/noun-heart-59-0272-2-2.png',
-              fit: BoxFit.cover,
-            ),
-          ),
-          SizedBox(
-            // autogroup3nthGvu (2RBzsfi8fN6bLXXWWx3NtH)
-            height: double.infinity,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  // jan1D5T (34:166)
-                  margin:
-                      EdgeInsets.fromLTRB(0 * fem, 0 * fem, 0 * fem, 5 * fem),
-                  child: Text(
-                    'Jan 1',
-                    style: SafeGoogleFont(
-                      'Inter',
-                      fontSize: 22 * ffem,
-                      fontWeight: FontWeight.w400,
-                      height: 1.2125 * ffem / fem,
-                      color: Theme.of(context).colorScheme.primaryContainer,
-                    ),
-                  ),
-                ),
-                Text(
-                  // Hr1 (34:168)
-                  '2023',
-                  style: SafeGoogleFont(
-                    'Inter',
-                    fontSize: 16 * ffem,
-                    fontWeight: FontWeight.w400,
-                    height: 1.2125 * ffem / fem,
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
