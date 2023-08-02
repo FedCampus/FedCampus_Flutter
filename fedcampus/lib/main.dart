@@ -13,7 +13,7 @@ void main() {
           primary: Colors.black,
           primaryContainer: const Color.fromARGB(255, 229, 85, 85),
           secondary: const Color.fromARGB(255, 217, 217, 217),
-          tertiary: const Color.fromARGB(51, 0, 0, 0),
+          tertiary: const Color.fromARGB(102, 0, 0, 0),
           shadow: const Color.fromARGB(38, 229, 85, 85),
           outline: const Color.fromARGB(25, 0, 0, 0),
           surfaceTint: const Color.fromARGB(255, 206, 229, 108),
