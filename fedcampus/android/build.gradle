@@ -6,11 +6,13 @@ buildscript {
         maven { url 'https://maven.aliyun.com/repository/google' }
          maven { url 'https://maven.aliyun.com/repository/jcenter' }
          maven { url 'https://maven.aliyun.com/nexus/content/groups/public' }
+        maven {url 'https://developer.huawei.com/repo/'}
     }
 
     dependencies {
         classpath 'com.android.tools.build:gradle:7.4.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.huawei.agconnect:agcp:1.6.0.300'
     }
 }
 
@@ -21,6 +23,7 @@ allprojects {
          maven { url 'https://maven.aliyun.com/repository/google' }
          maven { url 'https://maven.aliyun.com/repository/jcenter' }
          maven { url 'https://maven.aliyun.com/nexus/content/groups/public' }
+        maven {url 'https://developer.huawei.com/repo/'}
     }
 }
 

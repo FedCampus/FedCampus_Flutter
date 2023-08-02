@@ -24,8 +24,17 @@ if (flutterVersionName == null) {
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+apply plugin: 'com.huawei.agconnect'
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file('key.keystore')
+            storePassword 'gaimima940137'
+            keyAlias 'Key'
+            keyPassword 'gaimima940137'
+        }
+    }
     namespace "com.cuhk.fedcampus"
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
@@ -48,8 +57,10 @@ android {
         applicationId "com.cuhk.fedcampus"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion flutter.minSdkVersion
-        targetSdkVersion flutter.targetSdkVersion
+        // minSdkVersion flutter.minSdkVersion
+        minSdkVersion 24
+        // targetSdkVersion flutter.targetSdkVersion
+        targetSdkVersion 23
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -69,4 +80,6 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    implementation 'com.huawei.hms:health:6.5.0.300'
 }
