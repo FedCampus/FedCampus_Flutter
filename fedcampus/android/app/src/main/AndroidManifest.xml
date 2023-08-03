@@ -4,6 +4,10 @@
             android:label="fedcampus"
             android:usesCleartextTraffic="true"
             android:name="${applicationName}">
+
+        <activity android:name="com.cuhk.fedcampus.health.health.auth.HealthKitAuthActivity" />
+
+
         <activity
                 android:name=".MainActivity"
                 android:exported="true"
