@@ -1,7 +1,6 @@
 //TODO:find better way do adapt different screen size
 import 'dart:convert';
 
-import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/utility/test_api.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +21,12 @@ class _HealthyState extends State<Healthy> {
   }
 
   getDistance() async {
-    final responseBody = (await fetchDistance()).body;
+    String responseBody;
+    try {
+      responseBody = (await fetchDistance()).body;
+    } catch (e) {
+      responseBody = '{"status": "fail"}';
+    }
     final data = jsonDecode(responseBody);
     // logger.d(data);
     setState(() {
@@ -160,9 +164,7 @@ class Date extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            FedIcon(
-                fem: fem,
-                imagePath: 'assets/page-1/images/noun-heart-59-0272-2-2.png'),
+            FedIcon(fem: fem, imagePath: 'assets/images/health_nav_icon.png'),
             SizedBox(
               width: 11 * fem,
             ),
@@ -316,7 +318,7 @@ class Heart extends StatelessWidget {
           children: [
             FedIcon(
               fem: fem,
-              imagePath: 'assets/page-1/images/vector-hJy.png',
+              imagePath: 'assets/images/heart_rate.png',
             ),
             SizedBox(
               height: 11 * fem,
@@ -328,7 +330,7 @@ class Heart extends StatelessWidget {
             SizedBox(
               height: 11 * fem,
             ),
-            FedIcon(fem: fem, imagePath: 'assets/page-1/images/vector-6X3.png'),
+            FedIcon(fem: fem, imagePath: 'assets/images/heart_rate_2.png'),
           ],
         ));
   }
@@ -354,8 +356,7 @@ class Step extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                FedIcon(
-                    fem: fem, imagePath: 'assets/page-1/images/group-aLh.png'),
+                FedIcon(fem: fem, imagePath: 'assets/images/step.png'),
                 SizedBox(
                   height: 11 * fem,
                 ),
@@ -408,7 +409,7 @@ class Sleep extends StatelessWidget {
         children: [
           FedIcon(
             fem: fem,
-            imagePath: 'assets/page-1/images/noun-sleep-4541090-1.png',
+            imagePath: 'assets/images/sleep.png',
           ),
           SizedBox(
             height: 11 * fem,
@@ -446,7 +447,7 @@ class IntenseExercise extends StatelessWidget {
               children: [
                 FedIcon(
                   fem: fem,
-                  imagePath: 'assets/page-1/images/vector-StH.png',
+                  imagePath: 'assets/images/exercise.png',
                   width: 52,
                   height: 63,
                 ),
@@ -509,10 +510,7 @@ class Calorie extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                FedIcon(
-                    fem: fem,
-                    imagePath:
-                        'assets/page-1/images/noun-calorie-burn-512375-1.png'),
+                FedIcon(fem: fem, imagePath: 'assets/images/calorie.png'),
                 SizedBox(
                   height: 11 * fem,
                 ),
@@ -564,7 +562,7 @@ class Stress extends StatelessWidget {
       widget: Row(
         children: [
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            FedIcon(fem: fem, imagePath: 'assets/page-1/images/vector-ySR.png'),
+            FedIcon(fem: fem, imagePath: 'assets/images/meter.png'),
             SizedBox(
               height: 11 * fem,
             ),
@@ -619,7 +617,7 @@ class Distance extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              FedIcon(fem: fem, imagePath: 'assets/page-1/images/group.png'),
+              FedIcon(fem: fem, imagePath: 'assets/images/group.png'),
               SizedBox(
                 height: 10 * fem,
               ),
@@ -672,7 +670,7 @@ class TopBar extends StatelessWidget {
           width: 160 * fem,
           height: 34 * fem,
           child: Image.asset(
-            'assets/page-1/images/-Q8H.png',
+            'assets/images/title.png',
             fit: BoxFit.cover,
           ),
         ),

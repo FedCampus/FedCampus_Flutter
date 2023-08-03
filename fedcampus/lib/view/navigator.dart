@@ -29,7 +29,7 @@ class _BottomNavigatorState extends State<BottomNavigator> {
         // title: TopBar(fem: fem),
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
         title: Image.asset(
-          'assets/page-1/images/-Q8H.png',
+          'assets/images/title.png',
           height: 35,
         ),
       ),
@@ -40,7 +40,7 @@ class _BottomNavigatorState extends State<BottomNavigator> {
             icon: SizedBox(
               width: 40,
               child: Image.asset(
-                'assets/page-1/images/noun-heart-59-0272-2-1-tLh.png',
+                'assets/images/health_nav_icon.png',
                 fit: BoxFit.contain,
               ),
             ),
@@ -50,7 +50,7 @@ class _BottomNavigatorState extends State<BottomNavigator> {
             icon: SizedBox(
               width: 40,
               child: Image.asset(
-                'assets/page-1/images/noun-heart-590-2272-1-Mvh.png',
+                'assets/images/Activity_nav_icon.png',
                 fit: BoxFit.contain,
               ),
             ),
@@ -60,7 +60,7 @@ class _BottomNavigatorState extends State<BottomNavigator> {
             icon: SizedBox(
               width: 40,
               child: Image.asset(
-                'assets/page-1/images/edge-intelligence-logo-1-guF.png',
+                'assets/images/me_nav_icon.png',
                 fit: BoxFit.contain,
               ),
             ),
