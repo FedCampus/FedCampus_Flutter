@@ -9,7 +9,7 @@ class HomeRoute extends StatelessWidget {
   build(BuildContext context) => Scaffold(
         appBar: AppBar(
           title: Image.asset(
-            'assets/title.png',
+            'assets/images/title.png',
             height: 35,
           ),
         ),
