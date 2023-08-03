@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:fedcampus/utility/log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -17,6 +20,17 @@ class MinePage extends StatelessWidget {
       print(e);
       s = "shiting";
     }
+  }
+
+  getData() async {
+    String s;
+    try {
+      s = await methodChannel.invokeMethod<String>("get_data") ?? "no data";
+    } on PlatformException catch (e) {
+      logger.i(e);
+      s = "error";
+    }
+    print(s);
   }
 
   @override
@@ -49,7 +63,15 @@ class MinePage extends StatelessWidget {
                 },
               ),
             ),
-            // cancel authentication code
+            // get data code
+            Center(
+              child: ElevatedButton(
+                child: const Text('Get Data'),
+                onPressed: () {
+                  getData();
+                },
+              ),
+            ),
           ],
         )));
   }

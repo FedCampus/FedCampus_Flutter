@@ -3,6 +3,11 @@ package com.cuhk.fedcampus
 import android.content.Intent
 import android.util.Log
 import com.cuhk.fedcampus.health.health.auth.HealthKitAuthActivity
+import com.cuhk.fedcampus.health.utils.exercisedata.getExerciseData
+import com.huawei.hms.hihealth.DataController
+import com.huawei.hms.hihealth.HuaweiHiHealth
+import com.huawei.hms.hihealth.data.DataType
+import com.huawei.hms.hihealth.data.Field
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -67,6 +72,11 @@ class MainActivity : FlutterActivity() {
                 "huawei_authenticate" -> {
                     val intent = Intent(this@MainActivity, HealthKitAuthActivity::class.java)
                     startActivityForResult(intent,1000)
+                }
+                "get_data" ->{
+                    val dataController = HuaweiHiHealth.getDataController(this@MainActivity);
+                    val data = getExerciseData(DataType.DT_CONTINUOUS_STEPS_DELTA, Field.FIELD_STEPS, "step",dataController, 20230802, 20230802)
+                    result.success(data.toString());
                 }
 
 
