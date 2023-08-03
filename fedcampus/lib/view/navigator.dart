@@ -37,34 +37,55 @@ class _BottomNavigatorState extends State<BottomNavigator> {
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
+            label: 'Health',
             icon: SizedBox(
+              width: 40,
+              child: Image.asset(
+                'assets/images/health_nav_icon_inactive.png',
+                fit: BoxFit.contain,
+              ),
+            ),
+            activeIcon: SizedBox(
               width: 40,
               child: Image.asset(
                 'assets/images/health_nav_icon.png',
                 fit: BoxFit.contain,
               ),
             ),
-            label: 'Health',
           ),
           BottomNavigationBarItem(
+            label: 'Activity',
             icon: SizedBox(
               width: 40,
               child: Image.asset(
-                'assets/images/Activity_nav_icon.png',
+                'assets/images/activity_nav_icon_inactive.png',
                 fit: BoxFit.contain,
               ),
             ),
-            label: 'Activity',
+            activeIcon: SizedBox(
+              width: 40,
+              child: Image.asset(
+                'assets/images/activity_nav_icon.png',
+                fit: BoxFit.contain,
+              ),
+            ),
           ),
           BottomNavigationBarItem(
+            label: 'Me',
             icon: SizedBox(
+              width: 40,
+              child: Image.asset(
+                'assets/images/me_nav_icon_inactive.png',
+                fit: BoxFit.contain,
+              ),
+            ),
+            activeIcon: SizedBox(
               width: 40,
               child: Image.asset(
                 'assets/images/me_nav_icon.png',
                 fit: BoxFit.contain,
               ),
             ),
-            label: 'Me',
           ),
         ],
         currentIndex: _selectedIndex,

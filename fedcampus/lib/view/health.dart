@@ -16,7 +16,7 @@ class Healthy extends StatefulWidget {
 class _HealthyState extends State<Healthy> {
   String dist = 'loading';
 
-  refresh() async {
+  Future<void> refresh() async {
     getDistance();
   }
 
@@ -50,27 +50,34 @@ class _HealthyState extends State<Healthy> {
     double baseWidth = 390;
     double fem = MediaQuery.of(context).size.width / baseWidth;
     double ffem = fem * 0.97;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          margin: EdgeInsets.fromLTRB(32 * fem, 19 * fem, 26 * fem, 11 * fem),
-          width: double.infinity,
-          height: 650 * fem,
+    return RefreshIndicator(
+      onRefresh: refresh,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Container(
+          margin: EdgeInsets.fromLTRB(26 * fem, 19 * fem, 26 * fem, 11 * fem),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              LeftColumn(
-                fem: fem,
-                ffem: ffem,
-                dist: dist,
-                refresh: refresh,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Expanded(
+                flex: 1,
+                child: LeftColumn(
+                  fem: fem,
+                  ffem: ffem,
+                  dist: dist,
+                  refresh: refresh,
+                ),
               ),
-              RightColumn(fem: fem, ffem: ffem),
+              SizedBox(
+                width: 22 * fem,
+              ),
+              Expanded(flex: 1, child: RightColumn(fem: fem, ffem: ffem)),
             ],
           ),
         ),
-      ],
+      ),
     );
   }
 }
@@ -91,12 +98,9 @@ class LeftColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 26 * fem, 0 * fem),
-      width: 153 * fem,
-      height: double.infinity,
+    return SizedBox(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Date(fem: fem, callback: refresh),
           SizedBox(
@@ -162,7 +166,7 @@ class Date extends StatelessWidget {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             FedIcon(fem: fem, imagePath: 'assets/images/health_nav_icon.png'),
             SizedBox(
@@ -208,27 +212,23 @@ class RightColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 153 * fem,
-      height: double.infinity,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Step(fem: fem, ffem: ffem),
-          SizedBox(
-            height: 21 * fem,
-          ),
-          Calorie(fem: fem, ffem: ffem),
-          SizedBox(
-            height: 21 * fem,
-          ),
-          IntenseExercise(fem: fem, ffem: ffem),
-          SizedBox(
-            height: 21 * fem,
-          ),
-          Sleep(fem: fem, ffem: ffem),
-        ],
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Step(fem: fem, ffem: ffem),
+        SizedBox(
+          height: 21 * fem,
+        ),
+        Calorie(fem: fem, ffem: ffem),
+        SizedBox(
+          height: 21 * fem,
+        ),
+        IntenseExercise(fem: fem, ffem: ffem),
+        SizedBox(
+          height: 21 * fem,
+        ),
+        Sleep(fem: fem, ffem: ffem),
+      ],
     );
   }
 }
@@ -248,7 +248,6 @@ class FedCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.fromLTRB(14 * fem, 18 * fem, 14 * fem, 17 * fem),
-      width: double.infinity,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.background,
         borderRadius: BorderRadius.circular(24 * fem),
@@ -313,24 +312,30 @@ class Heart extends StatelessWidget {
     return FedCard(
         fem: fem,
         ffem: ffem,
-        widget: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        widget: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            FedIcon(
-              fem: fem,
-              imagePath: 'assets/images/heart_rate.png',
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                FedIcon(
+                  fem: fem,
+                  imagePath: 'assets/images/heart_rate.png',
+                ),
+                SizedBox(
+                  height: 11 * fem,
+                ),
+                Text(
+                  'Heart \nRate',
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.tertiary),
+                ),
+                SizedBox(
+                  height: 11 * fem,
+                ),
+                FedIcon(fem: fem, imagePath: 'assets/images/heart_rate_2.png'),
+              ],
             ),
-            SizedBox(
-              height: 11 * fem,
-            ),
-            Text(
-              'Heart \nRate',
-              style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
-            ),
-            SizedBox(
-              height: 11 * fem,
-            ),
-            FedIcon(fem: fem, imagePath: 'assets/images/heart_rate_2.png'),
           ],
         ));
   }
@@ -354,7 +359,7 @@ class Step extends StatelessWidget {
         widget: Row(
           children: [
             Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 FedIcon(fem: fem, imagePath: 'assets/images/step.png'),
                 SizedBox(
@@ -404,20 +409,24 @@ class Sleep extends StatelessWidget {
     return FedCard(
       fem: fem,
       ffem: ffem,
-      widget: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      widget: Row(
         children: [
-          FedIcon(
-            fem: fem,
-            imagePath: 'assets/images/sleep.png',
-          ),
-          SizedBox(
-            height: 11 * fem,
-          ),
-          Text(
-            // sleepoPf (30:137)
-            'Sleep',
-            style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              FedIcon(
+                fem: fem,
+                imagePath: 'assets/images/sleep.png',
+              ),
+              SizedBox(
+                height: 11 * fem,
+              ),
+              Text(
+                // sleepoPf (30:137)
+                'Sleep',
+                style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+              ),
+            ],
           ),
         ],
       ),
@@ -443,7 +452,7 @@ class IntenseExercise extends StatelessWidget {
         widget: Row(
           children: [
             Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 FedIcon(
                   fem: fem,
@@ -508,7 +517,7 @@ class Calorie extends StatelessWidget {
         widget: Row(
           children: [
             Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 FedIcon(fem: fem, imagePath: 'assets/images/calorie.png'),
                 SizedBox(
@@ -561,7 +570,7 @@ class Stress extends StatelessWidget {
       ffem: ffem,
       widget: Row(
         children: [
-          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Column(mainAxisAlignment: MainAxisAlignment.start, children: [
             FedIcon(fem: fem, imagePath: 'assets/images/meter.png'),
             SizedBox(
               height: 11 * fem,
@@ -615,7 +624,7 @@ class Distance extends StatelessWidget {
       widget: Row(
         children: [
           Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               FedIcon(fem: fem, imagePath: 'assets/images/group.png'),
               SizedBox(
@@ -659,7 +668,6 @@ class TopBar extends StatelessWidget {
       // group25P2Z (73:416)
       margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 0 * fem, 37 * fem),
       padding: EdgeInsets.fromLTRB(118 * fem, 44 * fem, 112 * fem, 11 * fem),
-      width: double.infinity,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primaryContainer,
       ),
