@@ -1,9 +1,8 @@
-import 'dart:math';
+import 'package:fedcampus/pigeons/data.dart';
 
 import 'package:fedcampus/utility/log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'package:fedcampus/view/train_app.dart';
 
 class MinePage extends StatelessWidget {
