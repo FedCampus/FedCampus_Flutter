@@ -2,18 +2,19 @@
 import 'dart:convert';
 
 import 'package:fedcampus/utility/test_api.dart';
+import 'package:fedcampus/view/widgets/widget.dart';
 import 'package:flutter/material.dart';
 
-class Healthy extends StatefulWidget {
-  const Healthy({
+class Health extends StatefulWidget {
+  const Health({
     super.key,
   });
 
   @override
-  State<Healthy> createState() => _HealthyState();
+  State<Health> createState() => _HealthState();
 }
 
-class _HealthyState extends State<Healthy> {
+class _HealthState extends State<Health> {
   String dist = 'loading';
 
   Future<void> refresh() async {
@@ -229,70 +230,6 @@ class RightColumn extends StatelessWidget {
         ),
         Sleep(fem: fem, ffem: ffem),
       ],
-    );
-  }
-}
-
-class FedCard extends StatelessWidget {
-  const FedCard({
-    super.key,
-    required this.fem,
-    required this.ffem,
-    required this.widget,
-  });
-  final double fem;
-  final double ffem;
-  final Widget widget;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.fromLTRB(14 * fem, 18 * fem, 14 * fem, 17 * fem),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.background,
-        borderRadius: BorderRadius.circular(24 * fem),
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(context).colorScheme.shadow,
-            offset: Offset(0 * fem, 4 * fem),
-            blurRadius: 2 * fem,
-          ),
-          BoxShadow(
-            color: Theme.of(context).colorScheme.outline,
-            offset: Offset(0 * fem, -1 * fem),
-            blurRadius: 1 * fem,
-          ),
-          BoxShadow(
-            color: Theme.of(context).colorScheme.outline,
-            offset: Offset(0 * fem, 4 * fem),
-            blurRadius: 2 * fem,
-          ),
-        ],
-      ),
-      child: widget,
-    );
-  }
-}
-
-class FedIcon extends StatelessWidget {
-  const FedIcon({
-    super.key,
-    required this.fem,
-    required this.imagePath,
-    this.height = 39,
-    this.width = 48,
-  });
-
-  final double fem;
-  final String imagePath;
-  final double height;
-  final double width;
-  @override
-  Widget build(BuildContext context) {
-    return Image.asset(
-      imagePath,
-      width: width * fem,
-      height: height * fem,
     );
   }
 }
@@ -626,7 +563,7 @@ class Distance extends StatelessWidget {
           Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              FedIcon(fem: fem, imagePath: 'assets/images/group.png'),
+              FedIcon(fem: fem, imagePath: 'assets/images/location.png'),
               SizedBox(
                 height: 10 * fem,
               ),
@@ -665,7 +602,6 @@ class TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      // group25P2Z (73:416)
       margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 0 * fem, 37 * fem),
       padding: EdgeInsets.fromLTRB(118 * fem, 44 * fem, 112 * fem, 11 * fem),
       decoration: BoxDecoration(
