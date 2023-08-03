@@ -1,10 +1,45 @@
 //TODO:find better way do adapt different screen size
+import 'dart:convert';
+
+import 'package:fedcampus/utility/log.dart';
+import 'package:fedcampus/utility/test_api.dart';
 import 'package:flutter/material.dart';
 
-class Healthy extends StatelessWidget {
+class Healthy extends StatefulWidget {
   const Healthy({
     super.key,
   });
+
+  @override
+  State<Healthy> createState() => _HealthyState();
+}
+
+class _HealthyState extends State<Healthy> {
+  String dist = 'loading';
+
+  refresh() async {
+    getDistance();
+  }
+
+  getDistance() async {
+    final responseBody = (await fetchDistance()).body;
+    final data = jsonDecode(responseBody);
+    // logger.d(data);
+    setState(() {
+      try {
+        int d = int.parse(data['distance']);
+        dist = d >= 10000 ? '${(d / 10000).toStringAsFixed(2)}km' : '${d}m';
+      } catch (e) {
+        dist = 'loading';
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getDistance();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +56,12 @@ class Healthy extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              LeftColumn(fem: fem, ffem: ffem),
+              LeftColumn(
+                fem: fem,
+                ffem: ffem,
+                dist: dist,
+                refresh: refresh,
+              ),
               RightColumn(fem: fem, ffem: ffem),
             ],
           ),
@@ -36,10 +76,14 @@ class LeftColumn extends StatelessWidget {
     super.key,
     required this.fem,
     required this.ffem,
+    required this.dist,
+    required this.refresh,
   });
 
   final double fem;
   final double ffem;
+  final String dist;
+  final void Function() refresh;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +94,7 @@ class LeftColumn extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Date(fem: fem),
+          Date(fem: fem, callback: refresh),
           SizedBox(
             height: 20 * fem,
           ),
@@ -59,7 +103,7 @@ class LeftColumn extends StatelessWidget {
           SizedBox(
             height: 20 * fem,
           ),
-          Distance(fem: fem, ffem: ffem),
+          Distance(fem: fem, ffem: ffem, distance: dist),
           SizedBox(
             height: 20 * fem,
           ),
@@ -74,9 +118,11 @@ class Date extends StatelessWidget {
   const Date({
     super.key,
     required this.fem,
+    required this.callback,
   });
 
   final double fem;
+  final void Function() callback;
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +149,8 @@ class Date extends StatelessWidget {
         ],
       ),
       child: TextButton(
-        onPressed: () {},
+        //TODO: currently, onPressed is set to resend all async requests
+        onPressed: callback,
         style: TextButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.background,
           padding: EdgeInsets.fromLTRB(14 * fem, 18 * fem, 14 * fem, 17 * fem),
@@ -555,10 +602,12 @@ class Distance extends StatelessWidget {
     super.key,
     required this.fem,
     required this.ffem,
+    required this.distance,
   });
 
   final double fem;
   final double ffem;
+  final String distance;
 
   @override
   Widget build(BuildContext context) {
@@ -572,25 +621,12 @@ class Distance extends StatelessWidget {
             children: [
               FedIcon(fem: fem, imagePath: 'assets/page-1/images/group.png'),
               SizedBox(
-                height: 11 * fem,
+                height: 10 * fem,
               ),
               Text(
                 'Distance',
                 style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
               ),
-              //   FedIcon(
-              //   fem: fem,
-              //   imagePath: 'assets/page-1/images/vector.png',
-              //   width: 45,
-              //   height: 29,
-              // ),
-              // SizedBox(
-              //   height: 11 * fem,
-              // ),
-              // Text(
-              //   'Elevation',
-              //   style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
-              // ),
             ],
           ),
           SizedBox(
@@ -598,16 +634,11 @@ class Distance extends StatelessWidget {
           ),
           Column(
             children: [
-              Text('78',
+              Text(distance,
                   style: TextStyle(
                       fontFamily: 'Montserrat Alternates',
-                      fontSize: 30,
+                      fontSize: 15,
                       color: Theme.of(context).colorScheme.primaryContainer)),
-              Text('m',
-                  style: TextStyle(
-                      fontFamily: 'Montserrat Alternates',
-                      fontSize: 20,
-                      color: Theme.of(context).colorScheme.primaryContainer))
             ],
           )
         ],
