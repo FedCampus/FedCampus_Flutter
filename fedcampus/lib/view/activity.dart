@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:fedcampus/utility/log.dart';
-import 'package:fedcampus/view/widgets/widget.dart';
+import 'package:fedcampus/utility/test_api.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 class Activity extends StatefulWidget {
   const Activity({
@@ -12,23 +15,106 @@ class Activity extends StatefulWidget {
 }
 
 class _ActivityState extends State<Activity> {
+  List steps = [{}];
+  int currentCount = 10;
+  final int maxCount = 50;
+
+  @override
+  void initState() {
+    super.initState();
+    getSteps();
+  }
+
+  Future<void> refresh() async {
+    getSteps();
+  }
+
+  getSteps() async {
+    String responseBody;
+    List data;
+    try {
+      responseBody = (await fetchSteps()).body;
+    } catch (e) {
+      responseBody = '{"status": "fail"}';
+    }
+    data = jsonDecode(responseBody);
+    // logger.d(data);
+    setState(() {
+      steps = data;
+      logger.d(steps);
+    });
+  }
+
+  // https://stackoverflow.com/questions/59681328/safe-way-to-access-list-index
+  T? tryGet<T>(List<T> list, int index) =>
+      index < 0 || index >= list.length ? null : list[index];
+
+  getDate(int index) {
+    if (tryGet(steps, index) != null) return tryGet(steps, index)["date"];
+    return "loading";
+  }
+
+  getStep(int index) {
+    if (tryGet(steps, index) != null) return tryGet(steps, index)["step"];
+    return "loading";
+  }
+
+  loadMore() {
+    Future.delayed(const Duration(seconds: 1)).then((e) => {
+          setState(() {
+            currentCount += 10;
+          })
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     double logicalWidth = MediaQuery.of(context).size.width;
-    return ListView.separated(
-        separatorBuilder: (context, index) => const SizedBox(height: 11),
-        itemCount: 20,
-        padding: EdgeInsets.all(logicalWidth / 20),
-        itemBuilder: (BuildContext context, int index) {
-          if (index == 0) {
-            return Date(fem: 1, callback: () => {});
-          }
-          // the use of IntrinsicHeight is explained here:
-          // because ActivityCard() is flexible vertically, when placed in ListView, the height becomes an issue
-          // IntrinsicHeight forces the column to be exactly as big as its contents
-          // https://api.flutter.dev/flutter/widgets/SingleChildScrollView-class.html
-          return const IntrinsicHeight(child: ActivityCard());
-        });
+    return RefreshIndicator(
+      onRefresh: refresh,
+      child: ListView.separated(
+          separatorBuilder: (context, index) => const SizedBox(height: 11),
+          itemCount: currentCount,
+          padding: EdgeInsets.all(logicalWidth / 20),
+          itemBuilder: (BuildContext context, int index) {
+            if (index == 0) {
+              return Date(fem: 1, callback: () => {});
+            }
+            // https://book.flutterchina.club/chapter6/listview.html
+            if (index == maxCount - 1) {
+              return Container(
+                alignment: Alignment.center,
+                padding: const EdgeInsets.all(16.0),
+                child: const Text(
+                  "no more data available",
+                  style: TextStyle(color: Colors.grey),
+                ),
+              );
+            }
+            if (index == currentCount - 1) {
+              // https://stackoverflow.com/a/59478165
+              SchedulerBinding.instance.addPostFrameCallback((_) {
+                loadMore();
+              });
+              return Container(
+                padding: const EdgeInsets.all(16.0),
+                alignment: Alignment.center,
+                child: const SizedBox(
+                  width: 24.0,
+                  height: 24.0,
+                  child: CircularProgressIndicator(strokeWidth: 2.0),
+                ),
+              );
+            }
+            // the use of IntrinsicHeight is explained here:
+            // because ActivityCard() is flexible vertically, when placed in ListView, the height becomes an issue
+            // IntrinsicHeight forces the column to be exactly as big as its contents
+            // https://api.flutter.dev/flutter/widgets/SingleChildScrollView-class.html
+            return IntrinsicHeight(
+                child:
+                    ActivityCard(date: getDate(index), steps: getStep(index)));
+          }),
+    );
   }
 }
 
@@ -97,12 +183,17 @@ class FedCard extends StatelessWidget {
 class ActivityCard extends StatelessWidget {
   const ActivityCard({
     super.key,
+    required this.date,
+    required this.steps,
   });
+
+  final String date;
+  final String steps;
 
   @override
   Widget build(BuildContext context) {
     double logicalWidth = MediaQuery.of(context).size.width;
-    logger.d(logicalWidth / 10);
+    // logger.d(logicalWidth / 10);
     return FedCard(
         smallSize: logicalWidth / 360,
         widget: Row(
@@ -122,7 +213,7 @@ class ActivityCard extends StatelessWidget {
             Expanded(
               flex: 7,
               child: Text(
-                '1111',
+                steps,
                 style: TextStyle(
                     fontFamily: 'Montserrat Alternates',
                     fontSize: 30,
@@ -157,7 +248,7 @@ class ActivityCard extends StatelessWidget {
             Expanded(
               flex: 7,
               child: Text(
-                '88/88',
+                date,
                 textAlign: TextAlign.end,
                 style: TextStyle(
                     fontFamily: 'Montserrat Alternates',

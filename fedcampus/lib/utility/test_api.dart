@@ -15,3 +15,8 @@ Future<http.Response> fetchIntenseExercise() {
   //sample response: 78
   return http.get(Uri.parse('http://192.168.0.107:9999/api/intenseexercise'));
 }
+
+Future<http.Response> fetchSteps() {
+  //sample response: [{"date": "1/0","steps": 19342},{"date": "1/1","steps": 7580},...]
+  return http.get(Uri.parse('http://192.168.0.107:9999/api/steps'));
+}
