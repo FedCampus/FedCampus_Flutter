@@ -34,7 +34,7 @@ class MainActivity : FlutterActivity() {
     lateinit var train: Train<Float3DArray, FloatArray>
     lateinit var flowerClient: FlowerClient<Float3DArray, FloatArray>
     var events: EventSink? = null
-    lateinit var result:Result
+    lateinit var result: Result
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -76,11 +76,18 @@ class MainActivity : FlutterActivity() {
                 "train" -> train(result)
                 "huawei_authenticate" -> {
                     val intent = Intent(this@MainActivity, HealthKitAuthActivity::class.java)
-                    startActivityForResult(intent,1000)
+                    startActivityForResult(intent, 1000)
                 }
-                "get_data" ->{
+                "get_data" -> {
                     val dataController = HuaweiHiHealth.getDataController(this@MainActivity);
-                    val data = getExerciseData(DataType.DT_CONTINUOUS_STEPS_DELTA, Field.FIELD_STEPS, "step",dataController, 20230802, 20230802)
+                    val data = getExerciseData(
+                        DataType.DT_CONTINUOUS_STEPS_DELTA,
+                        Field.FIELD_STEPS,
+                        "step",
+                        dataController,
+                        20230802,
+                        20230802
+                    )
                     result.success(data.toString());
                 }
 
@@ -94,8 +101,8 @@ class MainActivity : FlutterActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 1000){
-            if (resultCode == 200){
+        if (requestCode == 1000) {
+            if (resultCode == 200) {
                 result.success("user authenticated")
             }
         }

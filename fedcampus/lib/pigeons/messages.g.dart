@@ -59,7 +59,7 @@ class _DataApiCodec extends StandardMessageCodec {
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 128: 
+      case 128:
         return Data.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -77,12 +77,14 @@ class DataApi {
 
   static const MessageCodec<Object?> codec = _DataApiCodec();
 
-  Future<List<Data?>> getData(String arg_name, int arg_startTime, int arg_endTime) async {
+  Future<List<Data?>> getData(
+      String arg_name, int arg_startTime, int arg_endTime) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.pigeon_example_package.DataApi.getData', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
-        await channel.send(<Object?>[arg_name, arg_startTime, arg_endTime]) as List<Object?>?;
+        await channel.send(<Object?>[arg_name, arg_startTime, arg_endTime])
+            as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',

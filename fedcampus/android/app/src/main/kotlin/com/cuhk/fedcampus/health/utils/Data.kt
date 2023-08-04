@@ -1,6 +1,6 @@
 package com.cuhk.fedcampus.health.utils
 
-data class Data(var value: Double, var name: String, var startTime: Long, var endTime: Long){
+data class Data(var value: Double, var name: String, var startTime: Long, var endTime: Long) {
     companion object {
         @Suppress("UNCHECKED_CAST")
         fun fromList(list: List<Any?>): Data {
@@ -11,6 +11,7 @@ data class Data(var value: Double, var name: String, var startTime: Long, var en
             return Data(value.toDouble(), name, startTime, endTime)
         }
     }
+
     fun toList(): List<Any?> {
         return listOf<Any?>(
             name,
