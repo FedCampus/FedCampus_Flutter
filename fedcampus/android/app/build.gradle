@@ -27,14 +27,14 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 apply plugin: 'com.huawei.agconnect'
 
 android {
-    // signingConfigs {
-    //     debug {
-    //         storeFile file('key.keystore')
-    //         storePassword 'gaimima940137'
-    //         keyAlias 'Key'
-    //         keyPassword 'gaimima940137'
-    //     }
-    // }
+    signingConfigs {
+        debug {
+            storeFile file('key.keystore')
+            storePassword 'gaimima940137'
+            keyAlias 'Key'
+            keyPassword 'gaimima940137'
+        }
+    }
     namespace "com.cuhk.fedcampus"
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion

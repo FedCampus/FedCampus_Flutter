@@ -1,9 +1,5 @@
 import 'package:fedcampus/view/home.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'dart:async';
-
-import 'package:flutter/services.dart';
 
 void main() {
   //make sure you use a context that contains a Navigator instance as parent.
