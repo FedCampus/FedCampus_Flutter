@@ -1,4 +1,3 @@
-
 import 'package:fedcampus/view/train_app.dart';
 import 'package:fedcampus/view/navigator.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +37,4 @@ class HomeRoute extends StatelessWidget {
           ]),
         ),
       );
-
-
 }

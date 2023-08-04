@@ -26,7 +26,6 @@ void main() {
     ),
     home: const HomeRoute(),
   ));
-
 }
 
 class MyAppState extends ChangeNotifier {}
