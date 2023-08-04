@@ -1,4 +1,4 @@
-import 'package:fedcampus/pigeons/data.dart';
+import 'package:fedcampus/pigeons/messages.g.dart';
 
 import 'package:fedcampus/utility/log.dart';
 import 'package:flutter/material.dart';
@@ -22,14 +22,9 @@ class MinePage extends StatelessWidget {
   }
 
   getData() async {
-    String s;
-    try {
-      s = await methodChannel.invokeMethod<String>("get_data") ?? "no data";
-    } on PlatformException catch (e) {
-      logger.i(e);
-      s = "error";
-    }
-    print(s);
+    final host = DataApi();
+    List<Data?> data = await host.getData("step", 20230804, 20230804);
+    print(data[0]!.value);
   }
 
   @override

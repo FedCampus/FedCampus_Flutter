@@ -9,8 +9,8 @@ import 'package:pigeon/pigeon.dart';
   kotlinOut:
       'android/app/src/main/kotlin/com/cuhk/fedcampus/pigeon/Messages.g.kt',
   kotlinOptions: KotlinOptions(),
-  javaOut: 'android/app/src/main/java/io/flutter/plugins/Messages.java',
-  javaOptions: JavaOptions(),
+  // javaOut: 'android/app/src/main/java/io/flutter/plugins/Messages.java',
+  // javaOptions: JavaOptions(),
   // swiftOut: 'ios/Runner/Messages.g.swift',
   // swiftOptions: SwiftOptions(),
   // objcHeaderOut: 'macos/Runner/messages.g.h',
@@ -21,13 +21,16 @@ import 'package:pigeon/pigeon.dart';
   dartPackageName: 'pigeon_example_package',
 ))
 class Data {
-  late String name;
-  late double value;
-  late int startTime;
-  late int endTime;
+  Data(
+      {required this.value,
+      required this.name,
+      required this.startTime,
+      required this.endTime});
+  String name;
+  double value;
+  int startTime;
+  int endTime;
 }
-
-class Context {}
 
 @HostApi()
 abstract class DataApi {

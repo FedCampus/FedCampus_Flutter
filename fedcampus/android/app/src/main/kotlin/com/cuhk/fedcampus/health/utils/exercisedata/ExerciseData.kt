@@ -26,7 +26,7 @@ suspend fun getExerciseData(
 
     return sampleSet.samplePoints.map {
         Data(
-            it.getFieldValue(field).toFloat(),
+            it.getFieldValue(field).toFloat().toDouble(),
             tag,
             it.getStartTime(TimeUnit.SECONDS),
             it.getEndTime(TimeUnit.SECONDS)

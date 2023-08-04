@@ -1,9 +1,11 @@
 package com.cuhk.fedcampus
 
+import DataApi
 import android.content.Intent
 import android.util.Log
 import com.cuhk.fedcampus.health.health.auth.HealthKitAuthActivity
 import com.cuhk.fedcampus.health.utils.exercisedata.getExerciseData
+import com.cuhk.fedcampus.pigeon.DataApiClass
 import com.huawei.hms.hihealth.DataController
 import com.huawei.hms.hihealth.HuaweiHiHealth
 import com.huawei.hms.hihealth.data.DataType
@@ -36,6 +38,9 @@ class MainActivity : FlutterActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+
+
+        DataApi.setUp(flutterEngine.dartExecutor.binaryMessenger, DataApiClass(this.activity));
         val messager = flutterEngine.dartExecutor.binaryMessenger
         MethodChannel(messager, "fed_kit_flutter").setMethodCallHandler(::handle)
         EventChannel(messager, "fed_kit_flutter_events").setStreamHandler(object :

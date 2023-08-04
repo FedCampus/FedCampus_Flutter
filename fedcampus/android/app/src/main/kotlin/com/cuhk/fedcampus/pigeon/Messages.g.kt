@@ -3,6 +3,7 @@
 
 
 import android.util.Log
+import com.cuhk.fedcampus.health.utils.Data
 import io.flutter.plugin.common.BasicMessageChannel
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MessageCodec
@@ -43,32 +44,6 @@ class FlutterError (
 ) : Throwable()
 
 /** Generated class from Pigeon that represents data sent in messages. */
-data class Data (
-  val name: String,
-  val value: Double,
-  val startTime: Long,
-  val endTime: Long
-
-) {
-  companion object {
-    @Suppress("UNCHECKED_CAST")
-    fun fromList(list: List<Any?>): Data {
-      val name = list[0] as String
-      val value = list[1] as Double
-      val startTime = list[2].let { if (it is Int) it.toLong() else it as Long }
-      val endTime = list[3].let { if (it is Int) it.toLong() else it as Long }
-      return Data(name, value, startTime, endTime)
-    }
-  }
-  fun toList(): List<Any?> {
-    return listOf<Any?>(
-      name,
-      value,
-      startTime,
-      endTime,
-    )
-  }
-}
 
 @Suppress("UNCHECKED_CAST")
 private object DataApiCodec : StandardMessageCodec() {
