@@ -17,7 +17,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  ThemeMode _themeMode = ThemeMode.system;
+  // ThemeMode _themeMode = ThemeMode.system;
+  // TODO: default to light in development; should be set to systemwide preference in release
+  ThemeMode _themeMode = ThemeMode.light;
   void changeTheme(ThemeMode themeMode) {
     setState(() {
       _themeMode = themeMode;
