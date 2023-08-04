@@ -1,3 +1,4 @@
+import 'package:fedcampus/view/huawei/huaweihomepage.dart';
 import 'package:fedcampus/view/train_app.dart';
 import 'package:fedcampus/view/navigator.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +32,15 @@ class HomeRoute extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                       builder: (context) => const BottomNavigator()),
+                );
+              },
+            ),
+            ElevatedButton(
+              child: const Text('Open Huawei Test Page'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HuaweiHome()),
                 );
               },
             ),
