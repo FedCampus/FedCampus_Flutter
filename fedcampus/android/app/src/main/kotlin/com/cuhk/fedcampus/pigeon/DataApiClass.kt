@@ -11,10 +11,10 @@ import com.huawei.hms.hihealth.data.Field
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
-class DataApiClass :DataApi{
-    val dataController : DataController
+class DataApiClass : DataApi {
+    val dataController: DataController
 
-    constructor(context: Context){
+    constructor(context: Context) {
         dataController = HuaweiHiHealth.getDataController(context);
     }
 
@@ -28,7 +28,12 @@ class DataApiClass :DataApi{
         val scope = MainScope();
         scope.launch {
             val data = getExerciseData(
-                        DataType.DT_CONTINUOUS_STEPS_DELTA, Field.FIELD_STEPS, name,dataController,startTime.toInt(), endTime.toInt()
+                DataType.DT_CONTINUOUS_STEPS_DELTA,
+                Field.FIELD_STEPS,
+                name,
+                dataController,
+                startTime.toInt(),
+                endTime.toInt()
             )
             callback(Result.success(data))
 
