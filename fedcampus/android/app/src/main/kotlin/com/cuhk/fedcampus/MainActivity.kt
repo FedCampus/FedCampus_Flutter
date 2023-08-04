@@ -1,8 +1,20 @@
 package com.cuhk.fedcampus
 
+
+import DataApi
+import android.content.Intent
 import android.util.Log
+import com.cuhk.fedcampus.health.health.auth.HealthKitAuthActivity
+import com.cuhk.fedcampus.health.utils.exercisedata.getExerciseData
+import com.cuhk.fedcampus.pigeon.DataApiClass
+import com.huawei.hms.hihealth.DataController
+import com.huawei.hms.hihealth.HuaweiHiHealth
+import com.huawei.hms.hihealth.data.DataType
+import com.huawei.hms.hihealth.data.Field
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
+
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.EventChannel.EventSink
 import io.flutter.plugin.common.MethodCall
@@ -25,8 +37,14 @@ class MainActivity : FlutterActivity() {
     lateinit var flowerClient: FlowerClient<Float3DArray, FloatArray>
     var events: EventSink? = null
 
+    lateinit var result: Result
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+
+
+        DataApi.setUp(flutterEngine.dartExecutor.binaryMessenger, DataApiClass(this.activity));
+
         val messager = flutterEngine.dartExecutor.binaryMessenger
         MethodChannel(messager, "fed_kit_flutter").setMethodCallHandler(::handle)
         EventChannel(messager, "fed_kit_flutter_events").setStreamHandler(object :
@@ -47,6 +65,9 @@ class MainActivity : FlutterActivity() {
     }
 
     fun handle(call: MethodCall, result: Result) = scope.launch {
+
+        this@MainActivity.result = result;
+
         try {
             when (call.method) {
                 "getPlatformVersion" -> result.success("Android ${android.os.Build.VERSION.RELEASE}")
@@ -59,10 +80,39 @@ class MainActivity : FlutterActivity() {
                 }
 
                 "train" -> train(result)
+
+                "huawei_authenticate" -> {
+                    val intent = Intent(this@MainActivity, HealthKitAuthActivity::class.java)
+                    startActivityForResult(intent, 1000)
+                }
+                "get_data" -> {
+                    val dataController = HuaweiHiHealth.getDataController(this@MainActivity);
+                    val data = getExerciseData(
+                        DataType.DT_CONTINUOUS_STEPS_DELTA,
+                        Field.FIELD_STEPS,
+                        "step",
+                        dataController,
+                        20230802,
+                        20230802
+                    )
+                    result.success(data.toString());
+                }
+
+
                 else -> result.notImplemented()
             }
         } catch (err: Throwable) {
-            result.error(TAG, "$err", err.stackTraceToString())
+            result.error("shit", "$err", err.stackTraceToString())
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 1000) {
+            if (resultCode == 200) {
+                result.success("user authenticated")
+            }
+
         }
     }
 
@@ -103,3 +153,4 @@ class MainActivity : FlutterActivity() {
         const val TAG = "MainActivity"
     }
 }
+
