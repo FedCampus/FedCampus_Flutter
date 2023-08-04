@@ -1,5 +1,6 @@
 package com.cuhk.fedcampus
 
+
 import DataApi
 import android.content.Intent
 import android.util.Log
@@ -13,6 +14,7 @@ import com.huawei.hms.hihealth.data.Field
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
+
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.EventChannel.EventSink
 import io.flutter.plugin.common.MethodCall
@@ -34,6 +36,7 @@ class MainActivity : FlutterActivity() {
     lateinit var train: Train<Float3DArray, FloatArray>
     lateinit var flowerClient: FlowerClient<Float3DArray, FloatArray>
     var events: EventSink? = null
+
     lateinit var result: Result
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -41,6 +44,7 @@ class MainActivity : FlutterActivity() {
 
 
         DataApi.setUp(flutterEngine.dartExecutor.binaryMessenger, DataApiClass(this.activity));
+
         val messager = flutterEngine.dartExecutor.binaryMessenger
         MethodChannel(messager, "fed_kit_flutter").setMethodCallHandler(::handle)
         EventChannel(messager, "fed_kit_flutter_events").setStreamHandler(object :
@@ -61,7 +65,9 @@ class MainActivity : FlutterActivity() {
     }
 
     fun handle(call: MethodCall, result: Result) = scope.launch {
+
         this@MainActivity.result = result;
+
         try {
             when (call.method) {
                 "getPlatformVersion" -> result.success("Android ${android.os.Build.VERSION.RELEASE}")
@@ -74,6 +80,7 @@ class MainActivity : FlutterActivity() {
                 }
 
                 "train" -> train(result)
+
                 "huawei_authenticate" -> {
                     val intent = Intent(this@MainActivity, HealthKitAuthActivity::class.java)
                     startActivityForResult(intent, 1000)
@@ -105,6 +112,7 @@ class MainActivity : FlutterActivity() {
             if (resultCode == 200) {
                 result.success("user authenticated")
             }
+
         }
     }
 

@@ -8,6 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+        with:
+          lfs: true
+
       - run: git clone https://github.com/FedCampus/FedKit.git ../FedKit/
       - uses: subosito/flutter-action@v2
       - name: Cache Flutter Android

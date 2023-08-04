@@ -8,29 +8,25 @@ import 'package:flutter/services.dart';
 void main() {
   //make sure you use a context that contains a Navigator instance as parent.
   //https://stackoverflow.com/a/51292613
-  runApp(
-    MyApp(),
-  );
-}
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  runApp(MaterialApp(
+    title: 'Fedcampus Flutter',
+    theme: ThemeData(
+      useMaterial3: false,
+      colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color.fromARGB(255, 229, 85, 85),
+          primary: Colors.black,
+          primaryContainer: const Color.fromARGB(255, 229, 85, 85),
+          secondary: const Color.fromARGB(255, 217, 217, 217),
+          tertiary: const Color.fromARGB(102, 0, 0, 0),
+          shadow: const Color.fromARGB(38, 229, 85, 85),
+          outline: const Color.fromARGB(25, 0, 0, 0),
+          surfaceTint: const Color.fromARGB(255, 206, 229, 108),
+          tertiaryContainer: const Color.fromARGB(225, 131, 139, 217)),
+    ),
+    home: const HomeRoute(),
+  ));
 
-  @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => MyAppState(),
-      child: MaterialApp(
-        title: 'My app',
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme:
-              ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 6, 102, 255)),
-        ),
-        home: const HomeRoute(),
-      ),
-    );
-  }
 }
 
 class MyAppState extends ChangeNotifier {}
