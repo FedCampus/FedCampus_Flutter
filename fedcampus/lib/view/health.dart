@@ -1,6 +1,7 @@
 //TODO:find better way do adapt different screen size
 import 'dart:convert';
 
+import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/utility/test_api.dart';
 import 'package:flutter/material.dart';
 
@@ -28,15 +29,19 @@ class _HealthyState extends State<Healthy> {
       responseBody = '{"status": "fail"}';
     }
     final data = jsonDecode(responseBody);
-    // logger.d(data);
-    setState(() {
-      try {
-        int d = int.parse(data['distance']);
-        dist = d >= 10000 ? '${(d / 10000).toStringAsFixed(2)}km' : '${d}m';
-      } catch (e) {
-        dist = 'loading';
-      }
-    });
+    logger.d(data);
+    if (mounted) {
+      setState(() {
+        try {
+          int d = int.parse(data['distance']);
+          dist = d >= 10000 ? '${(d / 10000).toStringAsFixed(2)}km' : '${d}m';
+        } catch (e) {
+          dist = 'loading';
+        }
+      });
+    } else {
+      logger.d("setState() called after dispose(), aborted");
+    }
   }
 
   @override
