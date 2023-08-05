@@ -35,7 +35,7 @@ class _ActivityState extends State<Activity> {
     try {
       responseBody = (await fetchSteps()).body;
     } catch (e) {
-      responseBody = '{"status": "fail"}';
+      responseBody = '[{"status": "fail"}]';
     }
     data = jsonDecode(responseBody);
     // logger.d(data);
