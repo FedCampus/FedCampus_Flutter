@@ -17,17 +17,6 @@ class _HuaweiHomeState extends State<HuaweiHome> {
 
   final methodChannel = const MethodChannel('fed_kit_flutter');
 
-  getHuaweiAuthenticate() async {
-    String s;
-    try {
-      s = await methodChannel.invokeMethod<String>("huawei_authenticate") ??
-          "not good";
-    } on PlatformException catch (e) {
-      print(e);
-      s = "shiting";
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     Widget page;

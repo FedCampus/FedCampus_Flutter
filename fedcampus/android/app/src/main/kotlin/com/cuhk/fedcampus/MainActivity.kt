@@ -2,24 +2,21 @@ package com.cuhk.fedcampus
 
 
 import DataApi
+import HuaweiAuthApi
 import android.content.Intent
 import android.util.Log
 import com.cuhk.fedcampus.health.health.auth.HealthKitAuthActivity
-import com.cuhk.fedcampus.health.utils.exercisedata.getExerciseData
 import com.cuhk.fedcampus.pigeon.DataApiClass
-import com.huawei.hms.hihealth.DataController
-import com.huawei.hms.hihealth.HuaweiHiHealth
-import com.huawei.hms.hihealth.data.DataType
-import com.huawei.hms.hihealth.data.Field
+import com.cuhk.fedcampus.pigeon.HuaweiAuthApiClass
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
+
+import io.flutter.plugin.common.MethodChannel.Result as ResultFlutter
 
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.EventChannel.EventSink
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugin.common.MethodChannel.Result
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import org.eu.fedcampus.fed_kit.FlowerClient
@@ -37,13 +34,15 @@ class MainActivity : FlutterActivity() {
     lateinit var flowerClient: FlowerClient<Float3DArray, FloatArray>
     var events: EventSink? = null
 
-    lateinit var result: Result
+    lateinit var callback: (Result<Boolean>) -> Unit
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
-
+        // setup the pigeon file
         DataApi.setUp(flutterEngine.dartExecutor.binaryMessenger, DataApiClass(this.activity));
+        HuaweiAuthApi.setUp(flutterEngine.dartExecutor.binaryMessenger, HuaweiAuthApiClass(this))
+
 
         val messager = flutterEngine.dartExecutor.binaryMessenger
         MethodChannel(messager, "fed_kit_flutter").setMethodCallHandler(::handle)
@@ -64,9 +63,8 @@ class MainActivity : FlutterActivity() {
         })
     }
 
-    fun handle(call: MethodCall, result: Result) = scope.launch {
+    fun handle(call: MethodCall, result: ResultFlutter) = scope.launch {
 
-        this@MainActivity.result = result;
 
         try {
             when (call.method) {
@@ -85,39 +83,31 @@ class MainActivity : FlutterActivity() {
                     val intent = Intent(this@MainActivity, HealthKitAuthActivity::class.java)
                     startActivityForResult(intent, 1000)
                 }
-                "get_data" -> {
-                    val dataController = HuaweiHiHealth.getDataController(this@MainActivity);
-                    val data = getExerciseData(
-                        DataType.DT_CONTINUOUS_STEPS_DELTA,
-                        Field.FIELD_STEPS,
-                        "step",
-                        dataController,
-                        20230802,
-                        20230802
-                    )
-                    result.success(data.toString());
-                }
-
 
                 else -> result.notImplemented()
             }
         } catch (err: Throwable) {
-            result.error("shit", "$err", err.stackTraceToString())
+            result.error("error when decoding call method", "$err", err.stackTraceToString())
         }
+    }
+
+    fun startActivityForFlutterResult(intent:Intent, requestCode: Int, callback: (Result<Boolean>) -> Unit  ){
+        this.callback= callback
+        startActivityForResult(intent,requestCode)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 1000) {
             if (resultCode == 200) {
-                result.success("user authenticated")
+                this.callback(Result.success(true))
             }
 
         }
     }
 
     suspend fun connect(
-        partitionId: Int, host: String, backendUrl: String, startFresh: Boolean, result: Result
+        partitionId: Int, host: String, backendUrl: String, startFresh: Boolean, result: ResultFlutter
     ) {
         // TODO: Adapt for the actual workflow.
         train = Train(this, backendUrl, sampleSpec())
@@ -140,7 +130,7 @@ class MainActivity : FlutterActivity() {
         result.success(serverData.port)
     }
 
-    fun train(result: Result) {
+    fun train(result: ResultFlutter) {
         train.start {
             runOnUiThread {
                 events?.success(it)
