@@ -35,6 +35,8 @@ class _ReportPageState extends State<ReportPage> {
       getDataList(host, "rest_heart_rate", date);
       getDataList(host, "intensity", date);
       getDataList(host, "exercise_heart_rate", date);
+      getDataList(host, "sleep_efficiency", date);
+      getDataList(host, "step_time", date);
     } on Exception catch (e) {
       logger.e(e);
       return;
@@ -51,6 +53,13 @@ class _ReportPageState extends State<ReportPage> {
         _log += "$name 0\n";
       }
     });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getData();
   }
 
   @override

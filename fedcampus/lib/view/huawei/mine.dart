@@ -15,34 +15,10 @@ class MinePage extends StatefulWidget {
 class _MinePageState extends State<MinePage> {
   final methodChannel = const MethodChannel('fed_kit_flutter');
 
-  var value = "abcdefg";
-
   getHuaweiAuthenticate() async {
     final host = HuaweiAuthApi();
     bool ifAuth = await host.getAuthenticate();
     print(ifAuth);
-  }
-
-  getData() async {
-    final host = DataApi();
-    setState(() {
-      value = "";
-    });
-    getDataList(host, "step", 20230802);
-    getDataList(host, "calorie", 20230803);
-    getDataList(host, "distance", 20230803);
-    getDataList(host, "stress", 20230803);
-    getDataList(host, "rest_heart_rate", 20230803);
-    getDataList(host, "exercise_heart_rate", 20230803);
-  }
-
-  getDataList(DataApi host, String name, int time) async {
-    var data = await host.getData(name, time, time);
-
-    print(data[0]!.name + " " + data[0]!.value.toString());
-    setState(() {
-      value += (data[0]!.name + " " + data[0]!.value.toString() + '\n');
-    });
   }
 
   @override
@@ -54,7 +30,7 @@ class _MinePageState extends State<MinePage> {
         body: Center(
             child: Column(
           children: [
-            Text("home page"),
+            const Text("home page"),
             Center(
               child: ElevatedButton(
                 child: const Text('Open training page'),
@@ -75,16 +51,6 @@ class _MinePageState extends State<MinePage> {
                 },
               ),
             ),
-            // get data code
-            Center(
-              child: ElevatedButton(
-                child: const Text('Get Data'),
-                onPressed: () {
-                  getData();
-                },
-              ),
-            ),
-            Text(value)
           ],
         )));
   }

@@ -3,6 +3,7 @@ package com.cuhk.fedcampus.pigeon
 import DataApi
 import android.content.Context
 import com.cuhk.fedcampus.health.utils.Data
+import com.cuhk.fedcampus.health.utils.DateCalender
 import com.cuhk.fedcampus.health.utils.exercisedata.*
 import com.huawei.hms.hihealth.DataController
 import com.huawei.hms.hihealth.HuaweiHiHealth
@@ -13,8 +14,9 @@ import kotlinx.coroutines.launch
 
 class DataApiClass(context: Context) : DataApi {
     val dataController: DataController
-
+    val context:Context
     init {
+        this.context = context
         dataController = HuaweiHiHealth.getDataController(context)
     }
 
@@ -24,12 +26,23 @@ class DataApiClass(context: Context) : DataApi {
         endTime: Long,
         callback: (Result<List<Data>>) -> Unit
     ) {
-//        TODO("Not yet implemented")
-
-        //check
-
-
+        //check if it is sleep
         val scope = MainScope();
+        if (name=="sleep_efficiency"){
+            scope.launch{
+                val data = getSleepEfficiencyData("sleep_efficiency",context, startTime.toInt(), DateCalender.add(endTime.toInt(),1));
+                callback(Result.success(data));
+            }
+            return
+        }
+        if (name=="step_time"){
+            scope.launch {
+                val data = getStepTimeData(name,dataController,startTime.toInt(),endTime.toInt())
+                callback(Result.success(data))
+            }
+            return;
+        }
+
         val inputTriple:Triple<DataType, Field, String>;
         when (name){
             "calorie" -> {
