@@ -21,6 +21,12 @@ class _MinePageState extends State<MinePage> {
     print(ifAuth);
   }
 
+  _cancelHuaweiAuthenticate() async {
+    final host = HuaweiAuthApi();
+    bool ifCancel = await host.cancelAuthenticate();
+    print("if cancelled $ifCancel");
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -48,6 +54,14 @@ class _MinePageState extends State<MinePage> {
                 child: const Text('Huawei Authenticate'),
                 onPressed: () {
                   getHuaweiAuthenticate();
+                },
+              ),
+            ),
+            Center(
+              child: ElevatedButton(
+                child: const Text('Cancel Authenticate'),
+                onPressed: () {
+                  _cancelHuaweiAuthenticate();
                 },
               ),
             ),

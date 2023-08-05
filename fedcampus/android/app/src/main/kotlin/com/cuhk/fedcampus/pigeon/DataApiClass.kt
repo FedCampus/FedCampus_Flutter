@@ -11,6 +11,7 @@ import com.huawei.hms.hihealth.data.DataType
 import com.huawei.hms.hihealth.data.Field
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import java.security.Security
 
 class DataApiClass(context: Context) : DataApi {
     val dataController: DataController
@@ -30,15 +31,28 @@ class DataApiClass(context: Context) : DataApi {
         val scope = MainScope();
         if (name=="sleep_efficiency"){
             scope.launch{
-                val data = getSleepEfficiencyData("sleep_efficiency",context, startTime.toInt(), DateCalender.add(endTime.toInt(),1));
-                callback(Result.success(data));
+                try {
+                    val data = getSleepEfficiencyData(
+                        "sleep_efficiency",
+                        context,
+                        startTime.toInt(),
+                        DateCalender.add(endTime.toInt(), 1)
+                    )
+                    callback(Result.success(data));
+                } catch (err:Exception){
+                    callback(Result.failure(err));
+                }
             }
             return
         }
         if (name=="step_time"){
             scope.launch {
-                val data = getStepTimeData(name,dataController,startTime.toInt(),endTime.toInt())
-                callback(Result.success(data))
+                try {
+                    val data = getStepTimeData(name,dataController,startTime.toInt(),endTime.toInt())
+                    callback(Result.success(data))
+                } catch (e: Exception) {
+                    callback(Result.failure(e));
+                }
             }
             return;
         }
@@ -72,15 +86,19 @@ class DataApiClass(context: Context) : DataApi {
         }
 
         scope.launch {
-            val data = getExerciseData(
-                inputTriple.first,
-                inputTriple.second,
-                inputTriple.third,
-                dataController,
-                startTime.toInt(),
-                endTime.toInt()
-            )
-            callback(Result.success(data))
+            try {
+                val data = getExerciseData(
+                    inputTriple.first,
+                    inputTriple.second,
+                    inputTriple.third,
+                    dataController,
+                    startTime.toInt(),
+                    endTime.toInt()
+                )
+                callback(Result.success(data))
+            } catch (e: Exception) {
+                callback(Result.failure(e))
+            }
         }
     }
 
