@@ -26,7 +26,7 @@ class _HealthState extends State<Health> {
     try {
       responseBody = (await fetchDistance()).body;
     } catch (e) {
-      responseBody = '{"status": "fail"}';
+      responseBody = '[{"status": "fail"}]';
     }
     final data = jsonDecode(responseBody);
     // logger.d(data);

@@ -3,20 +3,34 @@ import 'package:fedcampus/view/train_app.dart';
 import 'package:fedcampus/view/navigator.dart';
 import 'package:flutter/material.dart';
 
-class HomeRoute extends StatelessWidget {
+class HomeRoute extends StatefulWidget {
   const HomeRoute({super.key, required this.changeThemeCallback});
-
   final void Function(ThemeMode) changeThemeCallback;
 
+  @override
+  State<HomeRoute> createState() => _HomeRouteState();
+}
+
+class _HomeRouteState extends State<HomeRoute> {
+  final List<bool> _selectedThemes = [true, false];
+
   void toggleTheme(int i) {
-    switch (i) {
-      case 0:
-        changeThemeCallback(ThemeMode.light);
-      case 1:
-        changeThemeCallback(ThemeMode.dark);
-      default:
-        changeThemeCallback(ThemeMode.light);
-    }
+    setState(() {
+      switch (i) {
+        case 0:
+          widget.changeThemeCallback(ThemeMode.light);
+          _selectedThemes[0] = true;
+          _selectedThemes[1] = false;
+        case 1:
+          widget.changeThemeCallback(ThemeMode.dark);
+          _selectedThemes[0] = false;
+          _selectedThemes[1] = true;
+        default:
+          widget.changeThemeCallback(ThemeMode.light);
+          _selectedThemes[0] = true;
+          _selectedThemes[1] = false;
+      }
+    });
   }
 
   @override
@@ -49,7 +63,7 @@ class HomeRoute extends StatelessWidget {
               },
             ),
             ToggleButtons(
-                isSelected: const [true, false],
+                isSelected: _selectedThemes,
                 onPressed: (i) => toggleTheme(i),
                 children: const [Text('light'), Text('dark')]),
             ElevatedButton(

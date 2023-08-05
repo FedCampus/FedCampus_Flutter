@@ -5,8 +5,6 @@ class ActivityPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    // throw UnimplementedError();
     return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
         body: const Center(
