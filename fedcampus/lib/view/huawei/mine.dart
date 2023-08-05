@@ -1,5 +1,5 @@
-import 'package:fedcampus/pigeons/messages.g.dart';
 import 'package:fedcampus/pigeons/huaweiauth.g.dart';
+import 'package:fedcampus/view/signin.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -29,8 +29,6 @@ class _MinePageState extends State<MinePage> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    // throw UnimplementedError();
     return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
         body: Center(
@@ -64,6 +62,15 @@ class _MinePageState extends State<MinePage> {
                   _cancelHuaweiAuthenticate();
                 },
               ),
+            ),
+            ElevatedButton(
+              child: const Text('Login'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SignIn()),
+                );
+              },
             ),
           ],
         )));
