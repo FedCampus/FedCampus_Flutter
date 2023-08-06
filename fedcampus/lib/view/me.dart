@@ -1,5 +1,10 @@
-import 'package:fedcampus/view/activity.dart';
-import 'package:fedcampus/view/setting.dart';
+import 'dart:io';
+import 'package:fedcampus/utility/log.dart';
+import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
+
+import 'package:fedcampus/view/me/setting.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 class Me extends StatefulWidget {
@@ -34,16 +39,28 @@ class _MeState extends State<Me> {
             );
           },
         ),
-        MeDivider(),
-        // MeText(text: 'Authentication'),
-        // MeDivider(),
-        // MeText(text: 'Authentication'),
-        // MeDivider(),
-        // MeText(text: 'About'),
-        // MeDivider(),
-        // MeText(text: 'Help & feedback'),
-        // MeDivider(),
-        BottomText(),
+        const MeDivider(),
+        MeText(
+          text: 'Authentication',
+          callback: () => {},
+        ),
+        const MeDivider(),
+        MeText(
+          text: 'News',
+          callback: () => {},
+        ),
+        const MeDivider(),
+        MeText(
+          text: 'About',
+          callback: () => {},
+        ),
+        const MeDivider(),
+        MeText(
+          text: 'Help & feedback',
+          callback: () => {},
+        ),
+        const MeDivider(),
+        const BottomText(),
       ],
     );
   }
@@ -79,7 +96,7 @@ class MeDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Divider(
-      height: 20,
+      height: 1,
       thickness: 1,
       indent: 50,
       endIndent: 50,
@@ -98,20 +115,26 @@ class MeText extends StatelessWidget {
   final String text;
   final void Function() callback;
 
+  delayOpenpenNewPage() {
+    // add a short delay for more complete animation
+    Future.delayed(const Duration(milliseconds: 140)).then((e) => {callback()});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: TextButton(
-          onPressed: callback,
-          child: Text(
-            text,
-            style: TextStyle(
-                fontSize: 20,
-                color: Theme.of(context).colorScheme.surfaceVariant),
-            textAlign: TextAlign.center,
-          ),
-        ));
+      padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
+      child: TextButton(
+        onPressed: delayOpenpenNewPage,
+        child: Text(
+          text,
+          style: TextStyle(
+              fontSize: 20,
+              color: Theme.of(context).colorScheme.surfaceVariant),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
   }
 }
 
@@ -125,6 +148,22 @@ class ProfileCard extends StatelessWidget {
   final String date;
   final String steps;
 
+  upLoadAvatar() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    if (result != null) {
+      File file = File(result.files.single.path ?? '');
+      var url = Uri.parse('http://192.168.0.107:9999/api/image/6/');
+      Dio dio = Dio();
+      FormData formData = FormData.fromMap({"file": file});
+      var response =
+          await dio.post('http://192.168.0.107:9999/api/image/6/', data: formData);
+      logger.d(response);
+      // http.post(url, body: );
+    } else {
+      // User canceled the picker
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double logicalWidth = MediaQuery.of(context).size.width;
@@ -134,12 +173,22 @@ class ProfileCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Image.asset(
-            'assets/images/step_activity.png',
-            fit: BoxFit.contain,
-            height: logicalWidth / 6,
-            width: logicalWidth / 6,
+          GestureDetector(
+            onTap: upLoadAvatar,
+            child: const CircleAvatar(
+              backgroundImage: AssetImage(
+                'http://192.168.0.107:9999/api/image/6/',
+              ),
+              backgroundColor: Colors.white,
+              radius: 40,
+            ),
           ),
+          // Image.asset(
+          //   'assets/images/step_activity.png',
+          //   fit: BoxFit.contain,
+          //   height: logicalWidth / 6,
+          //   width: logicalWidth / 6,
+          // ),
           Text(
             'John Doe',
             style: TextStyle(
