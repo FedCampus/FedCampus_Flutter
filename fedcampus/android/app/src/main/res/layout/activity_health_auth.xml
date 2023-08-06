@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        android:layout_marginLeft="0dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/health_auth_back_icon"
+                style="@style/health_auth_nav_icon"
+                android:background="?android:attr/selectableItemBackground"
+                android:src="@drawable/health_kit_back" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="bottom">
+
+            <TextView
+                android:id="@+id/health_auth_title"
+                style="@style/health_auth_nav_title"
+                android:text="@string/healthkit_auth_title" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/health_context"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <ImageView
+            style="@style/health_kit_icon"
+            android:src="@drawable/health_kit_icon" />
+
+        <TextView
+            android:id="@+id/health_auth_desc_title"
+            style="@style/health_auth_desc_title"
+            android:text="@string/healthkit_auth_success" />
+
+        <TextView
+            android:id="@+id/health_auth_desc"
+            style="@style/health_auth_desc"
+            android:text="@string/healthkit_auth_desc" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="bottom"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/health_auth_confirm"
+                style="@style/health_auth_button"
+                android:text="@string/healthkit_auth_confirm" />
+
+            <Button
+                android:id="@+id/health_auth_retry"
+                style="@style/health_auth_button"
+                android:text="@string/healthkit_auth_retry"
+                android:textAllCaps="false" />
+
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

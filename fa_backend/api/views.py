@@ -5,6 +5,7 @@ import time
 from .models import Record
 from .models import SleepTime
 from .models import RecordDP
+from .models import saveRecord
 
 from django.contrib.auth import login
 from django.contrib.auth import logout
@@ -67,7 +68,8 @@ class Data(APIView):
 
         for i in request.data.values():
             data = json.loads(i)
-            Record.saveRecord(
+            saveRecord(
+                Record,
                 user=request.user,
                 data=data,
                 startTime=int(
@@ -95,7 +97,8 @@ class DataDP(APIView):
 
         for i in request.data.values():
             data = json.loads(i)
-            RecordDP.saveRecord(
+            saveRecord(
+                RecordDP,
                 user=request.user,
                 data=data,
                 startTime=int(
@@ -202,7 +205,6 @@ class FedAnalysis(APIView):
             Q(startTime=dateTime) & Q(user=request.user) & Q(dataType=exerciseType)
         ).exists():
             ## let the user send the data to the backend server
-            print("no")
             return Response(None, status=452)
 
         querySet = RecordDP.objects.filter(
@@ -212,7 +214,6 @@ class FedAnalysis(APIView):
         query = querySet.get(user=request.user)
         index = querySet.filter(value__gt=query.value).count()  # ranking = index + 1
         similarUsers = getSimilarUser(querySet, index, 1)
-        print(similarUsers)
 
         return Response({"avg": avg, "rank": index + 1, "similar_user": similarUsers})
 

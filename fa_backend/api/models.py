@@ -87,6 +87,40 @@ class RecordDP(models.Model):
         )
 
 
+def saveRecord(Data, user, startTime, endTime, dataType, data):
+    ## judge if it is sleep efficiency?
+
+    if dataType == "sleep_efficiency":
+        # deal with sleep effieicny
+        startTime = startTime // 1000000 * 1000000
+        endTime = endTime // 1000000 * 1000000
+        pass
+
+    try:
+        record = Data.objects.filter(
+            Q(user=user)
+            & Q(startTime=startTime)
+            & Q(endTime=endTime)
+            & Q(dataType=dataType)
+        )[0]
+        value = record.data.get("value")
+        if not value == data.get("value"):
+            record.data = data
+            record.value = float(data.get("value"))
+            record.save()
+    except:
+        record = Data.objects.create(
+            user=user,
+            startTime=startTime,
+            endTime=endTime,
+            data=data,
+            dataType=dataType,
+            value=data.get("value"),
+        )
+        logger.info(f"record created {data}")
+    pass
+
+
 class SleepTime(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     startTime = models.IntegerField()
