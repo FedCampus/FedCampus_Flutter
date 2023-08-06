@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:fedcampus/utility/log.dart';
 import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'package:fedcampus/view/me/setting.dart';
 import 'package:file_picker/file_picker.dart';
@@ -138,7 +140,7 @@ class MeText extends StatelessWidget {
   }
 }
 
-class ProfileCard extends StatelessWidget {
+class ProfileCard extends StatefulWidget {
   const ProfileCard({
     super.key,
     required this.date,
@@ -148,20 +150,48 @@ class ProfileCard extends StatelessWidget {
   final String date;
   final String steps;
 
+  @override
+  State<ProfileCard> createState() => _ProfileCardState();
+}
+
+class _ProfileCardState extends State<ProfileCard> {
+  String _avatarUrl = '';
+
+  @override
+  void initState() {
+    super.initState();
+    getAvatar();
+  }
+
   upLoadAvatar() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
     if (result != null) {
       File file = File(result.files.single.path ?? '');
-      var url = Uri.parse('http://192.168.0.107:9999/api/image/6/');
       Dio dio = Dio();
-      FormData formData = FormData.fromMap({"file": file});
-      var response =
-          await dio.post('http://192.168.0.107:9999/api/image/6/', data: formData);
-      logger.d(response);
-      // http.post(url, body: );
+      FormData formData =
+          FormData.fromMap({"file": await MultipartFile.fromFile(file.path)});
+      logger.d(formData);
+      try {
+        var response = await dio.put('http://192.168.0.107:9999/api/file/10/',
+            data: formData);
+        logger.d(response);
+      } catch (e) {
+        logger.d(e);
+      }
     } else {
       // User canceled the picker
     }
+    getAvatar();
+  }
+
+  getAvatar() async {
+    String responseBody =
+        (await http.get(Uri.parse('http://192.168.0.107:9999/api/file/10/')))
+            .body;
+    final data = jsonDecode(responseBody);
+    setState(() {
+      _avatarUrl = data['file'];
+    });
   }
 
   @override
@@ -175,19 +205,31 @@ class ProfileCard extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: upLoadAvatar,
-            child: const CircleAvatar(
-              backgroundImage: AssetImage(
-                'http://192.168.0.107:9999/api/image/6/',
-              ),
+            child: CircleAvatar(
+              foregroundImage: NetworkImage(_avatarUrl),
+              backgroundImage: const AssetImage('assets/images/step_activity.png'),
               backgroundColor: Colors.white,
               radius: 40,
             ),
           ),
-          // Image.asset(
-          //   'assets/images/step_activity.png',
-          //   fit: BoxFit.contain,
-          //   height: logicalWidth / 6,
-          //   width: logicalWidth / 6,
+          // GestureDetector(
+          //   onTap: upLoadAvatar,
+          //   child: Container(
+          //     width: 70,
+          //     height: 70,
+          //     child: Image.network(_avatarUrl,
+          //         errorBuilder: (context, error, stackTrace) {
+          //       return const Text('Loading ...');
+          //     }, frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+          //       if (frame == null) {
+          //         // fallback to placeholder
+          //         return Image.asset(
+          //           'assets/images/step_activity.png',
+          //         );
+          //       }
+          //       return child;
+          //     }),
+          //   ),
           // ),
           Text(
             'John Doe',
