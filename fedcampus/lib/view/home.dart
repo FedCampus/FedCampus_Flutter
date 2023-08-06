@@ -4,7 +4,20 @@ import 'package:fedcampus/view/navigator.dart';
 import 'package:flutter/material.dart';
 
 class HomeRoute extends StatelessWidget {
-  const HomeRoute({super.key});
+  const HomeRoute({super.key, required this.changeThemeCallback});
+
+  final void Function(ThemeMode) changeThemeCallback;
+
+  void toggleTheme(int i) {
+    switch (i) {
+      case 0:
+        changeThemeCallback(ThemeMode.light);
+      case 1:
+        changeThemeCallback(ThemeMode.dark);
+      default:
+        changeThemeCallback(ThemeMode.light);
+    }
+  }
 
   @override
   build(BuildContext context) => Scaffold(
@@ -35,6 +48,10 @@ class HomeRoute extends StatelessWidget {
                 );
               },
             ),
+            ToggleButtons(
+                isSelected: const [true, false],
+                onPressed: (i) => toggleTheme(i),
+                children: const [Text('light'), Text('dark')]),
             ElevatedButton(
               child: const Text('Open Huawei Test Page'),
               onPressed: () {

@@ -12,6 +12,7 @@
 **.webp
 **build/
 **desktop.ini
+**.venv/
 
 **gradlew
 **gradlew.bat
