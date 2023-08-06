@@ -15,40 +15,28 @@ class HuaweiHome extends StatefulWidget {
 class _HuaweiHomeState extends State<HuaweiHome> {
   var _selectedIndex = 0;
 
+  late PageController _pageController;
+
+  final List<Widget> _pages = [ReportPage(), ActivityPage(), MinePage()];
+
   final methodChannel = const MethodChannel('fed_kit_flutter');
 
   @override
-  Widget build(BuildContext context) {
-    Widget page;
-    switch (_selectedIndex) {
-      case 0:
-        page = const ReportPage();
-        break;
-      case 1:
-        page = const ActivityPage();
-        break;
-      case 2:
-        page = const MinePage();
-        break;
-      default:
-        throw UnimplementedError("no widget for $_selectedIndex");
-    }
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: _selectedIndex);
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('FedKit'),
       ),
-      body: Center(
-        child: Column(
-          children: [
-            Expanded(
-              child: Container(
-                color: Theme.of(context).colorScheme.primaryContainer,
-                child: page,
-              ),
-            ),
-          ],
-        ),
+      body: PageView(
+        controller: _pageController,
+        physics: const NeverScrollableScrollPhysics(),
+        children: _pages,
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -68,22 +56,10 @@ class _HuaweiHomeState extends State<HuaweiHome> {
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.amber[800],
         onTap: (int index) {
-          // switch (index) {
-          //   case 0:
-          //     // only scroll to top when current index is selected.
-          //     if (_selectedIndex == index) {
-          //       // _homeController.animateTo(
-          //       //   0.0,
-          //       //   duration: const Duration(milliseconds: 500),
-          //       //   curve: Curves.easeOut,
-          //       // );
-          //     }
-          //   case 1:
-          //   // showModal(context);
-          // }
           setState(
             () {
               _selectedIndex = index;
+              _pageController.jumpToPage(_selectedIndex);
             },
           );
         },

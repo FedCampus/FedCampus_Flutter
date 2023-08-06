@@ -1,9 +1,12 @@
 import 'dart:convert';
 
+import 'package:fedcampus/utility/http_client.dart';
 import 'package:http/http.dart' as http;
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:fedcampus/utility/log.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignIn extends StatefulWidget {
   @override
@@ -16,17 +19,57 @@ class _SignInState extends State<SignIn> {
 
   void _login() async {
     logger.i("username: $_username , password: $_password");
-    http.Response response = await http.post(
-        Uri.parse("http://dku-vcm-2630.vm.duke.edu:8005/auth/token/login/"),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          "username": _username,
-          "password": _password,
-        }));
-    var data = jsonDecode(response.body);
-    print(data['auth_token']);
+    try {
+      http.Response response = await HTTPClient.post(
+          HTTPClient.login,
+          <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          jsonEncode(<String, String>{
+            "username": _username,
+            "password": _password,
+          }));
+      if (response.statusCode == 400) {
+        // login failed
+        _showLogInFailed();
+        return;
+      }
+
+      // login success, save token
+      logger.i("login success");
+      final prefs = await SharedPreferences.getInstance();
+      final responseJson = jsonDecode(response.body);
+      String token = responseJson['auth_token'];
+      HTTPClient.setToken(token);
+      await prefs.setString("auth_token", token);
+      Navigator.pop(context, responseJson);
+    } on http.ClientException {
+      _showLogInError();
+    }
+  }
+
+  void _showLogInError() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    Fluttertoast.showToast(
+        msg: "Login Error, Please Check your Internet Connection.",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0);
+  }
+
+  void _showLogInFailed() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    Fluttertoast.showToast(
+        msg: "Bad Credentials, please try again.",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0);
   }
 
   @override
