@@ -22,11 +22,16 @@ class _ReportPageState extends State<ReportPage> {
 
   var isAuth = false;
 
+  late List<Data> data;
+
+  final dataLength = 9;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _getData();
+    _getLastDayDataAndSend();
   }
 
   @override
@@ -60,7 +65,23 @@ class _ReportPageState extends State<ReportPage> {
         )));
   }
 
-  void _getData() {
+  void _getLastDayDataAndSend() async {
+    // get the data from the last day
+    final now = DateTime.now();
+    final yeasterday = now.add(const Duration(days: -1));
+    final yeasterdayDate =
+        yeasterday.year * 10000 + yeasterday.month * 100 + yeasterday.day;
+
+    final host = DataApi();
+    final date = yeasterdayDate;
+
+    final data = await Future.wait(
+        [getDataList(host, "step", date), getDataList(host, "calorie", date)]);
+
+    // send data to the backend
+  }
+
+  void _getData() async {
     final host = DataApi();
 
     int date = 0;
@@ -100,7 +121,7 @@ class _ReportPageState extends State<ReportPage> {
     }
   }
 
-  void getDataList(DataApi host, String name, int time) async {
+  Future<Data?> getDataList(DataApi host, String name, int time) async {
     List<Data?> data;
 
     try {
@@ -115,7 +136,7 @@ class _ReportPageState extends State<ReportPage> {
         logger.e(error.toString());
       }
       logger.e("catching error $error");
-      return;
+      return null;
     }
 
     setState(() {
@@ -125,5 +146,7 @@ class _ReportPageState extends State<ReportPage> {
         _log += "$name 0\n";
       }
     });
+
+    return data[0];
   }
 }
