@@ -51,7 +51,7 @@ class _HealthState extends State<Health> {
   updateDate(DateTime selectedDate) {
     setState(() {
       dateTime = selectedDate;
-      logger.d(selectedDate);
+      // logger.d(selectedDate);
     });
   }
 
@@ -78,13 +78,6 @@ class _HealthState extends State<Health> {
                   ffem: ffem,
                   date: dateTime,
                   dist: dist,
-                  onDateClicked: () => {},
-                  // () => Future.delayed(
-                  //         const Duration(milliseconds: 140))
-                  //     .then((value) => Navigator.push(
-                  //           context,
-                  //           MaterialPageRoute(builder: (context) => Calendar(onDateChange: ,)),
-                  //         )),
                   onDateChange: updateDate,
                 ),
               ),
@@ -107,7 +100,6 @@ class LeftColumn extends StatelessWidget {
     required this.ffem,
     required this.date,
     required this.dist,
-    required this.onDateClicked,
     required this.onDateChange,
   });
 
@@ -115,7 +107,6 @@ class LeftColumn extends StatelessWidget {
   final double ffem;
   final DateTime date;
   final String dist;
-  final void Function() onDateClicked;
   final void Function(DateTime selectedDate) onDateChange;
 
   @override
@@ -126,7 +117,6 @@ class LeftColumn extends StatelessWidget {
         children: [
           Date(
             fem: fem,
-            callback: onDateClicked,
             date: date,
             onDateChange: onDateChange,
           ),
@@ -154,17 +144,35 @@ class Date extends StatelessWidget {
     super.key,
     required this.fem,
     required this.date,
-    required this.callback,
     required this.onDateChange,
   });
 
   final double fem;
   final DateTime date;
-  final void Function() callback;
   final void Function(DateTime selectedDate) onDateChange;
 
   @override
   Widget build(BuildContext context) {
+    Future<bool?> showDeleteConfirmDialog1() {
+      return showDialog<bool>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Select a day"),
+            content: CalendarDialog(onDateChange: onDateChange),
+            actions: <Widget>[
+              TextButton(
+                child: const Text("Confirm"),
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.background,
@@ -188,15 +196,17 @@ class Date extends StatelessWidget {
         ],
       ),
       child: TextButton(
-        //TODO: currently, onPressed is set to resend all async requests
-        onPressed: () => Future.delayed(const Duration(milliseconds: 160))
-            .then((value) => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => Calendar(
-                            onDateChange: onDateChange,
-                          )),
-                )),
+        // onPressed: () => Future.delayed(const Duration(milliseconds: 140))
+        //     .then((value) => showDeleteConfirmDialog1()),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => CalendarPage(
+                      onDateChange: onDateChange,
+                    )),
+          );
+        },
         style: TextButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.background,
           padding: EdgeInsets.fromLTRB(14 * fem, 18 * fem, 14 * fem, 17 * fem),

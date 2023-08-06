@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:fedcampus/utility/log.dart';
 import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'package:fedcampus/view/me/setting.dart';
 import 'package:file_picker/file_picker.dart';
@@ -196,7 +195,7 @@ class _ProfileCardState extends State<ProfileCard> {
 
   @override
   Widget build(BuildContext context) {
-    double logicalWidth = MediaQuery.of(context).size.width;
+    // double logicalWidth = MediaQuery.of(context).size.width;
     // logger.d(logicalWidth / 10);
     return Container(
       padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
@@ -207,7 +206,8 @@ class _ProfileCardState extends State<ProfileCard> {
             onTap: upLoadAvatar,
             child: CircleAvatar(
               foregroundImage: NetworkImage(_avatarUrl),
-              backgroundImage: const AssetImage('assets/images/step_activity.png'),
+              backgroundImage:
+                  const AssetImage('assets/images/step_activity.png'),
               backgroundColor: Colors.white,
               radius: 40,
             ),
