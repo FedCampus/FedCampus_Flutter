@@ -3,6 +3,7 @@ import logging
 from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import User
+import djoser
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -15,7 +16,7 @@ class Record(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     startTime = models.IntegerField(null=True, blank=True)
     endTime = models.IntegerField(null=True, blank=True)
-    data = models.JSONField(null=True, blank=True)
+    # data = models.JSONField(null=True, blank=True)
     dataType = models.CharField(max_length=10, null=True, blank=True)
     value = models.FloatField(null=True, blank=True)
 
@@ -29,7 +30,7 @@ class Record(models.Model):
             )[0]
             value = record.data.get("value")
             if not value == data.get("value"):
-                record.data = data
+                # record.data = data
                 record.value = float(data.get("value"))
                 record.save()
         except:
@@ -37,7 +38,7 @@ class Record(models.Model):
                 user=user,
                 startTime=startTime,
                 endTime=endTime,
-                data=data,
+                # data=data,
                 dataType=dataType,
                 value=data.get("value"),
             )
@@ -52,7 +53,7 @@ class RecordDP(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     startTime = models.IntegerField(null=True, blank=True)
     endTime = models.IntegerField(null=True, blank=True)
-    data = models.JSONField(null=True, blank=True)
+    # data = models.JSONField(null=True, blank=True)
     dataType = models.CharField(max_length=10, null=True, blank=True)
     value = models.FloatField(null=True, blank=True)
 
@@ -66,7 +67,7 @@ class RecordDP(models.Model):
             )[0]
             value = record.data.get("value")
             if not value == data.get("value"):
-                record.data = data
+                # record.data = data
                 record.value = float(data.get("value"))
                 record.save()
         except:
@@ -74,7 +75,7 @@ class RecordDP(models.Model):
                 user=user,
                 startTime=startTime,
                 endTime=endTime,
-                data=data,
+                # data=data,
                 dataType=dataType,
                 value=data.get("value"),
             )

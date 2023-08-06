@@ -12,7 +12,7 @@ from django.db.models import Q
 from django.db.models import Avg
 
 # Create your views here.
-from rest_framework.authtoken.serializers import AuthTokenSerializer
+from .serializers import LoginSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
@@ -28,16 +28,22 @@ EXERCISE_DATA = ["steps", "calories", "elevation", "intensity", "distance"]
 
 class Login(APIView):
     permission_classes = (permissions.AllowAny,)
+    authentication_classes = []
 
     def post(self, request, format=None):
-        serializer = AuthTokenSerializer(data=request.data)
+        serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data["user"]
-        login(request, user)
 
         nickname = user.customer.nickname
         email = user.email
-        return Response({"nickname": nickname, "email": email})
+        return Response(
+            {
+                "nickname": nickname,
+                "email": email,
+                "auth_token": serializer.validated_data["auth_token"],
+            }
+        )
 
 
 class TestView(APIView):
