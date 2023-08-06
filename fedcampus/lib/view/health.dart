@@ -153,7 +153,7 @@ class Date extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Future<bool?> showDeleteConfirmDialog1() {
+    Future<bool?> calendarDialog() {
       return showDialog<bool>(
         context: context,
         builder: (context) {
@@ -196,17 +196,17 @@ class Date extends StatelessWidget {
         ],
       ),
       child: TextButton(
-        // onPressed: () => Future.delayed(const Duration(milliseconds: 140))
-        //     .then((value) => showDeleteConfirmDialog1()),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => CalendarPage(
-                      onDateChange: onDateChange,
-                    )),
-          );
-        },
+        onPressed: () => Future.delayed(const Duration(milliseconds: 140))
+            .then((value) => calendarDialog()),
+        // onPressed: () {
+        //   Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //         builder: (context) => CalendarPage(
+        //               onDateChange: onDateChange,
+        //             )),
+        //   );
+        // },
         style: TextButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.background,
           padding: EdgeInsets.fromLTRB(14 * fem, 18 * fem, 14 * fem, 17 * fem),

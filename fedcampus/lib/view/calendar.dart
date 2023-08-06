@@ -1,8 +1,11 @@
 import 'package:fedcampus/utility/log.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarPage extends StatefulWidget {
+  // TODO: keep tha paged version for now because of potential unexpected overridden
+  // bahevior, and I might need to come back to this.
   const CalendarPage({
     super.key,
     required this.onDateChange,
@@ -15,30 +18,31 @@ class CalendarPage extends StatefulWidget {
 }
 
 class _CalendarPageState extends State<CalendarPage> {
-  DateTime today = DateTime.now();
-  // DateTime focusDay = DateTime.now();
-  late final ValueNotifier<DateTime> _focusedDay =
-      ValueNotifier(DateTime.now());
+  final ValueNotifier<DateTime> _focusedDay = ValueNotifier(DateTime.now());
   void _onDateSelected(DateTime day, DateTime focusedDay) {
-    // logger.d(today);
-    // logger.d(day);
-    // logger.d(focusedDay);
-    widget.onDateChange(day);
+    // in general, `day` and `focusedDay` are the same, with few exceptions:
+    // if you tap a day in previous month that is visable from current month,
+    // `focusedDay` is first day of this month, while `day` is the actual day
+    // tapped. The same applies to next month.
+    logger.d(day);
+    logger.d(focusedDay);
+    widget.onDateChange(focusedDay);
     setState(() {
-      // focusDay = day;
       _focusedDay.value = focusedDay;
     });
   }
 
   void _onPageChanged(DateTime day) {
     logger.d(day);
+    // you should not use setState() in onPageChanged because focusedDay changes,
+    // and if you call setState(), it triggers more updates than expectd: you
+    // do not want your focus change on page change.
     _focusedDay.value = day;
-
-    // focusDay = day;
-    // setState(() {});
-    // setState(() {
-    //   focusDay = day;
-    // });
+    // here I use the same implementation under the hood as the source code of table_calendar,
+    // the ValueNotifier is needed because the title should be notified while
+    // others should not be triggered a rebuild.
+    // you do not need to provide a ValueNotifier if you don't need to imeplement
+    // a customized title.
   }
 
   @override
@@ -60,11 +64,10 @@ class _CalendarPageState extends State<CalendarPage> {
             children: [
               const Text('Selected date:'),
               Text('${_focusedDay.value.month}/${_focusedDay.value.day}'),
-              Text('   ${_focusedDay.value.month}'),
               ValueListenableBuilder<DateTime>(
                 valueListenable: _focusedDay,
-                builder: (context, value, child) => Text('   ${value.month}'),
-              )
+                builder: (context, value, child) => Text(' ${value.month}'),
+              ),
             ],
           ),
           ElevatedButton(
@@ -89,24 +92,17 @@ class CalendarDialog extends StatefulWidget {
 }
 
 class _CalendarDialogState extends State<CalendarDialog> {
-  DateTime today = DateTime.now();
-  DateTime focusDay = DateTime.now();
-  DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay;
+  final ValueNotifier<DateTime> _focusedDay = ValueNotifier(DateTime.now());
 
   void _onDateSelected(DateTime day, DateTime focusedDay) {
-    logger.d(day);
-    logger.d(focusedDay);
-    widget.onDateChange(day);
-    // setState(() {
-    //   today = day;
-    // });
+    widget.onDateChange(focusedDay);
+    setState(() {
+      _focusedDay.value = focusedDay;
+    });
   }
 
   void _onPageChanged(DateTime day) {
-    setState(() {
-      focusDay = day;
-    });
+    _focusedDay.value = day;
   }
 
   @override
@@ -114,115 +110,96 @@ class _CalendarDialogState extends State<CalendarDialog> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(5)),
-            child: Text(_focusedDay.month.toString())),
-        TableCalendar(
-          headerVisible: false,
-          // headerStyle: HeaderStyle(
-          //     titleCentered: true,
-          //     formatButtonVisible: false,
-          //     leftChevronVisible: false,
-          //     rightChevronVisible: false,
-          //     titleTextStyle: TextStyle(
-          //         color: Theme.of(context).colorScheme.background,
-          //         backgroundColor:
-          //             Theme.of(context).colorScheme.primaryContainer)),
-          calendarStyle: CalendarStyle(
-            todayDecoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondaryContainer,
-                shape: BoxShape.circle),
-            selectedDecoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primaryContainer,
-                shape: BoxShape.circle),
+        ValueListenableBuilder<DateTime>(
+          valueListenable: _focusedDay,
+          builder: (context, value, child) => Container(
+            padding: const EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Theme.of(context).colorScheme.primaryContainer,
+            ),
+            child: Text(
+              ' ${DateFormat.yMMMM('en_US').format(value)}',
+              style:
+                  TextStyle(color: Theme.of(context).colorScheme.surfaceTint),
+            ),
           ),
-          firstDay: DateTime.utc(2010, 10, 16),
-          lastDay: DateTime.utc(2030, 3, 14),
-          onFormatChanged: (format) => {},
-          selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-          // focusedDay: today,
-          focusedDay: _focusedDay,
-          // onPageChanged: _onPageChanged,
-          onPageChanged: (focusedDay) {
-            // No need to call `setState()` here
-            setState(() {
-              _focusedDay = focusedDay;
-            });
-          },
-          // onDaySelected: _onDateSelected,
-          onDaySelected: (selectedDay, focusedDay) {
-            if (!isSameDay(_selectedDay, selectedDay)) {
-              // Call `setState()` when updating the selected day
-              setState(() {
-                _selectedDay = selectedDay;
-                _focusedDay = focusedDay;
-              });
-            }
-          },
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        SizedBox(
+          height: 200,
+          child: TableCalendar(
+            calendarBuilders: CalendarBuilders(
+              dowBuilder: (context, day) {
+                if (day.weekday == DateTime.sunday ||
+                    day.weekday == DateTime.saturday) {
+                  final text = DateFormat.E().format(day);
+                  return Center(
+                    child: Text(
+                      text,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primaryContainer,
+                      ),
+                    ),
+                  );
+                }
+              },
+            ),
+            shouldFillViewport: true,
+            headerVisible: false,
+            // headerStyle: HeaderStyle(
+            //     titleCentered: true,
+            //     formatButtonVisible: false,
+            //     leftChevronVisible: false,
+            //     rightChevronVisible: false,
+            //     titleTextStyle: TextStyle(
+            //         color: Theme.of(context).colorScheme.background,
+            //         backgroundColor:
+            //             Theme.of(context).colorScheme.primaryContainer)),
+            calendarStyle: CalendarStyle(
+                // FIXME: https://github.com/aleksanderwozniak/table_calendar/issues/583
+                // because I override deoration with rectangle, I need to set every decoration mannually,
+                // not sure if any issues persist
+                defaultDecoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                weekendDecoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                todayDecoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.secondaryContainer,
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                selectedDecoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                weekendTextStyle: TextStyle(
+                    color: Theme.of(context).colorScheme.primaryContainer),
+                weekNumberTextStyle: TextStyle(color: Colors.amber)),
+            firstDay: DateTime.utc(2010, 10, 16),
+            lastDay: DateTime.utc(2030, 3, 14),
+            onFormatChanged: (format) => {},
+            selectedDayPredicate: (day) => isSameDay(_focusedDay.value, day),
+            focusedDay: _focusedDay.value,
+            onDaySelected: _onDateSelected,
+            onPageChanged: _onPageChanged,
+          ),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text('Selected date:'),
-            Text('${_focusedDay.month}/${_focusedDay.day}'),
+            Text('${_focusedDay.value.month}/${_focusedDay.value.day}'),
           ],
         ),
       ],
-    );
-  }
-}
-
-class TableBasicsExample extends StatefulWidget {
-  @override
-  _TableBasicsExampleState createState() => _TableBasicsExampleState();
-}
-
-class _TableBasicsExampleState extends State<TableBasicsExample> {
-  CalendarFormat _calendarFormat = CalendarFormat.month;
-  DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('TableCalendar - Basics'),
-      ),
-      body: TableCalendar(
-        firstDay: DateTime.utc(2010, 10, 16),
-        lastDay: DateTime.utc(2030, 3, 14),
-        focusedDay: _focusedDay,
-        calendarFormat: _calendarFormat,
-        selectedDayPredicate: (day) {
-          // Use `selectedDayPredicate` to determine which day is currently selected.
-          // If this returns true, then `day` will be marked as selected.
-
-          // Using `isSameDay` is recommended to disregard
-          // the time-part of compared DateTime objects.
-          return isSameDay(_selectedDay, day);
-        },
-        onDaySelected: (selectedDay, focusedDay) {
-          if (!isSameDay(_selectedDay, selectedDay)) {
-            // Call `setState()` when updating the selected day
-            setState(() {
-              _selectedDay = selectedDay;
-              _focusedDay = focusedDay;
-            });
-          }
-        },
-        onFormatChanged: (format) {
-          if (_calendarFormat != format) {
-            // Call `setState()` when updating calendar format
-            setState(() {
-              _calendarFormat = format;
-            });
-          }
-        },
-        onPageChanged: (focusedDay) {
-          // No need to call `setState()` here
-          _focusedDay = focusedDay;
-        },
-      ),
     );
   }
 }
