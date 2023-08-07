@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/utility/test_api.dart';
+import 'package:fedcampus/view/calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
@@ -18,6 +19,7 @@ class _ActivityState extends State<Activity> {
   List steps = [{}];
   int currentCount = 10;
   final int maxCount = 50;
+  DateTime dateTime = DateTime.now();
 
   @override
   void initState() {
@@ -45,6 +47,13 @@ class _ActivityState extends State<Activity> {
         logger.d(steps);
       });
     }
+  }
+
+  updateDate(DateTime selectedDate) {
+    setState(() {
+      dateTime = selectedDate;
+      // logger.d(selectedDate);
+    });
   }
 
   // https://stackoverflow.com/questions/59681328/safe-way-to-access-list-index
@@ -80,7 +89,11 @@ class _ActivityState extends State<Activity> {
           padding: EdgeInsets.all(logicalWidth / 20),
           itemBuilder: (BuildContext context, int index) {
             if (index == 0) {
-              return Date(fem: 1, callback: () => {});
+              return Date(
+                fem: 1,
+                onDateChange: updateDate,
+                date: dateTime,
+              );
             }
             // https://book.flutterchina.club/chapter6/listview.html
             if (index == maxCount - 1) {
@@ -267,14 +280,39 @@ class Date extends StatelessWidget {
   const Date({
     super.key,
     required this.fem,
-    required this.callback,
+    required this.onDateChange,
+    required this.date,
   });
 
   final double fem;
-  final void Function() callback;
+  final void Function(DateTime) onDateChange;
+  final DateTime date;
 
   @override
   Widget build(BuildContext context) {
+    Future<bool?> calendarDialog() {
+      return showDialog<bool>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Select a day"),
+            content: CalendarDialog(
+              onDateChange: onDateChange,
+              primaryColor: Theme.of(context).colorScheme.secondaryContainer,
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text("Confirm"),
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceTint,
@@ -298,7 +336,8 @@ class Date extends StatelessWidget {
         ],
       ),
       child: TextButton(
-        onPressed: callback,
+        onPressed: () => Future.delayed(const Duration(milliseconds: 140))
+            .then((value) => calendarDialog()),
         style: TextButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.surfaceTint,
           padding: EdgeInsets.fromLTRB(40 * fem, 18 * fem, 40 * fem, 17 * fem),
@@ -320,7 +359,7 @@ class Date extends StatelessWidget {
                     margin:
                         EdgeInsets.fromLTRB(0 * fem, 0 * fem, 0 * fem, 5 * fem),
                     child: Text(
-                      'Jan 1',
+                      '${date.month}/${date.day}',
                       style: TextStyle(
                           fontSize: 20,
                           shadows: [

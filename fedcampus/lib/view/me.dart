@@ -4,7 +4,7 @@ import 'package:fedcampus/utility/log.dart';
 import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
 
-import 'package:fedcampus/view/me/setting.dart';
+import 'package:fedcampus/view/me/preferences.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -32,11 +32,20 @@ class _MeState extends State<Me> {
           height: 10,
         ),
         MeText(
+          text: 'Account Settings',
+          callback: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const Preferences()),
+            );
+          },
+        ),
+        MeText(
           text: 'Preference',
           callback: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const Settings()),
+              MaterialPageRoute(builder: (context) => const Preferences()),
             );
           },
         ),
@@ -193,9 +202,11 @@ class _ProfileCardState extends State<ProfileCard> {
       responseBody = '{"file": "fail"}';
     }
     final data = jsonDecode(responseBody);
-    setState(() {
-      _avatarUrl = data['file'];
-    });
+    if (mounted) {
+      setState(() {
+        _avatarUrl = data['file'];
+      });
+    }
   }
 
   @override
@@ -213,7 +224,7 @@ class _ProfileCardState extends State<ProfileCard> {
               foregroundImage: NetworkImage(_avatarUrl),
               backgroundImage:
                   const AssetImage('assets/images/step_activity.png'),
-              backgroundColor: Colors.white,
+              backgroundColor: Theme.of(context).colorScheme.surfaceTint,
               radius: 40,
             ),
           ),

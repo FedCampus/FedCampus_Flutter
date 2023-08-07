@@ -83,9 +83,11 @@ class CalendarDialog extends StatefulWidget {
   const CalendarDialog({
     super.key,
     required this.onDateChange,
+    required this.primaryColor,
   });
 
   final void Function(DateTime selectedDate) onDateChange;
+  final Color primaryColor;
 
   @override
   State<CalendarDialog> createState() => _CalendarDialogState();
@@ -152,7 +154,7 @@ class _CalendarDialogState extends State<CalendarDialog> {
                     child: Text(
                       text,
                       style: TextStyle(
-                        color: Theme.of(context).colorScheme.primaryContainer,
+                        color: widget.primaryColor,
                       ),
                     ),
                   );
@@ -188,12 +190,12 @@ class _CalendarDialogState extends State<CalendarDialog> {
                   borderRadius: BorderRadius.circular(5),
                 ),
                 selectedDecoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
+                  color: widget.primaryColor,
                   shape: BoxShape.rectangle,
                   borderRadius: BorderRadius.circular(5),
                 ),
                 weekendTextStyle: TextStyle(
-                    color: Theme.of(context).colorScheme.primaryContainer),
+                    color: widget.primaryColor),
                 weekNumberTextStyle: TextStyle(color: Colors.amber)),
             firstDay: DateTime.utc(2010, 10, 16),
             lastDay: DateTime.utc(2030, 3, 14),
