@@ -35,7 +35,7 @@ class _HomeRouteState extends State<HomeRoute> {
             },
           ),
           ElevatedButton(
-            child: const Text('Open Health page'),
+            child: const Text('Open FedCampus App'),
             onPressed: () {
               Navigator.push(
                 context,

@@ -83,6 +83,7 @@ class _MyAppState extends State<MyApp> {
           tertiaryContainer: const Color.fromARGB(255, 174, 197, 242),
           surfaceTint: const Color.fromARGB(255, 249, 255, 231),
           surfaceVariant: const Color.fromARGB(255, 132, 139, 218),
+          surface: const Color.fromARGB(85, 165, 187, 231),
           shadow: const Color.fromARGB(38, 229, 85, 85),
           outline: const Color.fromARGB(25, 0, 0, 0),
         ),

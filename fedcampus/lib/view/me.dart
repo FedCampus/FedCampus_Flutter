@@ -1,12 +1,18 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:fedcampus/utility/log.dart';
-import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
-
-import 'package:fedcampus/view/me/preferences.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:file_picker/file_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:fedcampus/pigeons/loaddata.g.dart';
+import 'package:fedcampus/pigeons/huaweiauth.g.dart';
+import 'package:fedcampus/view/me/preferences.dart';
+import 'package:fedcampus/utility/http_client.dart';
+import 'package:fedcampus/utility/log.dart';
+import 'package:fedcampus/view/me/signin.dart';
 
 class Me extends StatefulWidget {
   const Me({
@@ -17,9 +23,84 @@ class Me extends StatefulWidget {
   State<Me> createState() => _MeState();
 }
 
-class _MeState extends State<Me> {
+class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
+  @override
+  bool get wantKeepAlive => true;
+  final methodChannel = const MethodChannel('fed_kit_flutter');
+
+  String log = "";
+
+  @override
+  void initState() {
+    super.initState();
+    setUser();
+  }
+
+  void setUser() async {
+    final pref = await SharedPreferences.getInstance();
+    final iflogin = pref.getBool("login") ?? false;
+    if (iflogin) {
+      setState(() {
+        final nickname = pref.get("nickname");
+        final email = pref.get("email");
+        log += "nickname : $nickname \n email: $email ";
+      });
+    }
+  }
+
+  _getHuaweiAuthenticate() async {
+    final host = HuaweiAuthApi();
+    await host.getAuthenticate();
+  }
+
+  _cancelHuaweiAuthenticate() async {
+    final host = HuaweiAuthApi();
+    await host.cancelAuthenticate();
+  }
+
+  Future<void> _loginAndGetResult() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SignIn()),
+    );
+    if (result != null) {
+      //success
+      final nickname = result['nickname'];
+      final email = result['email'];
+      // save the nickname and email in shared preference
+      setState(() {
+        log += "nickname : $nickname \n email: $email ";
+      });
+
+      final pref = await SharedPreferences.getInstance();
+      pref.setString("nickname", nickname);
+      pref.setString("email", email);
+      pref.setBool("login", true);
+    }
+  }
+
+  void _logout() async {
+    try {
+      await HTTPClient.Logout();
+    } on Exception {}
+
+    setState(() {
+      log = "";
+    });
+
+    final pref = await SharedPreferences.getInstance();
+    pref.setBool("login", false);
+  }
+
+  void _loadData() async {
+    final host = LoadDataApi();
+    bool ifokay = await host.loaddata();
+    print("load data is $ifokay");
+  }
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return ListView(
       children: [
         const IntrinsicHeight(
@@ -32,14 +113,17 @@ class _MeState extends State<Me> {
           height: 10,
         ),
         MeText(
-          text: 'Account Settings',
-          callback: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const Preferences()),
-            );
-          },
+          text: 'Sign in',
+          callback: _loginAndGetResult,
         ),
+        const SizedBox(
+          height: 10,
+        ),
+        MeText(
+          text: 'Account Settings',
+          callback: () {},
+        ),
+        const MeDivider(),
         MeText(
           text: 'Preference',
           callback: () {
@@ -52,12 +136,12 @@ class _MeState extends State<Me> {
         const MeDivider(),
         MeText(
           text: 'Authentication',
-          callback: () => {},
+          callback: _getHuaweiAuthenticate,
         ),
         const MeDivider(),
         MeText(
-          text: 'News',
-          callback: () => {},
+          text: 'Cancel authentication',
+          callback: _cancelHuaweiAuthenticate,
         ),
         const MeDivider(),
         MeText(
@@ -68,6 +152,11 @@ class _MeState extends State<Me> {
         MeText(
           text: 'Help & feedback',
           callback: () => {},
+        ),
+        const MeDivider(),
+        MeText(
+          text: 'Sign out',
+          callback: _logout,
         ),
         const MeDivider(),
         const BottomText(),
@@ -250,7 +339,7 @@ class _ProfileCardState extends State<ProfileCard> {
           Text(
             'John Doe',
             style: TextStyle(
-                fontSize: 30, color: Theme.of(context).colorScheme.primary),
+                fontSize: 27, color: Theme.of(context).colorScheme.primary),
           ),
           Text(
             'johndoe123@dukekunshan.edu.cn',

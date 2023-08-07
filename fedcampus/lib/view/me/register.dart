@@ -1,15 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+
+import 'package:fedcampus/utility/http_client.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:fedcampus/utility/http_client.dart';
-import 'package:fedcampus/view/widgets/widget.dart';
-
 class Register extends StatefulWidget {
-  const Register({super.key});
-
   @override
   State<Register> createState() => _RegisterState();
 }
@@ -72,9 +69,7 @@ class _RegisterState extends State<Register> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString("auth_token", token);
       HTTPClient.setToken(token);
-      if (mounted) {
-        Navigator.pop(context, {"nickname": _netid, "email": _email});
-      }
+      Navigator.pop(context, {"nickname": _netid, "email": _email});
     } else {
       showErrorMessage(jsonDecode(response.body)['error'][0]);
     }
@@ -82,63 +77,63 @@ class _RegisterState extends State<Register> {
 
   @override
   Widget build(BuildContext context) {
-    double aspectRatio = MediaQuery.of(context).size.aspectRatio;
-    double width = MediaQuery.of(context).size.width;
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Sign up'),
-        ),
-        resizeToAvoidBottomInset: false,
         body: Center(
             child: Column(
-          children: <Widget>[
-            const Expanded(flex: 2, child: SizedBox()),
-            Text(
-              'Sign up',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.primary,
-                fontSize: 27,
-              ),
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          child: TextFormField(
+            initialValue: _email,
+            onChanged: (value) => {_email = value},
+            decoration: const InputDecoration(
+              border: UnderlineInputBorder(),
+              labelText: 'Email',
             ),
-            const Expanded(flex: 3, child: SizedBox()),
-            SignInUpTextField(
-              field: _email,
-              label: 'Email',
-              onChanged: (value) => {_email = value},
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          child: TextFormField(
+            initialValue: _netid,
+            onChanged: (value) => {_netid = value},
+            decoration: const InputDecoration(
+              border: UnderlineInputBorder(),
+              labelText: 'Netid',
             ),
-            const Expanded(flex: 1, child: SizedBox()),
-            SignInUpTextField(
-              field: _password,
-              label: 'Password',
-              onChanged: (value) => {_password = value},
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          child: TextFormField(
+            initialValue: _password,
+            obscureText: true,
+            onChanged: (value) => {_password = value},
+            decoration: const InputDecoration(
+              border: UnderlineInputBorder(),
+              labelText: 'Password',
             ),
-            const Expanded(flex: 1, child: SizedBox()),
-            SignInUpTextField(
-              field: _passwordConfirm,
-              label: 'Password confirm',
-              onChanged: (value) => {_passwordConfirm = value},
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          child: TextFormField(
+            initialValue: _passwordConfirm,
+            obscureText: true,
+            onChanged: (value) => {_passwordConfirm = value},
+            decoration: const InputDecoration(
+              border: UnderlineInputBorder(),
+              labelText: 'Password Confirm',
             ),
-            const Expanded(flex: 1, child: SizedBox()),
-            SignInUpTextField(
-              field: _netid,
-              label: 'NetID',
-              onChanged: (value) => {_netid = value},
-            ),
-            const Expanded(flex: 1, child: SizedBox()),
-            SignInUpTextField(
-              field: _password,
-              label: 'Password',
-              onChanged: (value) => {_password = value},
-            ),
-            const Expanded(flex: 1, child: SizedBox()),
-            ElevatedButton(
-              child: const Text('Sign Up'),
-              onPressed: () {
-                _signUp();
-              },
-            ),
-            Spacer(flex: (7 / aspectRatio).round()),
-          ],
-        )));
+          ),
+        ),
+        ElevatedButton(
+          child: const Text('Sign Up'),
+          onPressed: () {
+            _signUp();
+          },
+        ),
+      ],
+    )));
   }
 }
