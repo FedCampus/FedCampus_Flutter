@@ -12,10 +12,10 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-  var _email = "test@duke.edu";
-  var _password = "111111111";
-  var _passwordConfirm = "111111111";
-  var _netid = "test";
+  var _email = "";
+  var _password = "";
+  var _passwordConfirm = "";
+  var _netid = "";
 
   void showErrorMessage(String msg) {
     FocusManager.instance.primaryFocus?.unfocus();
@@ -54,7 +54,7 @@ class _RegisterState extends State<Register> {
     // send the request and wait for response
 
     http.Response response = await HTTPClient.post(
-        "http://dku-vcm-2630.vm.duke.edu:8005/api/register",
+        HTTPClient.register,
         <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

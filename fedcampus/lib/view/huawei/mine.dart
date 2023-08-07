@@ -1,4 +1,5 @@
 import 'package:fedcampus/pigeons/huaweiauth.g.dart';
+import 'package:fedcampus/pigeons/loaddata.g.dart';
 import 'package:fedcampus/utility/http_client.dart';
 import 'package:fedcampus/view/register.dart';
 import 'package:fedcampus/view/signin.dart';
@@ -41,14 +42,12 @@ class _MinePageState extends State<MinePage>
 
   getHuaweiAuthenticate() async {
     final host = HuaweiAuthApi();
-    bool ifAuth = await host.getAuthenticate();
-    print(ifAuth);
+    await host.getAuthenticate();
   }
 
   _cancelHuaweiAuthenticate() async {
     final host = HuaweiAuthApi();
-    bool ifCancel = await host.cancelAuthenticate();
-    print("if cancelled $ifCancel");
+    await host.cancelAuthenticate();
   }
 
   Future<void> _loginAndGetResult() async {
@@ -74,7 +73,7 @@ class _MinePageState extends State<MinePage>
 
   void _logout() async {
     try {
-      bool ifLogout = await HTTPClient.Logout();
+      await HTTPClient.Logout();
     } on Exception {}
 
     setState(() {
@@ -92,7 +91,6 @@ class _MinePageState extends State<MinePage>
     );
 
     if (result != null) {
-      print(result);
       final nickname = result['nickname'];
       final email = result['email'];
       setState(() {
@@ -103,6 +101,12 @@ class _MinePageState extends State<MinePage>
       pref.setString("email", email);
       pref.setBool("login", true);
     }
+  }
+
+  void _loadData() async {
+    final host = LoadDataApi();
+    bool ifokay = await host.loaddata();
+    print("load data is $ifokay");
   }
 
   @override
@@ -158,6 +162,12 @@ class _MinePageState extends State<MinePage>
               child: const Text('Register'),
               onPressed: () {
                 _register();
+              },
+            ),
+            ElevatedButton(
+              child: const Text('load data'),
+              onPressed: () {
+                _loadData();
               },
             ),
             Text(log),

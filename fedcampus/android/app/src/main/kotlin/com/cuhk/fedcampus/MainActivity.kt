@@ -3,11 +3,13 @@ package com.cuhk.fedcampus
 
 import DataApi
 import HuaweiAuthApi
+import LoadDataApi
 import android.content.Intent
 import android.util.Log
 import com.cuhk.fedcampus.health.health.auth.HealthKitAuthActivity
 import com.cuhk.fedcampus.pigeon.DataApiClass
 import com.cuhk.fedcampus.pigeon.HuaweiAuthApiClass
+import com.cuhk.fedcampus.pigeon.LoadDataApiClass
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 
@@ -42,6 +44,7 @@ class MainActivity : FlutterActivity() {
         // setup the pigeon file
         DataApi.setUp(flutterEngine.dartExecutor.binaryMessenger, DataApiClass(this.activity));
         HuaweiAuthApi.setUp(flutterEngine.dartExecutor.binaryMessenger, HuaweiAuthApiClass(this))
+        LoadDataApi.setUp(flutterEngine.dartExecutor.binaryMessenger,LoadDataApiClass(this))
 
 
         val messager = flutterEngine.dartExecutor.binaryMessenger

@@ -14,6 +14,8 @@ class HTTPClient {
 
   static const dataDP = "${_host}api/data_dp";
 
+  static const register = "${_host}api/register";
+
   static var _checkToken = false;
 
   static var _token = "";
