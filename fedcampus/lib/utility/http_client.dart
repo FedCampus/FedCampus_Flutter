@@ -10,6 +10,10 @@ class HTTPClient {
 
   static const logout = "${_host}auth/token/logout/";
 
+  static const data = "${_host}api/data";
+
+  static const dataDP = "${_host}api/data_dp";
+
   static var _checkToken = false;
 
   static var _token = "";

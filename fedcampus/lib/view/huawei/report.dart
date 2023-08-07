@@ -91,19 +91,31 @@ class _ReportPageState extends State<ReportPage> {
     List<Future<Data?>> list = List.empty(growable: true);
 
     dataList.forEach((element) {
-      list.add(getDataList(host, element, date));
+      list.add(getDataListWithNoLog(host, element, date));
     });
 
     final data = await Future.wait(list);
 
-    http.Response response = await HTTPClient.post(
-        "http://dku-vcm-2630.vm.duke.edu:8005/api/data",
-        <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        jsonEncode(data));
+    List<http.Response> responseArr = await Future.wait([
+      HTTPClient.post(
+          HTTPClient.data,
+          <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          jsonEncode(data)),
+      // TODO: Data DP Algorithm!!!
+      HTTPClient.post(
+          HTTPClient.dataDP,
+          <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          jsonEncode(data))
+    ]);
 
-    logger.i("Status Code ${response.statusCode} : ${jsonEncode(data)}");
+    logger.i(
+        "Data Status Code ${responseArr[0].statusCode} : ${jsonEncode(data)}");
+    logger.i(
+        "Data DP Status Code ${responseArr[1].statusCode} : ${jsonEncode(data)}");
   }
 
   void _getData() async {
@@ -117,7 +129,7 @@ class _ReportPageState extends State<ReportPage> {
       });
 
       for (var i = 0; i < dataList.length; i++) {
-        getDataListWithNoLog(host, dataList[i], date);
+        getDataList(host, dataList[i], date);
       }
     } on Exception catch (e) {
       logger.e(e);

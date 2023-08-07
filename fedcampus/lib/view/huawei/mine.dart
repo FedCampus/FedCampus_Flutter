@@ -1,5 +1,6 @@
 import 'package:fedcampus/pigeons/huaweiauth.g.dart';
 import 'package:fedcampus/utility/http_client.dart';
+import 'package:fedcampus/view/register.dart';
 import 'package:fedcampus/view/signin.dart';
 
 import 'package:flutter/material.dart';
@@ -84,6 +85,26 @@ class _MinePageState extends State<MinePage>
     pref.setBool("login", false);
   }
 
+  void _register() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Register()),
+    );
+
+    if (result != null) {
+      print(result);
+      final nickname = result['nickname'];
+      final email = result['email'];
+      setState(() {
+        log += "nickname : $nickname \n email: $email ";
+      });
+      final pref = await SharedPreferences.getInstance();
+      pref.setString("nickname", nickname);
+      pref.setString("email", email);
+      pref.setBool("login", true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -131,6 +152,12 @@ class _MinePageState extends State<MinePage>
               child: const Text('LogOut'),
               onPressed: () {
                 _logout();
+              },
+            ),
+            ElevatedButton(
+              child: const Text('Register'),
+              onPressed: () {
+                _register();
               },
             ),
             Text(log),
