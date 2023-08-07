@@ -6,6 +6,7 @@ app_name = "api"
 
 urlpatterns = [
     path("login", views.Login.as_view(), name="login"),
+    path("register", views.Register.as_view(), name="register"),
     path("data", views.Data.as_view(), name="exercisedata"),
     path("data_dp", views.DataDP.as_view(), name="exercisedata_dp"),
     path("health_data", views.HealthData.as_view(), name="healthdata"),
