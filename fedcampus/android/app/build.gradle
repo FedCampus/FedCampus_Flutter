@@ -22,9 +22,10 @@ if (flutterVersionName == null) {
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
+//apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 apply plugin: 'com.huawei.agconnect'
+apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
     signingConfigs {
@@ -84,4 +85,8 @@ dependencies {
 
     // Local dependencies.
     implementation project(':fed_kit')
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.8.0'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0'
+    implementation 'androidx.core:core-ktx:1.10.0'
+    implementation 'androidx.work:work-runtime-ktx:2.7.1'
 }

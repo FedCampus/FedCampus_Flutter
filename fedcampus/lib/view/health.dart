@@ -37,7 +37,7 @@ class _HealthState extends State<Health> {
       responseBody = '[{"status": "fail"}]';
     }
     final data = jsonDecode(responseBody);
-    // logger.d(data);
+    logger.d(data);
     if (mounted) {
       setState(() {
         try {
@@ -47,6 +47,8 @@ class _HealthState extends State<Health> {
           dist = 'loading';
         }
       });
+    } else {
+      logger.d("setState() called after dispose(), aborted");
     }
   }
 

@@ -69,7 +69,10 @@ suspend fun DataController.readDaySummation(dataType: DataType, start: Int, end:
             continuation.resumeWithException(it)
         }
     }
-
+val STEP =
+    Triple(
+        DataType.DT_CONTINUOUS_STEPS_DELTA, Field.FIELD_STEPS, "step"
+    )
 
 val CALORIE =
     Triple(

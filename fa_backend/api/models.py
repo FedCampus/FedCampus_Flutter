@@ -3,6 +3,7 @@ import logging
 from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import User
+import djoser
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -15,9 +16,33 @@ class Record(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     startTime = models.IntegerField(null=True, blank=True)
     endTime = models.IntegerField(null=True, blank=True)
-    data = models.JSONField(null=True, blank=True)
+    # data = models.JSONField(null=True, blank=True)
     dataType = models.CharField(max_length=10, null=True, blank=True)
     value = models.FloatField(null=True, blank=True)
+
+    def saveRecord(user, startTime, endTime, dataType, data):
+        try:
+            record = Record.objects.filter(
+                Q(user=user)
+                & Q(startTime=startTime)
+                & Q(endTime=endTime)
+                & Q(dataType=dataType)
+            )[0]
+            value = record.data.get("value")
+            if not value == data.get("value"):
+                # record.data = data
+                record.value = float(data.get("value"))
+                record.save()
+        except:
+            record = Record.objects.create(
+                user=user,
+                startTime=startTime,
+                endTime=endTime,
+                # data=data,
+                dataType=dataType,
+                value=data.get("value"),
+            )
+            logger.info(f"record created {data}")
 
     def __str__(self):
         return str(self.startTime)[0:9] + " " + str(self.dataType)
@@ -28,9 +53,33 @@ class RecordDP(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     startTime = models.IntegerField(null=True, blank=True)
     endTime = models.IntegerField(null=True, blank=True)
-    data = models.JSONField(null=True, blank=True)
+    # data = models.JSONField(null=True, blank=True)
     dataType = models.CharField(max_length=10, null=True, blank=True)
     value = models.FloatField(null=True, blank=True)
+
+    def saveRecord(user, startTime, endTime, dataType, data):
+        try:
+            record = RecordDP.objects.filter(
+                Q(user=user)
+                & Q(startTime=startTime)
+                & Q(endTime=endTime)
+                & Q(dataType=dataType)
+            )[0]
+            value = record.data.get("value")
+            if not value == data.get("value"):
+                # record.data = data
+                record.value = float(data.get("value"))
+                record.save()
+        except:
+            record = RecordDP.objects.create(
+                user=user,
+                startTime=startTime,
+                endTime=endTime,
+                # data=data,
+                dataType=dataType,
+                value=data.get("value"),
+            )
+            logger.info(f"record created {data}")
 
     def __str__(self):
         return (
@@ -56,7 +105,6 @@ def saveRecord(Data, user, startTime, endTime, dataType, data):
         )[0]
         value = record.data.get("value")
         if not value == data.get("value"):
-            record.data = data
             record.value = float(data.get("value"))
             record.save()
     except:
@@ -64,7 +112,6 @@ def saveRecord(Data, user, startTime, endTime, dataType, data):
             user=user,
             startTime=startTime,
             endTime=endTime,
-            data=data,
             dataType=dataType,
             value=data.get("value"),
         )
@@ -95,6 +142,7 @@ class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     avator = models.ImageField(null=True, blank=True)
     nickname = models.CharField(max_length=30)
+    netid = models.CharField(max_length=20, null=True, blank=True)
 
     def __str__(self):
         return self.nickname
