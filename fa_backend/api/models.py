@@ -105,7 +105,6 @@ def saveRecord(Data, user, startTime, endTime, dataType, data):
         )[0]
         value = record.data.get("value")
         if not value == data.get("value"):
-            record.data = data
             record.value = float(data.get("value"))
             record.save()
     except:
@@ -113,7 +112,6 @@ def saveRecord(Data, user, startTime, endTime, dataType, data):
             user=user,
             startTime=startTime,
             endTime=endTime,
-            data=data,
             dataType=dataType,
             value=data.get("value"),
         )
@@ -144,6 +142,7 @@ class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     avator = models.ImageField(null=True, blank=True)
     nickname = models.CharField(max_length=30)
+    netid = models.CharField(max_length=20, null=True, blank=True)
 
     def __str__(self):
         return self.nickname

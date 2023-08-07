@@ -14,6 +14,8 @@ from django.db.models import Avg
 
 # Create your views here.
 from .serializers import LoginSerializer
+from .serializers import RegisterSerializer
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
@@ -47,6 +49,20 @@ class Login(APIView):
         )
 
 
+class Register(APIView):
+    authentication_classes = []
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response(
+            {
+                "auth_token": serializer.validated_data["auth_token"],
+            }
+        )
+
+
 class TestView(APIView):
     authentication_classes = [SessionAuthentication]
     permission_classes = (permissions.IsAuthenticated,)
@@ -60,26 +76,25 @@ class TestView(APIView):
 
 # Exercise Data without DP
 class Data(APIView):
-    authentication_classes = [SessionAuthentication]
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
         logger.info("received data: " + str(request.data))
 
-        for i in request.data.values():
-            data = json.loads(i)
+        for i in request.data:
+            data = i
             saveRecord(
                 Record,
                 user=request.user,
                 data=data,
                 startTime=int(
                     time.strftime(
-                        "%Y%m%d%H%M%S", time.localtime(data.get("start") + 28800)
+                        "%Y%m%d%H%M%S", time.localtime(data.get("startTime") + 28800)
                     )
                 ),
                 endTime=int(
                     time.strftime(
-                        "%Y%m%d%H%M%S", time.localtime(data.get("start") + 28800)
+                        "%Y%m%d%H%M%S", time.localtime(data.get("startTime") + 28800)
                     )
                 ),
                 dataType=data.get("name"),
@@ -89,26 +104,25 @@ class Data(APIView):
 
 # Exercise Data with DP
 class DataDP(APIView):
-    authentication_classes = [SessionAuthentication]
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
         logger.info("received data dp: " + str(request.data))
 
-        for i in request.data.values():
-            data = json.loads(i)
+        for i in request.data:
+            data = i
             saveRecord(
                 RecordDP,
                 user=request.user,
                 data=data,
                 startTime=int(
                     time.strftime(
-                        "%Y%m%d%H%M%S", time.localtime(data.get("start") + 28800)
+                        "%Y%m%d%H%M%S", time.localtime(data.get("startTime") + 28800)
                     )
                 ),
                 endTime=int(
                     time.strftime(
-                        "%Y%m%d%H%M%S", time.localtime(data.get("start") + 28800)
+                        "%Y%m%d%H%M%S", time.localtime(data.get("startTime") + 28800)
                     )
                 ),
                 dataType=data.get("name"),
