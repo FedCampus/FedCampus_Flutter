@@ -1,9 +1,12 @@
-import 'package:fedcampus/pigeons/huaweiauth.g.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
+import 'package:fedcampus/pigeons/huaweiauth.g.dart';
+import 'package:fedcampus/utility/http_client.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/pigeons/messages.g.dart';
-import 'package:flutter/services.dart';
 
 class ReportPage extends StatefulWidget {
   const ReportPage({super.key});
@@ -22,7 +25,17 @@ class _ReportPageState extends State<ReportPage> {
 
   var isAuth = false;
 
-  late List<Data> data;
+  final dataList = [
+    "step",
+    "calorie",
+    "distance",
+    "stress",
+    "rest_heart_rate",
+    "intensity",
+    "exercise_heart_rate",
+    "step_time",
+    "sleep_efficiency"
+  ];
 
   final dataLength = 9;
 
@@ -75,10 +88,22 @@ class _ReportPageState extends State<ReportPage> {
     final host = DataApi();
     final date = yeasterdayDate;
 
-    final data = await Future.wait(
-        [getDataList(host, "step", date), getDataList(host, "calorie", date)]);
+    List<Future<Data?>> list = List.empty(growable: true);
 
-    // send data to the backend
+    dataList.forEach((element) {
+      list.add(getDataList(host, element, date));
+    });
+
+    final data = await Future.wait(list);
+
+    http.Response response = await HTTPClient.post(
+        "http://dku-vcm-2630.vm.duke.edu:8005/api/data",
+        <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        jsonEncode(data));
+
+    logger.i("Status Code ${response.statusCode} : ${jsonEncode(data)}");
   }
 
   void _getData() async {
@@ -91,15 +116,9 @@ class _ReportPageState extends State<ReportPage> {
         _log = "$_date \n";
       });
 
-      getDataList(host, "step", date);
-      getDataList(host, "calorie", date);
-      getDataList(host, "distance", date);
-      getDataList(host, "stress", date);
-      getDataList(host, "rest_heart_rate", date);
-      getDataList(host, "intensity", date);
-      getDataList(host, "exercise_heart_rate", date);
-      getDataList(host, "step_time", date);
-      getDataList(host, "sleep_efficiency", date);
+      for (var i = 0; i < dataList.length; i++) {
+        getDataListWithNoLog(host, dataList[i], date);
+      }
     } on Exception catch (e) {
       logger.e(e);
       return;
@@ -146,6 +165,28 @@ class _ReportPageState extends State<ReportPage> {
         _log += "$name 0\n";
       }
     });
+
+    return data[0];
+  }
+
+  Future<Data?> getDataListWithNoLog(
+      DataApi host, String name, int time) async {
+    List<Data?> data;
+
+    try {
+      data = await host.getData(name, time, time);
+    } on PlatformException catch (error) {
+      if (error.message == "java.lang.SecurityException: 50005") {
+        logger.d("not authenticated");
+
+        // redirect the user to the authenticate page
+        authAndGetData();
+      } else {
+        logger.e(error.toString());
+      }
+      logger.e("catching error $error");
+      return null;
+    }
 
     return data[0];
   }

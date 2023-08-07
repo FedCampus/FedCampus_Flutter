@@ -33,6 +33,13 @@ class Data {
     ];
   }
 
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        "value": value,
+        "startTime": startTime,
+        "endTime": endTime
+      };
+
   static Data decode(Object result) {
     result as List<Object?>;
     return Data(
