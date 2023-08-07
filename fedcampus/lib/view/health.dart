@@ -38,14 +38,16 @@ class _HealthState extends State<Health> {
     }
     final data = jsonDecode(responseBody);
     // logger.d(data);
-    setState(() {
-      try {
-        int d = int.parse(data['distance']);
-        dist = d >= 10000 ? '${(d / 10000).toStringAsFixed(2)}km' : '${d}m';
-      } catch (e) {
-        dist = 'loading';
-      }
-    });
+    if (mounted) {
+      setState(() {
+        try {
+          int d = int.parse(data['distance']);
+          dist = d >= 10000 ? '${(d / 10000).toStringAsFixed(2)}km' : '${d}m';
+        } catch (e) {
+          dist = 'loading';
+        }
+      });
+    }
   }
 
   updateDate(DateTime selectedDate) {
@@ -198,6 +200,7 @@ class Date extends StatelessWidget {
       child: TextButton(
         onPressed: () => Future.delayed(const Duration(milliseconds: 140))
             .then((value) => calendarDialog()),
+        // legacypaged calendar
         // onPressed: () {
         //   Navigator.push(
         //     context,

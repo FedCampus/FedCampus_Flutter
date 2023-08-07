@@ -1,0 +1,14 @@
+{
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings appbar text"
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Language setting entry text"
+  },
+  "dark_mode": "Dark mode",
+  "@dark_mode": {
+    "description": "Dark mode setting entry text"
+  }
+}

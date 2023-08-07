@@ -184,9 +184,14 @@ class _ProfileCardState extends State<ProfileCard> {
   }
 
   getAvatar() async {
-    String responseBody =
-        (await http.get(Uri.parse('http://192.168.0.107:9999/api/file/10/')))
-            .body;
+    String responseBody;
+    try {
+      responseBody =
+          (await http.get(Uri.parse('http://192.168.0.107:9999/api/file/10/')))
+              .body;
+    } catch (e) {
+      responseBody = '{"file": "fail"}';
+    }
     final data = jsonDecode(responseBody);
     setState(() {
       _avatarUrl = data['file'];

@@ -39,10 +39,12 @@ class _ActivityState extends State<Activity> {
     }
     data = jsonDecode(responseBody);
     // logger.d(data);
-    setState(() {
-      steps = data;
-      logger.d(steps);
-    });
+    if (mounted) {
+      setState(() {
+        steps = data;
+        logger.d(steps);
+      });
+    }
   }
 
   // https://stackoverflow.com/questions/59681328/safe-way-to-access-list-index

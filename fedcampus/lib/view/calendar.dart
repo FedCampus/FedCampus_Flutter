@@ -92,7 +92,19 @@ class CalendarDialog extends StatefulWidget {
 }
 
 class _CalendarDialogState extends State<CalendarDialog> {
-  final ValueNotifier<DateTime> _focusedDay = ValueNotifier(DateTime.now());
+  late final ValueNotifier<DateTime> _focusedDay;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusedDay = ValueNotifier(DateTime.now());
+  }
+
+  @override
+  void dispose() {
+    _focusedDay.dispose();
+    super.dispose();
+  }
 
   void _onDateSelected(DateTime day, DateTime focusedDay) {
     widget.onDateChange(focusedDay);
