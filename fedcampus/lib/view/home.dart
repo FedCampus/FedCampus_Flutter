@@ -1,14 +1,10 @@
-import 'package:fedcampus/main.dart';
 import 'package:fedcampus/view/huawei/huaweihomepage.dart';
 import 'package:fedcampus/view/train_app.dart';
 import 'package:fedcampus/view/navigator.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class HomeRoute extends StatefulWidget {
-  const HomeRoute({super.key, required this.changeThemeCallback});
-  final void Function(ThemeMode) changeThemeCallback;
-
+  const HomeRoute({super.key});
   @override
   State<HomeRoute> createState() => _HomeRouteState();
 }

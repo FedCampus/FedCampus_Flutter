@@ -147,9 +147,9 @@ class _CalendarDialogState extends State<CalendarDialog> {
           child: TableCalendar(
             calendarBuilders: CalendarBuilders(
               dowBuilder: (context, day) {
+                final text = DateFormat.E().format(day);
                 if (day.weekday == DateTime.sunday ||
                     day.weekday == DateTime.saturday) {
-                  final text = DateFormat.E().format(day);
                   return Center(
                     child: Text(
                       text,
@@ -159,6 +159,14 @@ class _CalendarDialogState extends State<CalendarDialog> {
                     ),
                   );
                 }
+                return Center(
+                  child: Text(
+                    text,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                );
               },
             ),
             shouldFillViewport: true,
@@ -173,30 +181,29 @@ class _CalendarDialogState extends State<CalendarDialog> {
             //         backgroundColor:
             //             Theme.of(context).colorScheme.primaryContainer)),
             calendarStyle: CalendarStyle(
-                // FIXME: https://github.com/aleksanderwozniak/table_calendar/issues/583
-                // because I override deoration with rectangle, I need to set every decoration mannually,
-                // not sure if any issues persist
-                defaultDecoration: BoxDecoration(
-                  shape: BoxShape.rectangle,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                weekendDecoration: BoxDecoration(
-                  shape: BoxShape.rectangle,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                todayDecoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondaryContainer,
-                  shape: BoxShape.rectangle,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                selectedDecoration: BoxDecoration(
-                  color: widget.primaryColor,
-                  shape: BoxShape.rectangle,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                weekendTextStyle: TextStyle(
-                    color: widget.primaryColor),
-                weekNumberTextStyle: TextStyle(color: Colors.amber)),
+              // FIXME: https://github.com/aleksanderwozniak/table_calendar/issues/583
+              // because I override deoration with rectangle, I need to set every decoration mannually,
+              // not sure if any issues persist
+              defaultDecoration: BoxDecoration(
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              weekendDecoration: BoxDecoration(
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              todayDecoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.secondaryContainer,
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              selectedDecoration: BoxDecoration(
+                color: widget.primaryColor,
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              weekendTextStyle: TextStyle(color: widget.primaryColor),
+            ),
             firstDay: DateTime.utc(2010, 10, 16),
             lastDay: DateTime.utc(2030, 3, 14),
             onFormatChanged: (format) => {},

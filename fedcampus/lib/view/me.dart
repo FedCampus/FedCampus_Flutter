@@ -1,16 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:fedcampus/view/me/user_model.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:file_picker/file_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
-import 'package:fedcampus/pigeons/loaddata.g.dart';
-import 'package:fedcampus/pigeons/huaweiauth.g.dart';
 import 'package:fedcampus/view/me/preferences.dart';
-import 'package:fedcampus/utility/http_client.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/me/signin.dart';
 
@@ -33,69 +31,33 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
   @override
   void initState() {
     super.initState();
-    setUser();
-  }
-
-  void setUser() async {
-    final pref = await SharedPreferences.getInstance();
-    final iflogin = pref.getBool("login") ?? false;
-    if (iflogin) {
-      setState(() {
-        final nickname = pref.get("nickname");
-        final email = pref.get("email");
-        log += "nickname : $nickname \n email: $email ";
-      });
-    }
-  }
-
-  _getHuaweiAuthenticate() async {
-    final host = HuaweiAuthApi();
-    await host.getAuthenticate();
-  }
-
-  _cancelHuaweiAuthenticate() async {
-    final host = HuaweiAuthApi();
-    await host.cancelAuthenticate();
+    logger.d('init');
+    Provider.of<UserModel>(context, listen: false).setUser();
   }
 
   Future<void> _loginAndGetResult() async {
-    final result = await Navigator.push(
+    final loggedIn = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const SignIn()),
     );
-    if (result != null) {
-      //success
-      final nickname = result['nickname'];
-      final email = result['email'];
-      // save the nickname and email in shared preference
-      setState(() {
-        log += "nickname : $nickname \n email: $email ";
-      });
-
-      final pref = await SharedPreferences.getInstance();
-      pref.setString("nickname", nickname);
-      pref.setString("email", email);
-      pref.setBool("login", true);
+    logger.d(loggedIn);
+    if (loggedIn && mounted) {
+      Provider.of<UserModel>(context, listen: false).setUser();
     }
-  }
+    // if (result != null) {
+    //   //success
+    //   final nickname = result['nickname'];
+    //   final email = result['email'];
+    //   // save the nickname and email in shared preference
+    //   setState(() {
+    //     log += "nickname : $nickname \n email: $email ";
+    //   });
 
-  void _logout() async {
-    try {
-      await HTTPClient.Logout();
-    } on Exception {}
-
-    setState(() {
-      log = "";
-    });
-
-    final pref = await SharedPreferences.getInstance();
-    pref.setBool("login", false);
-  }
-
-  void _loadData() async {
-    final host = LoadDataApi();
-    bool ifokay = await host.loaddata();
-    print("load data is $ifokay");
+    //   final pref = await SharedPreferences.getInstance();
+    //   pref.setString("nickname", nickname);
+    //   pref.setString("email", email);
+    //   pref.setBool("login", true);
+    // }
   }
 
   @override
@@ -136,18 +98,17 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
         const MeDivider(),
         MeText(
           text: 'Authentication',
-          callback: _getHuaweiAuthenticate,
+          callback: () => Provider.of<UserModel>(context, listen: false)
+              .getHuaweiAuthenticate(),
         ),
         const MeDivider(),
         MeText(
           text: 'Cancel authentication',
-          callback: _cancelHuaweiAuthenticate,
+          callback: () => Provider.of<UserModel>(context, listen: false)
+              .cancelHuaweiAuthenticate(),
         ),
         const MeDivider(),
-        MeText(
-          text: 'About',
-          callback: () => {},
-        ),
+        MeText(text: 'About', callback: () => {}),
         const MeDivider(),
         MeText(
           text: 'Help & feedback',
@@ -156,7 +117,8 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
         const MeDivider(),
         MeText(
           text: 'Sign out',
-          callback: _logout,
+          callback: () =>
+              Provider.of<UserModel>(context, listen: false).logout(),
         ),
         const MeDivider(),
         const BottomText(),
@@ -337,12 +299,12 @@ class _ProfileCardState extends State<ProfileCard> {
           //   ),
           // ),
           Text(
-            'John Doe',
+            Provider.of<UserModel>(context).userName,
             style: TextStyle(
                 fontSize: 27, color: Theme.of(context).colorScheme.primary),
           ),
           Text(
-            'johndoe123@dukekunshan.edu.cn',
+            Provider.of<UserModel>(context).email,
             style: TextStyle(
                 fontSize: 20,
                 color: Theme.of(context).colorScheme.surfaceVariant),

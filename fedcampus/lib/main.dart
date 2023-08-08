@@ -1,6 +1,4 @@
-import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/home.dart';
-import 'package:fedcampus/view/me.dart';
 import 'package:fedcampus/view/me/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -29,27 +27,17 @@ class MyApp extends StatefulWidget {
     super.key,
   });
 
-  static _MyAppState of(BuildContext context) =>
-      context.findAncestorStateOfType<_MyAppState>()!;
-
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
   // TODO: ThemeMode _themeMode = ThemeMode.system;
-  ThemeMode _themeMode = ThemeMode.light;
 
   @override
   void initState() {
     super.initState();
     initSettings(context);
-  }
-
-  void changeTheme(ThemeMode themeMode) {
-    setState(() {
-      _themeMode = themeMode;
-    });
   }
 
   void initSettings(BuildContext context) async {
@@ -100,7 +88,7 @@ class _MyAppState extends State<MyApp> {
         /* dark theme settings */
       ),
       themeMode: appState.themeMode,
-      home: HomeRoute(changeThemeCallback: changeTheme),
+      home: const HomeRoute(),
     );
   }
 }
