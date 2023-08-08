@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'package:fedcampus/view/me/user_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:fedcampus/utility/http_client.dart';
@@ -22,7 +24,7 @@ class _SignInState extends State<SignIn> {
   String _signUpStatus = '';
   TextEditingController emailTextEditingController = TextEditingController();
 
-  void _login() async {
+  void signIn() async {
     logger.i("username: $_username , password: $_password");
     try {
       http.Response response = await HTTPClient.post(
@@ -145,7 +147,9 @@ class _SignInState extends State<SignIn> {
             ElevatedButton(
               child: const Text('Login'),
               onPressed: () {
-                _login();
+                Provider.of<UserModel>(context, listen: false)
+                    .signIn(_username, _password);
+                ;
               },
             ),
             const Expanded(

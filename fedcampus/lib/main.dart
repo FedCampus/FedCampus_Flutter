@@ -1,5 +1,7 @@
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/home.dart';
+import 'package:fedcampus/view/me.dart';
+import 'package:fedcampus/view/me/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
@@ -9,12 +11,17 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 void main() {
   //make sure you use a context that contains a Navigator instance as parent.
   //https://stackoverflow.com/a/51292613
-  runApp(
-    ChangeNotifierProvider(
-      create: (context) => MyAppState(),
-      child: const MyApp(),
-    ),
-  );
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(
+        create: (context) => MyAppState(),
+      ),
+      ChangeNotifierProvider(
+        create: (context) => UserModel(),
+      ),
+    ],
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatefulWidget {
