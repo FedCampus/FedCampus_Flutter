@@ -1,3 +1,4 @@
+import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/home.dart';
 import 'package:fedcampus/view/me/user_model.dart';
 import 'package:flutter/material.dart';
@@ -32,8 +33,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // TODO: ThemeMode _themeMode = ThemeMode.system;
-
   @override
   void initState() {
     super.initState();
@@ -44,8 +43,26 @@ class _MyAppState extends State<MyApp> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (!mounted) return;
     MyAppState myAppState = Provider.of<MyAppState>(context, listen: false);
-    bool theme = prefs.getBool('isDarkModeOn') ?? false;
-    myAppState.toggleTheme(theme);
+    // dark mode settings:
+    // if dark mode is not set in shared preferences, default to systemwide preferences
+    bool systemIsDark;
+    if (MediaQuery.platformBrightnessOf(context) == Brightness.light) {
+      systemIsDark = false;
+    } else {
+      systemIsDark = true;
+    }
+    bool isDark = prefs.getBool('isDarkModeOn') ?? systemIsDark;
+    myAppState.toggleTheme(isDark);
+    // locale settings
+    String localeString = prefs.getString('locale') ?? 'en_US';
+    Locale locale;
+    try {
+      locale = Locale(localeString.split('_')[0], localeString.split('_')[1]);
+    } catch (e) {
+      locale = const Locale('en', 'US');
+      logger.e(e);
+    }
+    myAppState.setLocale(locale);
   }
 
   @override
@@ -103,6 +120,12 @@ class MyAppState extends ChangeNotifier {
 
   void setLocale(Locale value) {
     locale = value;
+    notifyListeners();
+  }
+
+  void resetPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.clear();
     notifyListeners();
   }
 }

@@ -72,7 +72,7 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
         ),
         const MeDivider(),
         MeText(
-          text: 'Preference',
+          text: 'Preferences',
           callback: () {
             Navigator.push(
               context,

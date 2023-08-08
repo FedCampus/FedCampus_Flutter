@@ -1,7 +1,9 @@
+import 'package:fedcampus/main.dart';
 import 'package:fedcampus/view/huawei/huaweihomepage.dart';
 import 'package:fedcampus/view/train_app.dart';
 import 'package:fedcampus/view/navigator.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomeRoute extends StatefulWidget {
   const HomeRoute({super.key});
@@ -12,6 +14,7 @@ class HomeRoute extends StatefulWidget {
 class _HomeRouteState extends State<HomeRoute> {
   @override
   build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
     return Scaffold(
       appBar: AppBar(
         title: Image.asset(
@@ -49,6 +52,7 @@ class _HomeRouteState extends State<HomeRoute> {
               );
             },
           ),
+          Text('current language: ${appState.locale}'),
         ]),
       ),
     );
