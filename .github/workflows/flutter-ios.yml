@@ -2,7 +2,9 @@ on:
   push:
     paths:
       - '.github/workflows/flutter-ios.yml'
-      - '**.dart'
+      - '**.plist'
+      - '**.swift'
+      - '**.xcconfig'
 jobs:
   build:
     runs-on: macos-latest
@@ -11,23 +13,12 @@ jobs:
         with:
           lfs: true
       - uses: subosito/flutter-action@v2
-      - name: Cache Flutter iOS
-        id: cache-flutter-ios
-        uses: actions/cache@v3
         with:
-          path: |
-            ~/.pub-cache/
-            fedcampus/build/
-            fedcampus/.dart_tool/
-          key: ${{ runner.os }}-flutter-ios
+          cache: true
       - name: Install dependencies
         run: |
           cd fedcampus/
           flutter pub get
-      - name: Test
-        run: |
-          cd fedcampus/
-          flutter test
       - name: Build
         run: |
           cd fedcampus/
