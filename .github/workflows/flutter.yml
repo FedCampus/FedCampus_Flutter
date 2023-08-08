@@ -1,18 +1,14 @@
 on:
   push:
     paths:
-      - '.github/workflows/flutter-android.yml'
-      - '**.gradle'
-      - '**.kt'
-      - '**.java'
-      - '**.xml'
+      - '.github/workflows/flutter.yml'
+      - '**.dart'
+      - '**pubspec.yaml'
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          lfs: true
       - run: git clone https://github.com/FedCampus/FedKit.git ../FedKit/
       - uses: subosito/flutter-action@v2
         with:
@@ -21,11 +17,13 @@ jobs:
         run: |
           cd fedcampus/
           flutter pub get
-      - uses: actions/setup-java@v2
-        with:
-          distribution: 'zulu'
-          java-version: '18'
-      - name: Build APK
+      - name: Test
         run: |
           cd fedcampus/
-          flutter build apk
+          flutter test
+      - name: Analysis
+        run: |
+          cd fedcampus/
+          flutter analyze
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed .
