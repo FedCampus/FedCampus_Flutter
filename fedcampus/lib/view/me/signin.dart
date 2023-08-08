@@ -32,9 +32,10 @@ class _SignInState extends State<SignIn> {
     var res = await Provider.of<UserModel>(context, listen: false)
         .signIn(_username, _password);
     if (mounted) {
-      // _loggedIn = res["status"];
+      _loggedIn = res["status"];
+
       // in test, suppose successful
-      _loggedIn = true;
+      // _loggedIn = true;
 
       return showDialog<bool>(
         context: context,

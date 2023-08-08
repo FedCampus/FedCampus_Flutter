@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:fedcampus/view/me/user_model.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -31,7 +32,8 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
   @override
   void initState() {
     super.initState();
-    Provider.of<UserModel>(context, listen: false).setUser();
+    SchedulerBinding.instance.addPostFrameCallback(
+        (_) => Provider.of<UserModel>(context, listen: false).getLogInStatus());
   }
 
   Future<void> _loginAndGetResult() async {
@@ -41,7 +43,7 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
     );
     logger.d(loggedIn);
     if (loggedIn && mounted) {
-      Provider.of<UserModel>(context, listen: false).setUser();
+      Provider.of<UserModel>(context, listen: false).getLogInStatus();
     }
   }
 

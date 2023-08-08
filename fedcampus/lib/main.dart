@@ -17,6 +17,9 @@ void main() {
       ),
       ChangeNotifierProvider(
         create: (context) => UserModel(),
+        // set lazy to false because I want to have the UserModel ready when I enter 
+        // any page
+        lazy: false,
       ),
     ],
     child: const MyApp(),
