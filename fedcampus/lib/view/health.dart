@@ -205,16 +205,6 @@ class Date extends StatelessWidget {
       child: TextButton(
         onPressed: () => Future.delayed(const Duration(milliseconds: 140))
             .then((value) => calendarDialog()),
-        // legacypaged calendar
-        // onPressed: () {
-        //   Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //         builder: (context) => CalendarPage(
-        //               onDateChange: onDateChange,
-        //             )),
-        //   );
-        // },
         style: TextButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.background,
           padding: EdgeInsets.fromLTRB(14 * fem, 18 * fem, 14 * fem, 17 * fem),

@@ -129,18 +129,23 @@ class UserModel extends ChangeNotifier {
     }
   }
 
-  logout() async {
-    // try {
-    //   await HTTPClient.Logout();
-    // } on Exception {}
-    // final pref = await SharedPreferences.getInstance();
-    // pref.setBool("login", false);
-
+  Future<Map<String, dynamic>> logout() async {
+    // >>>>> for test only
     final pref = await SharedPreferences.getInstance();
     pref.setBool("login", false);
     userName = "not logged in";
     email = "not logged in";
     notifyListeners();
+    return {"status": true};
+    // <<<<< uncomment this
+
+    try {
+      await HTTPClient.Logout();
+    } on Exception {
+      return {"status": false, "message": "HTTP exception"};
+    }
+    pref.setBool("login", false);
+    return {"status": true};
   }
 
   getHuaweiAuthenticate() async {

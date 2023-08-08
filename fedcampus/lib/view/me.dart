@@ -31,7 +31,6 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
   @override
   void initState() {
     super.initState();
-    logger.d('init');
     Provider.of<UserModel>(context, listen: false).setUser();
   }
 
@@ -44,20 +43,6 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
     if (loggedIn && mounted) {
       Provider.of<UserModel>(context, listen: false).setUser();
     }
-    // if (result != null) {
-    //   //success
-    //   final nickname = result['nickname'];
-    //   final email = result['email'];
-    //   // save the nickname and email in shared preference
-    //   setState(() {
-    //     log += "nickname : $nickname \n email: $email ";
-    //   });
-
-    //   final pref = await SharedPreferences.getInstance();
-    //   pref.setString("nickname", nickname);
-    //   pref.setString("email", email);
-    //   pref.setBool("login", true);
-    // }
   }
 
   @override

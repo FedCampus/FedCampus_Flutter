@@ -45,7 +45,6 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
     MyAppState myAppState = Provider.of<MyAppState>(context, listen: false);
     bool theme = prefs.getBool('isDarkModeOn') ?? false;
-    myAppState.isDarkModeOn = theme;
     myAppState.toggleTheme(theme);
   }
 
@@ -87,7 +86,7 @@ class _MyAppState extends State<MyApp> {
         brightness: Brightness.dark,
         /* dark theme settings */
       ),
-      themeMode: appState.themeMode,
+      themeMode: appState.isDarkModeOn ? ThemeMode.dark : ThemeMode.light,
       home: const HomeRoute(),
     );
   }
@@ -95,18 +94,10 @@ class _MyAppState extends State<MyApp> {
 
 class MyAppState extends ChangeNotifier {
   Locale locale = const Locale('en', 'US');
-  ThemeMode themeMode = ThemeMode.light;
   bool isDarkModeOn = false;
 
   void toggleTheme(bool b) {
-    // logger.d(b);
-    if (b) {
-      themeMode = ThemeMode.dark;
-      isDarkModeOn = true;
-    } else {
-      themeMode = ThemeMode.light;
-      isDarkModeOn = false;
-    }
+    isDarkModeOn = b;
     notifyListeners();
   }
 
