@@ -6,7 +6,7 @@ on:
 jobs:
   Black:
     name: Check Black format
-runs-on: [self-hosted, linux, x64]
+    runs-on: [self-hosted, linux, x64]
     steps:
       - uses: actions/checkout@v3
       - uses: rickstaa/action-black@v1
