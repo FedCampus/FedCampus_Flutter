@@ -3,7 +3,6 @@ import 'package:fedcampus/models/user_model.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/me/user_api.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 import 'package:fedcampus/view/me/signup.dart';

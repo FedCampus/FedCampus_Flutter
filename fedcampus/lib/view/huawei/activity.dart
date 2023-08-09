@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:fedcampus/pigeons/datawrapper.dart';
-import 'package:fedcampus/pigeons/messages.g.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

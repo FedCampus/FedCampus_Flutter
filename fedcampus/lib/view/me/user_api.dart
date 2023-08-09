@@ -26,12 +26,12 @@ class UserApi {
 
   Future<User> signIn(String localUserName, String password) async {
     // >>>>> for test only
-    User user = User(
-      userName: 'nickname',
-      email: 'email',
-    );
-    user.loggedIn = true;
-    return user;
+    // User user = User(
+    //   userName: 'nickname',
+    //   email: 'email',
+    // );
+    // user.loggedIn = true;
+    // return user;
     // <<<<< comment this
     if (localUserName.isEmpty) {
       throw Exception('Username should not be empty');
@@ -124,17 +124,18 @@ class UserApi {
     }
   }
 
-  getHuaweiAuthenticate() async {
+  healthServiceAuthenticate() async {
     final host = HuaweiAuthApi();
     await host.getAuthenticate();
   }
 
-  cancelHuaweiAuthenticate() async {
+  healthServiceCancel() async {
     final host = HuaweiAuthApi();
     await host.cancelAuthenticate();
   }
 
   loadData() async {
+    // TODO: 
     final host = LoadDataApi();
     bool ifokay = await host.loaddata();
     logger.d("load data is $ifokay");

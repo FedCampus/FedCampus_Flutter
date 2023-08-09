@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:fedcampus/models/user.dart';
 import 'package:fedcampus/models/user_model.dart';
 import 'package:fedcampus/view/me/user_api.dart';
 import 'package:fedcampus/view/widgets/widget.dart';
@@ -52,6 +51,26 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
     }
   }
 
+  void _healthServiceAuthenticate() async {
+    try {
+      await userApi.healthServiceAuthenticate();
+      showToastMessage('you successfully authenticated');
+    } on Exception catch (e) {
+      logger.d(e.toString());
+      if (mounted) showToastMessage(e.getMessage);
+    }
+  }
+
+  void _healthServiceCancel() async {
+    try {
+      await userApi.healthServiceCancel();
+      showToastMessage('you successfully cancelled authenticattion');
+    } on Exception catch (e) {
+      logger.d(e.toString());
+      if (mounted) showToastMessage(e.getMessage);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -93,12 +112,12 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
         const MeDivider(),
         MeText(
           text: 'Authentication',
-          callback: () => userApi.getHuaweiAuthenticate(),
+          callback: _healthServiceAuthenticate,
         ),
         const MeDivider(),
         MeText(
           text: 'Cancel authentication',
-          callback: () => userApi.cancelHuaweiAuthenticate(),
+          callback: _healthServiceCancel,
         ),
         const MeDivider(),
         MeText(text: 'About', callback: () => {}),
