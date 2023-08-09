@@ -1,29 +1,32 @@
+import 'package:fedcampus/models/user_model.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/home.dart';
-import 'package:fedcampus/view/me/user_model.dart';
+import 'package:fedcampus/view/me/user_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+//make sure you use a context that contains a Navigator instance as parent.
+//https://stackoverflow.com/a/51292613
 void main() {
-  //make sure you use a context that contains a Navigator instance as parent.
-  //https://stackoverflow.com/a/51292613
-  runApp(MultiProvider(
-    providers: [
-      ChangeNotifierProvider(
-        create: (context) => MyAppState(),
-      ),
-      ChangeNotifierProvider(
-        create: (context) => UserModel(),
-        // set lazy to false because I want to have the UserModel ready when I enter 
-        // any page
-        lazy: false,
-      ),
-    ],
-    child: const MyApp(),
-  ));
+  // https://stackoverflow.com/a/57775690
+  WidgetsFlutterBinding.ensureInitialized();
+  userApi.init().then((e) => runApp(MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (context) => MyAppState(),
+          ),
+          ChangeNotifierProvider(
+            create: (context) => UserModel(),
+            // set lazy to false because I want to have the UserModel ready when I enter
+            // any page
+            // lazy: false,
+          ),
+        ],
+        child: const MyApp(),
+      )));
 }
 
 class MyApp extends StatefulWidget {

@@ -1,58 +1,39 @@
 import 'dart:convert';
 
+import 'package:fedcampus/models/user.dart';
 import 'package:fedcampus/pigeons/huaweiauth.g.dart';
 import 'package:fedcampus/pigeons/loaddata.g.dart';
 import 'package:http/http.dart' as http;
 import 'package:fedcampus/utility/http_client.dart';
 import 'package:fedcampus/utility/log.dart';
-import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class UserModel extends ChangeNotifier {
+UserApi get userApi => UserApi.instance;
+
+class UserApi {
   // this model handles all the logic related to user: it communicates with backend
   // server (via http_client). The model is created in main() with lazy set to false.
-  String userName = "testName";
-  String email = "testEmail";
-  String signUpStatus = '';
-  bool loggedIn = false;
-  late SharedPreferences pref;
+  // final User user = User(login: 'userName', email: 'email');
+  UserApi._();
 
-  UserModel() {
-    init().then(
-      (value) => {logger.d('user model init finished')},
-    );
-  }
+  static final instance = UserApi._();
+
+  late SharedPreferences _pref;
 
   Future<void> init() async {
-    pref = await SharedPreferences.getInstance();
-    loggedIn = pref.getBool("login") ?? false;
-    if (loggedIn) {
-      userName = pref.getString("userName") ?? "username placeholder";
-      email = pref.getString("email") ?? "email placeholder";
-    }
+    _pref = await SharedPreferences.getInstance();
   }
 
-  Future<bool> getLogInStatus() async {
-    loggedIn = pref.getBool("login") ?? false;
-    logger.d('logged in: $loggedIn');
-    if (!loggedIn) {
-      return false;
-    }
-    notifyListeners();
-    return true;
-  }
-
-  Future<Map<String, dynamic>> signIn(localUserName, password) async {
+  Future<User> signIn(localUserName, password) async {
     // this method does need to call notifyListeners()
     // >>>>> for test only
-    // email = "testemail";
-    // loggedIn = true;
-    // userName = 'testusername';
-    // pref.setBool("login", true);
-    // pref.setString("userName", "testusername");
-    // pref.setString("email", email);
+    // User user = User(
+    //   userName: 'nickname',
+    //   email: 'email',
+    // );
+    // user.loggedIn = true;
+    // return user;
 
-    // return {"status": true};
     // <<<<< comment this
 
     logger.d("$localUserName, $password");
@@ -68,24 +49,21 @@ class UserModel extends ChangeNotifier {
           }));
       if (response.statusCode == 400) {
         // login failed
-        return {"status": false};
+        return Future.error('Error');
       }
 
       // login success, save token
       logger.i("login success");
       final responseJson = jsonDecode(response.body);
-      loggedIn = true;
       String token = responseJson['auth_token'];
-      email = responseJson['email'];
-      userName = responseJson['nickname'];
+
       HTTPClient.setToken(token);
-      pref.setBool("login", true);
-      pref.setString("username", userName);
-      pref.setString("email", email);
-      pref.setString("auth_token", token);
-      return {"status": true};
+      User user = User(
+          userName: responseJson['nickname'], email: responseJson['email']);
+      user.loggedIn = true;
+      return user;
     } on http.ClientException {
-      return {"status": false};
+      return Future.error('Error');
     }
   }
 
@@ -130,7 +108,7 @@ class UserModel extends ChangeNotifier {
         }));
     if (response.statusCode == 200) {
       final token = jsonDecode(response.body)['auth_token'];
-      pref.setString("auth_token", token);
+      _pref.setString("auth_token", token);
       HTTPClient.setToken(token);
       return {"status": true};
     } else {
@@ -155,20 +133,18 @@ class UserModel extends ChangeNotifier {
     } on Exception {
       return {"status": false, "message": "HTTP exception"};
     }
-    pref.setBool("login", false);
+    _pref.setBool("login", false);
     return {"status": true};
   }
 
   getHuaweiAuthenticate() async {
     final host = HuaweiAuthApi();
     await host.getAuthenticate();
-    notifyListeners();
   }
 
   cancelHuaweiAuthenticate() async {
     final host = HuaweiAuthApi();
     await host.cancelAuthenticate();
-    notifyListeners();
   }
 
   loadData() async {

@@ -1,4 +1,4 @@
-import 'package:fedcampus/view/me/user_model.dart';
+import 'package:fedcampus/view/me/user_api.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
@@ -31,7 +31,7 @@ class _SignUpState extends State<SignUp> {
   }
 
   signUp() async {
-    var res = await Provider.of<UserModel>(context, listen: false)
+    var res = await Provider.of<UserApi>(context, listen: false)
         .signUp(_email, _netid, _password, _passwordConfirm);
     if (mounted) {
       return showDialog<bool>(

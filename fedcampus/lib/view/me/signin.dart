@@ -1,4 +1,6 @@
-import 'package:fedcampus/view/me/user_model.dart';
+import 'package:fedcampus/models/user.dart';
+import 'package:fedcampus/models/user_model.dart';
+import 'package:fedcampus/view/me/user_api.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,7 +17,6 @@ class SignIn extends StatefulWidget {
 class _SignInState extends State<SignIn> {
   String _username = "";
   String _password = "";
-  bool _loggedIn = false;
   TextEditingController emailTextEditingController = TextEditingController();
 
   void _register() async {
@@ -28,21 +29,19 @@ class _SignInState extends State<SignIn> {
     }
   }
 
-  sign() async {
-    var res = await Provider.of<UserModel>(context, listen: false)
-        .signIn(_username, _password);
+  signIn() async {
+    var res = await userApi.signIn(_username, _password);
+    User user;
     if (mounted) {
-      _loggedIn = res["status"];
-
-      // in test, suppose successful
-      // _loggedIn = true;
+      user = res;
+      Provider.of<UserModel>(context, listen: false).setUser = user;
 
       return showDialog<bool>(
         context: context,
         builder: (context) {
           return AlertDialog(
             title: const Text("Login status"),
-            content: Text(res["status"].toString()),
+            content: Text(res.toString()),
             actions: <Widget>[
               TextButton(
                 child: const Text("Confirm"),
@@ -68,7 +67,7 @@ class _SignInState extends State<SignIn> {
         resizeToAvoidBottomInset: false,
         body: WillPopScope(
           onWillPop: () async {
-            Navigator.pop(context, _loggedIn);
+            Navigator.pop(context);
             return false;
           },
           child: Center(
@@ -115,7 +114,7 @@ class _SignInState extends State<SignIn> {
               ),
               const Expanded(flex: 1, child: SizedBox()),
               ElevatedButton(
-                onPressed: sign,
+                onPressed: signIn,
                 child: const Text('Login'),
               ),
               const Expanded(

@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:fedcampus/view/me/user_model.dart';
+import 'package:fedcampus/models/user_model.dart';
+import 'package:fedcampus/view/me/user_api.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
@@ -33,18 +34,7 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
   void initState() {
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback(
-        (_) => Provider.of<UserModel>(context, listen: false).getLogInStatus());
-  }
-
-  Future<void> _loginAndGetResult() async {
-    final loggedIn = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const SignIn()),
-    );
-    logger.d(loggedIn);
-    if (loggedIn && mounted) {
-      Provider.of<UserModel>(context, listen: false).getLogInStatus();
-    }
+        (_) => Provider.of<UserModel>(context, listen: false).init());
   }
 
   @override
@@ -63,7 +53,10 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
         ),
         MeText(
           text: 'Sign in',
-          callback: _loginAndGetResult,
+          callback: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const SignIn()),
+          ),
         ),
         const SizedBox(
           height: 10,
@@ -85,13 +78,13 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
         const MeDivider(),
         MeText(
           text: 'Authentication',
-          callback: () => Provider.of<UserModel>(context, listen: false)
+          callback: () => Provider.of<UserApi>(context, listen: false)
               .getHuaweiAuthenticate(),
         ),
         const MeDivider(),
         MeText(
           text: 'Cancel authentication',
-          callback: () => Provider.of<UserModel>(context, listen: false)
+          callback: () => Provider.of<UserApi>(context, listen: false)
               .cancelHuaweiAuthenticate(),
         ),
         const MeDivider(),
@@ -104,8 +97,7 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
         const MeDivider(),
         MeText(
           text: 'Sign out',
-          callback: () =>
-              Provider.of<UserModel>(context, listen: false).logout(),
+          callback: () => Provider.of<UserApi>(context, listen: false).logout(),
         ),
         const MeDivider(),
         const BottomText(),
@@ -253,51 +245,39 @@ class _ProfileCardState extends State<ProfileCard> {
     // logger.d(logicalWidth / 10);
     return Container(
       padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
-      child: Column(
+      child: header(),
+    );
+  }
+}
+
+Widget header() {
+  return Consumer<UserModel>(
+    builder: (BuildContext context, UserModel value, Widget? child) {
+      return Column(
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          GestureDetector(
-            onTap: upLoadAvatar,
-            child: CircleAvatar(
-              foregroundImage: NetworkImage(_avatarUrl),
-              backgroundImage:
-                  const AssetImage('assets/images/step_activity.png'),
-              backgroundColor: Theme.of(context).colorScheme.surfaceTint,
-              radius: 40,
-            ),
-          ),
-          // GestureDetector(
-          //   onTap: upLoadAvatar,
-          //   child: Container(
-          //     width: 70,
-          //     height: 70,
-          //     child: Image.network(_avatarUrl,
-          //         errorBuilder: (context, error, stackTrace) {
-          //       return const Text('Loading ...');
-          //     }, frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-          //       if (frame == null) {
-          //         // fallback to placeholder
-          //         return Image.asset(
-          //           'assets/images/step_activity.png',
-          //         );
-          //       }
-          //       return child;
-          //     }),
-          //   ),
-          // ),
+        children: <Widget>[
+          value.isLogin
+              ? CircleAvatar(
+                  foregroundImage: NetworkImage(value.user.avatarUrl ?? ''),
+                  backgroundImage:
+                      const AssetImage('assets/images/step_activity.png'),
+                  backgroundColor: Theme.of(context).colorScheme.surfaceTint,
+                  radius: 40,
+                )
+              : CircleAvatar(
+                  backgroundImage: const AssetImage(
+                      'assets/images/me_nav_icon_inactive.png'),
+                  backgroundColor: Theme.of(context).colorScheme.surfaceTint,
+                  radius: 40,
+                ),
           Text(
-            Provider.of<UserModel>(context).userName,
-            style: TextStyle(
-                fontSize: 27, color: Theme.of(context).colorScheme.primary),
-          ),
-          Text(
-            Provider.of<UserModel>(context).email,
+            value.isLogin ? value.user.userName : 'Not logged in',
             style: TextStyle(
                 fontSize: 20,
                 color: Theme.of(context).colorScheme.surfaceVariant),
-          ),
+          )
         ],
-      ),
-    );
-  }
+      );
+    },
+  );
 }
