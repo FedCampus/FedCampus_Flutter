@@ -31,4 +31,10 @@ class UserModel extends ChangeNotifier {
     _pref.setString("email", user.email);
     notifyListeners();
   }
+
+  set setLogin(bool loggedIn) {
+    user.loggedIn = loggedIn;
+    _pref.setBool("login", user.loggedIn);
+    notifyListeners();
+  }
 }

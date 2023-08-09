@@ -24,19 +24,22 @@ class UserApi {
     _pref = await SharedPreferences.getInstance();
   }
 
-  Future<User> signIn(localUserName, password) async {
-    // this method does need to call notifyListeners()
+  Future<User> signIn(String localUserName, String password) async {
     // >>>>> for test only
-    // User user = User(
-    //   userName: 'nickname',
-    //   email: 'email',
-    // );
-    // user.loggedIn = true;
-    // return user;
-
+    User user = User(
+      userName: 'nickname',
+      email: 'email',
+    );
+    user.loggedIn = true;
+    return user;
     // <<<<< comment this
-
-    logger.d("$localUserName, $password");
+    if (localUserName.isEmpty) {
+      throw Exception('Username should not be empty');
+    }
+    if (password.length < 8) {
+      throw Exception("Password's lengh has to be greater than 8");
+    }
+    logger.d(localUserName);
     try {
       http.Response response = await HTTPClient.post(
           HTTPClient.login,
@@ -49,7 +52,8 @@ class UserApi {
           }));
       if (response.statusCode == 400) {
         // login failed
-        return Future.error('Error');
+        logger.e('Bad Credentials, please try again');
+        throw Exception('Bad Credentials, please try again');
       }
 
       // login success, save token
@@ -62,79 +66,62 @@ class UserApi {
           userName: responseJson['nickname'], email: responseJson['email']);
       user.loggedIn = true;
       return user;
-    } on http.ClientException {
-      return Future.error('Error');
+    } on http.ClientException catch (e) {
+      logger.e(e);
+      throw ('Login Error, Please Check your Internet Connection', e);
     }
   }
 
-  Future<Map<String, dynamic>> signUp(String email, String netid,
-      String password, String passwordConfirm) async {
-    // this method does need to call notifyListeners()
+  Future<void> signUp(String email, String netid, String password,
+      String passwordConfirm) async {
     // check if email ends in duke.edu
     if (!email.endsWith("@duke.edu")) {
-      // showErrorMessage("email has to end with @duke.edu");
-      return {"status": false, "message": "email has to end with @duke.edu"};
+      throw Exception("Email has to end with @duke.edu");
     }
-
     if (netid == "") {
-      // showErrorMessage("please Enter Your Netid!");
-      return {"status": false, "message": "please Enter Your Netid!"};
+      throw Exception("Please Enter Your Netid!");
     }
-
     if (password.length < 8) {
-      // showErrorMessage("password's lengh has to be greater than 8");
-      return {
-        "status": false,
-        "message": "password's lengh has to be greater than 8"
-      };
+      throw Exception("Password's lengh has to be greater than 8");
     }
-
     if (password != passwordConfirm) {
-      // showErrorMessage("The two passwords are different!");
-      return {"status": false, "message": "The two passwords are different!"};
+      throw Exception("The two passwords are different!");
     }
 
     // send the request and wait for response
-
-    http.Response response = await HTTPClient.post(
-        HTTPClient.register,
-        <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        jsonEncode(<String, String>{
-          "email": email,
-          "password": password,
-          "netid": netid
-        }));
-    if (response.statusCode == 200) {
-      final token = jsonDecode(response.body)['auth_token'];
-      _pref.setString("auth_token", token);
-      HTTPClient.setToken(token);
-      return {"status": true};
-    } else {
-      return {
-        "status": false,
-        "message": "Please check your network connection."
-      };
+    try {
+      http.Response response = await HTTPClient.post(
+          HTTPClient.register,
+          <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          jsonEncode(<String, String>{
+            "email": email,
+            "password": password,
+            "netid": netid
+          }));
+      final responseJson = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        final token = responseJson['auth_token'];
+        _pref.setString("auth_token", token);
+        HTTPClient.setToken(token);
+      } else {
+        logger.e(Exception(responseJson['error'][0]));
+        throw Exception(responseJson['error'][0]);
+      }
+    } on http.ClientException catch (e) {
+      logger.e(e);
+      throw ('Login Error, Please Check your Internet Connection', e);
     }
   }
 
-  Future<Map<String, dynamic>> logout() async {
-    // >>>>> for test only
-    // pref.setBool("login", false);
-    // userName = "not logged in";
-    // email = "not logged in";
-    // notifyListeners();
-    // return {"status": true};
-    // <<<<< comment this
-
+  Future<void> logout() async {
     try {
       await HTTPClient.Logout();
-    } on Exception {
-      return {"status": false, "message": "HTTP exception"};
+    } on http.ClientException catch (e) {
+      logger.e('Logout Error, Please Check your Internet Connection');
+      throw ('Logout Error, Please Check your Internet Connection', e);
     }
-    _pref.setBool("login", false);
-    return {"status": true};
   }
 
   getHuaweiAuthenticate() async {

@@ -1,7 +1,6 @@
+import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/me/user_api.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:provider/provider.dart';
 
 import 'package:fedcampus/view/widgets/widget.dart';
 
@@ -18,40 +17,15 @@ class _SignUpState extends State<SignUp> {
   var _passwordConfirm = "";
   var _netid = "";
 
-  void showErrorMessage(String msg) {
-    FocusManager.instance.primaryFocus?.unfocus();
-    Fluttertoast.showToast(
-        msg: msg,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0);
-  }
-
   signUp() async {
-    var res = await Provider.of<UserApi>(context, listen: false)
-        .signUp(_email, _netid, _password, _passwordConfirm);
-    if (mounted) {
-      return showDialog<bool>(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text("Sign up status"),
-            content: Text("${res["status"]}2\n${res["message"]}"),
-            actions: <Widget>[
-              TextButton(
-                child: const Text("Confirm"),
-                onPressed: () {
-                  Navigator.of(context).pop(true);
-                },
-              ),
-            ],
-          );
-        },
-      );
+    try {
+      await userApi.signUp(_email, _netid, _password, _passwordConfirm);
+    } on Exception catch (e) {
+      logger.e(e);
+      if (mounted) showToastMessage(e.getMessage);
+      return;
     }
+    if (mounted) showToastMessage('sign up sucess');
   }
 
   @override

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class FedCard extends StatelessWidget {
   const FedCard({
@@ -134,4 +135,36 @@ class _SignInUpTextFieldState extends State<SignInUpTextField> {
       ],
     );
   }
+}
+
+void showToastMessage(String msg) {
+  FocusManager.instance.primaryFocus?.unfocus();
+  Fluttertoast.showToast(
+      msg: msg,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.red,
+      textColor: Colors.white,
+      fontSize: 16.0);
+}
+
+void showDialogMessage(String message, String title, BuildContext context) {
+  showDialog<bool>(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: <Widget>[
+          TextButton(
+            child: const Text("Confirm"),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
 }

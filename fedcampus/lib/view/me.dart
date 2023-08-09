@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:fedcampus/models/user.dart';
 import 'package:fedcampus/models/user_model.dart';
 import 'package:fedcampus/view/me/user_api.dart';
+import 'package:fedcampus/view/widgets/widget.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +39,19 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
         (_) => Provider.of<UserModel>(context, listen: false).init());
   }
 
+  void _logOut() async {
+    try {
+      await userApi.logout();
+      showToastMessage('you successfully logged out');
+      if (mounted) {
+        Provider.of<UserModel>(context, listen: false).setLogin = false;
+      }
+    } on Exception catch (e) {
+      logger.d(e.toString());
+      if (mounted) showToastMessage(e.getMessage);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -63,7 +78,7 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
         ),
         MeText(
           text: 'Account Settings',
-          callback: () {},
+          callback: () => {},
         ),
         const MeDivider(),
         MeText(
@@ -78,14 +93,12 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
         const MeDivider(),
         MeText(
           text: 'Authentication',
-          callback: () => Provider.of<UserApi>(context, listen: false)
-              .getHuaweiAuthenticate(),
+          callback: () => userApi.getHuaweiAuthenticate(),
         ),
         const MeDivider(),
         MeText(
           text: 'Cancel authentication',
-          callback: () => Provider.of<UserApi>(context, listen: false)
-              .cancelHuaweiAuthenticate(),
+          callback: () => userApi.cancelHuaweiAuthenticate(),
         ),
         const MeDivider(),
         MeText(text: 'About', callback: () => {}),
@@ -97,7 +110,7 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
         const MeDivider(),
         MeText(
           text: 'Sign out',
-          callback: () => Provider.of<UserApi>(context, listen: false).logout(),
+          callback: _logOut,
         ),
         const MeDivider(),
         const BottomText(),

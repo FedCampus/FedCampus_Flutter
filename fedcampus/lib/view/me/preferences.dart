@@ -247,12 +247,7 @@ class _SettingsDropDownMenuState extends State<SettingsDropDownMenu> {
                 child: Text(value),
               );
             }).toList(),
-            onChanged: (s) {
-              setState(() {
-                dropdownValue = s!;
-              });
-              widget.callback(s ?? 'en');
-            },
+            onChanged: (s) => widget.callback(s ?? 'en'),
           )
         ],
       ),

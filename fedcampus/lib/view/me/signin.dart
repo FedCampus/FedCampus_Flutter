@@ -1,7 +1,9 @@
 import 'package:fedcampus/models/user.dart';
 import 'package:fedcampus/models/user_model.dart';
+import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/me/user_api.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 import 'package:fedcampus/view/me/signup.dart';
@@ -19,40 +21,18 @@ class _SignInState extends State<SignIn> {
   String _password = "";
   TextEditingController emailTextEditingController = TextEditingController();
 
-  void _register() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const SignUp()),
-    );
-    if (result != null) {
-      setState(() {});
-    }
-  }
-
-  signIn() async {
-    var res = await userApi.signIn(_username, _password);
+  _signIn() async {
     User user;
+    try {
+      user = await userApi.signIn(_username, _password);
+    } on Exception catch (e) {
+      logger.d(e.toString());
+      if (mounted) showToastMessage(e.getMessage);
+      return;
+    }
     if (mounted) {
-      user = res;
       Provider.of<UserModel>(context, listen: false).setUser = user;
-
-      return showDialog<bool>(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text("Login status"),
-            content: Text(res.toString()),
-            actions: <Widget>[
-              TextButton(
-                child: const Text("Confirm"),
-                onPressed: () {
-                  Navigator.of(context).pop(true);
-                },
-              ),
-            ],
-          );
-        },
-      );
+      showToastMessage('login success');
     }
   }
 
@@ -114,15 +94,18 @@ class _SignInState extends State<SignIn> {
               ),
               const Expanded(flex: 1, child: SizedBox()),
               ElevatedButton(
-                onPressed: signIn,
+                onPressed: _signIn,
                 child: const Text('Login'),
               ),
               const Expanded(
                   child: SizedBox(
                 height: 1,
               )),
-              GestureDetector(
-                onTap: _register,
+              TextButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SignUp()),
+                ),
                 child: Text(
                   'No account? Sign up',
                   style: TextStyle(
