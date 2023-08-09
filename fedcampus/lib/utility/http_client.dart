@@ -4,7 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HTTPClient {
-  static const _host = "http://dku-vcm-2630.vm.duke.edu:8005/";
+  // TODO: make the _host in the production mode
+  static const _host = "http://10.200.20.31:8006/";
 
   static const login = "${_host}api/login";
 

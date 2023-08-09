@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,6 +8,9 @@ import 'package:fedcampus/pigeons/huaweiauth.g.dart';
 import 'package:fedcampus/utility/http_client.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/pigeons/messages.g.dart';
+import 'package:http/http.dart';
+
+import '../../pigeons/datawrapper.dart';
 
 class ReportPage extends StatefulWidget {
   const ReportPage({super.key});
@@ -25,6 +29,8 @@ class _ReportPageState extends State<ReportPage> {
 
   var isAuth = false;
 
+  var isInternetIssue = false;
+
   final dataList = [
     "step",
     "calorie",
@@ -41,7 +47,6 @@ class _ReportPageState extends State<ReportPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _getData();
     _getLastDayDataAndSend();
@@ -85,37 +90,71 @@ class _ReportPageState extends State<ReportPage> {
     final yeasterdayDate =
         yeasterday.year * 10000 + yeasterday.month * 100 + yeasterday.day;
 
-    final host = DataApi();
     final date = yeasterdayDate;
 
-    List<Future<Data?>> list = List.empty(growable: true);
+    late final List<Data?>? data;
+    try {
+      data = await DataWrapper.getDataList(dataList, date);
+    } on PlatformException catch (error) {
+      if (error.message == "java.lang.SecurityException: 50005") {
+        logger.d("not authenticated");
+        // authAndGetData();
+      } else if (error.message == "java.lang.SecurityException: 50030") {
+        logger.d("internet issue");
+        Fluttertoast.showToast(
+            msg: "Internet Connection Issue, please connect to Internet.",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+      }
+      return;
+    }
 
-    dataList.forEach((element) {
-      list.add(getDataListWithNoLog(host, element, date));
-    });
+    try {
+      List<http.Response> responseArr = await Future.wait([
+        HTTPClient.post(
+            HTTPClient.data,
+            <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            jsonEncode(data)),
+        // TODO: Data DP Algorithm!!!
+        HTTPClient.post(
+            HTTPClient.dataDP,
+            <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            jsonEncode(data))
+      ]);
 
-    final data = await Future.wait(list);
-
-    List<http.Response> responseArr = await Future.wait([
-      HTTPClient.post(
-          HTTPClient.data,
-          <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
-          jsonEncode(data)),
-      // TODO: Data DP Algorithm!!!
-      HTTPClient.post(
-          HTTPClient.dataDP,
-          <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
-          jsonEncode(data))
-    ]);
-
-    logger.i(
-        "Data Status Code ${responseArr[0].statusCode} : ${jsonEncode(data)}");
-    logger.i(
-        "Data DP Status Code ${responseArr[1].statusCode} : ${jsonEncode(data)}");
+      logger.i(
+          "Data Status Code ${responseArr[0].statusCode} : ${jsonEncode(data)}");
+      logger.i(
+          "Data DP Status Code ${responseArr[1].statusCode} : ${jsonEncode(data)}");
+      if (responseArr[0].statusCode == 401) {
+        // user login
+        Fluttertoast.showToast(
+            msg: "Please Login for federated analysis.",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+      }
+    } on ClientException {
+      Fluttertoast.showToast(
+          msg: "Please make sure you are connected to DKU network!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    }
   }
 
   void _getData() async {
@@ -147,6 +186,7 @@ class _ReportPageState extends State<ReportPage> {
       bool ifAuth = await host.getAuthenticate();
       isAuth = false;
       _getData();
+      _getLastDayDataAndSend();
     } on PlatformException catch (error) {
       logger.e(error);
     }
@@ -163,6 +203,8 @@ class _ReportPageState extends State<ReportPage> {
 
         // redirect the user to the authenticate page
         authAndGetData();
+      } else if (error.message == "java.lang.SecurityException: 50030") {
+        logger.d("internet error");
       } else {
         logger.e(error.toString());
       }
@@ -178,28 +220,11 @@ class _ReportPageState extends State<ReportPage> {
       }
     });
 
-    return data[0];
-  }
-
-  Future<Data?> getDataListWithNoLog(
-      DataApi host, String name, int time) async {
-    List<Data?> data;
-
     try {
-      data = await host.getData(name, time, time);
-    } on PlatformException catch (error) {
-      if (error.message == "java.lang.SecurityException: 50005") {
-        logger.d("not authenticated");
-
-        // redirect the user to the authenticate page
-        authAndGetData();
-      } else {
-        logger.e(error.toString());
-      }
-      logger.e("catching error $error");
+      return data[0];
+    } on RangeError {
+      logger.i("no data for $name");
       return null;
     }
-
-    return data[0];
   }
 }
