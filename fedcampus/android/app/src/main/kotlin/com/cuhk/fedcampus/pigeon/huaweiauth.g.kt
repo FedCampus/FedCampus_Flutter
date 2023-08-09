@@ -7,27 +7,25 @@ import io.flutter.plugin.common.BasicMessageChannel
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MessageCodec
 import io.flutter.plugin.common.StandardMessageCodec
-import java.io.ByteArrayOutputStream
-import java.nio.ByteBuffer
 
 private fun wrapResult(result: Any?): List<Any?> {
-  return listOf(result)
+    return listOf(result)
 }
 
 private fun wrapError(exception: Throwable): List<Any?> {
-  if (exception is FlutterError) {
-    return listOf(
-      exception.code,
-      exception.message,
-      exception.details
-    )
-  } else {
-    return listOf(
-      exception.javaClass.simpleName,
-      exception.toString(),
-      "Cause: " + exception.cause + ", Stacktrace: " + Log.getStackTraceString(exception)
-    )
-  }
+    if (exception is FlutterError) {
+        return listOf(
+            exception.code,
+            exception.message,
+            exception.details
+        )
+    } else {
+        return listOf(
+            exception.javaClass.simpleName,
+            exception.toString(),
+            "Cause: " + exception.cause + ", Stacktrace: " + Log.getStackTraceString(exception)
+        )
+    }
 }
 
 /**
@@ -44,53 +42,62 @@ private fun wrapError(exception: Throwable): List<Any?> {
 
 /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
 interface HuaweiAuthApi {
-  fun getAuthenticate(callback: (Result<Boolean>) -> Unit)
-  fun cancelAuthenticate(callback: (Result<Boolean>) -> Unit)
+    fun getAuthenticate(callback: (Result<Boolean>) -> Unit)
+    fun cancelAuthenticate(callback: (Result<Boolean>) -> Unit)
 
-  companion object {
-    /** The codec used by HuaweiAuthApi. */
-    val codec: MessageCodec<Any?> by lazy {
-      StandardMessageCodec()
-    }
-    /** Sets up an instance of `HuaweiAuthApi` to handle messages through the `binaryMessenger`. */
-    @Suppress("UNCHECKED_CAST")
-    fun setUp(binaryMessenger: BinaryMessenger, api: HuaweiAuthApi?) {
-      run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.pigeon_example_package.HuaweiAuthApi.getAuthenticate", codec)
-        if (api != null) {
-          channel.setMessageHandler { _, reply ->
-            api.getAuthenticate() { result: Result<Boolean> ->
-              val error = result.exceptionOrNull()
-              if (error != null) {
-                reply.reply(wrapError(error))
-              } else {
-                val data = result.getOrNull()
-                reply.reply(wrapResult(data))
-              }
-            }
-          }
-        } else {
-          channel.setMessageHandler(null)
+    companion object {
+        /** The codec used by HuaweiAuthApi. */
+        val codec: MessageCodec<Any?> by lazy {
+            StandardMessageCodec()
         }
-      }
-      run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.pigeon_example_package.HuaweiAuthApi.cancelAuthenticate", codec)
-        if (api != null) {
-          channel.setMessageHandler { _, reply ->
-            api.cancelAuthenticate() { result: Result<Boolean> ->
-              val error = result.exceptionOrNull()
-              if (error != null) {
-                reply.reply(wrapError(error))
-              } else {
-                val data = result.getOrNull()
-                reply.reply(wrapResult(data))
-              }
+
+        /** Sets up an instance of `HuaweiAuthApi` to handle messages through the `binaryMessenger`. */
+        @Suppress("UNCHECKED_CAST")
+        fun setUp(binaryMessenger: BinaryMessenger, api: HuaweiAuthApi?) {
+            run {
+                val channel = BasicMessageChannel<Any?>(
+                    binaryMessenger,
+                    "dev.flutter.pigeon.pigeon_example_package.HuaweiAuthApi.getAuthenticate",
+                    codec
+                )
+                if (api != null) {
+                    channel.setMessageHandler { _, reply ->
+                        api.getAuthenticate() { result: Result<Boolean> ->
+                            val error = result.exceptionOrNull()
+                            if (error != null) {
+                                reply.reply(wrapError(error))
+                            } else {
+                                val data = result.getOrNull()
+                                reply.reply(wrapResult(data))
+                            }
+                        }
+                    }
+                } else {
+                    channel.setMessageHandler(null)
+                }
             }
-          }
-        } else {
-          channel.setMessageHandler(null)
+            run {
+                val channel = BasicMessageChannel<Any?>(
+                    binaryMessenger,
+                    "dev.flutter.pigeon.pigeon_example_package.HuaweiAuthApi.cancelAuthenticate",
+                    codec
+                )
+                if (api != null) {
+                    channel.setMessageHandler { _, reply ->
+                        api.cancelAuthenticate() { result: Result<Boolean> ->
+                            val error = result.exceptionOrNull()
+                            if (error != null) {
+                                reply.reply(wrapError(error))
+                            } else {
+                                val data = result.getOrNull()
+                                reply.reply(wrapResult(data))
+                            }
+                        }
+                    }
+                } else {
+                    channel.setMessageHandler(null)
+                }
+            }
         }
-      }
     }
-  }
 }
