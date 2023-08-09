@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,6 +8,9 @@ import 'package:fedcampus/pigeons/huaweiauth.g.dart';
 import 'package:fedcampus/utility/http_client.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/pigeons/messages.g.dart';
+import 'package:http/http.dart';
+
+import '../signin.dart';
 
 class ReportPage extends StatefulWidget {
   const ReportPage({super.key});
@@ -24,6 +28,8 @@ class _ReportPageState extends State<ReportPage> {
   var _log = "";
 
   var isAuth = false;
+
+  var isInternetIssue = false;
 
   final dataList = [
     "step",
@@ -95,27 +101,50 @@ class _ReportPageState extends State<ReportPage> {
     });
 
     final data = await Future.wait(list);
+    data.removeWhere((element) => element == null);
 
-    List<http.Response> responseArr = await Future.wait([
-      HTTPClient.post(
-          HTTPClient.data,
-          <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
-          jsonEncode(data)),
-      // TODO: Data DP Algorithm!!!
-      HTTPClient.post(
-          HTTPClient.dataDP,
-          <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
-          jsonEncode(data))
-    ]);
+    try {
+      List<http.Response> responseArr = await Future.wait([
+        HTTPClient.post(
+            HTTPClient.data,
+            <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            jsonEncode(data)),
+        // TODO: Data DP Algorithm!!!
+        HTTPClient.post(
+            HTTPClient.dataDP,
+            <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            jsonEncode(data))
+      ]);
 
-    logger.i(
-        "Data Status Code ${responseArr[0].statusCode} : ${jsonEncode(data)}");
-    logger.i(
-        "Data DP Status Code ${responseArr[1].statusCode} : ${jsonEncode(data)}");
+      logger.i(
+          "Data Status Code ${responseArr[0].statusCode} : ${jsonEncode(data)}");
+      logger.i(
+          "Data DP Status Code ${responseArr[1].statusCode} : ${jsonEncode(data)}");
+      if (responseArr[0].statusCode == 401) {
+        // user login
+        Fluttertoast.showToast(
+            msg: "Please Login for federated analysis.",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+      }
+    } on ClientException catch (error) {
+      Fluttertoast.showToast(
+          msg: "Please make sure you are connected to DKU network!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    }
   }
 
   void _getData() async {
@@ -178,7 +207,12 @@ class _ReportPageState extends State<ReportPage> {
       }
     });
 
-    return data[0];
+    try {
+      return data[0];
+    } on RangeError {
+      print("no data for $name");
+      return null;
+    }
   }
 
   Future<Data?> getDataListWithNoLog(
@@ -193,13 +227,31 @@ class _ReportPageState extends State<ReportPage> {
 
         // redirect the user to the authenticate page
         authAndGetData();
+      } else if (error.message == "java.lang.SecurityException: 50030") {
+        // network issue
+        if (isInternetIssue) {
+          return null;
+        }
+        isInternetIssue = true;
+        Fluttertoast.showToast(
+            msg: "Internet Connection Issue, please connect to Internet.",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
       } else {
         logger.e(error.toString());
       }
       logger.e("catching error $error");
       return null;
     }
-
-    return data[0];
+    try {
+      return data[0];
+    } on RangeError {
+      print("no data for $name");
+      return null;
+    }
   }
 }
