@@ -112,13 +112,14 @@ class _CalendarDialogState extends State<CalendarDialog> {
               // FIXME: https://github.com/aleksanderwozniak/table_calendar/issues/583
               // because I override deoration with rectangle, I need to set every decoration mannually,
               // not sure if any issues persist
-              defaultDecoration:
-                  textDecoration(Theme.of(context).colorScheme.primary),
-              weekendDecoration:
-                  textDecoration(Theme.of(context).colorScheme.primary),
+              defaultDecoration: textDecoration(
+                  Theme.of(context).colorScheme.background),
+              weekendDecoration: textDecoration(Theme.of(context).colorScheme.background),
               todayDecoration: textDecoration(
                   Theme.of(context).colorScheme.secondaryContainer),
               selectedDecoration: textDecoration(widget.primaryColor),
+              defaultTextStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
+              selectedTextStyle: TextStyle(color: Theme.of(context).colorScheme.background),
               weekendTextStyle: TextStyle(color: widget.primaryColor),
             ),
             firstDay: DateTime.utc(2010, 10, 16),
