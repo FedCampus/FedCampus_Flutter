@@ -1,11 +1,14 @@
 //TODO:find better way do adapt different screen size
 import 'dart:convert';
 
+import 'package:fedcampus/models/health_data_model.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/utility/test_api.dart';
 import 'package:fedcampus/view/calendar.dart';
 import 'package:fedcampus/view/widgets/widget.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class Health extends StatefulWidget {
   const Health({
@@ -22,11 +25,13 @@ class _HealthState extends State<Health> {
   @override
   void initState() {
     super.initState();
-    getDistance();
+    refresh();
+    // getDistance();
   }
 
   Future<void> refresh() async {
-    getDistance();
+    Provider.of<HealthDataModel>(context, listen: false).getData();
+    // getDistance();
   }
 
   getDistance() async {
@@ -55,7 +60,14 @@ class _HealthState extends State<Health> {
   updateDate(DateTime selectedDate) {
     setState(() {
       dateTime = selectedDate;
-      // logger.d(selectedDate);
+      logger.d(selectedDate);
+      String month = selectedDate.month.toString();
+      if (month.length < 2) month = '0$month';
+      String day = selectedDate.day.toString();
+      if (day.length < 2) day = '0$day';
+      String datecode = '${selectedDate.year}$month$day';
+      Provider.of<HealthDataModel>(context, listen: false).date = datecode;
+      logger.d(1);
     });
   }
 
@@ -127,7 +139,6 @@ class LeftColumn extends StatelessWidget {
           SizedBox(
             height: 20 * fem,
           ),
-          // Heartrate(fem: fem, ffem: ffem),
           Heart(fem: fem, ffem: ffem),
           SizedBox(
             height: 20 * fem,
@@ -143,7 +154,7 @@ class LeftColumn extends StatelessWidget {
   }
 }
 
-class Date extends StatelessWidget {
+class Date extends StatefulWidget {
   const Date({
     super.key,
     required this.fem,
@@ -156,6 +167,17 @@ class Date extends StatelessWidget {
   final void Function(DateTime selectedDate) onDateChange;
 
   @override
+  State<Date> createState() => _DateState();
+}
+
+class _DateState extends State<Date> {
+  DateTime _date = DateTime.now();
+
+  void change(DateTime dateTime) {
+    _date = dateTime;
+  }
+
+  @override
   Widget build(BuildContext context) {
     Future<bool?> calendarDialog() {
       return showDialog<bool>(
@@ -164,14 +186,15 @@ class Date extends StatelessWidget {
           return AlertDialog(
             title: const Text("Select a day"),
             content: CalendarDialog(
-              onDateChange: onDateChange,
+              onDateChange: change,
               primaryColor: Theme.of(context).colorScheme.primaryContainer,
             ),
             actions: <Widget>[
               TextButton(
                 child: const Text("Confirm"),
                 onPressed: () {
-                  Navigator.of(context).pop(true);
+                  widget.onDateChange(_date);
+                  Navigator.of(context).pop();
                 },
               ),
             ],
@@ -187,18 +210,18 @@ class Date extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Theme.of(context).colorScheme.shadow,
-            offset: Offset(0 * fem, 4 * fem),
-            blurRadius: 2 * fem,
+            offset: Offset(0 * widget.fem, 4 * widget.fem),
+            blurRadius: 2 * widget.fem,
           ),
           BoxShadow(
             color: Theme.of(context).colorScheme.outline,
-            offset: Offset(0 * fem, -1 * fem),
-            blurRadius: 1 * fem,
+            offset: Offset(0 * widget.fem, -1 * widget.fem),
+            blurRadius: 1 * widget.fem,
           ),
           BoxShadow(
             color: Theme.of(context).colorScheme.outline,
-            offset: Offset(0 * fem, 4 * fem),
-            blurRadius: 2 * fem,
+            offset: Offset(0 * widget.fem, 4 * widget.fem),
+            blurRadius: 2 * widget.fem,
           ),
         ],
       ),
@@ -207,34 +230,47 @@ class Date extends StatelessWidget {
             .then((value) => calendarDialog()),
         style: TextButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.background,
-          padding: EdgeInsets.fromLTRB(14 * fem, 18 * fem, 14 * fem, 17 * fem),
+          padding: EdgeInsets.fromLTRB(14 * widget.fem, 18 * widget.fem,
+              14 * widget.fem, 17 * widget.fem),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            FedIcon(fem: fem, imagePath: 'assets/images/health_nav_icon.png'),
+            FedIcon(
+                fem: widget.fem,
+                imagePath: 'assets/images/health_nav_icon.png'),
             SizedBox(
-              width: 11 * fem,
+              width: 11 * widget.fem,
             ),
             SizedBox(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    margin:
-                        EdgeInsets.fromLTRB(0 * fem, 0 * fem, 0 * fem, 5 * fem),
+                    margin: EdgeInsets.fromLTRB(0 * widget.fem, 0 * widget.fem,
+                        0 * widget.fem, 5 * widget.fem),
                     child: Text(
-                      '${date.month}/${date.day}',
+                      DateFormat.MMMd('en_US').format(widget.date),
                       style: TextStyle(
-                          color: Theme.of(context).colorScheme.tertiary),
+                          color: Theme.of(context).colorScheme.primaryContainer,
+                          fontSize: 22,
+                          shadows: [
+                            BoxShadow(
+                              color: Theme.of(context).colorScheme.shadow,
+                              offset: Offset(0 * widget.fem, 2 * widget.fem),
+                              blurRadius: 1,
+                            ),
+                          ]),
                     ),
                   ),
                   Text(
-                    '2023',
+                    DateFormat.y('en_US').format(widget.date),
                     style: TextStyle(
-                        color: Theme.of(context).colorScheme.tertiary),
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      fontSize: 17,
+                    ),
                   ),
                 ],
               ),
@@ -318,6 +354,34 @@ class Heart extends StatelessWidget {
                 FedIcon(fem: fem, imagePath: 'assets/images/heart_rate_2.png'),
               ],
             ),
+            SizedBox(
+              width: 11 * fem,
+            ),
+            Column(
+              children: [
+                Text(
+                    Provider.of<HealthDataModel>(context)
+                            .healthData['restHeartRate']
+                            ?.toStringAsFixed(2) ??
+                        '0',
+                    style: TextStyle(
+                        fontFamily: 'Montserrat Alternates',
+                        fontSize: 30,
+                        color: Theme.of(context).colorScheme.primaryContainer)),
+                SizedBox(
+                  height: 33 * fem,
+                ),
+                Text(
+                    Provider.of<HealthDataModel>(context)
+                            .healthData['exerciseHeartRate']
+                            ?.toStringAsFixed(2) ??
+                        '0',
+                    style: TextStyle(
+                        fontFamily: 'Montserrat Alternates',
+                        fontSize: 30,
+                        color: Theme.of(context).colorScheme.primaryContainer)),
+              ],
+            )
           ],
         ));
   }
@@ -359,16 +423,21 @@ class Step extends StatelessWidget {
             ),
             Column(
               children: [
-                Text('78',
+                Text(
+                    Provider.of<HealthDataModel>(context)
+                            .healthData['step']
+                            ?.toInt()
+                            .toString() ??
+                        '0',
                     style: TextStyle(
                         fontFamily: 'Montserrat Alternates',
-                        fontSize: 30,
+                        fontSize: 25,
                         color: Theme.of(context).colorScheme.primaryContainer)),
-                Text('78',
-                    style: TextStyle(
-                        fontFamily: 'Montserrat Alternates',
-                        fontSize: 30,
-                        color: Theme.of(context).colorScheme.primaryContainer))
+                // Text('78',
+                //     style: TextStyle(
+                //         fontFamily: 'Montserrat Alternates',
+                //         fontSize: 30,
+                //         color: Theme.of(context).colorScheme.primaryContainer))
               ],
             )
           ],
@@ -404,12 +473,27 @@ class Sleep extends StatelessWidget {
                 height: 11 * fem,
               ),
               Text(
-                // sleepoPf (30:137)
                 'Sleep',
                 style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
               ),
             ],
           ),
+          SizedBox(
+            width: 11 * fem,
+          ),
+          Column(
+            children: [
+              Text(
+                  Provider.of<HealthDataModel>(context)
+                          .healthData['sleepEfficiency']
+                          ?.toStringAsFixed(2) ??
+                      '0',
+                  style: TextStyle(
+                      fontFamily: 'Montserrat Alternates',
+                      fontSize: 30,
+                      color: Theme.of(context).colorScheme.primaryContainer)),
+            ],
+          )
         ],
       ),
     );
@@ -464,7 +548,11 @@ class IntenseExercise extends StatelessWidget {
             ),
             Column(
               children: [
-                Text('78',
+                Text(
+                    Provider.of<HealthDataModel>(context)
+                            .healthData['intensity']
+                            ?.toStringAsFixed(2) ??
+                        '0',
                     style: TextStyle(
                         fontFamily: 'Montserrat Alternates',
                         fontSize: 30,
@@ -518,16 +606,20 @@ class Calorie extends StatelessWidget {
             ),
             Column(
               children: [
-                Text('78',
+                Text(
+                    Provider.of<HealthDataModel>(context)
+                            .healthData['calorie']
+                            ?.toStringAsFixed(2) ??
+                        '0',
                     style: TextStyle(
                         fontFamily: 'Montserrat Alternates',
                         fontSize: 30,
                         color: Theme.of(context).colorScheme.primaryContainer)),
-                Text('f8',
-                    style: TextStyle(
-                        fontFamily: 'Montserrat Alternates',
-                        fontSize: 20,
-                        color: Theme.of(context).colorScheme.primaryContainer))
+                // Text('f8',
+                //     style: TextStyle(
+                //         fontFamily: 'Montserrat Alternates',
+                //         fontSize: 20,
+                //         color: Theme.of(context).colorScheme.primaryContainer))
               ],
             )
           ],
@@ -568,7 +660,11 @@ class Stress extends StatelessWidget {
           ),
           Column(
             children: [
-              Text('78',
+              Text(
+                  Provider.of<HealthDataModel>(context)
+                          .healthData['stress']
+                          ?.toStringAsFixed(2) ??
+                      '0',
                   style: TextStyle(
                       fontFamily: 'Montserrat Alternates',
                       fontSize: 30,
@@ -619,14 +715,19 @@ class Distance extends StatelessWidget {
             ],
           ),
           SizedBox(
-            width: 11 * fem,
+            width: 10 * fem,
           ),
           Column(
             children: [
-              Text(distance,
+              Text(
+                  Provider.of<HealthDataModel>(context)
+                          .healthData['distance']
+                          ?.toInt()
+                          .toString() ??
+                      '0',
                   style: TextStyle(
                       fontFamily: 'Montserrat Alternates',
-                      fontSize: 15,
+                      fontSize: 22,
                       color: Theme.of(context).colorScheme.primaryContainer)),
             ],
           )

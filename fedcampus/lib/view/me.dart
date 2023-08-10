@@ -31,13 +31,6 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
 
   String log = "";
 
-  @override
-  void initState() {
-    super.initState();
-    SchedulerBinding.instance.addPostFrameCallback(
-        (_) => Provider.of<UserModel>(context, listen: false).init());
-  }
-
   void _logOut() async {
     try {
       await userApi.logout();
@@ -290,7 +283,7 @@ Widget header() {
         children: <Widget>[
           value.isLogin
               ? CircleAvatar(
-                  foregroundImage: NetworkImage(value.user.avatarUrl ?? ''),
+                  foregroundImage: NetworkImage(value.user['avatarUrl'] ?? ''),
                   backgroundImage:
                       const AssetImage('assets/images/step_activity.png'),
                   backgroundColor: Theme.of(context).colorScheme.surfaceTint,
@@ -303,7 +296,7 @@ Widget header() {
                   radius: 40,
                 ),
           Text(
-            value.isLogin ? value.user.userName : 'Not logged in',
+            value.isLogin ? value.user['userName'] : 'Not logged in',
             style: TextStyle(
                 fontSize: 20,
                 color: Theme.of(context).colorScheme.surfaceVariant),

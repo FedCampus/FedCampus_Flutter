@@ -1,7 +1,9 @@
+import 'package:fedcampus/models/health_data_model.dart';
 import 'package:fedcampus/models/user_model.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/home.dart';
 import 'package:fedcampus/view/me/user_api.dart';
+import 'package:fedcampus/view/widgets/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
@@ -13,17 +15,41 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 void main() {
   // https://stackoverflow.com/a/57775690
   WidgetsFlutterBinding.ensureInitialized();
-  userApi.init().then((e) => runApp(MultiProvider(
-        providers: [
-          ChangeNotifierProvider(
-            create: (context) => MyAppState(),
-          ),
-          ChangeNotifierProvider(
-            create: (context) => UserModel(),
-          ),
-        ],
-        child: const MyApp(),
-      )));
+  userApi
+      .init()
+      .then((e) => runApp(MultiProvider(
+            providers: [
+              ChangeNotifierProvider(
+                create: (context) => MyAppState(),
+              ),
+              ChangeNotifierProvider(
+                create: (context) => UserModel(),
+              ),
+              ChangeNotifierProvider(
+                create: (context) => HealthDataModel(),
+              ),
+            ],
+            child: const MyApp(),
+          )))
+      .onError((Exception error, stackTrace) => runApp(ErrorApp(
+            error: error,
+          )));
+}
+
+class ErrorApp extends StatelessWidget {
+  const ErrorApp({super.key, required this.error});
+
+  final Exception error;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: const Text('Error :(')),
+        body: Text(error.getMessage),
+      ),
+    );
+  }
 }
 
 class MyApp extends StatefulWidget {

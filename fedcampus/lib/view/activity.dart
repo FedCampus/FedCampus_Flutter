@@ -5,6 +5,7 @@ import 'package:fedcampus/utility/test_api.dart';
 import 'package:fedcampus/view/calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:intl/intl.dart';
 
 class Activity extends StatefulWidget {
   const Activity({
@@ -314,6 +315,7 @@ class Date extends StatelessWidget {
     }
 
     return Container(
+      height: 80,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceTint,
         borderRadius: BorderRadius.circular(24),
@@ -340,45 +342,91 @@ class Date extends StatelessWidget {
             .then((value) => calendarDialog()),
         style: TextButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.surfaceTint,
-          padding: EdgeInsets.fromLTRB(40 * fem, 18 * fem, 40 * fem, 17 * fem),
+          padding: EdgeInsets.fromLTRB(40 * fem, 12 * fem, 40 * fem, 12 * fem),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            const FedIcon(imagePath: 'assets/images/activity_nav_icon.png'),
-            SizedBox(
-              width: 11 * fem,
+          children: <Widget>[
+            const FedIcon(
+              imagePath: 'assets/images/activity_nav_icon.png',
+              height: 52,
             ),
-            SizedBox(
+            const Expanded(
+              flex: 2,
+              child: SizedBox(),
+            ),
+            Expanded(
+              flex: 10,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    margin:
-                        EdgeInsets.fromLTRB(0 * fem, 0 * fem, 0 * fem, 5 * fem),
-                    child: Text(
-                      '${date.month}/${date.day}',
-                      style: TextStyle(
-                          fontSize: 20,
-                          shadows: [
-                            BoxShadow(
-                              color: Theme.of(context).colorScheme.shadow,
-                              offset: Offset(0 * fem, 2 * fem),
-                              blurRadius: 1,
-                            ),
-                          ],
-                          color: Theme.of(context).colorScheme.tertiary),
-                    ),
+                children: <Widget>[
+                  const Expanded(
+                    flex: 1,
+                    child: SizedBox(),
+                  ),
+                  Row(
+                    children: <Widget>[
+                      const Expanded(
+                        flex: 1,
+                        child: SizedBox(),
+                      ),
+                      Text(
+                        DateFormat.MMMd('en_US').format(date),
+                        style: TextStyle(
+                            fontSize: 22,
+                            shadows: [
+                              BoxShadow(
+                                color: Theme.of(context).colorScheme.shadow,
+                                offset: Offset(0 * fem, 2 * fem),
+                                blurRadius: 1,
+                              ),
+                            ],
+                            color: Theme.of(context).colorScheme.tertiary),
+                      ),
+                      const Expanded(
+                        flex: 1,
+                        child: SizedBox(),
+                      ),
+                      Text(
+                        DateFormat.E('en_US').format(date),
+                        style: TextStyle(
+                            fontSize: 22,
+                            shadows: [
+                              BoxShadow(
+                                color: Theme.of(context).colorScheme.shadow,
+                                offset: Offset(0 * fem, 2 * fem),
+                                blurRadius: 1,
+                              ),
+                            ],
+                            color: Theme.of(context).colorScheme.tertiary),
+                      ),
+                      const Expanded(
+                        flex: 1,
+                        child: SizedBox(),
+                      ),
+                    ],
+                  ),
+                  const Expanded(
+                    flex: 3,
+                    child: SizedBox(),
                   ),
                   Text(
                     '2023',
                     style: TextStyle(
                         color: Theme.of(context).colorScheme.tertiary),
                   ),
+                  const Expanded(
+                    flex: 1,
+                    child: SizedBox(),
+                  ),
                 ],
               ),
+            ),
+            const Expanded(
+              flex: 2,
+              child: SizedBox(),
             ),
           ],
         ),

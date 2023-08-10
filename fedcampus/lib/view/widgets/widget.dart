@@ -15,7 +15,7 @@ class FedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.fromLTRB(14 * fem, 18 * fem, 14 * fem, 17 * fem),
+      padding: EdgeInsets.fromLTRB(10 * fem, 18 * fem, 10 * fem, 17 * fem),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.background,
         borderRadius: BorderRadius.circular(24 * fem),

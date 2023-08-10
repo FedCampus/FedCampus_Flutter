@@ -21,7 +21,8 @@ class _SignInState extends State<SignIn> {
   TextEditingController emailTextEditingController = TextEditingController();
 
   _signIn() async {
-    User user;
+    Map<String, dynamic> user;
+    // user = User.mapOf(userName: 'luyao', email: 'lw337@duke.edu', loggedIn: true);
     try {
       user = await userApi.signIn(_username, _password);
     } on Exception catch (e) {
