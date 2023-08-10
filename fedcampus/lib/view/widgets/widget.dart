@@ -4,36 +4,34 @@ import 'package:fluttertoast/fluttertoast.dart';
 class FedCard extends StatelessWidget {
   const FedCard({
     super.key,
-    required this.fem,
-    required this.ffem,
     required this.widget,
   });
-  final double fem;
-  final double ffem;
   final Widget widget;
 
   @override
   Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
     return Container(
-      padding: EdgeInsets.fromLTRB(10 * fem, 18 * fem, 10 * fem, 17 * fem),
+      padding:
+          EdgeInsets.fromLTRB(10 * pixel, 17 * pixel, 10 * pixel, 14 * pixel),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.background,
-        borderRadius: BorderRadius.circular(24 * fem),
+        borderRadius: BorderRadius.circular(24 * pixel),
         boxShadow: [
           BoxShadow(
             color: Theme.of(context).colorScheme.shadow,
-            offset: Offset(0 * fem, 4 * fem),
-            blurRadius: 2 * fem,
+            offset: Offset(0 * pixel, 4 * pixel),
+            blurRadius: 2 * pixel,
           ),
           BoxShadow(
             color: Theme.of(context).colorScheme.outline,
-            offset: Offset(0 * fem, -1 * fem),
-            blurRadius: 1 * fem,
+            offset: Offset(0 * pixel, -1 * pixel),
+            blurRadius: 1 * pixel,
           ),
           BoxShadow(
             color: Theme.of(context).colorScheme.outline,
-            offset: Offset(0 * fem, 4 * fem),
-            blurRadius: 2 * fem,
+            offset: Offset(0 * pixel, 4 * pixel),
+            blurRadius: 2 * pixel,
           ),
         ],
       ),
@@ -45,22 +43,21 @@ class FedCard extends StatelessWidget {
 class FedIcon extends StatelessWidget {
   const FedIcon({
     super.key,
-    required this.fem,
     required this.imagePath,
     this.height = 39,
     this.width = 48,
   });
 
-  final double fem;
   final String imagePath;
   final double height;
   final double width;
   @override
   Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
     return Image.asset(
       imagePath,
-      width: width * fem,
-      height: height * fem,
+      width: width * pixel,
+      height: height * pixel,
     );
   }
 }

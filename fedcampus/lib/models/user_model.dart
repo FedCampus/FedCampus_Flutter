@@ -5,10 +5,6 @@ import 'package:flutter/foundation.dart';
 class UserModel extends ChangeNotifier {
   Map<String, dynamic> user = User.mapOf(userName: 'userName', email: 'email');
   UserModel() {
-    init();
-  }
-
-  Future<void> init() async {
     user['loggedIn'] = userApi.prefs.getBool("login") ?? false;
     if (user['loggedIn']) {
       user['userName'] =

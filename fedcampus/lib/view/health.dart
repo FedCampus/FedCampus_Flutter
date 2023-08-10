@@ -67,22 +67,20 @@ class _HealthState extends State<Health> {
       if (day.length < 2) day = '0$day';
       String datecode = '${selectedDate.year}$month$day';
       Provider.of<HealthDataModel>(context, listen: false).date = datecode;
-      logger.d(1);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    double baseWidth = 390;
-    double fem = MediaQuery.of(context).size.width / baseWidth;
-    double ffem = fem * 0.97;
+    double pixel = MediaQuery.of(context).size.width / 400;
     return RefreshIndicator(
       onRefresh: refresh,
       child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         physics: const AlwaysScrollableScrollPhysics(),
         child: Container(
-          margin: EdgeInsets.fromLTRB(26 * fem, 19 * fem, 26 * fem, 11 * fem),
+          margin: EdgeInsets.fromLTRB(
+              22 * pixel, 19 * pixel, 22 * pixel, 10 * pixel),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,17 +88,15 @@ class _HealthState extends State<Health> {
               Expanded(
                 flex: 1,
                 child: LeftColumn(
-                  fem: fem,
-                  ffem: ffem,
                   date: dateTime,
                   dist: dist,
                   onDateChange: updateDate,
                 ),
               ),
               SizedBox(
-                width: 22 * fem,
+                width: 22 * pixel,
               ),
-              Expanded(flex: 1, child: RightColumn(fem: fem, ffem: ffem)),
+              const Expanded(flex: 1, child: RightColumn()),
             ],
           ),
         ),
@@ -112,44 +108,69 @@ class _HealthState extends State<Health> {
 class LeftColumn extends StatelessWidget {
   const LeftColumn({
     super.key,
-    required this.fem,
-    required this.ffem,
     required this.date,
     required this.dist,
     required this.onDateChange,
   });
 
-  final double fem;
-  final double ffem;
   final DateTime date;
   final String dist;
   final void Function(DateTime selectedDate) onDateChange;
 
   @override
   Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
     return SizedBox(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Date(
-            fem: fem,
             date: date,
             onDateChange: onDateChange,
           ),
           SizedBox(
-            height: 20 * fem,
+            height: 20 * pixel,
           ),
-          Heart(fem: fem, ffem: ffem),
+          const Heart(),
           SizedBox(
-            height: 20 * fem,
+            height: 20 * pixel,
           ),
-          Distance(fem: fem, ffem: ffem, distance: dist),
+          Distance(distance: dist),
           SizedBox(
-            height: 20 * fem,
+            height: 20 * pixel,
           ),
-          Stress(fem: fem, ffem: ffem),
+          const Stress(),
         ],
       ),
+    );
+  }
+}
+
+class RightColumn extends StatelessWidget {
+  const RightColumn({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        const Step(),
+        SizedBox(
+          height: 21 * pixel,
+        ),
+        const Calorie(),
+        SizedBox(
+          height: 21 * pixel,
+        ),
+        const IntenseExercise(),
+        SizedBox(
+          height: 21 * pixel,
+        ),
+        const Sleep(),
+      ],
     );
   }
 }
@@ -157,12 +178,10 @@ class LeftColumn extends StatelessWidget {
 class Date extends StatefulWidget {
   const Date({
     super.key,
-    required this.fem,
     required this.date,
     required this.onDateChange,
   });
 
-  final double fem;
   final DateTime date;
   final void Function(DateTime selectedDate) onDateChange;
 
@@ -179,6 +198,7 @@ class _DateState extends State<Date> {
 
   @override
   Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
     Future<bool?> calendarDialog() {
       return showDialog<bool>(
         context: context,
@@ -206,51 +226,48 @@ class _DateState extends State<Date> {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.background,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
             color: Theme.of(context).colorScheme.shadow,
-            offset: Offset(0 * widget.fem, 4 * widget.fem),
-            blurRadius: 2 * widget.fem,
+            offset: Offset(0 * pixel, 4 * pixel),
+            blurRadius: 2 * pixel,
           ),
           BoxShadow(
             color: Theme.of(context).colorScheme.outline,
-            offset: Offset(0 * widget.fem, -1 * widget.fem),
-            blurRadius: 1 * widget.fem,
+            offset: Offset(0 * pixel, -1 * pixel),
+            blurRadius: 1 * pixel,
           ),
           BoxShadow(
             color: Theme.of(context).colorScheme.outline,
-            offset: Offset(0 * widget.fem, 4 * widget.fem),
-            blurRadius: 2 * widget.fem,
+            offset: Offset(0 * pixel, 4 * pixel),
+            blurRadius: 2 * pixel,
           ),
         ],
       ),
       child: TextButton(
-        onPressed: () => Future.delayed(const Duration(milliseconds: 140))
-            .then((value) => calendarDialog()),
+        onPressed: () => calendarDialog(),
         style: TextButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.background,
-          padding: EdgeInsets.fromLTRB(14 * widget.fem, 18 * widget.fem,
-              14 * widget.fem, 17 * widget.fem),
+          padding: EdgeInsets.fromLTRB(
+              14 * pixel, 18 * pixel, 14 * pixel, 17 * pixel),
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            FedIcon(
-                fem: widget.fem,
-                imagePath: 'assets/images/health_nav_icon.png'),
+            const FedIcon(imagePath: 'assets/images/health_nav_icon.png'),
             SizedBox(
-              width: 11 * widget.fem,
+              width: 10 * pixel,
             ),
             SizedBox(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    margin: EdgeInsets.fromLTRB(0 * widget.fem, 0 * widget.fem,
-                        0 * widget.fem, 5 * widget.fem),
+                    margin: EdgeInsets.fromLTRB(
+                        0 * pixel, 0 * pixel, 0 * pixel, 5 * pixel),
                     child: Text(
                       DateFormat.MMMd('en_US').format(widget.date),
                       style: TextStyle(
@@ -259,7 +276,7 @@ class _DateState extends State<Date> {
                           shadows: [
                             BoxShadow(
                               color: Theme.of(context).colorScheme.shadow,
-                              offset: Offset(0 * widget.fem, 2 * widget.fem),
+                              offset: Offset(0 * pixel, 2 * pixel),
                               blurRadius: 1,
                             ),
                           ]),
@@ -282,372 +299,161 @@ class _DateState extends State<Date> {
   }
 }
 
-class RightColumn extends StatelessWidget {
-  const RightColumn({
-    super.key,
-    required this.fem,
-    required this.ffem,
-  });
-
-  final double fem;
-  final double ffem;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Step(fem: fem, ffem: ffem),
-        SizedBox(
-          height: 21 * fem,
-        ),
-        Calorie(fem: fem, ffem: ffem),
-        SizedBox(
-          height: 21 * fem,
-        ),
-        IntenseExercise(fem: fem, ffem: ffem),
-        SizedBox(
-          height: 21 * fem,
-        ),
-        Sleep(fem: fem, ffem: ffem),
-      ],
-    );
-  }
-}
-
 class Heart extends StatelessWidget {
   const Heart({
     super.key,
-    required this.fem,
-    required this.ffem,
   });
-
-  final double fem;
-  final double ffem;
 
   @override
   Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
     return FedCard(
-        fem: fem,
-        ffem: ffem,
         widget: Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                FedIcon(
-                  fem: fem,
-                  imagePath: 'assets/images/heart_rate.png',
-                ),
-                SizedBox(
-                  height: 11 * fem,
-                ),
-                Text(
-                  'Heart \nRate',
-                  style:
-                      TextStyle(color: Theme.of(context).colorScheme.tertiary),
-                ),
-                SizedBox(
-                  height: 11 * fem,
-                ),
-                FedIcon(fem: fem, imagePath: 'assets/images/heart_rate_2.png'),
-              ],
+            const FedIcon(
+              imagePath: 'assets/images/heart_rate.png',
             ),
             SizedBox(
-              width: 11 * fem,
+              height: 10 * pixel,
             ),
-            Column(
-              children: [
-                Text(
-                    Provider.of<HealthDataModel>(context)
-                            .healthData['restHeartRate']
-                            ?.toStringAsFixed(2) ??
-                        '0',
-                    style: TextStyle(
-                        fontFamily: 'Montserrat Alternates',
-                        fontSize: 30,
-                        color: Theme.of(context).colorScheme.primaryContainer)),
-                SizedBox(
-                  height: 33 * fem,
-                ),
-                Text(
-                    Provider.of<HealthDataModel>(context)
-                            .healthData['exerciseHeartRate']
-                            ?.toStringAsFixed(2) ??
-                        '0',
-                    style: TextStyle(
-                        fontFamily: 'Montserrat Alternates',
-                        fontSize: 30,
-                        color: Theme.of(context).colorScheme.primaryContainer)),
-              ],
-            )
+            Text(
+              'Heart \nRate',
+              style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+            ),
+            SizedBox(
+              height: 10 * pixel,
+            ),
+            const FedIcon(imagePath: 'assets/images/heart_rate_2.png'),
           ],
-        ));
-  }
-}
-
-class Step extends StatelessWidget {
-  const Step({
-    super.key,
-    required this.fem,
-    required this.ffem,
-  });
-
-  final double fem;
-  final double ffem;
-
-  @override
-  Widget build(BuildContext context) {
-    return FedCard(
-        fem: fem,
-        ffem: ffem,
-        widget: Row(
+        ),
+        SizedBox(
+          width: 10 * pixel,
+        ),
+        Column(
           children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                FedIcon(fem: fem, imagePath: 'assets/images/step.png'),
-                SizedBox(
-                  height: 11 * fem,
-                ),
-                Text(
-                  'Step',
-                  style:
-                      TextStyle(color: Theme.of(context).colorScheme.tertiary),
-                ),
-              ],
-            ),
+            Text(
+                Provider.of<HealthDataModel>(context)
+                        .healthData['restHeartRate']
+                        ?.toStringAsFixed(2) ??
+                    '0',
+                style: TextStyle(
+                    fontFamily: 'Montserrat Alternates',
+                    fontSize: 30,
+                    color: Theme.of(context).colorScheme.primaryContainer)),
             SizedBox(
-              width: 11 * fem,
+              height: 33 * pixel,
             ),
-            Column(
-              children: [
-                Text(
-                    Provider.of<HealthDataModel>(context)
-                            .healthData['step']
-                            ?.toInt()
-                            .toString() ??
-                        '0',
-                    style: TextStyle(
-                        fontFamily: 'Montserrat Alternates',
-                        fontSize: 25,
-                        color: Theme.of(context).colorScheme.primaryContainer)),
-                // Text('78',
-                //     style: TextStyle(
-                //         fontFamily: 'Montserrat Alternates',
-                //         fontSize: 30,
-                //         color: Theme.of(context).colorScheme.primaryContainer))
-              ],
-            )
+            Text(
+                Provider.of<HealthDataModel>(context)
+                        .healthData['exerciseHeartRate']
+                        ?.toStringAsFixed(2) ??
+                    '0',
+                style: TextStyle(
+                    fontFamily: 'Montserrat Alternates',
+                    fontSize: 30,
+                    color: Theme.of(context).colorScheme.primaryContainer)),
           ],
-        ));
+        )
+      ],
+    ));
   }
 }
 
-class Sleep extends StatelessWidget {
-  const Sleep({
+class Distance extends StatelessWidget {
+  const Distance({
     super.key,
-    required this.fem,
-    required this.ffem,
+    required this.distance,
   });
 
-  final double fem;
-  final double ffem;
+  final String distance;
 
   @override
   Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
+    String displayText = Provider.of<HealthDataModel>(context)
+            .healthData['distance']
+            ?.toInt()
+            .toString() ??
+        '0';
     return FedCard(
-      fem: fem,
-      ffem: ffem,
-      widget: Row(
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              FedIcon(
-                fem: fem,
-                imagePath: 'assets/images/sleep.png',
-              ),
-              SizedBox(
-                height: 11 * fem,
-              ),
-              Text(
-                'Sleep',
-                style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
-              ),
-            ],
-          ),
-          SizedBox(
-            width: 11 * fem,
-          ),
-          Column(
-            children: [
-              Text(
-                  Provider.of<HealthDataModel>(context)
-                          .healthData['sleepEfficiency']
-                          ?.toStringAsFixed(2) ??
-                      '0',
-                  style: TextStyle(
-                      fontFamily: 'Montserrat Alternates',
-                      fontSize: 30,
-                      color: Theme.of(context).colorScheme.primaryContainer)),
-            ],
-          )
-        ],
+      widget: SizedBox(
+        width: double.infinity,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const FedIcon(imagePath: 'assets/images/location.png'),
+            SizedBox(
+              height: 10 * pixel,
+            ),
+            Text(
+              'Distance',
+              style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+            ),
+            SizedBox(
+              height: 9 * pixel,
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                RichText(
+                  // https://stackoverflow.com/a/61748312
+                  text: TextSpan(children: [
+                    TextSpan(
+                        text: displayText,
+                        style: TextStyle(
+                          fontFamily: 'Montserrat Alternates',
+                          color: Theme.of(context).colorScheme.primaryContainer,
+                          fontSize: displayText.length < 6
+                              ? 30
+                              : 170 / displayText.length,
+                        )),
+                    WidgetSpan(
+                      child: Transform.translate(
+                        offset: const Offset(2, -2),
+                        child: Text(
+                          'm',
+                          style: TextStyle(
+                              fontFamily: 'Montserrat Alternates',
+                              fontSize: displayText.length < 6
+                                  ? 17
+                                  : 90 / displayText.length,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer),
+                        ),
+                      ),
+                    )
+                  ]),
+                )
+              ],
+            )
+          ],
+        ),
       ),
     );
-  }
-}
-
-class IntenseExercise extends StatelessWidget {
-  const IntenseExercise({
-    super.key,
-    required this.fem,
-    required this.ffem,
-  });
-
-  final double fem;
-  final double ffem;
-
-  @override
-  Widget build(BuildContext context) {
-    return FedCard(
-        fem: fem,
-        ffem: ffem,
-        widget: Row(
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                FedIcon(
-                  fem: fem,
-                  imagePath: 'assets/images/exercise.png',
-                  width: 52,
-                  height: 63,
-                ),
-                SizedBox(
-                  height: 11 * fem,
-                ),
-                Container(
-                  margin:
-                      EdgeInsets.fromLTRB(3 * fem, 0 * fem, 0 * fem, 0 * fem),
-                  constraints: BoxConstraints(
-                    maxWidth: 64 * fem,
-                  ),
-                  child: Text(
-                    'Intense \nExercise',
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.tertiary),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              width: 11 * fem,
-            ),
-            Column(
-              children: [
-                Text(
-                    Provider.of<HealthDataModel>(context)
-                            .healthData['intensity']
-                            ?.toStringAsFixed(2) ??
-                        '0',
-                    style: TextStyle(
-                        fontFamily: 'Montserrat Alternates',
-                        fontSize: 30,
-                        color: Theme.of(context).colorScheme.primaryContainer)),
-                Text('min',
-                    style: TextStyle(
-                        fontFamily: 'Montserrat Alternates',
-                        fontSize: 20,
-                        color: Theme.of(context).colorScheme.primaryContainer))
-              ],
-            )
-          ],
-        ));
-  }
-}
-
-class Calorie extends StatelessWidget {
-  const Calorie({
-    super.key,
-    required this.fem,
-    required this.ffem,
-  });
-
-  final double fem;
-  final double ffem;
-
-  @override
-  Widget build(BuildContext context) {
-    return FedCard(
-        fem: fem,
-        ffem: ffem,
-        widget: Row(
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                FedIcon(fem: fem, imagePath: 'assets/images/calorie.png'),
-                SizedBox(
-                  height: 11 * fem,
-                ),
-                Text(
-                  // calorieFSh (30:134)
-                  'Calorie',
-                  style:
-                      TextStyle(color: Theme.of(context).colorScheme.tertiary),
-                ),
-              ],
-            ),
-            SizedBox(
-              width: 11 * fem,
-            ),
-            Column(
-              children: [
-                Text(
-                    Provider.of<HealthDataModel>(context)
-                            .healthData['calorie']
-                            ?.toStringAsFixed(2) ??
-                        '0',
-                    style: TextStyle(
-                        fontFamily: 'Montserrat Alternates',
-                        fontSize: 30,
-                        color: Theme.of(context).colorScheme.primaryContainer)),
-                // Text('f8',
-                //     style: TextStyle(
-                //         fontFamily: 'Montserrat Alternates',
-                //         fontSize: 20,
-                //         color: Theme.of(context).colorScheme.primaryContainer))
-              ],
-            )
-          ],
-        ));
   }
 }
 
 class Stress extends StatelessWidget {
   const Stress({
     super.key,
-    required this.fem,
-    required this.ffem,
   });
-
-  final double fem;
-  final double ffem;
 
   @override
   Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
     return FedCard(
-      fem: fem,
-      ffem: ffem,
       widget: Row(
         children: [
           Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-            FedIcon(fem: fem, imagePath: 'assets/images/meter.png'),
+            const FedIcon(imagePath: 'assets/images/meter.png'),
             SizedBox(
-              height: 11 * fem,
+              height: 10 * pixel,
             ),
             Text(
               // stressm6H (30:138)
@@ -656,7 +462,7 @@ class Stress extends StatelessWidget {
             ),
           ]),
           SizedBox(
-            width: 11 * fem,
+            width: 10 * pixel,
           ),
           Column(
             children: [
@@ -682,88 +488,203 @@ class Stress extends StatelessWidget {
   }
 }
 
-class Distance extends StatelessWidget {
-  const Distance({
+class Step extends StatelessWidget {
+  const Step({
     super.key,
-    required this.fem,
-    required this.ffem,
-    required this.distance,
   });
-
-  final double fem;
-  final double ffem;
-  final String distance;
 
   @override
   Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
+    String displayText = Provider.of<HealthDataModel>(context)
+            .healthData['step']
+            ?.toInt()
+            .toString() ??
+        '0';
     return FedCard(
-      fem: fem,
-      ffem: ffem,
+        widget: Row(
+      children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const FedIcon(imagePath: 'assets/images/step.png'),
+            SizedBox(
+              height: 10 * pixel,
+            ),
+            Text(
+              'Step',
+              style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+            ),
+          ],
+        ),
+        SizedBox(
+          width: 10 * pixel,
+        ),
+        Column(
+          children: [
+            Text(displayText,
+                style: TextStyle(
+                    fontFamily: 'Montserrat Alternates',
+                    fontSize:
+                        displayText.length < 5 ? 30 : 135 / displayText.length,
+                    color: Theme.of(context).colorScheme.primaryContainer)),
+          ],
+        )
+      ],
+    ));
+  }
+}
+
+class Calorie extends StatelessWidget {
+  const Calorie({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
+    String displayText = Provider.of<HealthDataModel>(context)
+            .healthData['calorie']
+            ?.toStringAsFixed(2) ??
+        '0';
+    return FedCard(
+        widget: Row(
+      children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const FedIcon(imagePath: 'assets/images/calorie.png'),
+            SizedBox(
+              height: 10 * pixel,
+            ),
+            Text(
+              'Calorie',
+              style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+            ),
+          ],
+        ),
+        SizedBox(
+          width: 10 * pixel,
+        ),
+        Column(
+          children: [
+            Text(displayText,
+                style: TextStyle(
+                    fontFamily: 'Montserrat Alternates',
+                    fontSize:
+                        displayText.length < 6 ? 30 : 145 / displayText.length,
+                    color: Theme.of(context).colorScheme.primaryContainer)),
+          ],
+        )
+      ],
+    ));
+  }
+}
+
+class IntenseExercise extends StatelessWidget {
+  const IntenseExercise({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
+    return FedCard(
+        widget: Row(
+      children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const FedIcon(
+              imagePath: 'assets/images/exercise.png',
+              width: 52,
+              height: 63,
+            ),
+            SizedBox(
+              height: 10 * pixel,
+            ),
+            Container(
+              margin: EdgeInsets.fromLTRB(
+                  3 * pixel, 0 * pixel, 0 * pixel, 0 * pixel),
+              constraints: BoxConstraints(
+                maxWidth: 64 * pixel,
+              ),
+              child: Text(
+                'Intense \nExercise',
+                style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(
+          width: 10 * pixel,
+        ),
+        Column(
+          children: [
+            Text(
+                Provider.of<HealthDataModel>(context)
+                        .healthData['intensity']
+                        ?.toStringAsFixed(2) ??
+                    '0',
+                style: TextStyle(
+                    fontFamily: 'Montserrat Alternates',
+                    fontSize: 30,
+                    color: Theme.of(context).colorScheme.primaryContainer)),
+            Text('min',
+                style: TextStyle(
+                    fontFamily: 'Montserrat Alternates',
+                    fontSize: 20,
+                    color: Theme.of(context).colorScheme.primaryContainer))
+          ],
+        )
+      ],
+    ));
+  }
+}
+
+class Sleep extends StatelessWidget {
+  const Sleep({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
+    return FedCard(
       widget: Row(
         children: [
           Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              FedIcon(fem: fem, imagePath: 'assets/images/location.png'),
+              const FedIcon(
+                imagePath: 'assets/images/sleep.png',
+              ),
               SizedBox(
-                height: 10 * fem,
+                height: 10 * pixel,
               ),
               Text(
-                'Distance',
+                'Sleep',
                 style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
               ),
             ],
           ),
           SizedBox(
-            width: 10 * fem,
+            width: 10 * pixel,
           ),
           Column(
             children: [
               Text(
                   Provider.of<HealthDataModel>(context)
-                          .healthData['distance']
-                          ?.toInt()
-                          .toString() ??
+                          .healthData['sleepEfficiency']
+                          ?.toStringAsFixed(2) ??
                       '0',
                   style: TextStyle(
                       fontFamily: 'Montserrat Alternates',
-                      fontSize: 22,
+                      fontSize: 30,
                       color: Theme.of(context).colorScheme.primaryContainer)),
             ],
           )
         ],
-      ),
-    );
-  }
-}
-
-class TopBar extends StatelessWidget {
-  const TopBar({
-    super.key,
-    required this.fem,
-  });
-
-  final double fem;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 0 * fem, 37 * fem),
-      padding: EdgeInsets.fromLTRB(118 * fem, 44 * fem, 112 * fem, 11 * fem),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primaryContainer,
-      ),
-      child: Align(
-        // 2rD (36:231)
-        alignment: Alignment.bottomCenter,
-        child: SizedBox(
-          width: 160 * fem,
-          height: 34 * fem,
-          child: Image.asset(
-            'assets/images/title.png',
-            fit: BoxFit.cover,
-          ),
-        ),
       ),
     );
   }

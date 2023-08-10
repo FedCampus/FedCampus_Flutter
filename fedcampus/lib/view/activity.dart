@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/utility/test_api.dart';
 import 'package:fedcampus/view/calendar.dart';
+import 'package:fedcampus/view/widgets/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
@@ -73,9 +74,12 @@ class _ActivityState extends State<Activity> {
 
   loadMore() {
     Future.delayed(const Duration(seconds: 1)).then((e) => {
-          setState(() {
-            currentCount += 10;
-          })
+          if (mounted)
+            {
+              setState(() {
+                currentCount += 10;
+              })
+            }
         });
   }
 
@@ -156,46 +160,6 @@ class FedIcon extends StatelessWidget {
   }
 }
 
-class FedCard extends StatelessWidget {
-  const FedCard({
-    super.key,
-    required this.smallSize,
-    required this.widget,
-  });
-  final double smallSize;
-  final Widget widget;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.fromLTRB(
-          14 * smallSize, 18 * smallSize, 14 * smallSize, 17 * smallSize),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.background,
-        borderRadius: BorderRadius.circular(24 * smallSize),
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(context).colorScheme.shadow,
-            offset: Offset(0 * smallSize, 4 * smallSize),
-            blurRadius: 2 * smallSize,
-          ),
-          BoxShadow(
-            color: Theme.of(context).colorScheme.outline,
-            offset: Offset(0 * smallSize, -1 * smallSize),
-            blurRadius: 1 * smallSize,
-          ),
-          BoxShadow(
-            color: Theme.of(context).colorScheme.outline,
-            offset: Offset(0 * smallSize, 4 * smallSize),
-            blurRadius: 2 * smallSize,
-          ),
-        ],
-      ),
-      child: widget,
-    );
-  }
-}
-
 class ActivityCard extends StatelessWidget {
   const ActivityCard({
     super.key,
@@ -208,72 +172,79 @@ class ActivityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double logicalWidth = MediaQuery.of(context).size.width;
+    double pixel = MediaQuery.of(context).size.width / 400;
     // logger.d(logicalWidth / 10);
     return FedCard(
-        smallSize: logicalWidth / 360,
         widget: Row(
-          children: <Widget>[
-            // As stated in https://api.flutter.dev/flutter/widgets/Image/height.html,
-            // it is recommended to specify the image size (in order to avoid
-            // widget size suddenly changes when the app just loads another page)
-            Image.asset(
-              'assets/images/step_activity.png',
-              fit: BoxFit.contain,
-              height: logicalWidth / 6,
-              width: logicalWidth / 6,
-            ),
-            const Expanded(
-              child: SizedBox(),
-            ),
-            Expanded(
-              flex: 7,
-              child: Text(
-                steps,
-                style: TextStyle(
-                    fontFamily: 'Montserrat Alternates',
-                    fontSize: 30,
-                    color: Theme.of(context).colorScheme.primary),
+      children: <Widget>[
+        // As stated in https://api.flutter.dev/flutter/widgets/Image/height.html,
+        // it is recommended to specify the image size (in order to avoid
+        // widget size suddenly changes when the app just loads another page)
+        const Expanded(
+          flex: 1,
+          child: SizedBox(),
+        ),
+        Image.asset(
+          'assets/images/step_activity.png',
+          fit: BoxFit.contain,
+          height: pixel * 56,
+          width: pixel * 56,
+        ),
+        const Expanded(
+          flex: 1,
+          child: SizedBox(),
+        ),
+        Expanded(
+          flex: 7,
+          child: Text(
+            steps,
+            style: TextStyle(
+                fontFamily: 'Montserrat Alternates',
+                fontSize: 30,
+                color: Theme.of(context).colorScheme.primary),
+          ),
+        ),
+        Expanded(
+          flex: 5,
+          child: Column(
+            children: <Widget>[
+              const Expanded(
+                flex: 1,
+                child: SizedBox(),
               ),
-            ),
-            Expanded(
-              flex: 5,
-              child: Column(
-                children: <Widget>[
-                  const Expanded(
-                    flex: 2,
-                    child: SizedBox(),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Text(
-                      'steps',
-                      style: TextStyle(
-                          fontFamily: 'Montserrat Alternates',
-                          fontSize: 20,
-                          color:
-                              Theme.of(context).colorScheme.secondaryContainer),
-                    ),
-                  ),
-                ],
+              Expanded(
+                flex: 1,
+                child: Text(
+                  'steps',
+                  style: TextStyle(
+                      fontFamily: 'Montserrat Alternates',
+                      fontSize: 20,
+                      color: Theme.of(context).colorScheme.secondaryContainer),
+                ),
               ),
-            ),
-            const Expanded(
-              child: SizedBox(),
-            ),
-            Expanded(
-              flex: 7,
-              child: Text(
-                date,
-                textAlign: TextAlign.end,
-                style: TextStyle(
-                    fontFamily: 'Montserrat Alternates',
-                    fontSize: 30,
-                    color: Theme.of(context).colorScheme.secondaryContainer),
-              ),
-            ),
-          ],
-        ));
+            ],
+          ),
+        ),
+        const Expanded(
+          child: SizedBox(),
+        ),
+        Expanded(
+          flex: 7,
+          child: Text(
+            date,
+            textAlign: TextAlign.end,
+            style: TextStyle(
+                fontFamily: 'Montserrat Alternates',
+                fontSize: 30,
+                color: Theme.of(context).colorScheme.secondaryContainer),
+          ),
+        ),
+        const Expanded(
+          flex: 2,
+          child: SizedBox(),
+        ),
+      ],
+    ));
   }
 }
 
@@ -318,7 +289,7 @@ class Date extends StatelessWidget {
       height: 80,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceTint,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
             color: Theme.of(context).colorScheme.shadow,
@@ -338,13 +309,12 @@ class Date extends StatelessWidget {
         ],
       ),
       child: TextButton(
-        onPressed: () => Future.delayed(const Duration(milliseconds: 140))
-            .then((value) => calendarDialog()),
+        onPressed: () => calendarDialog(),
         style: TextButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.surfaceTint,
           padding: EdgeInsets.fromLTRB(40 * fem, 12 * fem, 40 * fem, 12 * fem),
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,

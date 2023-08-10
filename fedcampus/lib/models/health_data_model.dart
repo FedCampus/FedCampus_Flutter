@@ -4,12 +4,10 @@ import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/me/user_api.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HealthDataModel extends ChangeNotifier {
   Map<String, double> healthData = HealthData.mapOf();
   bool isAuth = false;
-  late SharedPreferences _pref;
   late final DataApi host;
   String _date = (DateTime.now().year * 10000 +
           DateTime.now().month * 100 +

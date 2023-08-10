@@ -4,7 +4,6 @@ import 'package:dio/dio.dart';
 import 'package:fedcampus/models/user_model.dart';
 import 'package:fedcampus/view/me/user_api.dart';
 import 'package:fedcampus/view/widgets/widget.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -180,17 +179,12 @@ class MeText extends StatelessWidget {
   final String text;
   final void Function() callback;
 
-  delayOpenpenNewPage() {
-    // add a short delay for more complete animation
-    Future.delayed(const Duration(milliseconds: 140)).then((e) => {callback()});
-  }
-
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
       child: TextButton(
-        onPressed: delayOpenpenNewPage,
+        onPressed: callback,
         child: Text(
           text,
           style: TextStyle(
