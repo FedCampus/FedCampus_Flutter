@@ -4,7 +4,16 @@ import DataApi
 import android.content.Context
 import com.cuhk.fedcampus.health.utils.Data
 import com.cuhk.fedcampus.health.utils.DateCalender
-import com.cuhk.fedcampus.health.utils.exercisedata.*
+import com.cuhk.fedcampus.health.utils.exercisedata.CALORIE
+import com.cuhk.fedcampus.health.utils.exercisedata.DISTANCE
+import com.cuhk.fedcampus.health.utils.exercisedata.EXERCISE_HEART_RATE
+import com.cuhk.fedcampus.health.utils.exercisedata.INTENSITY
+import com.cuhk.fedcampus.health.utils.exercisedata.REST_HEART_RATE
+import com.cuhk.fedcampus.health.utils.exercisedata.STEP
+import com.cuhk.fedcampus.health.utils.exercisedata.STRESS
+import com.cuhk.fedcampus.health.utils.exercisedata.getExerciseData
+import com.cuhk.fedcampus.health.utils.exercisedata.getSleepEfficiencyData
+import com.cuhk.fedcampus.health.utils.exercisedata.getStepTimeData
 import com.huawei.hms.hihealth.DataController
 import com.huawei.hms.hihealth.HuaweiHiHealth
 import com.huawei.hms.hihealth.data.DataType
@@ -22,13 +31,10 @@ class DataApiClass(context: Context) : DataApi {
     }
 
     override fun getData(
-        name: String,
-        startTime: Long,
-        endTime: Long,
-        callback: (Result<List<Data>>) -> Unit
+        name: String, startTime: Long, endTime: Long, callback: (Result<List<Data>>) -> Unit
     ) {
         //check if it is sleep
-        val scope = MainScope();
+        val scope = MainScope()
         if (name == "sleep_efficiency") {
             scope.launch {
                 try {
@@ -38,9 +44,9 @@ class DataApiClass(context: Context) : DataApi {
                         startTime.toInt(),
                         DateCalender.add(endTime.toInt(), 1)
                     )
-                    callback(Result.success(data));
+                    callback(Result.success(data))
                 } catch (err: Exception) {
-                    callback(Result.failure(err));
+                    callback(Result.failure(err))
                 }
             }
             return
@@ -52,13 +58,13 @@ class DataApiClass(context: Context) : DataApi {
                         getStepTimeData(name, dataController, startTime.toInt(), endTime.toInt())
                     callback(Result.success(data))
                 } catch (e: Exception) {
-                    callback(Result.failure(e));
+                    callback(Result.failure(e))
                 }
             }
-            return;
+            return
         }
 
-        val inputTriple: Triple<DataType, Field, String>;
+        val inputTriple: Triple<DataType, Field, String>
         when (name) {
             "calorie" -> {
                 inputTriple = CALORIE
@@ -85,7 +91,7 @@ class DataApiClass(context: Context) : DataApi {
             }
 
             "step" -> {
-                inputTriple = STEP;
+                inputTriple = STEP
             }
 
             else -> {
