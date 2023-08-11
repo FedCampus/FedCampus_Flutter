@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -115,20 +116,11 @@ class _ReportPageState extends State<ReportPage> {
 
     try {
       List<http.Response> responseArr = await Future.wait([
-        HTTPClient.post(
-            HTTPClient.data,
-            <String, String>{
-              'Content-Type': 'application/json; charset=UTF-8',
-            },
-            jsonEncode(data)),
+        HTTPClient.post(HTTPClient.data, <String, String>{}, jsonEncode(data)),
         // TODO: Data DP Algorithm!!!
-        HTTPClient.post(
-            HTTPClient.dataDP,
-            <String, String>{
-              'Content-Type': 'application/json; charset=UTF-8',
-            },
-            jsonEncode(data))
-      ]);
+        HTTPClient.post(HTTPClient.dataDP, <String, String>{}, jsonEncode(data))
+      ]).timeout(const Duration(seconds: 5));
+      // TODO: Time out for 5 seconds.
 
       logger.i(
           "Data Status Code ${responseArr[0].statusCode} : ${jsonEncode(data)}");
@@ -154,6 +146,17 @@ class _ReportPageState extends State<ReportPage> {
           backgroundColor: Colors.red,
           textColor: Colors.white,
           fontSize: 16.0);
+    } on TimeoutException {
+      logger.d("internet issue");
+      Fluttertoast.showToast(
+          msg: "Please make sure you are connected to DKU network!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+      return;
     }
   }
 
