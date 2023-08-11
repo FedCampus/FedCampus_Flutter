@@ -72,7 +72,7 @@ class _SignInState extends State<SignIn> {
               Text(
                 'Sign in',
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.primary,
+                  color: Theme.of(context).colorScheme.onTertiaryContainer,
                   fontSize: 27,
                 ),
               ),
@@ -108,7 +108,7 @@ class _SignInState extends State<SignIn> {
                 child: Text(
                   'No account? Sign up',
                   style: TextStyle(
-                    color: Theme.of(context).colorScheme.surfaceVariant,
+                    color: Theme.of(context).colorScheme.onTertiaryContainer,
                     fontSize: 18,
                   ),
                 ),
@@ -119,7 +119,7 @@ class _SignInState extends State<SignIn> {
               Text(
                 'Welcome to DKU FedCampus',
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.surfaceVariant,
+                  color: Theme.of(context).colorScheme.onTertiaryContainer,
                   fontSize: 18,
                 ),
               ),

@@ -67,12 +67,12 @@ class _CalendarDialogState extends State<CalendarDialog> {
             padding: const EdgeInsets.all(5),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: Theme.of(context).colorScheme.primaryContainer,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
             ),
             child: Text(
               ' ${DateFormat.yMMMM('en_US').format(value)}',
               style:
-                  TextStyle(color: Theme.of(context).colorScheme.surfaceTint),
+                  TextStyle(color: Theme.of(context).colorScheme.inversePrimary),
             ),
           ),
         ),
@@ -116,7 +116,7 @@ class _CalendarDialogState extends State<CalendarDialog> {
                   Theme.of(context).colorScheme.background),
               weekendDecoration: textDecoration(Theme.of(context).colorScheme.background),
               todayDecoration: textDecoration(
-                  Theme.of(context).colorScheme.secondaryContainer),
+                  Theme.of(context).colorScheme.onSecondaryContainer),
               selectedDecoration: textDecoration(widget.primaryColor),
               defaultTextStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
               selectedTextStyle: TextStyle(color: Theme.of(context).colorScheme.background),

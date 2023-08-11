@@ -137,9 +137,13 @@ class BottomText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Text('Privacy Policy'),
-      SizedBox(
+    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Text(
+        'Privacy Policy',
+        style:
+            TextStyle(color: Theme.of(context).colorScheme.onTertiaryContainer),
+      ),
+      const SizedBox(
         width: 30,
         child: Text(
           '·',
@@ -147,7 +151,11 @@ class BottomText extends StatelessWidget {
           style: TextStyle(fontSize: 30),
         ),
       ),
-      Text('Terms of Service')
+      Text(
+        'Terms of Service',
+        style:
+            TextStyle(color: Theme.of(context).colorScheme.onTertiaryContainer),
+      )
     ]);
   }
 }
@@ -164,7 +172,7 @@ class MeDivider extends StatelessWidget {
       thickness: 1,
       indent: 50,
       endIndent: 50,
-      color: Theme.of(context).colorScheme.surfaceVariant,
+      color: Theme.of(context).colorScheme.onTertiaryContainer,
     );
   }
 }
@@ -189,7 +197,7 @@ class MeText extends StatelessWidget {
           text,
           style: TextStyle(
               fontSize: 20,
-              color: Theme.of(context).colorScheme.surfaceVariant),
+              color: Theme.of(context).colorScheme.onTertiaryContainer),
           textAlign: TextAlign.center,
         ),
       ),
@@ -293,7 +301,7 @@ Widget header() {
             value.isLogin ? value.user['userName'] : 'Not logged in',
             style: TextStyle(
                 fontSize: 20,
-                color: Theme.of(context).colorScheme.surfaceVariant),
+                color: Theme.of(context).colorScheme.onTertiaryContainer),
           )
         ],
       );

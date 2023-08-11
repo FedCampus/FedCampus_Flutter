@@ -142,7 +142,7 @@ class SettingsButton extends StatelessWidget {
             text,
             style: TextStyle(
               fontSize: 18,
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.onTertiaryContainer,
               fontWeight: FontWeight.normal,
             ),
           ),
@@ -174,7 +174,7 @@ class SettingsSwitch extends StatelessWidget {
           Text(
             text,
             style: TextStyle(
-                fontSize: 18, color: Theme.of(context).colorScheme.primary),
+                fontSize: 18, color: Theme.of(context).colorScheme.onTertiaryContainer),
           ),
           Switch(
             value: appState.isDarkModeOn,
@@ -232,14 +232,14 @@ class _SettingsDropDownMenuState extends State<SettingsDropDownMenu> {
             widget.text,
             style: TextStyle(
               fontSize: 18,
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.onTertiaryContainer,
             ),
           ),
           DropdownButton(
             value: dropdownValue,
             style: TextStyle(
               fontSize: 18,
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.onTertiaryContainer,
             ),
             items: widget.options.map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
@@ -267,7 +267,7 @@ class SettingsDivider extends StatelessWidget {
       thickness: 1,
       indent: 40,
       endIndent: 40,
-      color: Theme.of(context).colorScheme.surfaceVariant,
+      color: Theme.of(context).colorScheme.onTertiaryContainer,
     );
   }
 }

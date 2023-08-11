@@ -130,6 +130,7 @@ class UserApi {
   }
 
   healthServiceAuthenticate() async {
+    logger.d('authenticating');
     final host = HuaweiAuthApi();
     await host.getAuthenticate();
   }

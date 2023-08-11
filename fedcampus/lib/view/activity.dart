@@ -219,7 +219,7 @@ class ActivityCard extends StatelessWidget {
                   style: TextStyle(
                       fontFamily: 'Montserrat Alternates',
                       fontSize: 20,
-                      color: Theme.of(context).colorScheme.secondaryContainer),
+                      color: Theme.of(context).colorScheme.onSecondaryContainer),
                 ),
               ),
             ],
@@ -236,7 +236,7 @@ class ActivityCard extends StatelessWidget {
             style: TextStyle(
                 fontFamily: 'Montserrat Alternates',
                 fontSize: 30,
-                color: Theme.of(context).colorScheme.secondaryContainer),
+                color: Theme.of(context).colorScheme.onSecondaryContainer),
           ),
         ),
         const Expanded(
@@ -270,7 +270,7 @@ class Date extends StatelessWidget {
             title: const Text("Select a day"),
             content: CalendarDialog(
               onDateChange: onDateChange,
-              primaryColor: Theme.of(context).colorScheme.secondaryContainer,
+              primaryColor: Theme.of(context).colorScheme.onSecondaryContainer,
             ),
             actions: <Widget>[
               TextButton(
@@ -353,7 +353,7 @@ class Date extends StatelessWidget {
                                 blurRadius: 1,
                               ),
                             ],
-                            color: Theme.of(context).colorScheme.tertiary),
+                            color: Theme.of(context).colorScheme.secondary),
                       ),
                       const Expanded(
                         flex: 1,
@@ -370,7 +370,7 @@ class Date extends StatelessWidget {
                                 blurRadius: 1,
                               ),
                             ],
-                            color: Theme.of(context).colorScheme.tertiary),
+                            color: Theme.of(context).colorScheme.secondary),
                       ),
                       const Expanded(
                         flex: 1,
@@ -385,7 +385,7 @@ class Date extends StatelessWidget {
                   Text(
                     '2023',
                     style: TextStyle(
-                        color: Theme.of(context).colorScheme.tertiary),
+                        color: Theme.of(context).colorScheme.secondary),
                   ),
                   const Expanded(
                     flex: 1,

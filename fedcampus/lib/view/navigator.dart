@@ -39,6 +39,7 @@ class _BottomNavigatorState extends State<BottomNavigator> {
 
   @override
   Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
     return Scaffold(
       appBar: AppBar(
         // backgroundColor: Theme.of(context).colorScheme.primaryContainer,
@@ -49,63 +50,74 @@ class _BottomNavigatorState extends State<BottomNavigator> {
         ),
       ),
       body: _widgetOptions.elementAt(_selectedIndex),
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(
-            label: 'Health',
-            icon: SizedBox(
-              width: 40,
-              child: Image.asset(
-                'assets/images/health_nav_icon_inactive.png',
-                fit: BoxFit.contain,
+      bottomNavigationBar: SizedBox(
+        height: 75 * pixel,
+        child: BottomNavigationBar(
+          // https://stackoverflow.com/a/57126622
+          backgroundColor: Theme.of(context).colorScheme.onPrimary,
+          items: [
+            BottomNavigationBarItem(
+              label: 'Health',
+              icon: SizedBox(
+                width: 40,
+                height: 40 * pixel,
+                child: Image.asset(
+                  'assets/images/health_nav_icon_inactive.png',
+                  fit: BoxFit.contain,
+                ),
+              ),
+              activeIcon: SizedBox(
+                width: 40,
+                height: 40 * pixel,
+                child: Image.asset(
+                  'assets/images/health_nav_icon.png',
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
-            activeIcon: SizedBox(
-              width: 40,
-              child: Image.asset(
-                'assets/images/health_nav_icon.png',
-                fit: BoxFit.contain,
+            BottomNavigationBarItem(
+              label: 'Activity',
+              icon: SizedBox(
+                width: 40,
+                height: 40 * pixel,
+                child: Image.asset(
+                  'assets/images/activity_nav_icon_inactive.png',
+                  fit: BoxFit.contain,
+                ),
+              ),
+              activeIcon: SizedBox(
+                width: 40,
+                height: 40 * pixel,
+                child: Image.asset(
+                  'assets/images/activity_nav_icon.png',
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
-          ),
-          BottomNavigationBarItem(
-            label: 'Activity',
-            icon: SizedBox(
-              width: 40,
-              child: Image.asset(
-                'assets/images/activity_nav_icon_inactive.png',
-                fit: BoxFit.contain,
+            BottomNavigationBarItem(
+              label: 'Me',
+              icon: SizedBox(
+                width: 40,
+                height: 40 * pixel,
+                child: Image.asset(
+                  'assets/images/me_nav_icon_inactive.png',
+                  fit: BoxFit.contain,
+                ),
+              ),
+              activeIcon: SizedBox(
+                width: 40,
+                height: 40 * pixel,
+                child: Image.asset(
+                  'assets/images/me_nav_icon.png',
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
-            activeIcon: SizedBox(
-              width: 40,
-              child: Image.asset(
-                'assets/images/activity_nav_icon.png',
-                fit: BoxFit.contain,
-              ),
-            ),
-          ),
-          BottomNavigationBarItem(
-            label: 'Me',
-            icon: SizedBox(
-              width: 40,
-              child: Image.asset(
-                'assets/images/me_nav_icon_inactive.png',
-                fit: BoxFit.contain,
-              ),
-            ),
-            activeIcon: SizedBox(
-              width: 40,
-              child: Image.asset(
-                'assets/images/me_nav_icon.png',
-                fit: BoxFit.contain,
-              ),
-            ),
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        onTap: (i) => _onItemTapped(i),
-        selectedItemColor: Colors.amber[800],
+          ],
+          currentIndex: _selectedIndex,
+          onTap: (i) => _onItemTapped(i),
+          selectedItemColor: Colors.amber[800],
+        ),
       ),
     );
   }

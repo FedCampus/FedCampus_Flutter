@@ -44,7 +44,7 @@ class _SignUpState extends State<SignUp> {
             Text(
               'Sign up',
               style: TextStyle(
-                color: Theme.of(context).colorScheme.primary,
+                color: Theme.of(context).colorScheme.onTertiaryContainer,
                 fontSize: 27,
               ),
             ),

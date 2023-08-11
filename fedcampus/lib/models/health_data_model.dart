@@ -33,7 +33,7 @@ class HealthDataModel extends ChangeNotifier {
   bool get isAuthenticated => isAuth;
 
   set isAuthenticated(bool auth) {
-    isAuthenticated = auth;
+    isAuth = auth;
     userApi.prefs.setBool("login", auth);
     notifyListeners();
   }

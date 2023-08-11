@@ -15,7 +15,7 @@ class FedCard extends StatelessWidget {
       padding:
           EdgeInsets.fromLTRB(10 * pixel, 17 * pixel, 10 * pixel, 14 * pixel),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.background,
+        color: Theme.of(context).colorScheme.onBackground,
         borderRadius: BorderRadius.circular(24 * pixel),
         boxShadow: [
           BoxShadow(
@@ -92,11 +92,11 @@ class _SignInUpTextFieldState extends State<SignInUpTextField> {
         ValueListenableBuilder<bool>(
           valueListenable: _focused,
           builder: (context, value, child) {
-            Color color = Theme.of(context).colorScheme.surfaceVariant;
+            Color color = Theme.of(context).colorScheme.onTertiaryContainer;
             if (value) {
-              color = Theme.of(context).colorScheme.primary;
+              color = Theme.of(context).colorScheme.onTertiaryContainer;
             } else {
-              Theme.of(context).colorScheme.surfaceVariant;
+              Theme.of(context).colorScheme.onTertiaryContainer;
             }
             return Text(
               widget.label,
@@ -115,13 +115,13 @@ class _SignInUpTextFieldState extends State<SignInUpTextField> {
                 isDense: true,
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.surfaceVariant,
+                    color: Theme.of(context).colorScheme.onTertiaryContainer,
                     width: 1.0,
                   ),
                 ),
                 focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: Theme.of(context).colorScheme.onTertiaryContainer,
                     width: 1.5,
                   ),
                 ),

@@ -207,7 +207,7 @@ class _DateState extends State<Date> {
             title: const Text("Select a day"),
             content: CalendarDialog(
               onDateChange: change,
-              primaryColor: Theme.of(context).colorScheme.primaryContainer,
+              primaryColor: Theme.of(context).colorScheme.onPrimaryContainer,
             ),
             actions: <Widget>[
               TextButton(
@@ -225,7 +225,7 @@ class _DateState extends State<Date> {
 
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.background,
+        color: Theme.of(context).colorScheme.onBackground,
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
@@ -248,7 +248,7 @@ class _DateState extends State<Date> {
       child: TextButton(
         onPressed: () => calendarDialog(),
         style: TextButton.styleFrom(
-          backgroundColor: Theme.of(context).colorScheme.background,
+          backgroundColor: Theme.of(context).colorScheme.onBackground,
           padding: EdgeInsets.fromLTRB(
               14 * pixel, 18 * pixel, 14 * pixel, 17 * pixel),
           shape:
@@ -271,7 +271,7 @@ class _DateState extends State<Date> {
                     child: Text(
                       DateFormat.MMMd('en_US').format(widget.date),
                       style: TextStyle(
-                          color: Theme.of(context).colorScheme.primaryContainer,
+                          color: Theme.of(context).colorScheme.onPrimaryContainer,
                           fontSize: 22,
                           shadows: [
                             BoxShadow(
@@ -285,7 +285,7 @@ class _DateState extends State<Date> {
                   Text(
                     DateFormat.y('en_US').format(widget.date),
                     style: TextStyle(
-                      color: Theme.of(context).colorScheme.primaryContainer,
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
                       fontSize: 17,
                     ),
                   ),
@@ -322,7 +322,7 @@ class Heart extends StatelessWidget {
             ),
             Text(
               'Heart \nRate',
-              style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
             ),
             SizedBox(
               height: 10 * pixel,
@@ -343,7 +343,7 @@ class Heart extends StatelessWidget {
                 style: TextStyle(
                     fontFamily: 'Montserrat Alternates',
                     fontSize: 30,
-                    color: Theme.of(context).colorScheme.primaryContainer)),
+                    color: Theme.of(context).colorScheme.onPrimaryContainer)),
             SizedBox(
               height: 33 * pixel,
             ),
@@ -355,7 +355,7 @@ class Heart extends StatelessWidget {
                 style: TextStyle(
                     fontFamily: 'Montserrat Alternates',
                     fontSize: 30,
-                    color: Theme.of(context).colorScheme.primaryContainer)),
+                    color: Theme.of(context).colorScheme.onPrimaryContainer)),
           ],
         )
       ],
@@ -392,7 +392,7 @@ class Distance extends StatelessWidget {
             ),
             Text(
               'Distance',
-              style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
             ),
             SizedBox(
               height: 9 * pixel,
@@ -407,7 +407,7 @@ class Distance extends StatelessWidget {
                         text: displayText,
                         style: TextStyle(
                           fontFamily: 'Montserrat Alternates',
-                          color: Theme.of(context).colorScheme.primaryContainer,
+                          color: Theme.of(context).colorScheme.onPrimaryContainer,
                           fontSize: displayText.length < 6
                               ? 30
                               : 170 / displayText.length,
@@ -424,7 +424,7 @@ class Distance extends StatelessWidget {
                                   : 90 / displayText.length,
                               color: Theme.of(context)
                                   .colorScheme
-                                  .primaryContainer),
+                                  .onPrimaryContainer),
                         ),
                       ),
                     )
@@ -458,7 +458,7 @@ class Stress extends StatelessWidget {
             Text(
               // stressm6H (30:138)
               'Stress',
-              style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
             ),
           ]),
           SizedBox(
@@ -474,12 +474,12 @@ class Stress extends StatelessWidget {
                   style: TextStyle(
                       fontFamily: 'Montserrat Alternates',
                       fontSize: 30,
-                      color: Theme.of(context).colorScheme.primaryContainer)),
+                      color: Theme.of(context).colorScheme.onPrimaryContainer)),
               Text('mmHg',
                   style: TextStyle(
                       fontFamily: 'Montserrat Alternates',
                       fontSize: 15,
-                      color: Theme.of(context).colorScheme.primaryContainer))
+                      color: Theme.of(context).colorScheme.onPrimaryContainer))
             ],
           )
         ],
@@ -513,7 +513,7 @@ class Step extends StatelessWidget {
             ),
             Text(
               'Step',
-              style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
             ),
           ],
         ),
@@ -527,7 +527,7 @@ class Step extends StatelessWidget {
                     fontFamily: 'Montserrat Alternates',
                     fontSize:
                         displayText.length < 5 ? 30 : 135 / displayText.length,
-                    color: Theme.of(context).colorScheme.primaryContainer)),
+                    color: Theme.of(context).colorScheme.onPrimaryContainer)),
           ],
         )
       ],
@@ -559,7 +559,7 @@ class Calorie extends StatelessWidget {
             ),
             Text(
               'Calorie',
-              style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
             ),
           ],
         ),
@@ -573,7 +573,7 @@ class Calorie extends StatelessWidget {
                     fontFamily: 'Montserrat Alternates',
                     fontSize:
                         displayText.length < 6 ? 30 : 145 / displayText.length,
-                    color: Theme.of(context).colorScheme.primaryContainer)),
+                    color: Theme.of(context).colorScheme.onPrimaryContainer)),
           ],
         )
       ],
@@ -611,7 +611,8 @@ class IntenseExercise extends StatelessWidget {
               ),
               child: Text(
                 'Intense \nExercise',
-                style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+                style:
+                    TextStyle(color: Theme.of(context).colorScheme.secondary),
               ),
             ),
           ],
@@ -629,12 +630,12 @@ class IntenseExercise extends StatelessWidget {
                 style: TextStyle(
                     fontFamily: 'Montserrat Alternates',
                     fontSize: 30,
-                    color: Theme.of(context).colorScheme.primaryContainer)),
+                    color: Theme.of(context).colorScheme.onPrimaryContainer)),
             Text('min',
                 style: TextStyle(
                     fontFamily: 'Montserrat Alternates',
                     fontSize: 20,
-                    color: Theme.of(context).colorScheme.primaryContainer))
+                    color: Theme.of(context).colorScheme.onPrimaryContainer))
           ],
         )
       ],
@@ -664,7 +665,8 @@ class Sleep extends StatelessWidget {
               ),
               Text(
                 'Sleep',
-                style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+                style:
+                    TextStyle(color: Theme.of(context).colorScheme.secondary),
               ),
             ],
           ),
@@ -681,7 +683,7 @@ class Sleep extends StatelessWidget {
                   style: TextStyle(
                       fontFamily: 'Montserrat Alternates',
                       fontSize: 30,
-                      color: Theme.of(context).colorScheme.primaryContainer)),
+                      color: Theme.of(context).colorScheme.onPrimaryContainer)),
             ],
           )
         ],

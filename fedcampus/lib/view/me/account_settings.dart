@@ -96,7 +96,7 @@ class _SettingsSwitchState extends State<SettingsSwitch> {
         children: [
           Text(AppLocalizations.of(context)!.dark_mode,
               style: TextStyle(
-                  fontSize: 18, color: Theme.of(context).colorScheme.primary)),
+                  fontSize: 18, color: Theme.of(context).colorScheme.onTertiaryContainer)),
           Switch(
               value: appState.isDarkModeOn,
               onChanged: (b) => widget.callback(b, context)),
@@ -128,12 +128,12 @@ class _SettingsDropDownMenuState extends State<SettingsDropDownMenu> {
           Text(
             AppLocalizations.of(context)!.language,
             style: TextStyle(
-                fontSize: 18, color: Theme.of(context).colorScheme.primary),
+                fontSize: 18, color: Theme.of(context).colorScheme.onTertiaryContainer),
           ),
           DropdownButton(
               value: 'English',
               style: TextStyle(
-                  fontSize: 18, color: Theme.of(context).colorScheme.primary),
+                  fontSize: 18, color: Theme.of(context).colorScheme.onTertiaryContainer),
               items:
                   widget.options.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
