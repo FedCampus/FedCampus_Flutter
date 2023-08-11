@@ -73,6 +73,11 @@ android {
     }
 }
 
+afterEvaluate {
+    // Help cache :copyFlutterAssetsDebug.
+    cleanMergeDebugAssets.enabled = false
+}
+
 flutter {
     source '../..'
 }
