@@ -1,9 +1,7 @@
 //TODO:find better way do adapt different screen size
-import 'dart:convert';
 
 import 'package:fedcampus/models/health_data_model.dart';
 import 'package:fedcampus/utility/log.dart';
-import 'package:fedcampus/utility/test_api.dart';
 import 'package:fedcampus/view/calendar.dart';
 import 'package:fedcampus/view/widgets/widget.dart';
 import 'package:flutter/material.dart';
@@ -21,40 +19,14 @@ class Health extends StatefulWidget {
 
 class _HealthState extends State<Health> {
   DateTime dateTime = DateTime.now();
-  String dist = 'loading';
   @override
   void initState() {
     super.initState();
     refresh();
-    // getDistance();
   }
 
   Future<void> refresh() async {
     Provider.of<HealthDataModel>(context, listen: false).getData();
-    // getDistance();
-  }
-
-  getDistance() async {
-    String responseBody;
-    try {
-      responseBody = (await fetchDistance()).body;
-    } catch (e) {
-      responseBody = '[{"status": "fail"}]';
-    }
-    final data = jsonDecode(responseBody);
-    logger.d(data);
-    if (mounted) {
-      setState(() {
-        try {
-          int d = int.parse(data['distance']);
-          dist = d >= 10000 ? '${(d / 10000).toStringAsFixed(2)}km' : '${d}m';
-        } catch (e) {
-          dist = 'loading';
-        }
-      });
-    } else {
-      logger.d("setState() called after dispose(), aborted");
-    }
   }
 
   updateDate(DateTime selectedDate) {
@@ -89,7 +61,6 @@ class _HealthState extends State<Health> {
                 flex: 1,
                 child: LeftColumn(
                   date: dateTime,
-                  dist: dist,
                   onDateChange: updateDate,
                 ),
               ),
@@ -109,12 +80,10 @@ class LeftColumn extends StatelessWidget {
   const LeftColumn({
     super.key,
     required this.date,
-    required this.dist,
     required this.onDateChange,
   });
 
   final DateTime date;
-  final String dist;
   final void Function(DateTime selectedDate) onDateChange;
 
   @override
@@ -135,7 +104,7 @@ class LeftColumn extends StatelessWidget {
           SizedBox(
             height: 20 * pixel,
           ),
-          Distance(distance: dist),
+          const Distance(),
           SizedBox(
             height: 20 * pixel,
           ),
@@ -271,7 +240,8 @@ class _DateState extends State<Date> {
                     child: Text(
                       DateFormat.MMMd('en_US').format(widget.date),
                       style: TextStyle(
-                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                          color:
+                              Theme.of(context).colorScheme.onPrimaryContainer,
                           fontSize: 22,
                           shadows: [
                             BoxShadow(
@@ -366,10 +336,7 @@ class Heart extends StatelessWidget {
 class Distance extends StatelessWidget {
   const Distance({
     super.key,
-    required this.distance,
   });
-
-  final String distance;
 
   @override
   Widget build(BuildContext context) {
@@ -407,7 +374,8 @@ class Distance extends StatelessWidget {
                         text: displayText,
                         style: TextStyle(
                           fontFamily: 'Montserrat Alternates',
-                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                          color:
+                              Theme.of(context).colorScheme.onPrimaryContainer,
                           fontSize: displayText.length < 6
                               ? 30
                               : 170 / displayText.length,

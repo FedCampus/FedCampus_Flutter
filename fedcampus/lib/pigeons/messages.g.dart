@@ -39,6 +39,12 @@ class Data {
         "startTime": startTime,
         "endTime": endTime
       };
+  Map<String, dynamic> toMap() => {
+        'name': name,
+        "value": value,
+        "startTime": startTime,
+        "endTime": endTime
+      };
 
   static Data decode(Object result) {
     result as List<Object?>;

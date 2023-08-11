@@ -18,6 +18,16 @@ class Activity extends StatefulWidget {
 }
 
 class _ActivityState extends State<Activity> {
+  final dataList = [
+    "step_time",
+    "distance",
+    "calorie",
+    "intensity",
+    "stress",
+    "step",
+    "sleep_efficiency",
+  ];
+
   List steps = [{}];
   int currentCount = 10;
   final int maxCount = 50;
@@ -54,7 +64,6 @@ class _ActivityState extends State<Activity> {
   updateDate(DateTime selectedDate) {
     setState(() {
       dateTime = selectedDate;
-      // logger.d(selectedDate);
     });
   }
 
@@ -131,8 +140,11 @@ class _ActivityState extends State<Activity> {
             // IntrinsicHeight forces the column to be exactly as big as its contents
             // https://api.flutter.dev/flutter/widgets/SingleChildScrollView-class.html
             return IntrinsicHeight(
-                child:
-                    ActivityCard(date: getDate(index), steps: getStep(index)));
+                child: ActivityCard(
+              rank: getDate(index),
+              value: getStep(index),
+              iconPath: 'assets/images/step_activity.png',
+            ));
           }),
     );
   }
@@ -163,12 +175,14 @@ class FedIcon extends StatelessWidget {
 class ActivityCard extends StatelessWidget {
   const ActivityCard({
     super.key,
-    required this.date,
-    required this.steps,
+    required this.rank,
+    required this.value,
+    required this.iconPath,
   });
 
-  final String date;
-  final String steps;
+  final String rank;
+  final String value;
+  final String iconPath;
 
   @override
   Widget build(BuildContext context) {
@@ -185,7 +199,7 @@ class ActivityCard extends StatelessWidget {
           child: SizedBox(),
         ),
         Image.asset(
-          'assets/images/step_activity.png',
+          iconPath,
           fit: BoxFit.contain,
           height: pixel * 56,
           width: pixel * 56,
@@ -197,7 +211,7 @@ class ActivityCard extends StatelessWidget {
         Expanded(
           flex: 7,
           child: Text(
-            steps,
+            value,
             style: TextStyle(
                 fontFamily: 'Montserrat Alternates',
                 fontSize: 30,
@@ -219,7 +233,8 @@ class ActivityCard extends StatelessWidget {
                   style: TextStyle(
                       fontFamily: 'Montserrat Alternates',
                       fontSize: 20,
-                      color: Theme.of(context).colorScheme.onSecondaryContainer),
+                      color:
+                          Theme.of(context).colorScheme.onSecondaryContainer),
                 ),
               ),
             ],
@@ -231,7 +246,7 @@ class ActivityCard extends StatelessWidget {
         Expanded(
           flex: 7,
           child: Text(
-            date,
+            rank,
             textAlign: TextAlign.end,
             style: TextStyle(
                 fontFamily: 'Montserrat Alternates',

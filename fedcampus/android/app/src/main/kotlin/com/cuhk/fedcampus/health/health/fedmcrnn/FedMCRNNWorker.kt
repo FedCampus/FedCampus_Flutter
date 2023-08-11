@@ -13,7 +13,7 @@ import org.eu.fedcampus.fed_kit.background.trainWorkerData
 import org.eu.fedcampus.fed_kit.examples.fedmcrnn.DATA_TYPE
 import org.eu.fedcampus.fed_kit.examples.fedmcrnn.Float2DArray
 import org.eu.fedcampus.fed_kit.examples.fedmcrnn.sampleSpec
-import org.eu.fedcampus.fed_kit.helpers.deviceId
+import org.eu.fedcampus.fed_kit_train.helpers.deviceId
 
 class FedMCRNNWorker(context: Context, params: WorkerParameters) :
     BaseTrainWorker<Float2DArray, FloatArray>(

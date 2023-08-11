@@ -1,34 +1,30 @@
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
+import 'package:fedcampus/models/activity_data.dart';
 import 'package:fedcampus/pigeons/datawrapper.dart';
-
+import 'package:fedcampus/pigeons/messages.g.dart';
 import 'package:fedcampus/utility/http_client.dart';
-
-import 'package:flutter/material.dart';
+import 'package:fedcampus/utility/log.dart';
+import 'package:fedcampus/view/me/user_api.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 
-import '../../utility/log.dart';
+class ActivityDataModel extends ChangeNotifier {
+  Map<String, double> activityData = ActivityData.mapOf();
+  bool isAuth = false;
+  bool ifSent = false;
+  late final DataApi host;
 
-class ActivityPage extends StatefulWidget {
-  const ActivityPage({super.key});
-
-  @override
-  State<ActivityPage> createState() => _ActivityPageState();
-}
-
-class _ActivityPageState extends State<ActivityPage> {
-  var _date = (DateTime.now().year * 10000 +
+  String _date = (DateTime.now().year * 10000 +
           DateTime.now().month * 100 +
           DateTime.now().day)
       .toString();
 
-  final _now = (DateTime.now().year * 10000 +
+  final String _now = (DateTime.now().year * 10000 +
           DateTime.now().month * 100 +
           DateTime.now().day)
       .toString();
-
-  var ifSent = false;
 
   final dataList = [
     "step_time",
@@ -40,11 +36,20 @@ class _ActivityPageState extends State<ActivityPage> {
     "sleep_efficiency",
   ];
 
-  var _log = "";
+  ActivityDataModel() {
+    host = DataApi();
+  }
 
-  @override
-  void initState() {
-    super.initState();
+  bool get isAuthenticated => isAuth;
+
+  set isAuthenticated(bool auth) {
+    isAuth = auth;
+    userApi.prefs.setBool("login", auth);
+    notifyListeners();
+  }
+
+  set date(String date) {
+    _date = date;
     _getActivityData();
   }
 
@@ -79,12 +84,14 @@ class _ActivityPageState extends State<ActivityPage> {
       // show the data
       final responseJson = jsonDecode(response.body);
       print(ifSent);
-      setState(() {
-        _log = dataNumber.toString() + "\n";
-        jsonDecode(response.body).forEach((index, value) {
-          _log += ("$index - $value \n");
-        });
-      });
+
+
+      // setState(() {
+      //   _log = dataNumber.toString() + "\n";
+      //   jsonDecode(response.body).forEach((index, value) {
+      //     _log += ("$index - $value \n");
+      //   });
+      // });
 
       if (_date == _now) {
         return;
@@ -141,37 +148,5 @@ class _ActivityPageState extends State<ActivityPage> {
         logger.d("error");
       }
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-
-
-    return Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.background,
-        body: Center(
-            child: Column(
-          children: [
-            const Text("activity page"),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-              child: TextFormField(
-                initialValue: _date,
-                onChanged: (value) => {_date = value},
-                decoration: const InputDecoration(
-                  border: UnderlineInputBorder(),
-                  labelText: 'Date',
-                ),
-              ),
-            ),
-            ElevatedButton(
-              child: const Text('Get Data'),
-              onPressed: () {
-                _getActivityData();
-              },
-            ),
-            Text(_log),
-          ],
-        )));
   }
 }

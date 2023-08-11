@@ -12,8 +12,8 @@ import com.huawei.hms.hihealth.HuaweiHiHealth.getDataController
 import com.huawei.hms.hihealth.data.DataType
 import com.huawei.hms.hihealth.data.Field
 import kotlinx.coroutines.*
-import org.eu.fedcampus.fed_kit.FlowerClient
 import org.eu.fedcampus.fed_kit.examples.fedmcrnn.Float2DArray
+import org.eu.fedcampus.fed_kit_train.FlowerClient
 import java.text.SimpleDateFormat
 import java.util.*
 

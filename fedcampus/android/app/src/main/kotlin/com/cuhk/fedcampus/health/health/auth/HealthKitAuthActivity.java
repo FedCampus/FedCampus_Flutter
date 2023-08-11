@@ -16,7 +16,6 @@
 
 package com.cuhk.fedcampus.health.health.auth;
 
-import com.cuhk.fedcampus.R;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -30,6 +29,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import com.cuhk.fedcampus.R;
 import com.huawei.hms.hihealth.HiHealthStatusCodes;
 import com.huawei.hms.hihealth.HuaweiHiHealth;
 import com.huawei.hms.hihealth.SettingController;
