@@ -58,29 +58,30 @@ class _CalendarDialogState extends State<CalendarDialog> {
 
   @override
   Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         ValueListenableBuilder<DateTime>(
           valueListenable: _focusedDay,
           builder: (context, value, child) => Container(
-            padding: const EdgeInsets.all(5),
+            padding: EdgeInsets.all(5 * pixel),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(10 * pixel),
               color: Theme.of(context).colorScheme.onPrimaryContainer,
             ),
             child: Text(
               ' ${DateFormat.yMMMM('en_US').format(value)}',
-              style:
-                  TextStyle(color: Theme.of(context).colorScheme.inversePrimary),
+              style: TextStyle(
+                  color: Theme.of(context).colorScheme.inversePrimary),
             ),
           ),
         ),
-        const SizedBox(
-          height: 5,
+        SizedBox(
+          height: 5 * pixel,
         ),
         SizedBox(
-          height: 200,
+          height: 200 * pixel,
           child: TableCalendar(
             calendarBuilders: CalendarBuilders(
               dowBuilder: (context, day) {
@@ -112,14 +113,17 @@ class _CalendarDialogState extends State<CalendarDialog> {
               // FIXME: https://github.com/aleksanderwozniak/table_calendar/issues/583
               // because I override deoration with rectangle, I need to set every decoration mannually,
               // not sure if any issues persist
-              defaultDecoration: textDecoration(
-                  Theme.of(context).colorScheme.background),
-              weekendDecoration: textDecoration(Theme.of(context).colorScheme.background),
+              defaultDecoration:
+                  textDecoration(Theme.of(context).colorScheme.background),
+              weekendDecoration:
+                  textDecoration(Theme.of(context).colorScheme.background),
               todayDecoration: textDecoration(
                   Theme.of(context).colorScheme.onSecondaryContainer),
               selectedDecoration: textDecoration(widget.primaryColor),
-              defaultTextStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
-              selectedTextStyle: TextStyle(color: Theme.of(context).colorScheme.background),
+              defaultTextStyle:
+                  TextStyle(color: Theme.of(context).colorScheme.primary),
+              selectedTextStyle:
+                  TextStyle(color: Theme.of(context).colorScheme.background),
               weekendTextStyle: TextStyle(color: widget.primaryColor),
             ),
             firstDay: DateTime.utc(2010, 10, 16),
@@ -143,10 +147,11 @@ class _CalendarDialogState extends State<CalendarDialog> {
   }
 
   BoxDecoration textDecoration(color) {
+    double pixel = MediaQuery.of(context).size.width / 400;
     return BoxDecoration(
       color: color,
       shape: BoxShape.rectangle,
-      borderRadius: BorderRadius.circular(5),
+      borderRadius: BorderRadius.circular(5 * pixel),
     );
   }
 }

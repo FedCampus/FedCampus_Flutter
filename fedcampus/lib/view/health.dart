@@ -195,7 +195,7 @@ class _DateState extends State<Date> {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.onBackground,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(10 * pixel),
         boxShadow: [
           BoxShadow(
             color: Theme.of(context).colorScheme.shadow,
@@ -220,8 +220,8 @@ class _DateState extends State<Date> {
           backgroundColor: Theme.of(context).colorScheme.onBackground,
           padding: EdgeInsets.fromLTRB(
               14 * pixel, 18 * pixel, 14 * pixel, 17 * pixel),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10 * pixel)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -242,12 +242,12 @@ class _DateState extends State<Date> {
                       style: TextStyle(
                           color:
                               Theme.of(context).colorScheme.onPrimaryContainer,
-                          fontSize: 22,
+                          fontSize: pixel * 22,
                           shadows: [
                             BoxShadow(
                               color: Theme.of(context).colorScheme.shadow,
                               offset: Offset(0 * pixel, 2 * pixel),
-                              blurRadius: 1,
+                              blurRadius: 1 * pixel,
                             ),
                           ]),
                     ),
@@ -256,7 +256,7 @@ class _DateState extends State<Date> {
                     DateFormat.y('en_US').format(widget.date),
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      fontSize: 17,
+                      fontSize: pixel * 17,
                     ),
                   ),
                 ],
@@ -312,7 +312,7 @@ class Heart extends StatelessWidget {
                     '0',
                 style: TextStyle(
                     fontFamily: 'Montserrat Alternates',
-                    fontSize: 30,
+                    fontSize: pixel * 30,
                     color: Theme.of(context).colorScheme.onPrimaryContainer)),
             SizedBox(
               height: 33 * pixel,
@@ -324,7 +324,7 @@ class Heart extends StatelessWidget {
                     '0',
                 style: TextStyle(
                     fontFamily: 'Montserrat Alternates',
-                    fontSize: 30,
+                    fontSize: pixel * 30,
                     color: Theme.of(context).colorScheme.onPrimaryContainer)),
           ],
         )
@@ -377,8 +377,8 @@ class Distance extends StatelessWidget {
                           color:
                               Theme.of(context).colorScheme.onPrimaryContainer,
                           fontSize: displayText.length < 6
-                              ? 30
-                              : 170 / displayText.length,
+                              ? pixel * 30
+                              : pixel * (170 / displayText.length),
                         )),
                     WidgetSpan(
                       child: Transform.translate(
@@ -388,8 +388,8 @@ class Distance extends StatelessWidget {
                           style: TextStyle(
                               fontFamily: 'Montserrat Alternates',
                               fontSize: displayText.length < 6
-                                  ? 17
-                                  : 90 / displayText.length,
+                                  ? pixel * 17
+                                  : pixel * (90 / displayText.length),
                               color: Theme.of(context)
                                   .colorScheme
                                   .onPrimaryContainer),
@@ -424,7 +424,6 @@ class Stress extends StatelessWidget {
               height: 10 * pixel,
             ),
             Text(
-              // stressm6H (30:138)
               'Stress',
               style: TextStyle(color: Theme.of(context).colorScheme.secondary),
             ),
@@ -441,12 +440,12 @@ class Stress extends StatelessWidget {
                       '0',
                   style: TextStyle(
                       fontFamily: 'Montserrat Alternates',
-                      fontSize: 30,
+                      fontSize: pixel * 30,
                       color: Theme.of(context).colorScheme.onPrimaryContainer)),
               Text('mmHg',
                   style: TextStyle(
                       fontFamily: 'Montserrat Alternates',
-                      fontSize: 15,
+                      fontSize: pixel * 15,
                       color: Theme.of(context).colorScheme.onPrimaryContainer))
             ],
           )
@@ -493,8 +492,9 @@ class Step extends StatelessWidget {
             Text(displayText,
                 style: TextStyle(
                     fontFamily: 'Montserrat Alternates',
-                    fontSize:
-                        displayText.length < 5 ? 30 : 135 / displayText.length,
+                    fontSize: displayText.length < 5
+                        ? pixel * 30
+                        : pixel * (135 / displayText.length),
                     color: Theme.of(context).colorScheme.onPrimaryContainer)),
           ],
         )
@@ -539,8 +539,9 @@ class Calorie extends StatelessWidget {
             Text(displayText,
                 style: TextStyle(
                     fontFamily: 'Montserrat Alternates',
-                    fontSize:
-                        displayText.length < 6 ? 30 : 145 / displayText.length,
+                    fontSize: displayText.length < 6
+                        ? pixel * 30
+                        : pixel * (145 / displayText.length),
                     color: Theme.of(context).colorScheme.onPrimaryContainer)),
           ],
         )
@@ -563,10 +564,10 @@ class IntenseExercise extends StatelessWidget {
         Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const FedIcon(
+            FedIcon(
               imagePath: 'assets/images/exercise.png',
-              width: 52,
-              height: 63,
+              width: 52 * pixel,
+              height: 63 * pixel,
             ),
             SizedBox(
               height: 10 * pixel,
@@ -597,12 +598,12 @@ class IntenseExercise extends StatelessWidget {
                     '0',
                 style: TextStyle(
                     fontFamily: 'Montserrat Alternates',
-                    fontSize: 30,
+                    fontSize: pixel * 30,
                     color: Theme.of(context).colorScheme.onPrimaryContainer)),
             Text('min',
                 style: TextStyle(
                     fontFamily: 'Montserrat Alternates',
-                    fontSize: 20,
+                    fontSize: pixel * 20,
                     color: Theme.of(context).colorScheme.onPrimaryContainer))
           ],
         )
@@ -650,7 +651,7 @@ class Sleep extends StatelessWidget {
                       '0',
                   style: TextStyle(
                       fontFamily: 'Montserrat Alternates',
-                      fontSize: 30,
+                      fontSize: pixel * 30,
                       color: Theme.of(context).colorScheme.onPrimaryContainer)),
             ],
           )

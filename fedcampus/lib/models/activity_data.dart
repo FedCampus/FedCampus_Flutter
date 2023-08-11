@@ -1,21 +1,14 @@
+// feel free to migrate to json serializable classes such as json_model
 class ActivityData {
-  static Map<String, double> mapOf({
-    double step = 0,
-    double calorie = 0,
-    double distance = 0,
-    double stress = 0,
-    double intensity = 0,
-    double stepTime = 0,
-    double sleepEfficiency = 0,
-  }) {
+  static Map<String, dynamic> create() {
     return {
-      "step": step,
-      "calorie": calorie,
-      "distance": distance,
-      "stress": stress,
-      "intensity": intensity,
-      "step_time": stepTime,
-      "sleep_efficiency": sleepEfficiency,
+      "step": {"average": 0, "rank": '0/0', "simliar_user": Null},
+      "calorie": {"average": 0, "rank": '0/0', "simliar_user": Null},
+      "distance": {"average": 0, "rank": '0/0', "simliar_user": Null},
+      "stress": {"average": 0, "rank": '0/0', "simliar_user": Null},
+      "intensity": {"average": 0, "rank": '0/0', "simliar_user": Null},
+      "step_time": {"average": 0, "rank": '0/0', "simliar_user": Null},
+      "sleep_efficiency": {"average": 0, "rank": '0/0', "simliar_user": Null},
     };
   }
 }

@@ -26,19 +26,19 @@ class _SignInState extends State<SignIn> {
       user = await userApi.signIn(_username, _password);
     } on Exception catch (e) {
       logger.d(e.toString());
-      if (mounted) showToastMessage(e.getMessage);
+      if (mounted) showToastMessage(e.getMessage, context);
       return;
     }
     if (mounted) {
       Provider.of<UserModel>(context, listen: false).setUser = user;
-      showToastMessage('login success');
+      showToastMessage('login success', context);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
     double aspectRatio = MediaQuery.of(context).size.aspectRatio;
-    double width = MediaQuery.of(context).size.width;
     return Scaffold(
         appBar: AppBar(
           title: const Text('Sign in'),
@@ -52,34 +52,24 @@ class _SignInState extends State<SignIn> {
           child: Center(
               child: Column(
             children: <Widget>[
-              const Expanded(
-                  flex: 1,
-                  child: SizedBox(
-                    height: 1,
-                  )),
+              const Expanded(flex: 1, child: SizedBox()),
               CircleAvatar(
                 foregroundImage: const AssetImage(
                   'assets/images/me_nav_icon.png',
                 ),
                 backgroundColor: Theme.of(context).colorScheme.surface,
-                maxRadius: width / 7,
-                minRadius: width / 8,
+                maxRadius: 50 * pixel,
+                minRadius: 60 * pixel,
               ),
-              const Expanded(
-                  child: SizedBox(
-                height: 1,
-              )),
+              const Expanded(child: SizedBox()),
               Text(
                 'Sign in',
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onTertiaryContainer,
-                  fontSize: 27,
+                  fontSize: pixel * 27,
                 ),
               ),
-              const Expanded(
-                  child: SizedBox(
-                height: 1,
-              )),
+              const Expanded(child: SizedBox()),
               SignInUpTextField(
                 field: _username,
                 label: 'Email',
@@ -96,10 +86,7 @@ class _SignInState extends State<SignIn> {
                 onPressed: _signIn,
                 child: const Text('Login'),
               ),
-              const Expanded(
-                  child: SizedBox(
-                height: 1,
-              )),
+              const Expanded(child: SizedBox()),
               TextButton(
                 onPressed: () => Navigator.push(
                   context,
@@ -109,7 +96,7 @@ class _SignInState extends State<SignIn> {
                   'No account? Sign up',
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onTertiaryContainer,
-                    fontSize: 18,
+                    fontSize: pixel * 18,
                   ),
                 ),
               ),
@@ -120,7 +107,7 @@ class _SignInState extends State<SignIn> {
                 'Welcome to DKU FedCampus',
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onTertiaryContainer,
-                  fontSize: 18,
+                  fontSize: pixel * 18,
                 ),
               ),
               const Spacer(

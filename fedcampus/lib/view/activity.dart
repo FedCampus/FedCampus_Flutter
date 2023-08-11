@@ -1,12 +1,10 @@
-import 'dart:convert';
-
+import 'package:fedcampus/models/activity_data_model.dart';
 import 'package:fedcampus/utility/log.dart';
-import 'package:fedcampus/utility/test_api.dart';
 import 'package:fedcampus/view/calendar.dart';
 import 'package:fedcampus/view/widgets/widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class Activity extends StatefulWidget {
   const Activity({
@@ -18,52 +16,71 @@ class Activity extends StatefulWidget {
 }
 
 class _ActivityState extends State<Activity> {
-  final dataList = [
-    "step_time",
-    "distance",
-    "calorie",
-    "intensity",
-    "stress",
-    "step",
-    "sleep_efficiency",
+  final entries = [
+    {
+      "entry_name": "step_time",
+      "icon_path": "assets/images/step.png",
+      "unit": "min"
+    },
+    {
+      "entry_name": "distance",
+      "icon_path": "assets/images/location.png",
+      "unit": "meters"
+    },
+    {
+      "entry_name": "calorie",
+      "icon_path": "assets/images/calorie.png",
+      "unit": "kcals"
+    },
+    {
+      "entry_name": "intensity",
+      "icon_path": "assets/images/exercise.png",
+      "unit": "min"
+    },
+    {
+      "entry_name": "stress",
+      "icon_path": "assets/images/meter.png",
+      "unit": "mmHg"
+    },
+    {
+      "entry_name": "step",
+      "icon_path":
+          "assets/images/step.png", // TODO: distinguish step and step_time icon
+      "unit": "steps"
+    },
+    {
+      "entry_name": "sleep_efficiency",
+      "icon_path": "assets/images/sleep.png",
+      "unit": "effi"
+    },
   ];
 
-  List steps = [{}];
-  int currentCount = 10;
-  final int maxCount = 50;
+  final int maxCount = 8;
   DateTime dateTime = DateTime.now();
 
   @override
   void initState() {
     super.initState();
-    getSteps();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      refresh();
+    });
   }
 
   Future<void> refresh() async {
-    getSteps();
-  }
-
-  getSteps() async {
-    String responseBody;
-    List data;
-    try {
-      responseBody = (await fetchSteps()).body;
-    } catch (e) {
-      responseBody = '[{"status": "fail"}]';
-    }
-    data = jsonDecode(responseBody);
-    // logger.d(data);
-    if (mounted) {
-      setState(() {
-        steps = data;
-        logger.d(steps);
-      });
-    }
+    await Provider.of<ActivityDataModel>(context, listen: false)
+        .getActivityDataTest();
   }
 
   updateDate(DateTime selectedDate) {
     setState(() {
       dateTime = selectedDate;
+      logger.d(selectedDate);
+      String month = selectedDate.month.toString();
+      if (month.length < 2) month = '0$month';
+      String day = selectedDate.day.toString();
+      if (day.length < 2) day = '0$day';
+      String datecode = '${selectedDate.year}$month$day';
+      Provider.of<ActivityDataModel>(context, listen: false).date = datecode;
     });
   }
 
@@ -71,40 +88,18 @@ class _ActivityState extends State<Activity> {
   T? tryGet<T>(List<T> list, int index) =>
       index < 0 || index >= list.length ? null : list[index];
 
-  getDate(int index) {
-    if (tryGet(steps, index) != null) return tryGet(steps, index)["date"];
-    return "loading";
-  }
-
-  getStep(int index) {
-    if (tryGet(steps, index) != null) return tryGet(steps, index)["step"];
-    return "loading";
-  }
-
-  loadMore() {
-    Future.delayed(const Duration(seconds: 1)).then((e) => {
-          if (mounted)
-            {
-              setState(() {
-                currentCount += 10;
-              })
-            }
-        });
-  }
-
   @override
   Widget build(BuildContext context) {
-    double logicalWidth = MediaQuery.of(context).size.width;
+    double pixel = MediaQuery.of(context).size.width / 400;
     return RefreshIndicator(
       onRefresh: refresh,
       child: ListView.separated(
           separatorBuilder: (context, index) => const SizedBox(height: 11),
-          itemCount: currentCount,
-          padding: EdgeInsets.all(logicalWidth / 20),
+          itemCount: 8,
+          padding: EdgeInsets.all(20 * pixel),
           itemBuilder: (BuildContext context, int index) {
             if (index == 0) {
               return Date(
-                fem: 1,
                 onDateChange: updateDate,
                 date: dateTime,
               );
@@ -113,25 +108,11 @@ class _ActivityState extends State<Activity> {
             if (index == maxCount - 1) {
               return Container(
                 alignment: Alignment.center,
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.fromLTRB(
+                    16 * pixel, 16 * pixel, 8 * pixel, 16 * pixel),
                 child: const Text(
                   "no more data available",
                   style: TextStyle(color: Colors.grey),
-                ),
-              );
-            }
-            if (index == currentCount - 1) {
-              // https://stackoverflow.com/a/59478165
-              SchedulerBinding.instance.addPostFrameCallback((_) {
-                loadMore();
-              });
-              return Container(
-                padding: const EdgeInsets.all(16.0),
-                alignment: Alignment.center,
-                child: const SizedBox(
-                  width: 24.0,
-                  height: 24.0,
-                  child: CircularProgressIndicator(strokeWidth: 2.0),
                 ),
               );
             }
@@ -141,33 +122,17 @@ class _ActivityState extends State<Activity> {
             // https://api.flutter.dev/flutter/widgets/SingleChildScrollView-class.html
             return IntrinsicHeight(
                 child: ActivityCard(
-              rank: getDate(index),
-              value: getStep(index),
-              iconPath: 'assets/images/step_activity.png',
+              rank: Provider.of<ActivityDataModel>(context)
+                  .activityData[entries[index - 1]['entry_name']]["rank"]
+                  .toString(),
+              value: Provider.of<ActivityDataModel>(context)
+                  .activityData[entries[index - 1]['entry_name']]["average"]
+                  .toString(),
+              unit: entries[index - 1]['unit'] ?? "unit",
+              iconPath:
+                  entries[index - 1]['icon_path'] ?? "assets/images/sleep.png",
             ));
           }),
-    );
-  }
-}
-
-class FedIcon extends StatelessWidget {
-  const FedIcon({
-    super.key,
-    required this.imagePath,
-    this.width = 48,
-    this.height = 39,
-  });
-
-  final String imagePath;
-  final double height;
-  final double width;
-  @override
-  Widget build(BuildContext context) {
-    return Image.asset(
-      imagePath,
-      fit: BoxFit.contain,
-      height: height,
-      width: width,
     );
   }
 }
@@ -177,17 +142,18 @@ class ActivityCard extends StatelessWidget {
     super.key,
     required this.rank,
     required this.value,
+    required this.unit,
     required this.iconPath,
   });
 
   final String rank;
   final String value;
+  final String unit;
   final String iconPath;
 
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
-    // logger.d(logicalWidth / 10);
     return FedCard(
         widget: Row(
       children: <Widget>[
@@ -205,7 +171,7 @@ class ActivityCard extends StatelessWidget {
           width: pixel * 56,
         ),
         const Expanded(
-          flex: 1,
+          flex: 2,
           child: SizedBox(),
         ),
         Expanded(
@@ -214,12 +180,12 @@ class ActivityCard extends StatelessWidget {
             value,
             style: TextStyle(
                 fontFamily: 'Montserrat Alternates',
-                fontSize: 30,
+                fontSize: pixel * 30,
                 color: Theme.of(context).colorScheme.primary),
           ),
         ),
         Expanded(
-          flex: 5,
+          flex: 6,
           child: Column(
             children: <Widget>[
               const Expanded(
@@ -229,10 +195,10 @@ class ActivityCard extends StatelessWidget {
               Expanded(
                 flex: 1,
                 child: Text(
-                  'steps',
+                  unit,
                   style: TextStyle(
                       fontFamily: 'Montserrat Alternates',
-                      fontSize: 20,
+                      fontSize: pixel * 20,
                       color:
                           Theme.of(context).colorScheme.onSecondaryContainer),
                 ),
@@ -244,18 +210,18 @@ class ActivityCard extends StatelessWidget {
           child: SizedBox(),
         ),
         Expanded(
-          flex: 7,
+          flex: 5,
           child: Text(
             rank,
             textAlign: TextAlign.end,
             style: TextStyle(
                 fontFamily: 'Montserrat Alternates',
-                fontSize: 30,
+                fontSize: pixel * 30,
                 color: Theme.of(context).colorScheme.onSecondaryContainer),
           ),
         ),
         const Expanded(
-          flex: 2,
+          flex: 1,
           child: SizedBox(),
         ),
       ],
@@ -266,17 +232,16 @@ class ActivityCard extends StatelessWidget {
 class Date extends StatelessWidget {
   const Date({
     super.key,
-    required this.fem,
     required this.onDateChange,
     required this.date,
   });
 
-  final double fem;
   final void Function(DateTime) onDateChange;
   final DateTime date;
 
   @override
   Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
     Future<bool?> calendarDialog() {
       return showDialog<bool>(
         context: context,
@@ -301,25 +266,25 @@ class Date extends StatelessWidget {
     }
 
     return Container(
-      height: 80,
+      height: 80 * pixel,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceTint,
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(15 * pixel),
         boxShadow: [
           BoxShadow(
             color: Theme.of(context).colorScheme.shadow,
-            offset: Offset(0 * fem, 4 * fem),
-            blurRadius: 2 * fem,
+            offset: Offset(0 * pixel, 4 * pixel),
+            blurRadius: 2 * pixel,
           ),
           BoxShadow(
             color: Theme.of(context).colorScheme.outline,
-            offset: Offset(0 * fem, -1 * fem),
-            blurRadius: 1 * fem,
+            offset: Offset(0 * pixel, -1 * pixel),
+            blurRadius: 1 * pixel,
           ),
           BoxShadow(
             color: Theme.of(context).colorScheme.outline,
-            offset: Offset(0 * fem, 4 * fem),
-            blurRadius: 2 * fem,
+            offset: Offset(0 * pixel, 4 * pixel),
+            blurRadius: 2 * pixel,
           ),
         ],
       ),
@@ -327,16 +292,17 @@ class Date extends StatelessWidget {
         onPressed: () => calendarDialog(),
         style: TextButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.surfaceTint,
-          padding: EdgeInsets.fromLTRB(40 * fem, 12 * fem, 40 * fem, 12 * fem),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          padding: EdgeInsets.fromLTRB(
+              40 * pixel, 12 * pixel, 40 * pixel, 12 * pixel),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15 * pixel)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            const FedIcon(
+            FedIcon(
               imagePath: 'assets/images/activity_nav_icon.png',
-              height: 52,
+              height: 52 * pixel,
             ),
             const Expanded(
               flex: 2,
@@ -360,12 +326,12 @@ class Date extends StatelessWidget {
                       Text(
                         DateFormat.MMMd('en_US').format(date),
                         style: TextStyle(
-                            fontSize: 22,
+                            fontSize: pixel * 22,
                             shadows: [
                               BoxShadow(
                                 color: Theme.of(context).colorScheme.shadow,
-                                offset: Offset(0 * fem, 2 * fem),
-                                blurRadius: 1,
+                                offset: Offset(0 * pixel, 2 * pixel),
+                                blurRadius: 1 * pixel,
                               ),
                             ],
                             color: Theme.of(context).colorScheme.secondary),
@@ -377,12 +343,12 @@ class Date extends StatelessWidget {
                       Text(
                         DateFormat.E('en_US').format(date),
                         style: TextStyle(
-                            fontSize: 22,
+                            fontSize: pixel * 22,
                             shadows: [
                               BoxShadow(
                                 color: Theme.of(context).colorScheme.shadow,
-                                offset: Offset(0 * fem, 2 * fem),
-                                blurRadius: 1,
+                                offset: Offset(0 * pixel, 2 * pixel),
+                                blurRadius: 1 * pixel,
                               ),
                             ],
                             color: Theme.of(context).colorScheme.secondary),

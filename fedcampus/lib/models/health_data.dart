@@ -1,3 +1,4 @@
+// feel free to migrate to json serializable classes such as json_model
 class HealthData {
   static Map<String, double> mapOf({
     double step = 0,

@@ -11,7 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 class ActivityDataModel extends ChangeNotifier {
-  Map<String, double> activityData = ActivityData.mapOf();
+  Map<String, dynamic> activityData = ActivityData.create();
   bool isAuth = false;
   bool ifSent = false;
   late final DataApi host;
@@ -50,7 +50,16 @@ class ActivityDataModel extends ChangeNotifier {
 
   set date(String date) {
     _date = date;
-    _getActivityData();
+    // _getActivityData();
+    getActivityDataTest();
+  }
+
+  Future<void> getActivityDataTest() async {
+    for (final (i, dataEntryName) in dataList.indexed) {
+      activityData[dataEntryName]["average"] = '${i.toString()}01';
+      activityData[dataEntryName]["rank"] = '${i.toString()}02';
+    }
+    notifyListeners();
   }
 
   void _getActivityData() async {
@@ -84,7 +93,6 @@ class ActivityDataModel extends ChangeNotifier {
       // show the data
       final responseJson = jsonDecode(response.body);
       print(ifSent);
-
 
       // setState(() {
       //   _log = dataNumber.toString() + "\n";

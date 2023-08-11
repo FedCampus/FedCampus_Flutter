@@ -127,8 +127,10 @@ class SettingsButton extends StatelessWidget {
       );
     }
 
+    double pixel = MediaQuery.of(context).size.width / 400;
     return Container(
-      padding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
+      padding:
+          EdgeInsets.fromLTRB(30 * pixel, 10 * pixel, 30 * pixel, 10 * pixel),
       child: SizedBox(
         width: double.infinity,
         child: TextButton(
@@ -136,12 +138,13 @@ class SettingsButton extends StatelessWidget {
           style: TextButton.styleFrom(
             alignment: Alignment.centerLeft,
             minimumSize: Size.zero, // Set this
-            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10), // and this
+            padding: EdgeInsets.fromLTRB(
+                0 * pixel, 10 * pixel, 0 * pixel, 10 * pixel), // and this
           ),
           child: Text(
             text,
             style: TextStyle(
-              fontSize: 18,
+              fontSize: pixel * 18,
               color: Theme.of(context).colorScheme.onTertiaryContainer,
               fontWeight: FontWeight.normal,
             ),
@@ -165,16 +168,18 @@ class SettingsSwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
-
+    double pixel = MediaQuery.of(context).size.width / 400;
     return Container(
-      padding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
+      padding:
+          EdgeInsets.fromLTRB(30 * pixel, 10 * pixel, 30 * pixel, 10 * pixel),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             text,
             style: TextStyle(
-                fontSize: 18, color: Theme.of(context).colorScheme.onTertiaryContainer),
+                fontSize: pixel * 18,
+                color: Theme.of(context).colorScheme.onTertiaryContainer),
           ),
           Switch(
             value: appState.isDarkModeOn,
@@ -223,22 +228,24 @@ class _SettingsDropDownMenuState extends State<SettingsDropDownMenu> {
 
   @override
   Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
     return Container(
-      padding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
+      padding:
+          EdgeInsets.fromLTRB(30 * pixel, 10 * pixel, 30 * pixel, 10 * pixel),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             widget.text,
             style: TextStyle(
-              fontSize: 18,
+              fontSize: pixel * 18,
               color: Theme.of(context).colorScheme.onTertiaryContainer,
             ),
           ),
           DropdownButton(
             value: dropdownValue,
             style: TextStyle(
-              fontSize: 18,
+              fontSize: pixel * 18,
               color: Theme.of(context).colorScheme.onTertiaryContainer,
             ),
             items: widget.options.map<DropdownMenuItem<String>>((String value) {
@@ -262,8 +269,9 @@ class SettingsDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
     return Divider(
-      height: 1,
+      height: 1 * pixel,
       thickness: 1,
       indent: 40,
       endIndent: 40,

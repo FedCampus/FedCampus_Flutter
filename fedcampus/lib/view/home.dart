@@ -21,11 +21,12 @@ class _HomeRouteState extends State<HomeRoute> {
   @override
   build(BuildContext context) {
     var appState = context.watch<MyAppState>();
+    double pixel = MediaQuery.of(context).size.width / 400;
     return Scaffold(
       appBar: AppBar(
         title: Image.asset(
           'assets/images/title.png',
-          height: 35,
+          height: 35 * pixel,
         ),
       ),
       body: Center(

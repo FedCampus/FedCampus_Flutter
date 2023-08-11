@@ -1,3 +1,4 @@
+import 'package:fedcampus/models/activity_data_model.dart';
 import 'package:fedcampus/models/health_data_model.dart';
 import 'package:fedcampus/models/user_model.dart';
 import 'package:fedcampus/utility/log.dart';
@@ -27,6 +28,9 @@ void main() {
               ),
               ChangeNotifierProvider(
                 create: (context) => HealthDataModel(),
+              ),
+              ChangeNotifierProvider(
+                create: (context) => ActivityDataModel(),
               ),
             ],
             child: const MyApp(),
@@ -104,6 +108,16 @@ class _MyAppState extends State<MyApp> {
     ]);
     var appState = context.watch<MyAppState>();
     return MaterialApp(
+      builder: (context, widget) {
+        final mediaQueryData = MediaQuery.of(context);
+        return MediaQuery(
+          // https://stackoverflow.com/a/69336477
+          // override textScaleFactor to 1
+          // this is a good feature (also error-prone), sadly it is not implemented now
+          data: mediaQueryData.copyWith(textScaleFactor: 1),
+          child: widget!,
+        );
+      },
       title: 'Fedcampus Flutter',
       localizationsDelegates: const [
         AppLocalizations.delegate,

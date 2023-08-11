@@ -56,6 +56,7 @@ class FedIcon extends StatelessWidget {
     double pixel = MediaQuery.of(context).size.width / 400;
     return Image.asset(
       imagePath,
+      fit: BoxFit.contain,
       width: width * pixel,
       height: height * pixel,
     );
@@ -87,6 +88,7 @@ class _SignInUpTextFieldState extends State<SignInUpTextField> {
 
   @override
   Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
     return Column(
       children: [
         ValueListenableBuilder<bool>(
@@ -100,12 +102,12 @@ class _SignInUpTextFieldState extends State<SignInUpTextField> {
             }
             return Text(
               widget.label,
-              style: TextStyle(fontSize: 18, color: color),
+              style: TextStyle(fontSize: pixel * 18, color: color),
             );
           },
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
+          padding: EdgeInsets.symmetric(horizontal: 30 * pixel),
           child: Focus(
             onFocusChange: onTextFieldFocus,
             child: TextFormField(
@@ -116,13 +118,13 @@ class _SignInUpTextFieldState extends State<SignInUpTextField> {
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(
                     color: Theme.of(context).colorScheme.onTertiaryContainer,
-                    width: 1.0,
+                    width: 1.0 * pixel,
                   ),
                 ),
                 focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(
                     color: Theme.of(context).colorScheme.onTertiaryContainer,
-                    width: 1.5,
+                    width: 1.5 * pixel,
                   ),
                 ),
               ),
@@ -134,8 +136,9 @@ class _SignInUpTextFieldState extends State<SignInUpTextField> {
   }
 }
 
-void showToastMessage(String msg) {
+void showToastMessage(String msg, BuildContext context) {
   FocusManager.instance.primaryFocus?.unfocus();
+  double pixel = MediaQuery.of(context).size.width / 400;
   Fluttertoast.showToast(
       msg: msg,
       toastLength: Toast.LENGTH_SHORT,
@@ -143,7 +146,7 @@ void showToastMessage(String msg) {
       timeInSecForIosWeb: 1,
       backgroundColor: Colors.red,
       textColor: Colors.white,
-      fontSize: 16.0);
+      fontSize: pixel * 16.0);
 }
 
 void showDialogMessage(String message, String title, BuildContext context) {

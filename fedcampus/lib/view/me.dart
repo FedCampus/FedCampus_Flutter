@@ -33,39 +33,42 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
   void _logOut() async {
     try {
       await userApi.logout();
-      showToastMessage('you successfully logged out');
+      if (mounted) showToastMessage('you successfully logged out', context);
       if (mounted) {
         Provider.of<UserModel>(context, listen: false).setLogin = false;
       }
     } on Exception catch (e) {
       logger.d(e.toString());
-      if (mounted) showToastMessage(e.getMessage);
+      if (mounted) showToastMessage(e.getMessage, context);
     }
   }
 
   void _healthServiceAuthenticate() async {
     try {
       await userApi.healthServiceAuthenticate();
-      showToastMessage('you successfully authenticated');
+      if (mounted) showToastMessage('you successfully authenticated', context);
     } on Exception catch (e) {
       logger.d(e.toString());
-      if (mounted) showToastMessage(e.getMessage);
+      if (mounted) showToastMessage(e.getMessage, context);
     }
   }
 
   void _healthServiceCancel() async {
     try {
       await userApi.healthServiceCancel();
-      showToastMessage('you successfully cancelled authenticattion');
+      if (mounted) {
+        showToastMessage('you successfully cancelled authenticattion', context);
+      }
     } on Exception catch (e) {
       logger.d(e.toString());
-      if (mounted) showToastMessage(e.getMessage);
+      if (mounted) showToastMessage(e.getMessage, context);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    double pixel = MediaQuery.of(context).size.width / 400;
     return ListView(
       children: [
         const IntrinsicHeight(
@@ -74,8 +77,8 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
             steps: '1111',
           ),
         ),
-        const SizedBox(
-          height: 10,
+        SizedBox(
+          height: 10 * pixel,
         ),
         MeText(
           text: 'Sign in',
@@ -84,8 +87,8 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
             MaterialPageRoute(builder: (context) => const SignIn()),
           ),
         ),
-        const SizedBox(
-          height: 10,
+        SizedBox(
+          height: 10 * pixel,
         ),
         MeText(
           text: 'Account Settings',
@@ -137,18 +140,19 @@ class BottomText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
       Text(
         'Privacy Policy',
         style:
             TextStyle(color: Theme.of(context).colorScheme.onTertiaryContainer),
       ),
-      const SizedBox(
-        width: 30,
+      SizedBox(
+        width: 30 * pixel,
         child: Text(
           '·',
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 30),
+          style: TextStyle(fontSize: pixel * 30),
         ),
       ),
       Text(
@@ -167,8 +171,9 @@ class MeDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
     return Divider(
-      height: 1,
+      height: 1 * pixel,
       thickness: 1,
       indent: 50,
       endIndent: 50,
@@ -189,14 +194,16 @@ class MeText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
+      padding:
+          EdgeInsets.fromLTRB(50 * pixel, 0 * pixel, 50 * pixel, 0 * pixel),
       child: TextButton(
         onPressed: callback,
         child: Text(
           text,
           style: TextStyle(
-              fontSize: 20,
+              fontSize: pixel * 20,
               color: Theme.of(context).colorScheme.onTertiaryContainer),
           textAlign: TextAlign.center,
         ),
@@ -268,10 +275,9 @@ class _ProfileCardState extends State<ProfileCard> {
 
   @override
   Widget build(BuildContext context) {
-    // double logicalWidth = MediaQuery.of(context).size.width;
-    // logger.d(logicalWidth / 10);
+    double pixel = MediaQuery.of(context).size.width / 400;
     return Container(
-      padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+      padding: EdgeInsets.fromLTRB(0, 20 * pixel, 0, 0),
       child: header(),
     );
   }
@@ -280,6 +286,7 @@ class _ProfileCardState extends State<ProfileCard> {
 Widget header() {
   return Consumer<UserModel>(
     builder: (BuildContext context, UserModel value, Widget? child) {
+      double pixel = MediaQuery.of(context).size.width / 400;
       return Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
@@ -289,18 +296,18 @@ Widget header() {
                   backgroundImage:
                       const AssetImage('assets/images/step_activity.png'),
                   backgroundColor: Theme.of(context).colorScheme.surfaceTint,
-                  radius: 40,
+                  radius: 40 * pixel,
                 )
               : CircleAvatar(
                   backgroundImage: const AssetImage(
                       'assets/images/me_nav_icon_inactive.png'),
                   backgroundColor: Theme.of(context).colorScheme.surfaceTint,
-                  radius: 40,
+                  radius: 40 * pixel,
                 ),
           Text(
             value.isLogin ? value.user['userName'] : 'Not logged in',
             style: TextStyle(
-                fontSize: 20,
+                fontSize: pixel * 20,
                 color: Theme.of(context).colorScheme.onTertiaryContainer),
           )
         ],
