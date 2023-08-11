@@ -12,23 +12,23 @@ import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 
 private fun wrapResult(result: Any?): List<Any?> {
-  return listOf(result)
+    return listOf(result)
 }
 
 private fun wrapError(exception: Throwable): List<Any?> {
-  if (exception is FlutterError) {
-    return listOf(
-      exception.code,
-      exception.message,
-      exception.details
-    )
-  } else {
-    return listOf(
-      exception.javaClass.simpleName,
-      exception.toString(),
-      "Cause: " + exception.cause + ", Stacktrace: " + Log.getStackTraceString(exception)
-    )
-  }
+    if (exception is FlutterError) {
+        return listOf(
+            exception.code,
+            exception.message,
+            exception.details
+        )
+    } else {
+        return listOf(
+            exception.javaClass.simpleName,
+            exception.toString(),
+            "Cause: " + exception.cause + ", Stacktrace: " + Log.getStackTraceString(exception)
+        )
+    }
 }
 
 /**
@@ -37,71 +37,89 @@ private fun wrapError(exception: Throwable): List<Any?> {
  * @property message The error message.
  * @property details The error details. Must be a datatype supported by the api codec.
  */
-class FlutterError (
-  val code: String,
-  override val message: String? = null,
-  val details: Any? = null
+class FlutterError(
+    val code: String,
+    override val message: String? = null,
+    val details: Any? = null
 ) : Throwable()
 
 /** Generated class from Pigeon that represents data sent in messages. */
 
 @Suppress("UNCHECKED_CAST")
 private object DataApiCodec : StandardMessageCodec() {
-  override fun readValueOfType(type: Byte, buffer: ByteBuffer): Any? {
-    return when (type) {
-      128.toByte() -> {
-        return (readValue(buffer) as? List<Any?>)?.let {
-          Data.fromList(it)
+    override fun readValueOfType(type: Byte, buffer: ByteBuffer): Any? {
+        return when (type) {
+            128.toByte() -> {
+                return (readValue(buffer) as? List<Any?>)?.let {
+                    Data.fromList(it)
+                }
+            }
+
+            else -> super.readValueOfType(type, buffer)
         }
-      }
-      else -> super.readValueOfType(type, buffer)
     }
-  }
-  override fun writeValue(stream: ByteArrayOutputStream, value: Any?)   {
-    when (value) {
-      is Data -> {
-        stream.write(128)
-        writeValue(stream, value.toList())
-      }
-      else -> super.writeValue(stream, value)
+
+    override fun writeValue(stream: ByteArrayOutputStream, value: Any?) {
+        when (value) {
+            is Data -> {
+                stream.write(128)
+                writeValue(stream, value.toList())
+            }
+
+            else -> super.writeValue(stream, value)
+        }
     }
-  }
 }
 
 /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
 interface DataApi {
-  fun getData(name: String, startTime: Long, endTime: Long, callback: (Result<List<Data>>) -> Unit)
+    fun getData(
+        name: String,
+        startTime: Long,
+        endTime: Long,
+        callback: (Result<List<Data>>) -> Unit
+    )
 
-  companion object {
-    /** The codec used by DataApi. */
-    val codec: MessageCodec<Any?> by lazy {
-      DataApiCodec
-    }
-    /** Sets up an instance of `DataApi` to handle messages through the `binaryMessenger`. */
-    @Suppress("UNCHECKED_CAST")
-    fun setUp(binaryMessenger: BinaryMessenger, api: DataApi?) {
-      run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.pigeon_example_package.DataApi.getData", codec)
-        if (api != null) {
-          channel.setMessageHandler { message, reply ->
-            val args = message as List<Any?>
-            val nameArg = args[0] as String
-            val startTimeArg = args[1].let { if (it is Int) it.toLong() else it as Long }
-            val endTimeArg = args[2].let { if (it is Int) it.toLong() else it as Long }
-            api.getData(nameArg, startTimeArg, endTimeArg) { result: Result<List<Data>> ->
-              val error = result.exceptionOrNull()
-              if (error != null) {
-                reply.reply(wrapError(error))
-              } else {
-                val data = result.getOrNull()
-                reply.reply(wrapResult(data))
-              }
-            }
-          }
-        } else {
-          channel.setMessageHandler(null)
+    companion object {
+        /** The codec used by DataApi. */
+        val codec: MessageCodec<Any?> by lazy {
+            DataApiCodec
         }
-      }
+
+        /** Sets up an instance of `DataApi` to handle messages through the `binaryMessenger`. */
+        @Suppress("UNCHECKED_CAST")
+        fun setUp(binaryMessenger: BinaryMessenger, api: DataApi?) {
+            run {
+                val channel = BasicMessageChannel<Any?>(
+                    binaryMessenger,
+                    "dev.flutter.pigeon.pigeon_example_package.DataApi.getData",
+                    codec
+                )
+                if (api != null) {
+                    channel.setMessageHandler { message, reply ->
+                        val args = message as List<Any?>
+                        val nameArg = args[0] as String
+                        val startTimeArg =
+                            args[1].let { if (it is Int) it.toLong() else it as Long }
+                        val endTimeArg = args[2].let { if (it is Int) it.toLong() else it as Long }
+                        api.getData(
+                            nameArg,
+                            startTimeArg,
+                            endTimeArg
+                        ) { result: Result<List<Data>> ->
+                            val error = result.exceptionOrNull()
+                            if (error != null) {
+                                reply.reply(wrapError(error))
+                            } else {
+                                val data = result.getOrNull()
+                                reply.reply(wrapResult(data))
+                            }
+                        }
+                    }
+                } else {
+                    channel.setMessageHandler(null)
+                }
+            }
+        }
     }
-  }
 }

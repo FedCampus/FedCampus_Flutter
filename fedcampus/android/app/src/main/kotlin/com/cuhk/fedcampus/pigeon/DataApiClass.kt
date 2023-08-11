@@ -11,11 +11,11 @@ import com.huawei.hms.hihealth.data.DataType
 import com.huawei.hms.hihealth.data.Field
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import java.security.Security
 
 class DataApiClass(context: Context) : DataApi {
     val dataController: DataController
-    val context:Context
+    val context: Context
+
     init {
         this.context = context
         dataController = HuaweiHiHealth.getDataController(context)
@@ -29,8 +29,8 @@ class DataApiClass(context: Context) : DataApi {
     ) {
         //check if it is sleep
         val scope = MainScope();
-        if (name=="sleep_efficiency"){
-            scope.launch{
+        if (name == "sleep_efficiency") {
+            scope.launch {
                 try {
                     val data = getSleepEfficiencyData(
                         "sleep_efficiency",
@@ -39,16 +39,17 @@ class DataApiClass(context: Context) : DataApi {
                         DateCalender.add(endTime.toInt(), 1)
                     )
                     callback(Result.success(data));
-                } catch (err:Exception){
+                } catch (err: Exception) {
                     callback(Result.failure(err));
                 }
             }
             return
         }
-        if (name=="step_time"){
+        if (name == "step_time") {
             scope.launch {
                 try {
-                    val data = getStepTimeData(name,dataController,startTime.toInt(),endTime.toInt())
+                    val data =
+                        getStepTimeData(name, dataController, startTime.toInt(), endTime.toInt())
                     callback(Result.success(data))
                 } catch (e: Exception) {
                     callback(Result.failure(e));
@@ -57,30 +58,37 @@ class DataApiClass(context: Context) : DataApi {
             return;
         }
 
-        val inputTriple:Triple<DataType, Field, String>;
-        when (name){
+        val inputTriple: Triple<DataType, Field, String>;
+        when (name) {
             "calorie" -> {
-                inputTriple =  CALORIE
+                inputTriple = CALORIE
             }
-            "intensity" ->{
+
+            "intensity" -> {
                 inputTriple = INTENSITY
             }
-            "distance"-> {
+
+            "distance" -> {
                 inputTriple = DISTANCE
             }
+
             "stress" -> {
                 inputTriple = STRESS
             }
+
             "exercise_heart_rate" -> {
                 inputTriple = EXERCISE_HEART_RATE
             }
-            "rest_heart_rate" ->{
+
+            "rest_heart_rate" -> {
                 inputTriple = REST_HEART_RATE
             }
-            "step" ->{
+
+            "step" -> {
                 inputTriple = STEP;
             }
-            else ->{
+
+            else -> {
                 throw Exception("Data Type \'$name\' not supported")
             }
         }

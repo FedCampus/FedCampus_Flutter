@@ -45,6 +45,7 @@ fun Value.toFloat() = when (format) {
     4 -> {
         map!!.values.fold(0f) { acc, mapValue -> mapValue.toFloat() + acc }
     }
+
     5 -> asLongValue().toFloat()
     else -> throw Error("Unreachable format $format of $this")
 }
@@ -69,6 +70,7 @@ suspend fun DataController.readDaySummation(dataType: DataType, start: Int, end:
             continuation.resumeWithException(it)
         }
     }
+
 val STEP =
     Triple(
         DataType.DT_CONTINUOUS_STEPS_DELTA, Field.FIELD_STEPS, "step"
@@ -113,5 +115,3 @@ fun getExerciseTriple(tag: String) =
         "rest_heart_rate" -> REST_HEART_RATE
         else -> throw Error("tag is not in the list")
     }
-
-
