@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/utility/test_api.dart';
+import 'package:fedcampus/view/calendar.dart';
 import 'package:fedcampus/view/widgets/widget.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +17,13 @@ class Health extends StatefulWidget {
 }
 
 class _HealthState extends State<Health> {
+  DateTime dateTime = DateTime.now();
   String dist = 'loading';
+  @override
+  void initState() {
+    super.initState();
+    getDistance();
+  }
 
   Future<void> refresh() async {
     getDistance();
@@ -27,7 +34,7 @@ class _HealthState extends State<Health> {
     try {
       responseBody = (await fetchDistance()).body;
     } catch (e) {
-      responseBody = '{"status": "fail"}';
+      responseBody = '[{"status": "fail"}]';
     }
     final data = jsonDecode(responseBody);
     logger.d(data);
@@ -45,10 +52,11 @@ class _HealthState extends State<Health> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    getDistance();
+  updateDate(DateTime selectedDate) {
+    setState(() {
+      dateTime = selectedDate;
+      // logger.d(selectedDate);
+    });
   }
 
   @override
@@ -72,8 +80,9 @@ class _HealthState extends State<Health> {
                 child: LeftColumn(
                   fem: fem,
                   ffem: ffem,
+                  date: dateTime,
                   dist: dist,
-                  refresh: refresh,
+                  onDateChange: updateDate,
                 ),
               ),
               SizedBox(
@@ -93,14 +102,16 @@ class LeftColumn extends StatelessWidget {
     super.key,
     required this.fem,
     required this.ffem,
+    required this.date,
     required this.dist,
-    required this.refresh,
+    required this.onDateChange,
   });
 
   final double fem;
   final double ffem;
+  final DateTime date;
   final String dist;
-  final void Function() refresh;
+  final void Function(DateTime selectedDate) onDateChange;
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +119,11 @@ class LeftColumn extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Date(fem: fem, callback: refresh),
+          Date(
+            fem: fem,
+            date: date,
+            onDateChange: onDateChange,
+          ),
           SizedBox(
             height: 20 * fem,
           ),
@@ -132,14 +147,39 @@ class Date extends StatelessWidget {
   const Date({
     super.key,
     required this.fem,
-    required this.callback,
+    required this.date,
+    required this.onDateChange,
   });
 
   final double fem;
-  final void Function() callback;
+  final DateTime date;
+  final void Function(DateTime selectedDate) onDateChange;
 
   @override
   Widget build(BuildContext context) {
+    Future<bool?> calendarDialog() {
+      return showDialog<bool>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Select a day"),
+            content: CalendarDialog(
+              onDateChange: onDateChange,
+              primaryColor: Theme.of(context).colorScheme.primaryContainer,
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text("Confirm"),
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.background,
@@ -163,8 +203,8 @@ class Date extends StatelessWidget {
         ],
       ),
       child: TextButton(
-        //TODO: currently, onPressed is set to resend all async requests
-        onPressed: callback,
+        onPressed: () => Future.delayed(const Duration(milliseconds: 140))
+            .then((value) => calendarDialog()),
         style: TextButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.background,
           padding: EdgeInsets.fromLTRB(14 * fem, 18 * fem, 14 * fem, 17 * fem),
@@ -186,7 +226,7 @@ class Date extends StatelessWidget {
                     margin:
                         EdgeInsets.fromLTRB(0 * fem, 0 * fem, 0 * fem, 5 * fem),
                     child: Text(
-                      'Jan 1',
+                      '${date.month}/${date.day}',
                       style: TextStyle(
                           color: Theme.of(context).colorScheme.tertiary),
                     ),

@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:fedcampus/pigeons/datawrapper.dart';
+
 import 'package:fedcampus/utility/http_client.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -143,7 +145,8 @@ class _ActivityPageState extends State<ActivityPage> {
 
   @override
   Widget build(BuildContext context) {
-    // throw UnimplementedError();
+
+
     return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
         body: Center(

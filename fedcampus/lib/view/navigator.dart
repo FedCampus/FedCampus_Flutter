@@ -1,4 +1,5 @@
 import 'package:fedcampus/view/activity.dart';
+import 'package:fedcampus/view/me.dart';
 import 'package:flutter/material.dart';
 import 'health.dart';
 
@@ -14,7 +15,7 @@ class _BottomNavigatorState extends State<BottomNavigator> {
   static final List<Widget> _widgetOptions = <Widget>[
     const Health(),
     const Activity(),
-    const Text('3')
+    const Me()
   ];
 
   Color getAppBarColor(int index, BuildContext context) {
