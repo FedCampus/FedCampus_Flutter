@@ -480,7 +480,7 @@ class Step extends StatelessWidget {
             ),
             Text(
               'Step',
-              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+              style: TextStyle(color: Theme.of(context).colorScheme.secondary,),
             ),
           ],
         ),
@@ -564,10 +564,10 @@ class IntenseExercise extends StatelessWidget {
         Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            FedIcon(
+            const FedIcon(
               imagePath: 'assets/images/exercise.png',
-              width: 52 * pixel,
-              height: 63 * pixel,
+              width: 52,
+              height: 63,
             ),
             SizedBox(
               height: 10 * pixel,
