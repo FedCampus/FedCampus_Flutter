@@ -1,40 +1,31 @@
 import 'package:fedcampus/models/user.dart';
-import 'package:fedcampus/utility/log.dart';
+import 'package:fedcampus/view/me/user_api.dart';
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class UserModel extends ChangeNotifier {
-  User user = User(userName: 'userName', email: 'email');
-  late SharedPreferences _pref;
-
+  Map<String, dynamic> user = User.mapOf(userName: 'userName', email: 'email');
   UserModel() {
-    init().then(
-      (value) => {logger.d('user model init finished')},
-    );
-  }
-
-  Future<void> init() async {
-    _pref = await SharedPreferences.getInstance();
-    user.loggedIn = _pref.getBool("login") ?? false;
-    if (user.loggedIn) {
-      user.userName = _pref.getString("userName") ?? "username placeholder";
-      user.email = _pref.getString("email") ?? "email placeholder";
+    user['loggedIn'] = userApi.prefs.getBool("login") ?? false;
+    if (user['loggedIn']) {
+      user['userName'] =
+          userApi.prefs.getString("userName") ?? "username placeholder";
+      user['email'] = userApi.prefs.getString("email") ?? "email placeholder";
     }
   }
 
-  bool get isLogin => user.loggedIn;
+  bool get isLogin => user['loggedIn'];
 
-  set setUser(User user) {
+  set setUser(Map<String, dynamic> user) {
     this.user = user;
-    _pref.setBool("login", user.loggedIn);
-    _pref.setString("userName", user.userName);
-    _pref.setString("email", user.email);
+    userApi.prefs.setBool("login", user['loggedIn']);
+    userApi.prefs.setString("userName", user['userName']);
+    userApi.prefs.setString("email", user['email']);
     notifyListeners();
   }
 
   set setLogin(bool loggedIn) {
-    user.loggedIn = loggedIn;
-    _pref.setBool("login", user.loggedIn);
+    user['loggedIn'] = loggedIn;
+    userApi.prefs.setBool("login", user['loggedIn']);
     notifyListeners();
   }
 }

@@ -88,15 +88,17 @@ class _SettingsSwitchState extends State<SettingsSwitch> {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
-
+    double pixel = MediaQuery.of(context).size.width / 400;
     return Container(
-      padding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
+      padding:
+          EdgeInsets.fromLTRB(30 * pixel, 10 * pixel, 30 * pixel, 10 * pixel),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(AppLocalizations.of(context)!.dark_mode,
               style: TextStyle(
-                  fontSize: 18, color: Theme.of(context).colorScheme.primary)),
+                  fontSize: pixel * 18,
+                  color: Theme.of(context).colorScheme.onTertiaryContainer)),
           Switch(
               value: appState.isDarkModeOn,
               onChanged: (b) => widget.callback(b, context)),
@@ -120,20 +122,24 @@ class SettingsDropDownMenu extends StatefulWidget {
 class _SettingsDropDownMenuState extends State<SettingsDropDownMenu> {
   @override
   Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
     return Container(
-      padding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
+      padding:
+          EdgeInsets.fromLTRB(30 * pixel, 10 * pixel, 30 * pixel, 10 * pixel),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             AppLocalizations.of(context)!.language,
             style: TextStyle(
-                fontSize: 18, color: Theme.of(context).colorScheme.primary),
+                fontSize: pixel * 18,
+                color: Theme.of(context).colorScheme.onTertiaryContainer),
           ),
           DropdownButton(
               value: 'English',
               style: TextStyle(
-                  fontSize: 18, color: Theme.of(context).colorScheme.primary),
+                  fontSize: pixel * 18,
+                  color: Theme.of(context).colorScheme.onTertiaryContainer),
               items:
                   widget.options.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
@@ -155,8 +161,9 @@ class SettingsDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
     return Divider(
-      height: 1,
+      height: 1 * pixel,
       thickness: 1,
       indent: 40,
       endIndent: 40,

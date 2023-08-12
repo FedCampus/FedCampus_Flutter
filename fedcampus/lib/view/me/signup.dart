@@ -22,16 +22,16 @@ class _SignUpState extends State<SignUp> {
       await userApi.signUp(_email, _netid, _password, _passwordConfirm);
     } on Exception catch (e) {
       logger.e(e);
-      if (mounted) showToastMessage(e.getMessage);
+      if (mounted) showToastMessage(e.getMessage, context);
       return;
     }
-    if (mounted) showToastMessage('sign up sucess');
+    if (mounted) showToastMessage('sign up sucess', context);
   }
 
   @override
   Widget build(BuildContext context) {
     double aspectRatio = MediaQuery.of(context).size.aspectRatio;
-    // double width = MediaQuery.of(context).size.width;
+    double pixel = MediaQuery.of(context).size.width / 400;
     return Scaffold(
         appBar: AppBar(
           title: const Text('Sign up'),
@@ -44,8 +44,8 @@ class _SignUpState extends State<SignUp> {
             Text(
               'Sign up',
               style: TextStyle(
-                color: Theme.of(context).colorScheme.primary,
-                fontSize: 27,
+                color: Theme.of(context).colorScheme.onTertiaryContainer,
+                fontSize: pixel * 27,
               ),
             ),
             const Expanded(flex: 3, child: SizedBox()),

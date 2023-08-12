@@ -22,9 +22,13 @@ class UserApi {
 
   Future<void> init() async {
     _pref = await SharedPreferences.getInstance();
+    // throw Exception('exceptions in initialization');
   }
 
-  Future<User> signIn(String localUserName, String password) async {
+  SharedPreferences get prefs => _pref;
+
+  Future<Map<String, dynamic>> signIn(
+      String localUserName, String password) async {
     // >>>>> for test only
     // User user = User(
     //   userName: 'nickname',
@@ -62,9 +66,10 @@ class UserApi {
       String token = responseJson['auth_token'];
 
       HTTPClient.setToken(token);
-      User user = User(
-          userName: responseJson['nickname'], email: responseJson['email']);
-      user.loggedIn = true;
+      Map<String, dynamic> user = User.mapOf(
+          userName: responseJson['nickname'],
+          email: responseJson['email'],
+          loggedIn: true);
       return user;
     } on http.ClientException catch (e) {
       logger.e(e);
@@ -125,6 +130,7 @@ class UserApi {
   }
 
   healthServiceAuthenticate() async {
+    logger.d('authenticating');
     final host = HuaweiAuthApi();
     await host.getAuthenticate();
   }
@@ -135,7 +141,7 @@ class UserApi {
   }
 
   loadData() async {
-    // TODO: 
+    // TODO:
     final host = LoadDataApi();
     bool ifokay = await host.loaddata();
     logger.d("load data is $ifokay");

@@ -4,36 +4,34 @@ import 'package:fluttertoast/fluttertoast.dart';
 class FedCard extends StatelessWidget {
   const FedCard({
     super.key,
-    required this.fem,
-    required this.ffem,
     required this.widget,
   });
-  final double fem;
-  final double ffem;
   final Widget widget;
 
   @override
   Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
     return Container(
-      padding: EdgeInsets.fromLTRB(14 * fem, 18 * fem, 14 * fem, 17 * fem),
+      padding:
+          EdgeInsets.fromLTRB(10 * pixel, 17 * pixel, 10 * pixel, 14 * pixel),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.background,
-        borderRadius: BorderRadius.circular(24 * fem),
+        color: Theme.of(context).colorScheme.onBackground,
+        borderRadius: BorderRadius.circular(24 * pixel),
         boxShadow: [
           BoxShadow(
             color: Theme.of(context).colorScheme.shadow,
-            offset: Offset(0 * fem, 4 * fem),
-            blurRadius: 2 * fem,
+            offset: Offset(0 * pixel, 4 * pixel),
+            blurRadius: 2 * pixel,
           ),
           BoxShadow(
             color: Theme.of(context).colorScheme.outline,
-            offset: Offset(0 * fem, -1 * fem),
-            blurRadius: 1 * fem,
+            offset: Offset(0 * pixel, -1 * pixel),
+            blurRadius: 1 * pixel,
           ),
           BoxShadow(
             color: Theme.of(context).colorScheme.outline,
-            offset: Offset(0 * fem, 4 * fem),
-            blurRadius: 2 * fem,
+            offset: Offset(0 * pixel, 4 * pixel),
+            blurRadius: 2 * pixel,
           ),
         ],
       ),
@@ -45,22 +43,22 @@ class FedCard extends StatelessWidget {
 class FedIcon extends StatelessWidget {
   const FedIcon({
     super.key,
-    required this.fem,
     required this.imagePath,
     this.height = 39,
     this.width = 48,
   });
 
-  final double fem;
   final String imagePath;
   final double height;
   final double width;
   @override
   Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
     return Image.asset(
       imagePath,
-      width: width * fem,
-      height: height * fem,
+      fit: BoxFit.contain,
+      width: width * pixel,
+      height: height * pixel,
     );
   }
 }
@@ -90,25 +88,26 @@ class _SignInUpTextFieldState extends State<SignInUpTextField> {
 
   @override
   Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
     return Column(
       children: [
         ValueListenableBuilder<bool>(
           valueListenable: _focused,
           builder: (context, value, child) {
-            Color color = Theme.of(context).colorScheme.surfaceVariant;
+            Color color = Theme.of(context).colorScheme.onTertiaryContainer;
             if (value) {
-              color = Theme.of(context).colorScheme.primary;
+              color = Theme.of(context).colorScheme.onTertiaryContainer;
             } else {
-              Theme.of(context).colorScheme.surfaceVariant;
+              Theme.of(context).colorScheme.onTertiaryContainer;
             }
             return Text(
               widget.label,
-              style: TextStyle(fontSize: 18, color: color),
+              style: TextStyle(fontSize: pixel * 18, color: color),
             );
           },
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
+          padding: EdgeInsets.symmetric(horizontal: 30 * pixel),
           child: Focus(
             onFocusChange: onTextFieldFocus,
             child: TextFormField(
@@ -118,14 +117,14 @@ class _SignInUpTextFieldState extends State<SignInUpTextField> {
                 isDense: true,
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.surfaceVariant,
-                    width: 1.0,
+                    color: Theme.of(context).colorScheme.onTertiaryContainer,
+                    width: 1.0 * pixel,
                   ),
                 ),
                 focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.primary,
-                    width: 1.5,
+                    color: Theme.of(context).colorScheme.onTertiaryContainer,
+                    width: 1.5 * pixel,
                   ),
                 ),
               ),
@@ -137,8 +136,9 @@ class _SignInUpTextFieldState extends State<SignInUpTextField> {
   }
 }
 
-void showToastMessage(String msg) {
+void showToastMessage(String msg, BuildContext context) {
   FocusManager.instance.primaryFocus?.unfocus();
+  double pixel = MediaQuery.of(context).size.width / 400;
   Fluttertoast.showToast(
       msg: msg,
       toastLength: Toast.LENGTH_SHORT,
@@ -146,7 +146,7 @@ void showToastMessage(String msg) {
       timeInSecForIosWeb: 1,
       backgroundColor: Colors.red,
       textColor: Colors.white,
-      fontSize: 16.0);
+      fontSize: pixel * 16.0);
 }
 
 void showDialogMessage(String message, String title, BuildContext context) {
