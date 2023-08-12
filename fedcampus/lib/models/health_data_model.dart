@@ -1,13 +1,15 @@
+import 'dart:async';
+
 import 'package:fedcampus/models/health_data.dart';
 import 'package:fedcampus/pigeons/messages.g.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/me/user_api.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import '../pigeons/datawrapper.dart';
+import '../pigeons/huaweiauth.g.dart';
 
 class HealthDataModel extends ChangeNotifier {
   Map<String, double> healthData = HealthData.mapOf();
@@ -18,7 +20,7 @@ class HealthDataModel extends ChangeNotifier {
           DateTime.now().day)
       .toString();
 
-  final dataList = [
+  static final dataList = [
     "step",
     "calorie",
     "distance",
@@ -59,13 +61,13 @@ class HealthDataModel extends ChangeNotifier {
     }
 
     try {
-      healthData = await DataWrapper.getDataListToMap(dataList, date);
-      print(healthData.toString());
+      var dw = DataWrapper();
+      healthData = await dw.getDataListToMap(dataList, date);
       notifyListeners();
     } on PlatformException catch (error) {
       if (error.message == "java.lang.SecurityException: 50005") {
         logger.d("not authenticated");
-        // authAndGetData();
+        authAndGetData();
       } else if (error.message == "java.lang.SecurityException: 50030") {
         logger.d("internet issue");
         Fluttertoast.showToast(
@@ -81,20 +83,17 @@ class HealthDataModel extends ChangeNotifier {
     }
   }
 
-  // int date = 0;
-  //   logger.d(date);
-  //   try {
-  //     date = int.parse(_date);
-  //     for (var i = 0; i < dataList.length; i++) {
-  //       healthData[dataList[i]] =
-  //           (await getDataEntry(host, dataList[i], date))?.value ?? 0;
-  //     }
-  //     notifyListeners();
-  //   } on Exception catch (e) {
-  //     logger.e(e);
-  //     return;
-  //   }
-  // }
+  void authAndGetData() async {
+    HuaweiAuthApi host = HuaweiAuthApi();
+    try {
+      bool ifAuth = await host.getAuthenticate();
+      getData();
+      final dw = DataWrapper();
+      dw.getLastDayDataAndSend();
+    } on PlatformException catch (error) {
+      logger.e(error);
+    }
+  }
 
   Future<Data?> getDataEntry(DataApi host, String name, int time) async {
     List<Data?> dataList;

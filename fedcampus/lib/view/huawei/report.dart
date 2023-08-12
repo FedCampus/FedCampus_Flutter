@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -11,7 +10,6 @@ import 'package:fedcampus/utility/http_client.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/pigeons/messages.g.dart';
 import 'package:http/http.dart';
-import 'package:normal/normal.dart';
 import 'package:sample_statistics/sample_statistics.dart';
 
 import '../../pigeons/datawrapper.dart';
@@ -109,7 +107,8 @@ class _ReportPageState extends State<ReportPage> {
 
     late final List<Data?>? data;
     try {
-      data = await DataWrapper.getDataList(dataList, date);
+      var dw = DataWrapper();
+      data = await dw.getDataList(dataList, date);
     } on PlatformException catch (error) {
       if (error.message == "java.lang.SecurityException: 50005") {
         logger.d("not authenticated");

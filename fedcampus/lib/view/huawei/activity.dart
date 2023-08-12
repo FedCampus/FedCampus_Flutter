@@ -67,7 +67,8 @@ class _ActivityPageState extends State<ActivityPage> {
     late dynamic bodyJson;
     if (_date == _now) {
       try {
-        final data = await DataWrapper.getDataList(dataList, dataNumber);
+        var dw = DataWrapper();
+        final data = await dw.getDataList(dataList, dataNumber);
         bodyJson = jsonDecode(jsonEncode(data));
         // HTTPClient.post(HTTPClient.fedAnalysis, <String,String>{}, body)
       } on PlatformException catch (error) {
@@ -116,7 +117,8 @@ class _ActivityPageState extends State<ActivityPage> {
       }
 
       try {
-        final data = await DataWrapper.getDataList(dataMissing, dataNumber);
+        var dw = DataWrapper();
+        final data = await dw.getDataList(dataMissing, dataNumber);
         bodyJson = jsonDecode(jsonEncode(data));
 
         print(bodyJson);
