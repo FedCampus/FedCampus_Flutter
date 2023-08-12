@@ -34,12 +34,12 @@ class _HealthState extends State<Health> {
     setState(() {
       dateTime = selectedDate;
       logger.d(selectedDate);
-      String month = selectedDate.month.toString();
-      if (month.length < 2) month = '0$month';
-      String day = selectedDate.day.toString();
-      if (day.length < 2) day = '0$day';
-      String datecode = '${selectedDate.year}$month$day';
-      Provider.of<HealthDataModel>(context, listen: false).date = datecode;
+      int datecode = (selectedDate.year * 10000 +
+          selectedDate.month * 100 +
+          selectedDate.day);
+
+      Provider.of<HealthDataModel>(context, listen: false).date =
+          datecode.toString();
     });
   }
 
@@ -653,7 +653,7 @@ class Sleep extends StatelessWidget {
             children: [
               Text(
                   Provider.of<HealthDataModel>(context)
-                          .healthData['sleepEfficiency']
+                          .healthData['sleep_efficiency']
                           ?.toStringAsFixed(2) ??
                       '0',
                   style: TextStyle(

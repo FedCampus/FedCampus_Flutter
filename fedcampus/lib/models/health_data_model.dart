@@ -3,7 +3,11 @@ import 'package:fedcampus/pigeons/messages.g.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/me/user_api.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
+import '../pigeons/datawrapper.dart';
 
 class HealthDataModel extends ChangeNotifier {
   Map<String, double> healthData = HealthData.mapOf();
@@ -46,18 +50,44 @@ class HealthDataModel extends ChangeNotifier {
   Future<void> getData() async {
     int date = 0;
     logger.d(date);
+    date = int.parse(_date);
     try {
-      date = int.parse(_date);
-      for (var i = 0; i < dataList.length; i++) {
-        healthData[dataList[i]] =
-            (await getDataEntry(host, dataList[i], date))?.value ?? 0;
-      }
+      healthData = await DataWrapper.getDataListToMap(dataList, date);
+      print(healthData.toString());
       notifyListeners();
-    } on Exception catch (e) {
-      logger.e(e);
+    } on PlatformException catch (error) {
+      if (error.message == "java.lang.SecurityException: 50005") {
+        logger.d("not authenticated");
+        // authAndGetData();
+      } else if (error.message == "java.lang.SecurityException: 50030") {
+        logger.d("internet issue");
+        Fluttertoast.showToast(
+            msg: "Internet Connection Issue, please connect to Internet.",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+      }
       return;
     }
   }
+
+  // int date = 0;
+  //   logger.d(date);
+  //   try {
+  //     date = int.parse(_date);
+  //     for (var i = 0; i < dataList.length; i++) {
+  //       healthData[dataList[i]] =
+  //           (await getDataEntry(host, dataList[i], date))?.value ?? 0;
+  //     }
+  //     notifyListeners();
+  //   } on Exception catch (e) {
+  //     logger.e(e);
+  //     return;
+  //   }
+  // }
 
   Future<Data?> getDataEntry(DataApi host, String name, int time) async {
     List<Data?> dataList;

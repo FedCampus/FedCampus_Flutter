@@ -19,6 +19,21 @@ class DataWrapper {
     }
   }
 
+  static Future<Map<String, double>> getDataListToMap(
+      List<String> nameList, int time) async {
+    try {
+      List<Data?>? data = await getDataList(nameList, time);
+      Map<String, double> res = {};
+      // turn the data to a map
+      for (var d in data!) {
+        res.addAll({d!.name: d.value});
+      }
+      return res;
+    } on PlatformException {
+      rethrow;
+    }
+  }
+
   static Future<Data?> _getData(DataApi host, String name, int time) async {
     try {
       List<Data?> dataListOne = await host.getData(name, time, time);
