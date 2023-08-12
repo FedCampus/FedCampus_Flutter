@@ -51,6 +51,13 @@ class HealthDataModel extends ChangeNotifier {
     int date = 0;
     logger.d(date);
     date = int.parse(_date);
+
+    // TODO: add the loading notification
+    for (var i in dataList) {
+      healthData[i] = 0;
+      notifyListeners();
+    }
+
     try {
       healthData = await DataWrapper.getDataListToMap(dataList, date);
       print(healthData.toString());
