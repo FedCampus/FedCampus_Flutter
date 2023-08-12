@@ -219,7 +219,13 @@ private fun getInput2DArrayAndOutputArray(
         val time = SimpleDateFormat("yyyyMMdd").format(Date(data.startTime * 1000L)).toInt()
         val rowIndex = sizeOfSingleColumn - 1 - DateCalender.IntervalDay(start, time)
         if (data.name == "sleep_efficiency") {
-            outputArray[rowIndex] = data.value.toFloat()
+            try{
+            outputArray[rowIndex] = data.value.toFloat()}
+            catch (err: Exception){
+                print(time);
+                print(rowIndex);
+                print(data.toString());
+            }
             continue
         }
         val columnIndex = TAG_LIST.indexOf(data.name)

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -10,6 +11,8 @@ import 'package:fedcampus/utility/http_client.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/pigeons/messages.g.dart';
 import 'package:http/http.dart';
+import 'package:normal/normal.dart';
+import 'package:sample_statistics/sample_statistics.dart';
 
 import '../../pigeons/datawrapper.dart';
 
@@ -84,6 +87,17 @@ class _ReportPageState extends State<ReportPage> {
         )));
   }
 
+  void fuzzData(List<Data?>? data) {
+    List<double> error = truncatedNormalSample(data!.length, -10, 10, 0, 1);
+    for (var i = 0; i < data.length; i++) {
+      data[i] = Data(
+          name: data[i]!.name,
+          value: data[i]!.value + error[i] * 10,
+          startTime: data[i]!.startTime,
+          endTime: data[i]!.startTime);
+    }
+  }
+
   void _getLastDayDataAndSend() async {
     // get the data from the last day
     final now = DateTime.now();
@@ -113,19 +127,23 @@ class _ReportPageState extends State<ReportPage> {
       }
       return;
     }
+    List<Data> dataFuzz = List<Data>.from(data!);
+
+    fuzzData(dataFuzz);
 
     try {
       List<http.Response> responseArr = await Future.wait([
         HTTPClient.post(HTTPClient.data, <String, String>{}, jsonEncode(data)),
         // TODO: Data DP Algorithm!!!
-        HTTPClient.post(HTTPClient.dataDP, <String, String>{}, jsonEncode(data))
+        HTTPClient.post(
+            HTTPClient.dataDP, <String, String>{}, jsonEncode(dataFuzz))
       ]).timeout(const Duration(seconds: 5));
       // TODO: Time out for 5 seconds.
 
       logger.i(
           "Data Status Code ${responseArr[0].statusCode} : ${jsonEncode(data)}");
       logger.i(
-          "Data DP Status Code ${responseArr[1].statusCode} : ${jsonEncode(data)}");
+          "Data DP Status Code ${responseArr[1].statusCode} : ${jsonEncode(dataFuzz)}");
       if (responseArr[0].statusCode == 401) {
         // user login
         Fluttertoast.showToast(

@@ -1,12 +1,14 @@
 package com.cuhk.fedcampus
 
 
+import AlarmApi
 import DataApi
 import HuaweiAuthApi
 import LoadDataApi
 import android.content.Intent
 import android.util.Log
 import com.cuhk.fedcampus.health.health.auth.HealthKitAuthActivity
+import com.cuhk.fedcampus.pigeon.AlarmApiClass
 import com.cuhk.fedcampus.pigeon.DataApiClass
 import com.cuhk.fedcampus.pigeon.HuaweiAuthApiClass
 import com.cuhk.fedcampus.pigeon.LoadDataApiClass
@@ -52,6 +54,7 @@ class MainActivity : FlutterActivity() {
         DataApi.setUp(flutterEngine.dartExecutor.binaryMessenger, DataApiClass(this.activity));
         HuaweiAuthApi.setUp(flutterEngine.dartExecutor.binaryMessenger, HuaweiAuthApiClass(this))
         LoadDataApi.setUp(flutterEngine.dartExecutor.binaryMessenger, LoadDataApiClass(this))
+        AlarmApi.setUp(flutterEngine.dartExecutor.binaryMessenger, AlarmApiClass(this))
 
 
         val messager = flutterEngine.dartExecutor.binaryMessenger
@@ -118,7 +121,11 @@ class MainActivity : FlutterActivity() {
             } else {
                 this.callback(Result.success(false))
             }
-
+        }
+        else if (requestCode == 1001){
+            if (resultCode == 200){
+                this.callback(Result.success(true))
+            }
         }
     }
 
