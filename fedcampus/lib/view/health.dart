@@ -19,7 +19,9 @@ class Health extends StatefulWidget {
 
 class _HealthState extends State<Health> {
   DateTime dateTime = DateTime.now();
-  String dist = 'loading';
+
+  var dist = "...loading...";
+
   @override
   void initState() {
     super.initState();

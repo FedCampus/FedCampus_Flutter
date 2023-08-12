@@ -1,13 +1,17 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:http/http.dart' as http;
 import 'package:fedcampus/pigeons/datawrapper.dart';
+import "package:normal/normal.dart";
 
 import 'package:fedcampus/utility/http_client.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sample_statistics/sample_statistics.dart';
 
+import '../../pigeons/messages.g.dart';
 import '../../utility/log.dart';
 
 class ActivityPage extends StatefulWidget {
@@ -46,6 +50,14 @@ class _ActivityPageState extends State<ActivityPage> {
   void initState() {
     super.initState();
     _getActivityData();
+  }
+
+  void fuzzData(List<Data?>? data) {
+    List<double> error = truncatedNormalSample(data!.length, -10, 10, 0, 1);
+    for (var i = 0; i < data.length; i++) {
+      print(error[i]);
+      data[i]!.value = data[i]!.value + error[i];
+    }
   }
 
   void _getActivityData() async {
@@ -121,6 +133,7 @@ class _ActivityPageState extends State<ActivityPage> {
       List<http.Response> responseArr = await Future.wait([
         HTTPClient.post(
             HTTPClient.data, <String, String>{}, jsonEncode(bodyJson)),
+
         // TODO: Data DP Algorithm!!!
         HTTPClient.post(
             HTTPClient.dataDP, <String, String>{}, jsonEncode(bodyJson))
@@ -145,8 +158,6 @@ class _ActivityPageState extends State<ActivityPage> {
 
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
         body: Center(

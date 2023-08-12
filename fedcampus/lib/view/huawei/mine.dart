@@ -9,6 +9,8 @@ import 'package:flutter/services.dart';
 import 'package:fedcampus/view/train_app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../pigeons/alarm.g.dart';
+
 class MinePage extends StatefulWidget {
   const MinePage({super.key});
 
@@ -109,6 +111,12 @@ class _MinePageState extends State<MinePage>
     print("load data is $ifokay");
   }
 
+  void _setAlarm() async {
+    final host = AlarmApi();
+    var x = await host.setAlarm();
+    print(x);
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -168,6 +176,12 @@ class _MinePageState extends State<MinePage>
               child: const Text('load data'),
               onPressed: () {
                 _loadData();
+              },
+            ),
+            ElevatedButton(
+              child: const Text('Set Alarm for training'),
+              onPressed: () {
+                _setAlarm();
               },
             ),
             Text(log),
