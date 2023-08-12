@@ -25,7 +25,6 @@ class _HealthState extends State<Health> {
   void initState() {
     super.initState();
     refresh();
-    _sendLastDayData();
   }
 
   void _sendLastDayData() async {
@@ -35,6 +34,7 @@ class _HealthState extends State<Health> {
 
   Future<void> refresh() async {
     Provider.of<HealthDataModel>(context, listen: false).getData();
+    _sendLastDayData();
   }
 
   updateDate(DateTime selectedDate) {

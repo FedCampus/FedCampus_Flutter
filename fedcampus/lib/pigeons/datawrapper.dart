@@ -89,7 +89,7 @@ class DataWrapper {
     }
   }
 
-  void getLastDayDataAndSend() async {
+  void getLastDayDataAndSend({ifToast = false}) async {
     // get the data from the last day
     final now = DateTime.now();
     final yeasterday = now.add(const Duration(days: -1));
@@ -107,14 +107,16 @@ class DataWrapper {
         // authAndGetData();
       } else if (error.message == "java.lang.SecurityException: 50030") {
         logger.d("internet issue");
-        Fluttertoast.showToast(
-            msg: "Internet Connection Issue, please connect to Internet.",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        if (ifToast) {
+          Fluttertoast.showToast(
+              msg: "Internet Connection Issue, please connect to Internet.",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0);
+        }
       }
       return;
     }
