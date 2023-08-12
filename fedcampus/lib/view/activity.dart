@@ -247,10 +247,15 @@ class Date extends StatelessWidget {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: const Text("Select a day"),
-            content: CalendarDialog(
-              onDateChange: onDateChange,
-              primaryColor: Theme.of(context).colorScheme.onSecondaryContainer,
+            // title: const Text("Select a day"),
+            content: Container(
+              width: 200.0,
+              height: 200.0,
+              child: CalendarDialog(
+                onDateChange: onDateChange,
+                primaryColor:
+                    Theme.of(context).colorScheme.onSecondaryContainer,
+              ),
             ),
             actions: <Widget>[
               TextButton(

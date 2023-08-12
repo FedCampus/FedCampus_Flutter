@@ -20,7 +20,6 @@ class Health extends StatefulWidget {
 class _HealthState extends State<Health> {
   DateTime dateTime = DateTime.now();
 
-
   @override
   void initState() {
     super.initState();
@@ -176,9 +175,13 @@ class _DateState extends State<Date> {
         builder: (context) {
           return AlertDialog(
             title: const Text("Select a day"),
-            content: CalendarDialog(
-              onDateChange: change,
-              primaryColor: Theme.of(context).colorScheme.onPrimaryContainer,
+            content: Container(
+              height: 250,
+              width: 250,
+              child: CalendarDialog(
+                onDateChange: change,
+                primaryColor: Theme.of(context).colorScheme.onPrimaryContainer,
+              ),
             ),
             actions: <Widget>[
               TextButton(
@@ -482,7 +485,9 @@ class Step extends StatelessWidget {
             ),
             Text(
               'Step',
-              style: TextStyle(color: Theme.of(context).colorScheme.secondary,),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.secondary,
+              ),
             ),
           ],
         ),
