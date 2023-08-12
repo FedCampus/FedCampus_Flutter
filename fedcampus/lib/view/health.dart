@@ -312,7 +312,7 @@ class Heart extends StatelessWidget {
           children: [
             Text(
                 Provider.of<HealthDataModel>(context)
-                        .healthData['restHeartRate']
+                        .healthData['rest_heart_rate']
                         ?.toStringAsFixed(2) ??
                     '0',
                 style: TextStyle(
@@ -324,7 +324,7 @@ class Heart extends StatelessWidget {
             ),
             Text(
                 Provider.of<HealthDataModel>(context)
-                        .healthData['exerciseHeartRate']
+                        .healthData['exercise_heart_rate']
                         ?.toStringAsFixed(2) ??
                     '0',
                 style: TextStyle(
