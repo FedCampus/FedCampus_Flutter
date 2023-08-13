@@ -3,8 +3,10 @@ package com.cuhk.fedcampus.pigeon
 import LoadDataApi
 import android.content.Context
 import android.util.Log
+import com.cuhk.fedcampus.health.health.fedmcrnn.dataCleaning
 import com.cuhk.fedcampus.health.health.fedmcrnn.dataSlide
 import com.cuhk.fedcampus.health.health.fedmcrnn.getAllDataAvailable
+import com.cuhk.fedcampus.health.health.fedmcrnn.logger
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
@@ -27,21 +29,38 @@ class LoadDataApiClass(val context: Context) : LoadDataApi {
 //            callback(Result.success(true))
 //        }
 //    }
-    override fun loaddata(callback: (Result<List<Map<List<List<Double>>, List<Double>>>>) -> Unit) {
+    override fun loaddata(callback: (Result<Map<List<List<Double>>, List<Double>>>) -> Unit) {
 //        TODO("Not yet implemented")
         val scope = MainScope();
         println("starting to get data!")
 
         scope.launch {
+            logger("start data fetching")
             val data = getAllDataAvailable(context)
+            logger("finish data fetching")
+
+
+            logger("start data sliding")
             val input = dataSlide(data)
-            input.forEach { entry ->
-                println("input:")
-                printInputList(entry.key)
-                print("sleep: ${entry.value[0]}")
-                println("----------")
+            logger("finish data sliding")
+            logger("data cleaning");
+            dataCleaning(input);
+            logger("finish data cleaning")
+
+            val inputFinal = mutableMapOf<List<List<Double>>,List<Double>>()
+            for (entry in input){
+                val key= mutableListOf<List<Double>>();
+                for (item in entry.key){
+                    val itemFinal = item.toList();
+                    key.add(itemFinal)
+                }
+                val keyFinal = key.toList();
+                val valueFinal = entry.value.toList();
+                inputFinal[keyFinal] = valueFinal
             }
-            Result.success(input);
+            val inputFinalFinal = inputFinal.toMap();
+
+            callback(Result.success(inputFinalFinal))
         }
 
     }

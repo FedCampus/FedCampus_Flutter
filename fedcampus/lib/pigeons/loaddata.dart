@@ -23,5 +23,31 @@ import 'package:pigeon/pigeon.dart';
 @HostApi()
 abstract class LoadDataApi {
   @async
-  List<Map<List<List<double>>, List<double>>> loaddata();
+  Map<List<List<double>>, List<double>> loaddata();
 }
+
+
+/*
+This part is essential to load data
+
+      var x = replyList[0] as Map<Object?, Object?>;
+
+      Map<List<List<double>>, List<double>> xTrue = {};
+      for (var entry in x.entries) {
+        final value = entry.value as List<Object?>;
+        final key = entry.key as List<Object?>;
+        List<List<double>> twoDarrayTrue = List.empty(growable: true);
+        for (var onedarray in key) {
+          var x1 = (onedarray as List<Object?>);
+          List<double> onedarrayList = List.empty(growable: true);
+          for (final i in x1) {
+            onedarrayList.add(i as double);
+          }
+          twoDarrayTrue.add(onedarrayList);
+        }
+        xTrue[twoDarrayTrue] = [value[0]! as double];
+      }
+      return xTrue;
+
+
+*/

@@ -3,8 +3,10 @@
 // ignore_for_file: public_member_api_docs, non_constant_identifier_names, avoid_as, unused_import, unnecessary_parenthesis, prefer_null_aware_operators, omit_local_variable_types, unused_shown_name, unnecessary_import
 
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data' show Float64List, Int32List, Int64List, Uint8List;
 
+import 'package:fedcampus/utility/log.dart';
 import 'package:flutter/foundation.dart' show ReadBuffer, WriteBuffer;
 import 'package:flutter/services.dart';
 
@@ -18,12 +20,11 @@ class LoadDataApi {
 
   static const MessageCodec<Object?> codec = StandardMessageCodec();
 
-  Future<List<Map<List<List<double?>?>?, List<double?>?>?>> loaddata() async {
+  Future<Map<List<List<double?>?>?, List<double?>?>> loaddata() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.pigeon_example_package.LoadDataApi.loaddata', codec,
         binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(null) as List<Object?>?;
+    final List<Object?>? replyList = await channel.send(null) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -41,7 +42,24 @@ class LoadDataApi {
         message: 'Host platform returned null value for non-null return value.',
       );
     } else {
-      return (replyList[0] as List<Object?>?)!.cast<Map<List<List<double?>?>?, List<double?>?>?>();
+      var x = replyList[0] as Map<Object?, Object?>;
+
+      Map<List<List<double>>, List<double>> xTrue = {};
+      for (var entry in x.entries) {
+        final value = entry.value as List<Object?>;
+        final key = entry.key as List<Object?>;
+        List<List<double>> twoDarrayTrue = List.empty(growable: true);
+        for (var onedarray in key) {
+          var x1 = (onedarray as List<Object?>);
+          List<double> onedarrayList = List.empty(growable: true);
+          for (final i in x1) {
+            onedarrayList.add(i as double);
+          }
+          twoDarrayTrue.add(onedarrayList);
+        }
+        xTrue[twoDarrayTrue] = [value[0]! as double];
+      }
+      return xTrue;
     }
   }
 }

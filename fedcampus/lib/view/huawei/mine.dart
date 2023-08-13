@@ -108,12 +108,23 @@ class _MinePageState extends State<MinePage>
   void _loadData() async {
     final host = LoadDataApi();
     final input = await host.loaddata();
+    input.forEach((key, value) {
+      print("input");
+      printDoubleList(key);
+      print("sleep: ${value![0].toString()}");
+      print("------");
+    });
+  }
+
+  void printDoubleList(List<List<double?>?>? list) {
+    list!.forEach((element) {
+      print(element.toString());
+    });
   }
 
   void _setAlarm() async {
     final host = AlarmApi();
     var x = await host.setAlarm();
-    print(x);
   }
 
   @override

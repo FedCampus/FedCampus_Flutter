@@ -27,6 +27,22 @@ suspend fun loadData(
     val data = getAllDataAvailable(context)
     val input = dataSlide(data)
     dataCleaning(input)
+
+    // change the mutable list to a list
+    val inputFinal = mutableMapOf<List<List<Double>>,List<Double>>()
+    for (entry in input){
+        val key= mutableListOf<List<Double>>();
+        for (item in entry.key){
+            val itemFinal = item.toList();
+            key.add(itemFinal)
+        }
+        val keyFinal = key.toList();
+        val valueFinal = entry.value.toList();
+        inputFinal[keyFinal] = valueFinal
+    }
+    val inputFinalFinal = inputFinal.toMap();
+
+
 //    for (sample in input) {
 //        flowerClient.addSample(sample.first, sample.second, true)
 //        // TODO: Legitimate ways to evaluate instead of using the training set.
@@ -122,7 +138,7 @@ fun dataSlide(data: Pair<Array<DoubleArray>,DoubleArray>):MutableMap<MutableList
 
 suspend fun getAllDataAvailable(context: Context): Pair<Array<DoubleArray>,DoubleArray> {
     val maximumTime = 1
-    val interval = 25
+    val interval = 7
     var day = DateCalender.add(DateCalender.getCurrentDateNumber(), -1)
     val dataArray = (1..maximumTime).mapNotNull {
         val prevDay = DateCalender.add(day, -interval)
