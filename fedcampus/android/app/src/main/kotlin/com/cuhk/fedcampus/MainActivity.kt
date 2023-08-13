@@ -20,23 +20,15 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import org.eu.fedcampus.fed_kit_train.FlowerClient
 import org.eu.fedcampus.fed_kit.Train
-import org.eu.fedcampus.fed_kit.examples.cifar10.DATA_TYPE
-import org.eu.fedcampus.fed_kit.examples.cifar10.Float3DArray
-import org.eu.fedcampus.fed_kit.examples.cifar10.loadData
-import org.eu.fedcampus.fed_kit.examples.cifar10.sampleSpec
+import org.eu.fedcampus.fed_kit_examples.cifar10.DATA_TYPE
+import org.eu.fedcampus.fed_kit_examples.cifar10.Float3DArray
+import org.eu.fedcampus.fed_kit_examples.cifar10.loadData
+import org.eu.fedcampus.fed_kit_examples.cifar10.sampleSpec
+import org.eu.fedcampus.fed_kit_train.FlowerClient
 import org.eu.fedcampus.fed_kit_train.helpers.deviceId
 import org.eu.fedcampus.fed_kit_train.helpers.loadMappedFile
-import kotlin.Any
-import kotlin.Boolean
-import kotlin.FloatArray
-import kotlin.Int
 import kotlin.Result
-import kotlin.String
-import kotlin.Throwable
-import kotlin.Unit
-import kotlin.stackTraceToString
 import io.flutter.plugin.common.MethodChannel.Result as ResultFlutter
 
 class MainActivity : FlutterActivity() {
@@ -51,7 +43,7 @@ class MainActivity : FlutterActivity() {
         super.configureFlutterEngine(flutterEngine)
 
         // setup the pigeon file
-        DataApi.setUp(flutterEngine.dartExecutor.binaryMessenger, DataApiClass(this.activity));
+        DataApi.setUp(flutterEngine.dartExecutor.binaryMessenger, DataApiClass(this.activity))
         HuaweiAuthApi.setUp(flutterEngine.dartExecutor.binaryMessenger, HuaweiAuthApiClass(this))
         LoadDataApi.setUp(flutterEngine.dartExecutor.binaryMessenger, LoadDataApiClass(this))
         AlarmApi.setUp(flutterEngine.dartExecutor.binaryMessenger, AlarmApiClass(this))
@@ -105,9 +97,7 @@ class MainActivity : FlutterActivity() {
     }
 
     fun startActivityForFlutterResult(
-        intent: Intent,
-        requestCode: Int,
-        callback: (Result<Boolean>) -> Unit
+        intent: Intent, requestCode: Int, callback: (Result<Boolean>) -> Unit
     ) {
         this.callback = callback
         startActivityForResult(intent, requestCode)
