@@ -143,7 +143,6 @@ class UserApi {
   loadData() async {
     // TODO:
     final host = LoadDataApi();
-    bool ifokay = await host.loaddata();
-    logger.d("load data is $ifokay");
+    final input = await host.loaddata();
   }
 }

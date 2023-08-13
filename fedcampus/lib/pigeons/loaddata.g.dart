@@ -18,7 +18,7 @@ class LoadDataApi {
 
   static const MessageCodec<Object?> codec = StandardMessageCodec();
 
-  Future<bool> loaddata() async {
+  Future<List<Map<List<List<double?>?>?, List<double?>?>?>> loaddata() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.pigeon_example_package.LoadDataApi.loaddata', codec,
         binaryMessenger: _binaryMessenger);
@@ -41,7 +41,7 @@ class LoadDataApi {
         message: 'Host platform returned null value for non-null return value.',
       );
     } else {
-      return (replyList[0] as bool?)!;
+      return (replyList[0] as List<Object?>?)!.cast<Map<List<List<double?>?>?, List<double?>?>?>();
     }
   }
 }

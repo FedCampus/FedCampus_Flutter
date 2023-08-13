@@ -23,5 +23,5 @@ import 'package:pigeon/pigeon.dart';
 @HostApi()
 abstract class LoadDataApi {
   @async
-  bool loaddata();
+  List<Map<List<List<double>>, List<double>>> loaddata();
 }

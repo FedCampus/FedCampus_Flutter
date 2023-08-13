@@ -7,25 +7,27 @@ import io.flutter.plugin.common.BasicMessageChannel
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MessageCodec
 import io.flutter.plugin.common.StandardMessageCodec
+import java.io.ByteArrayOutputStream
+import java.nio.ByteBuffer
 
 private fun wrapResult(result: Any?): List<Any?> {
-    return listOf(result)
+  return listOf(result)
 }
 
 private fun wrapError(exception: Throwable): List<Any?> {
-    if (exception is FlutterError) {
-        return listOf(
-            exception.code,
-            exception.message,
-            exception.details
-        )
-    } else {
-        return listOf(
-            exception.javaClass.simpleName,
-            exception.toString(),
-            "Cause: " + exception.cause + ", Stacktrace: " + Log.getStackTraceString(exception)
-        )
-    }
+  if (exception is FlutterError) {
+    return listOf(
+      exception.code,
+      exception.message,
+      exception.details
+    )
+  } else {
+    return listOf(
+      exception.javaClass.simpleName,
+      exception.toString(),
+      "Cause: " + exception.cause + ", Stacktrace: " + Log.getStackTraceString(exception)
+    )
+  }
 }
 
 /**
@@ -37,39 +39,34 @@ private fun wrapError(exception: Throwable): List<Any?> {
 
 /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
 interface LoadDataApi {
-    fun loaddata(callback: (Result<Boolean>) -> Unit)
+  fun loaddata(callback: (Result<List<Map<List<List<Double>>, List<Double>>>>) -> Unit)
 
-    companion object {
-        /** The codec used by LoadDataApi. */
-        val codec: MessageCodec<Any?> by lazy {
-            StandardMessageCodec()
-        }
-
-        /** Sets up an instance of `LoadDataApi` to handle messages through the `binaryMessenger`. */
-        @Suppress("UNCHECKED_CAST")
-        fun setUp(binaryMessenger: BinaryMessenger, api: LoadDataApi?) {
-            run {
-                val channel = BasicMessageChannel<Any?>(
-                    binaryMessenger,
-                    "dev.flutter.pigeon.pigeon_example_package.LoadDataApi.loaddata",
-                    codec
-                )
-                if (api != null) {
-                    channel.setMessageHandler { _, reply ->
-                        api.loaddata() { result: Result<Boolean> ->
-                            val error = result.exceptionOrNull()
-                            if (error != null) {
-                                reply.reply(wrapError(error))
-                            } else {
-                                val data = result.getOrNull()
-                                reply.reply(wrapResult(data))
-                            }
-                        }
-                    }
-                } else {
-                    channel.setMessageHandler(null)
-                }
-            }
-        }
+  companion object {
+    /** The codec used by LoadDataApi. */
+    val codec: MessageCodec<Any?> by lazy {
+      StandardMessageCodec()
     }
+    /** Sets up an instance of `LoadDataApi` to handle messages through the `binaryMessenger`. */
+    @Suppress("UNCHECKED_CAST")
+    fun setUp(binaryMessenger: BinaryMessenger, api: LoadDataApi?) {
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.pigeon_example_package.LoadDataApi.loaddata", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            api.loaddata() { result: Result<List<Map<List<List<Double>>, List<Double>>>> ->
+              val error = result.exceptionOrNull()
+              if (error != null) {
+                reply.reply(wrapError(error))
+              } else {
+                val data = result.getOrNull()
+                reply.reply(wrapResult(data))
+              }
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+    }
+  }
 }

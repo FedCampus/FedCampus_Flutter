@@ -107,8 +107,7 @@ class _MinePageState extends State<MinePage>
 
   void _loadData() async {
     final host = LoadDataApi();
-    bool ifokay = await host.loaddata();
-    print("load data is $ifokay");
+    final input = await host.loaddata();
   }
 
   void _setAlarm() async {
