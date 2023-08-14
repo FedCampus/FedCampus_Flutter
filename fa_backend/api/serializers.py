@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
+from django.db.utils import IntegrityError
 
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
@@ -61,9 +62,13 @@ class RegisterSerializer(serializers.Serializer):
         user = authenticate(username=email, password=password)
         if user is None:
             # create a new user
-            user = User.objects.create_user(
-                username=email, password=password, email=email
-            )
+            try:
+                user = User.objects.create_user(
+                    username=email, password=password, email=email
+                )
+            except IntegrityError:
+                raise serializers.ValidationError({"error": "user already exists"})
+
             Customer.objects.create(user=user, nickname=netid, netid=netid)
             token = Token.objects.get_or_create(user=user)
             data["auth_token"] = token[0].key

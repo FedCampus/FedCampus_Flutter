@@ -28,8 +28,8 @@ class Record(models.Model):
                 & Q(endTime=endTime)
                 & Q(dataType=dataType)
             )[0]
-            value = record.data.get("value")
-            if not value == data.get("value"):
+            value = record.value
+            if not value == float(data.get("value")):
                 # record.data = data
                 record.value = float(data.get("value"))
                 record.save()
@@ -103,8 +103,8 @@ def saveRecord(Data, user, startTime, endTime, dataType, data):
             & Q(endTime=endTime)
             & Q(dataType=dataType)
         )[0]
-        value = record.data.get("value")
-        if not value == data.get("value"):
+        value = record.value
+        if not value == float(data.get("value")):
             record.value = float(data.get("value"))
             record.save()
     except:

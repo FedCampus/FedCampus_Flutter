@@ -219,50 +219,54 @@ class FedAnalysis(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
-        startTime = 0
-        dataList = []
-        for data in request.data:
-            if data.get("time"):
-                startTime = data.get("time")
-                continue
-            dataList.append(data.get("name"))
-            saveRecord(
-                Data=RecordDP,
-                user=request.user,
-                dataType=data.get("name"),
-                startTime=int(
-                    time.strftime(
-                        "%Y%m%d%H%M%S",
-                        time.localtime(data.get("startTime") + 28800),
-                    )
-                ),
-                endTime=int(
-                    time.strftime(
-                        "%Y%m%d%H%M%S",
-                        time.localtime(data.get("startTime") + 28800),
-                    )
-                ),
-                data=data,
+        # timeDate = 0
+        # for data in request.data:
+        #     timeDate = 0 if data.get("time") is None else data.get("time")
+        startTime = int(
+            time.strftime(
+                "%Y%m%d%H%M%S",
+                time.localtime(request.data[0].get("startTime") + 28800),
             )
-        return Response(self.calculateAverageAndRanking(request, startTime))
+        )
+        print(startTime)
+        now = datetime.datetime.now()
+        currentDate = now.year * 10000 + now.month * 100 + now.day
 
-    def calculateAverageAndRanking(self, request, dateTime):
-        dateTime = dateTime * 1000000
-
-        resultJson = {}
-
-        for dataType in FA_DATA:
-            querySet = RecordDP.objects.filter(
-                Q(dataType=dataType) & Q(startTime=dateTime)
-            ).order_by("-value")
-            if not querySet.filter(user=request.user).exists():
-                continue
-            query = querySet.get(user=request.user)
-            avg = querySet.aggregate(Avg("value")).get("value__avg")
-            percentage = self.calculatePercentage(querySet, query)
-            resultJson[dataType] = {"avg": avg, "ranking": percentage}
-
-        return resultJson
+        for data in request.data:
+            timeDate = data.get("time")
+            if timeDate:
+                # check if it is current day
+                now = datetime.datetime.now()
+                currentDate = now.year * 10000 + now.month * 100 + now.day
+                if currentDate == timeDate:
+                    # same day, continue
+                    continue
+                else:
+                    # check the result and give the result back to user
+                    return self.checkAndSend(timeDate, request)
+                    pass
+                pass
+            else:
+                saveRecord(
+                    Data=RecordDP,
+                    user=request.user,
+                    dataType=data.get("name"),
+                    startTime=int(
+                        time.strftime(
+                            "%Y%m%d%H%M%S",
+                            time.localtime(data.get("startTime") + 28800),
+                        )
+                    ),
+                    endTime=int(
+                        time.strftime(
+                            "%Y%m%d%H%M%S",
+                            time.localtime(data.get("startTime") + 28800),
+                        )
+                    ),
+                    data=data,
+                )
+                pass
+        return Response(None)
 
     def checkAndSend(self, dateTime, request):
         dateTime = dateTime * 1000000
@@ -284,13 +288,22 @@ class FedAnalysis(APIView):
                 avgJson[dataType] = {"avg": avg, "ranking": percentage}
             return Response(avgJson)
 
-    def calculatePercentage(self, querySet, query):
+    def sendToday(self, dateTime, request):
+        dateTime = dateTime * 1000000
+        result = RecordDP.objects.filter(
+            Q(startTime=dateTime) & Q(user=request.user) & Q(dataType__in=FA_DATA)
+        )
+        avgJson = {}
+
+    def calculatePercentage(self, querySet, request):
+        query = querySet.get(user=request.user)
         ranking = (
             querySet.filter(value__gt=query.value).count() + 1
         )  # ranking = index + 1
         totalLength = querySet.count()
         realPercentage = ranking / totalLength * 100
         for i in range(1, 21):
+            # print(i * 5)
             i = i * 5
             if i >= realPercentage:
                 return i
