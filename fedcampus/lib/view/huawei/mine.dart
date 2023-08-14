@@ -119,6 +119,7 @@ class _MinePageState extends State<MinePage>
   void printDoubleList(List<List<double?>?>? list) {
     for (final element in list!) {
       logger.i(element.toString());
+    }
   }
 
   void _setAlarm() async {
