@@ -29,7 +29,9 @@ class _SignUpState extends State<SignUp> {
       return;
     }
     if (mounted) showToastMessage('sign up sucess', context);
+    // ignore: use_build_context_synchronously
     await Provider.of<UserModel>(context, listen: false).setUser(user);
+    // ignore: use_build_context_synchronously
     Navigator.pop(context, true);
   }
 
@@ -80,13 +82,6 @@ class _SignUpState extends State<SignUp> {
               field: _netid,
               label: 'NetID',
               onChanged: (value) => {_netid = value},
-            ),
-            const Expanded(flex: 1, child: SizedBox()),
-            SignInUpTextField(
-              ifObscure: true,
-              field: _password,
-              label: 'Password',
-              onChanged: (value) => {_password = value},
             ),
             const Expanded(flex: 1, child: SizedBox()),
             ElevatedButton(
