@@ -68,7 +68,7 @@ class _ActivityState extends State<Activity> {
 
   Future<void> refresh() async {
     await Provider.of<ActivityDataModel>(context, listen: false)
-        .getActivityDataTest();
+        .getActivityData();
   }
 
   updateDate(DateTime selectedDate) {
