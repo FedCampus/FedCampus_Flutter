@@ -68,13 +68,17 @@ class _HealthState extends State<Health> {
         if (!Provider.of<HealthDataModel>(context).loading) {
           Navigator.of(context).pop(true);
         }
-        return Material(
-          color: Colors.transparent,
-          child: Center(
-            child: SizedBox(
-              height: 40 * pixel,
-              width: 40 * pixel,
-              child: const CircularProgressIndicator(strokeWidth: 2.0),
+        return WillPopScope(
+          // https://stackoverflow.com/a/59755386
+          onWillPop: () async => false,
+          child: Material(
+            color: Colors.transparent,
+            child: Center(
+              child: SizedBox(
+                height: 40 * pixel,
+                width: 40 * pixel,
+                child: const CircularProgressIndicator(strokeWidth: 2.0),
+              ),
             ),
           ),
         );

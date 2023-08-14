@@ -53,14 +53,14 @@ class HealthDataModel extends ChangeNotifier {
   }
 
   Future<void> getData() async {
+    _loading = true;
+    notifyListeners();
     int date = 0;
     logger.d(date);
     date = int.parse(_date);
 
     for (var i in dataList) {
       healthData[i] = 0;
-      _loading = true;
-      notifyListeners();
     }
 
     try {
@@ -71,9 +71,12 @@ class HealthDataModel extends ChangeNotifier {
     } on PlatformException catch (error) {
       if (error.message == "java.lang.SecurityException: 50005") {
         logger.d("not authenticated");
+        _loading = false;
         authAndGetData();
       } else if (error.message == "java.lang.SecurityException: 50030") {
         logger.d("internet issue");
+        _loading = false;
+        notifyListeners();
         Fluttertoast.showToast(
             msg: "Internet Connection Issue, please connect to Internet.",
             toastLength: Toast.LENGTH_SHORT,

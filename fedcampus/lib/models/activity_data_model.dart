@@ -14,6 +14,7 @@ class ActivityDataModel extends ChangeNotifier {
   Map<String, dynamic> activityData = ActivityData.create();
   bool isAuth = false;
   bool ifSent = false;
+  bool _loading = false;
   late final DataApi host;
 
   String _date = (DateTime.now().year * 10000 +
@@ -42,6 +43,8 @@ class ActivityDataModel extends ChangeNotifier {
 
   bool get isAuthenticated => isAuth;
 
+  bool get loading => _loading;
+
   set isAuthenticated(bool auth) {
     isAuth = auth;
     userApi.prefs.setBool("login", auth);
@@ -59,8 +62,8 @@ class ActivityDataModel extends ChangeNotifier {
 
   Future<void> getActivityDataTest() async {
     for (final (i, dataEntryName) in dataList.indexed) {
-      activityData[dataEntryName]["average"] = '${i.toString()}01';
-      activityData[dataEntryName]["rank"] = '${i.toString()}02';
+      activityData[dataEntryName]["average"] = 15110.045;
+      activityData[dataEntryName]["rank"] = '100%';
     }
     notifyListeners();
   }
@@ -100,20 +103,24 @@ class ActivityDataModel extends ChangeNotifier {
   void _setAndNotify(dynamic jsonValue) {
     final jsonMap = jsonValue as Map<String, dynamic>;
     jsonMap.forEach((key, value) {
-      activityData[key]['average'] = value['avg'].toString();
+      activityData[key]['average'] = value['avg'];
       activityData[key]['rank'] = ("${value['ranking']}%");
     });
+    _loading = false;
     notifyListeners();
   }
 
   void _clearAll() {
     for (final s in dataList) {
-      activityData[s]["average"] = "0";
+      activityData[s]["average"] = 0;
       activityData[s]["rank"] = "0";
     }
   }
 
   Future<void> getActivityData() async {
+    _loading = true;
+    notifyListeners();
+
     _clearAll();
     // get data and send to the server
     final dataNumber = int.parse(_date);
@@ -165,6 +172,8 @@ class ActivityDataModel extends ChangeNotifier {
         } else if (error.message == "java.lang.SecurityException: 50030") {
           logger.d("Internet connection Issue");
         }
+        _loading = false;
+        notifyListeners();
         return;
       }
 

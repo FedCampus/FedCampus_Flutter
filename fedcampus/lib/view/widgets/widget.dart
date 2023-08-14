@@ -5,15 +5,23 @@ class FedCard extends StatelessWidget {
   const FedCard({
     super.key,
     required this.widget,
+    this.left = 10,
+    this.top = 17,
+    this.right = 10,
+    this.bottom = 14,
   });
   final Widget widget;
+  final double left;
+  final double top;
+  final double right;
+  final double bottom;
 
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
     return Container(
-      padding:
-          EdgeInsets.fromLTRB(10 * pixel, 17 * pixel, 10 * pixel, 14 * pixel),
+      padding: EdgeInsets.fromLTRB(
+          left * pixel, top * pixel, right * pixel, bottom * pixel),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.onBackground,
         borderRadius: BorderRadius.circular(24 * pixel),
