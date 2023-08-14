@@ -14,6 +14,7 @@ import '../pigeons/huaweiauth.g.dart';
 class HealthDataModel extends ChangeNotifier {
   Map<String, double> healthData = HealthData.mapOf();
   bool isAuth = false;
+  bool _loading = false;
   late final DataApi host;
   String _date = (DateTime.now().year * 10000 +
           DateTime.now().month * 100 +
@@ -44,6 +45,8 @@ class HealthDataModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool get loading => _loading;
+
   set date(String date) {
     _date = date;
     getData();
@@ -54,15 +57,16 @@ class HealthDataModel extends ChangeNotifier {
     logger.d(date);
     date = int.parse(_date);
 
-    // TODO: add the loading notification
     for (var i in dataList) {
       healthData[i] = 0;
+      _loading = true;
       notifyListeners();
     }
 
     try {
       var dw = DataWrapper();
       healthData = await dw.getDataListToMap(dataList, date);
+      _loading = false;
       notifyListeners();
     } on PlatformException catch (error) {
       if (error.message == "java.lang.SecurityException: 50005") {

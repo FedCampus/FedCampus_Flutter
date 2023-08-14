@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -83,26 +84,26 @@ class _CalendarDialogState extends State<CalendarDialog> {
         SizedBox(
           height: 200 * pixel,
           child: TableCalendar(
+            daysOfWeekHeight: 22 * pixel,
             calendarBuilders: CalendarBuilders(
               dowBuilder: (context, day) {
                 final text = DateFormat.E().format(day);
                 if (day.weekday == DateTime.sunday ||
                     day.weekday == DateTime.saturday) {
                   return Center(
-                    child: Text(
+                    child: AutoSizeText(
                       text,
-                      style: TextStyle(
-                        color: widget.primaryColor,
-                      ),
+                      style:
+                          TextStyle(color: widget.primaryColor, fontSize: 20),
                     ),
                   );
                 }
                 return Center(
-                  child: Text(
+                  child: AutoSizeText(
                     text,
                     style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
+                        color: Theme.of(context).colorScheme.primary,
+                        fontSize: 20),
                   ),
                 );
               },

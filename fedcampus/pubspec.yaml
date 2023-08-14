@@ -53,6 +53,7 @@ dependencies:
 
   flutter_localizations:
     sdk: flutter
+  auto_size_text: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -123,6 +124,9 @@ flutter:
     - family: Montserrat Alternates
       fonts:
         - asset: fonts/MontserratAlternates-Regular.ttf
+    - family: Noto Sans
+      fonts:
+        - asset: fonts/NotoSans-Regular.ttf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
