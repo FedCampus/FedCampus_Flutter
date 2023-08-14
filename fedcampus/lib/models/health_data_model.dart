@@ -38,6 +38,8 @@ class HealthDataModel extends ChangeNotifier {
 
   bool get isAuthenticated => isAuth;
 
+  String get date => _date;
+
   set isAuthenticated(bool auth) {
     isAuth = auth;
     userApi.prefs.setBool("login", auth);
