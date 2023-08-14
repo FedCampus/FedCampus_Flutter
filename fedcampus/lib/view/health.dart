@@ -24,9 +24,11 @@ class _HealthState extends State<Health> {
   @override
   void initState() {
     super.initState();
-    this.dateTime = DateTime.parse(
+    dateTime = DateTime.parse(
         Provider.of<HealthDataModel>(context, listen: false).date);
-    refresh();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      refresh();
+    });
   }
 
   void _sendLastDayData() async {
@@ -36,20 +38,48 @@ class _HealthState extends State<Health> {
 
   Future<void> refresh() async {
     Provider.of<HealthDataModel>(context, listen: false).getData();
+    showLoadingBeforeLocalDataAvailable();
     _sendLastDayData();
   }
 
   updateDate(DateTime selectedDate) {
     setState(() {
       dateTime = selectedDate;
-      logger.d(selectedDate);
-      int datecode = (selectedDate.year * 10000 +
-          selectedDate.month * 100 +
-          selectedDate.day);
-
-      Provider.of<HealthDataModel>(context, listen: false).date =
-          datecode.toString();
     });
+    logger.d(selectedDate);
+    int datecode = (selectedDate.year * 10000 +
+        selectedDate.month * 100 +
+        selectedDate.day);
+    Provider.of<HealthDataModel>(context, listen: false).date =
+        datecode.toString();
+    showLoadingBeforeLocalDataAvailable();
+  }
+
+  void showLoadingBeforeLocalDataAvailable() {
+    // we do not use AlertDialog here because it has an intrinsic constraint of minimum width,
+    // as suggested here: https://stackoverflow.com/a/53913355
+    showGeneralDialog(
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.5),
+      pageBuilder: (context, __, ___) {
+        double pixel = MediaQuery.of(context).size.width / 400;
+        logger.d(
+            'loading: ${Provider.of<HealthDataModel>(context, listen: false).loading}');
+        if (!Provider.of<HealthDataModel>(context).loading) {
+          Navigator.of(context).pop(true);
+        }
+        return Material(
+          color: Colors.transparent,
+          child: Center(
+            child: SizedBox(
+              height: 40 * pixel,
+              width: 40 * pixel,
+              child: const CircularProgressIndicator(strokeWidth: 2.0),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -184,9 +214,9 @@ class _DateState extends State<Date> {
         builder: (context) {
           return AlertDialog(
             title: const Text("Select a day"),
-            content: Container(
-              height: 250,
-              width: 250,
+            content: SizedBox(
+              height: 285 * pixel,
+              width: 300 * pixel,
               child: CalendarDialog(
                 onDateChange: change,
                 primaryColor: Theme.of(context).colorScheme.onPrimaryContainer,
@@ -196,8 +226,8 @@ class _DateState extends State<Date> {
               TextButton(
                 child: const Text("Confirm"),
                 onPressed: () {
-                  widget.onDateChange(_date);
                   Navigator.of(context).pop();
+                  widget.onDateChange(_date);
                 },
               ),
             ],

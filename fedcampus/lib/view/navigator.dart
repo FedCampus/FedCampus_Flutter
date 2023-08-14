@@ -40,6 +40,10 @@ class _BottomNavigatorState extends State<BottomNavigator> {
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
+    TextStyle textStyle = TextStyle(
+      fontSize: 13 * pixel,
+      fontFamily: 'Noto Sans',
+    );
     return Scaffold(
       appBar: AppBar(
         // backgroundColor: Theme.of(context).colorScheme.primaryContainer,
@@ -50,25 +54,28 @@ class _BottomNavigatorState extends State<BottomNavigator> {
         ),
       ),
       body: _widgetOptions.elementAt(_selectedIndex),
+      // https://stackoverflow.com/a/55174433
       bottomNavigationBar: SizedBox(
-        height: 75 * pixel,
+        height: 65 * pixel,
         child: BottomNavigationBar(
+          unselectedLabelStyle: textStyle,
+          selectedLabelStyle: textStyle,
           // https://stackoverflow.com/a/57126622
           backgroundColor: Theme.of(context).colorScheme.onPrimary,
           items: [
             BottomNavigationBarItem(
               label: 'Health',
               icon: SizedBox(
-                width: 40 * pixel,
-                height: 40 * pixel,
+                width: 32 * pixel,
+                height: 32 * pixel,
                 child: Image.asset(
                   'assets/images/health_nav_icon_inactive.png',
                   fit: BoxFit.contain,
                 ),
               ),
               activeIcon: SizedBox(
-                width: 40 * pixel,
-                height: 40 * pixel,
+                width: 32 * pixel,
+                height: 32 * pixel,
                 child: Image.asset(
                   'assets/images/health_nav_icon.png',
                   fit: BoxFit.contain,
@@ -78,16 +85,16 @@ class _BottomNavigatorState extends State<BottomNavigator> {
             BottomNavigationBarItem(
               label: 'Activity',
               icon: SizedBox(
-                width: 40 * pixel,
-                height: 40 * pixel,
+                width: 32 * pixel,
+                height: 32 * pixel,
                 child: Image.asset(
                   'assets/images/activity_nav_icon_inactive.png',
                   fit: BoxFit.contain,
                 ),
               ),
               activeIcon: SizedBox(
-                width: 40 * pixel,
-                height: 40 * pixel,
+                width: 32 * pixel,
+                height: 32 * pixel,
                 child: Image.asset(
                   'assets/images/activity_nav_icon.png',
                   fit: BoxFit.contain,
@@ -97,16 +104,16 @@ class _BottomNavigatorState extends State<BottomNavigator> {
             BottomNavigationBarItem(
               label: 'Me',
               icon: SizedBox(
-                width: 40 * pixel,
-                height: 40 * pixel,
+                width: 32 * pixel,
+                height: 32 * pixel,
                 child: Image.asset(
                   'assets/images/me_nav_icon_inactive.png',
                   fit: BoxFit.contain,
                 ),
               ),
               activeIcon: SizedBox(
-                width: 40 * pixel,
-                height: 40 * pixel,
+                width: 32 * pixel,
+                height: 32 * pixel,
                 child: Image.asset(
                   'assets/images/me_nav_icon.png',
                   fit: BoxFit.contain,

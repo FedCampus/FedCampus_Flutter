@@ -71,13 +71,23 @@ class _SignInState extends State<SignIn> {
               child: Column(
             children: <Widget>[
               const Expanded(flex: 1, child: SizedBox()),
-              CircleAvatar(
-                foregroundImage: const AssetImage(
-                  'assets/images/me_nav_icon.png',
+              ClipOval(
+                child: Stack(
+                  children: [
+                    Container(
+                      width: 100 * pixel,
+                      height: 100 * pixel,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
+                      ),
+                    ),
+                    Image.asset(
+                      'assets/images/me_nav_icon.png',
+                      width: 100 * pixel,
+                      height: 100 * pixel,
+                    ),
+                  ],
                 ),
-                backgroundColor: Theme.of(context).colorScheme.surface,
-                maxRadius: 50 * pixel,
-                // minRadius: 60 * pixel,
               ),
               const Expanded(child: SizedBox()),
               Text(
