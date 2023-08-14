@@ -51,8 +51,11 @@ class ActivityDataModel extends ChangeNotifier {
   set date(String date) {
     _date = date;
     // _getActivityData();
-    getActivityDataTest();
+    // getActivityDataTest();
+    getActivityData();
   }
+
+  String get date => _date;
 
   Future<void> getActivityDataTest() async {
     for (final (i, dataEntryName) in dataList.indexed) {
@@ -62,11 +65,12 @@ class ActivityDataModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _getActivityData() async {
-    // get data and send to the server
+  Future<http.Response> _sendFirstRequest() async {
     final dataNumber = int.parse(_date);
 
     late dynamic bodyJson;
+
+    // get body json
     if (_date == _now) {
       try {
         var dw = DataWrapper();
@@ -79,52 +83,81 @@ class ActivityDataModel extends ChangeNotifier {
         } else if (error.message == "java.lang.SecurityException: 50030") {
           logger.d("Internet connection Issue");
         }
-        return;
+        rethrow;
       }
     } else {
       bodyJson = List.empty(growable: true);
     }
-
     bodyJson.add({"time": dataNumber});
 
+    //send the first request
     http.Response response = await HTTPClient.post(
         HTTPClient.fedAnalysis, <String, String>{}, jsonEncode(bodyJson));
 
+    return response;
+  }
+
+  void _setAndNotify(dynamic jsonValue) {
+    final jsonMap = jsonValue as Map<String, dynamic>;
+    jsonMap.forEach((key, value) {
+      activityData[key]['average'] = value['avg'].toString();
+      activityData[key]['rank'] = ("${value['ranking']}%");
+    });
+    notifyListeners();
+  }
+
+  void _clearAll() {
+    for (final s in dataList) {
+      activityData[s]["average"] = "0";
+      activityData[s]["rank"] = "0";
+    }
+  }
+
+  Future<void> getActivityData() async {
+    _clearAll();
+    // get data and send to the server
+    final dataNumber = int.parse(_date);
+
+    late dynamic bodyJson;
+
+    late http.Response response;
+
+    try {
+      response = await _sendFirstRequest();
+    } on PlatformException catch (error) {
+      logger.e(error);
+      return;
+    }
+
     if (response.statusCode == 200) {
-      // show the data
-      final responseJson = jsonDecode(response.body);
-      print(ifSent);
-
-      // setState(() {
-      //   _log = dataNumber.toString() + "\n";
-      //   jsonDecode(response.body).forEach((index, value) {
-      //     _log += ("$index - $value \n");
-      //   });
-      // });
-
+      // if the date is now, then return
       if (_date == _now) {
+        _setAndNotify(jsonDecode(response.body));
         return;
       }
 
       // check if there is data missing
+      final responseJson = jsonDecode(response.body);
       List<String> dataMissing = List.empty(growable: true);
-
       dataList.forEach((element) {
         if (responseJson[element] == null) {
           dataMissing.add(element);
         }
       });
-
       if (dataList.isEmpty) {
+        _setAndNotify(jsonDecode(response.body));
         return;
       }
 
+      // if there is data missing, send the second request
+      if (ifSent) {
+        _setAndNotify(jsonDecode(response.body));
+        return;
+      }
       try {
         var dw = DataWrapper();
         final data = await dw.getDataList(dataMissing, dataNumber);
         bodyJson = jsonDecode(jsonEncode(data));
-
-        print(bodyJson);
         // HTTPClient.post(HTTPClient.fedAnalysis, <String,String>{}, body)
       } on PlatformException catch (error) {
         if (error.message == "java.lang.SecurityException: 50005") {
@@ -149,11 +182,8 @@ class ActivityDataModel extends ChangeNotifier {
           "Data DP Status Code ${responseArr[1].statusCode} : ${jsonEncode(bodyJson)}");
 
       if (responseArr[0].statusCode == 200) {
-        if (ifSent) {
-          return;
-        }
         ifSent = true;
-        _getActivityData();
+        getActivityData();
       } else {
         logger.d("error");
       }

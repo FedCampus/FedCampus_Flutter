@@ -1,8 +1,10 @@
+import 'package:fedcampus/models/user_model.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/me/user_api.dart';
 import 'package:flutter/material.dart';
 
 import 'package:fedcampus/view/widgets/widget.dart';
+import 'package:provider/provider.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -18,14 +20,17 @@ class _SignUpState extends State<SignUp> {
   var _netid = "";
 
   signUp() async {
+    late Map<String, dynamic> user;
     try {
-      await userApi.signUp(_email, _netid, _password, _passwordConfirm);
+      user = await userApi.signUp(_email, _netid, _password, _passwordConfirm);
     } on Exception catch (e) {
       logger.e(e);
       if (mounted) showToastMessage(e.getMessage, context);
       return;
     }
     if (mounted) showToastMessage('sign up sucess', context);
+    await Provider.of<UserModel>(context, listen: false).setUser(user);
+    Navigator.pop(context, true);
   }
 
   @override
@@ -50,30 +55,35 @@ class _SignUpState extends State<SignUp> {
             ),
             const Expanded(flex: 3, child: SizedBox()),
             SignInUpTextField(
+              ifObscure: false,
               field: _email,
               label: 'Email',
               onChanged: (value) => {_email = value},
             ),
             const Expanded(flex: 1, child: SizedBox()),
             SignInUpTextField(
+              ifObscure: true,
               field: _password,
               label: 'Password',
               onChanged: (value) => {_password = value},
             ),
             const Expanded(flex: 1, child: SizedBox()),
             SignInUpTextField(
+              ifObscure: true,
               field: _passwordConfirm,
               label: 'Password confirm',
               onChanged: (value) => {_passwordConfirm = value},
             ),
             const Expanded(flex: 1, child: SizedBox()),
             SignInUpTextField(
+              ifObscure: false,
               field: _netid,
               label: 'NetID',
               onChanged: (value) => {_netid = value},
             ),
             const Expanded(flex: 1, child: SizedBox()),
             SignInUpTextField(
+              ifObscure: true,
               field: _password,
               label: 'Password',
               onChanged: (value) => {_password = value},

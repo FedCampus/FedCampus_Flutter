@@ -30,8 +30,20 @@ class _SignInState extends State<SignIn> {
       return;
     }
     if (mounted) {
-      Provider.of<UserModel>(context, listen: false).setUser = user;
+      await Provider.of<UserModel>(context, listen: false).setUser(user);
       showToastMessage('login success', context);
+      Navigator.pop(context, true);
+    }
+  }
+
+  void _toSignUp() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SignUp()),
+    );
+
+    if (result) {
+      Navigator.pop(context, true);
     }
   }
 
@@ -81,12 +93,14 @@ class _SignInState extends State<SignIn> {
               ),
               const Expanded(child: SizedBox()),
               SignInUpTextField(
+                ifObscure: false,
                 field: _username,
                 label: 'Email',
                 onChanged: (value) => {_username = value},
               ),
               const Expanded(flex: 2, child: SizedBox()),
               SignInUpTextField(
+                ifObscure: true,
                 field: _password,
                 label: 'Password',
                 onChanged: (value) => {_password = value},
@@ -98,10 +112,7 @@ class _SignInState extends State<SignIn> {
               ),
               const Expanded(child: SizedBox()),
               TextButton(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SignUp()),
-                ),
+                onPressed: () => _toSignUp(),
                 child: Text(
                   'No account? Sign up',
                   style: TextStyle(

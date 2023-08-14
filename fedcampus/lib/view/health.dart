@@ -24,6 +24,8 @@ class _HealthState extends State<Health> {
   @override
   void initState() {
     super.initState();
+    dateTime = DateTime.parse(
+        Provider.of<HealthDataModel>(context, listen: false).date);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       refresh();
     });

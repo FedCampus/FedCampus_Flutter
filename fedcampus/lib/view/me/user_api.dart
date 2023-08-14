@@ -77,8 +77,8 @@ class UserApi {
     }
   }
 
-  Future<void> signUp(String email, String netid, String password,
-      String passwordConfirm) async {
+  Future<Map<String, dynamic>> signUp(String email, String netid,
+      String password, String passwordConfirm) async {
     // check if email ends in duke.edu
     if (!email.endsWith("@duke.edu")) {
       throw Exception("Email has to end with @duke.edu");
@@ -108,8 +108,9 @@ class UserApi {
       final responseJson = jsonDecode(response.body);
       if (response.statusCode == 200) {
         final token = responseJson['auth_token'];
-        _pref.setString("auth_token", token);
         HTTPClient.setToken(token);
+        final user = User.mapOf(userName: netid, email: email, loggedIn: true);
+        return user;
       } else {
         logger.e(Exception(responseJson['error'][0]));
         throw Exception(responseJson['error'][0]);

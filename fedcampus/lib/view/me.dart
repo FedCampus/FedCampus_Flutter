@@ -65,6 +65,14 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
     }
   }
 
+  void _toSignInPage() async {
+    final res = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SignIn()),
+    );
+    print(res);
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -80,13 +88,7 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
         SizedBox(
           height: 10 * pixel,
         ),
-        MeText(
-          text: 'Sign in',
-          callback: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const SignIn()),
-          ),
-        ),
+        MeText(text: 'Sign in', callback: () => _toSignInPage()),
         SizedBox(
           height: 10 * pixel,
         ),
