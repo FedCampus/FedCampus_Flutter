@@ -138,7 +138,7 @@ fun dataSlide(data: Pair<Array<DoubleArray>,DoubleArray>):MutableMap<MutableList
 
 suspend fun getAllDataAvailable(context: Context): Pair<Array<DoubleArray>,DoubleArray> {
     val maximumTime = 1
-    val interval = 7
+    val interval = 24
     var day = DateCalender.add(DateCalender.getCurrentDateNumber(), -1)
     val dataArray = (1..maximumTime).mapNotNull {
         val prevDay = DateCalender.add(day, -interval)
