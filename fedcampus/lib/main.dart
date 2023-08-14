@@ -1,10 +1,59 @@
+import 'package:fedcampus/models/activity_data_model.dart';
+import 'package:fedcampus/models/health_data_model.dart';
+import 'package:fedcampus/models/user_model.dart';
+import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/home.dart';
+import 'package:fedcampus/view/me/user_api.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+//make sure you use a context that contains a Navigator instance as parent.
+//https://stackoverflow.com/a/51292613
 void main() {
-  //make sure you use a context that contains a Navigator instance as parent.
-  //https://stackoverflow.com/a/51292613
-  runApp(const MyApp());
+  // https://stackoverflow.com/a/57775690
+  WidgetsFlutterBinding.ensureInitialized();
+  userApi
+      .init()
+      .then((e) => runApp(MultiProvider(
+            providers: [
+              ChangeNotifierProvider(
+                create: (context) => MyAppState(),
+              ),
+              ChangeNotifierProvider(
+                create: (context) => UserModel(),
+              ),
+              ChangeNotifierProvider(
+                create: (context) => HealthDataModel(),
+              ),
+              ChangeNotifierProvider(
+                create: (context) => ActivityDataModel(),
+              ),
+            ],
+            child: const MyApp(),
+          )))
+      .onError((Exception error, stackTrace) => runApp(ErrorApp(
+            error: error,
+          )));
+}
+
+class ErrorApp extends StatelessWidget {
+  const ErrorApp({super.key, required this.error});
+
+  final Exception error;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: const Text('Error :(')),
+        body: Text(error.getMessage),
+      ),
+    );
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -17,42 +66,138 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // ThemeMode _themeMode = ThemeMode.system;
-  // TODO: default to light in development; should be set to systemwide preference in release
-  ThemeMode _themeMode = ThemeMode.light;
-  void changeTheme(ThemeMode themeMode) {
-    setState(() {
-      _themeMode = themeMode;
-    });
+  @override
+  void initState() {
+    super.initState();
+    initSettings(context);
+  }
+
+  void initSettings(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    MyAppState myAppState = Provider.of<MyAppState>(context, listen: false);
+    // dark mode settings:
+    // if dark mode is not set in shared preferences, default to systemwide preferences
+    bool systemIsDark;
+    if (MediaQuery.platformBrightnessOf(context) == Brightness.light) {
+      systemIsDark = false;
+    } else {
+      systemIsDark = true;
+    }
+    bool isDark = prefs.getBool('isDarkModeOn') ?? systemIsDark;
+    myAppState.toggleTheme(isDark);
+    // locale settings
+    String localeString = prefs.getString('locale') ?? 'en_US';
+    Locale locale;
+    try {
+      locale = Locale(localeString.split('_')[0], localeString.split('_')[1]);
+    } catch (e) {
+      locale = const Locale('en', 'US');
+      logger.e(e);
+    }
+    myAppState.setLocale(locale);
   }
 
   @override
   Widget build(BuildContext context) {
+    // https: //stackoverflow.com/a/50884081
+    // disable landsacpe orientation because we do not need it
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    var appState = context.watch<MyAppState>();
     return MaterialApp(
+      builder: (context, widget) {
+        final mediaQueryData = MediaQuery.of(context);
+        return MediaQuery(
+          // https://stackoverflow.com/a/69336477
+          // override textScaleFactor to 1
+          // this is a good feature (also error-prone), sadly it is not implemented now
+          data: mediaQueryData.copyWith(textScaleFactor: 1),
+          child: widget!,
+        );
+      },
       title: 'Fedcampus Flutter',
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en', 'US'),
+        Locale('zh', 'CN'),
+        Locale('ja', 'JP'),
+      ],
+      locale: appState.locale,
       theme: ThemeData(
+        dialogBackgroundColor: Colors.white,
         useMaterial3: false,
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color.fromARGB(255, 229, 85, 85),
+          background: const Color.fromARGB(255, 255, 255, 255),
+          onBackground: const Color.fromARGB(255, 255, 255, 255),
+          inversePrimary: const Color.fromARGB(255, 255, 255, 255),
           primary: Colors.black,
           primaryContainer: const Color.fromARGB(255, 229, 85, 85),
-          secondary: const Color.fromARGB(255, 217, 217, 217),
-          secondaryContainer: const Color.fromARGB(255, 206, 229, 109),
-          tertiary: const Color.fromARGB(102, 0, 0, 0),
-          tertiaryContainer: const Color.fromARGB(255, 174, 197, 242),
+          onPrimaryContainer: const Color.fromARGB(255, 229, 85, 85),
+          secondary: const Color.fromARGB(102, 0, 0, 0),
           surfaceTint: const Color.fromARGB(255, 249, 255, 231),
+          secondaryContainer: const Color.fromARGB(255, 206, 229, 109),
+          onSecondaryContainer: const Color.fromARGB(255, 176, 196, 93),
+          onTertiaryContainer: const Color.fromARGB(255, 132, 139, 218),
+          tertiaryContainer: const Color.fromARGB(255, 174, 197, 242),
+          surface: const Color.fromARGB(85, 165, 187, 231),
           shadow: const Color.fromARGB(38, 229, 85, 85),
           outline: const Color.fromARGB(25, 0, 0, 0),
+          onPrimary: Colors.white,
         ),
       ),
       darkTheme: ThemeData(
+        dialogBackgroundColor: const Color.fromARGB(255, 24, 24, 26),
         brightness: Brightness.dark,
-        /* dark theme settings */
+        useMaterial3: false,
+        colorScheme: const ColorScheme.dark(
+          background: Color.fromARGB(255, 24, 24, 26),
+          onBackground: Color.fromARGB(255, 53, 53, 57),
+          primary: Color.fromARGB(255, 249, 255, 231),
+          primaryContainer: Color.fromARGB(255, 229, 85, 85),
+          onPrimaryContainer: Color.fromARGB(255, 242, 116, 116),
+          surfaceTint: Color.fromARGB(255, 63, 63, 67),
+          secondary: Color.fromARGB(255, 243, 219, 135),
+          secondaryContainer: Color.fromARGB(255, 176, 196, 93),
+          onSecondaryContainer: Color.fromARGB(255, 176, 196, 93),
+          tertiaryContainer: Color.fromARGB(255, 113, 119, 201),
+          onTertiaryContainer: Color.fromARGB(255, 174, 197, 242),
+          shadow: Color.fromARGB(38, 75, 85, 125),
+          outline: Color.fromARGB(25, 0, 0, 0),
+          onPrimary: Color.fromARGB(255, 5, 5, 5),
+        ),
       ),
-      themeMode: _themeMode,
-      home: HomeRoute(changeThemeCallback: changeTheme),
+      themeMode: appState.isDarkModeOn ? ThemeMode.dark : ThemeMode.light,
+      home: const HomeRoute(),
     );
   }
 }
 
-class MyAppState extends ChangeNotifier {}
+class MyAppState extends ChangeNotifier {
+  Locale locale = const Locale('en', 'US');
+  bool isDarkModeOn = false;
+
+  void toggleTheme(bool b) {
+    isDarkModeOn = b;
+    notifyListeners();
+  }
+
+  void setLocale(Locale value) {
+    locale = value;
+    notifyListeners();
+  }
+
+  void resetPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.clear();
+    notifyListeners();
+  }
+}

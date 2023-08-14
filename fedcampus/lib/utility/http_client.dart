@@ -17,12 +17,20 @@ class HTTPClient {
 
   static const register = "${_host}api/register";
 
+  static const fedAnalysis = "${_host}api/fedanalysis";
+
   static var _checkToken = false;
 
   static var _token = "";
 
   static void setToken(String token) {
     _token = token;
+    _setTokenPreference(token);
+  }
+
+  static void _setTokenPreference(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString("auth_token", token);
   }
 
   static Future<bool> Logout() async {
@@ -39,6 +47,10 @@ class HTTPClient {
       String url, Map<String, String>? headers, Object? body) async {
     try {
       await getToken(headers);
+      headers!.addAll({
+        'Content-Type': 'application/json; charset=UTF-8',
+      });
+
       return await http.post(Uri.parse(url), headers: headers, body: body);
     } on Exception {
       rethrow;

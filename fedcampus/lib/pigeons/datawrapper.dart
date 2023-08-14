@@ -1,10 +1,30 @@
-import 'package:flutter/services.dart';
+import 'dart:async';
+import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
+import 'package:fedcampus/utility/http_client.dart';
+import 'package:http/http.dart';
+import 'package:sample_statistics/sample_statistics.dart';
+import '../utility/log.dart';
 import 'messages.g.dart';
 
 class DataWrapper {
-  static Future<List<Data?>?> getDataList(
-      List<String> nameList, int time) async {
+  final dataList = [
+    "step",
+    "calorie",
+    "distance",
+    "stress",
+    "rest_heart_rate",
+    "intensity",
+    "exercise_heart_rate",
+    "step_time",
+    "sleep_efficiency"
+  ];
+
+  Future<List<Data?>?> getDataList(List<String> nameList, int time) async {
     List<Future<Data?>> list = List.empty(growable: true);
     final host = DataApi();
     nameList.forEach((element) {
@@ -19,7 +39,22 @@ class DataWrapper {
     }
   }
 
-  static Future<Data?> _getData(DataApi host, String name, int time) async {
+  Future<Map<String, double>> getDataListToMap(
+      List<String> nameList, int time) async {
+    try {
+      List<Data?>? data = await getDataList(nameList, time);
+      Map<String, double> res = {};
+      // turn the data to a map
+      for (var d in data!) {
+        res.addAll({d!.name: d.value});
+      }
+      return res;
+    } on PlatformException {
+      rethrow;
+    }
+  }
+
+  Future<Data?> _getData(DataApi host, String name, int time) async {
     try {
       List<Data?> dataListOne = await host.getData(name, time, time);
       if (dataListOne.isEmpty) {
@@ -40,6 +75,99 @@ class DataWrapper {
       return null;
     } else {
       return dataListOne[0]!;
+    }
+  }
+
+  void fuzzData(List<Data?>? data) {
+    List<double> error = truncatedNormalSample(data!.length, -10, 10, 0, 1);
+    for (var i = 0; i < data.length; i++) {
+      data[i] = Data(
+          name: data[i]!.name,
+          value: data[i]!.value + error[i] * 10,
+          startTime: data[i]!.startTime,
+          endTime: data[i]!.startTime);
+    }
+  }
+
+  void getLastDayDataAndSend({ifToast = false}) async {
+    // get the data from the last day
+    final now = DateTime.now();
+    final yeasterday = now.add(const Duration(days: -1));
+    final yeasterdayDate =
+        yeasterday.year * 10000 + yeasterday.month * 100 + yeasterday.day;
+
+    final date = yeasterdayDate;
+
+    late final List<Data?>? data;
+    try {
+      data = await getDataList(dataList, date);
+    } on PlatformException catch (error) {
+      if (error.message == "java.lang.SecurityException: 50005") {
+        logger.d("not authenticated");
+        // authAndGetData();
+      } else if (error.message == "java.lang.SecurityException: 50030") {
+        logger.d("internet issue");
+        if (ifToast) {
+          Fluttertoast.showToast(
+              msg: "Internet Connection Issue, please connect to Internet.",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0);
+        }
+      }
+      return;
+    }
+    List<Data> dataFuzz = List<Data>.from(data!);
+
+    fuzzData(dataFuzz);
+
+    try {
+      List<http.Response> responseArr = await Future.wait([
+        HTTPClient.post(HTTPClient.data, <String, String>{}, jsonEncode(data)),
+        // TODO: Data DP Algorithm!!!
+        HTTPClient.post(
+            HTTPClient.dataDP, <String, String>{}, jsonEncode(dataFuzz))
+      ]).timeout(const Duration(seconds: 5));
+      // TODO: Time out for 5 seconds.
+
+      logger.i(
+          "Data Status Code ${responseArr[0].statusCode} : ${jsonEncode(data)}");
+      logger.i(
+          "Data DP Status Code ${responseArr[1].statusCode} : ${jsonEncode(dataFuzz)}");
+      if (responseArr[0].statusCode == 401) {
+        // user login
+        Fluttertoast.showToast(
+            msg: "Please Login for federated analysis.",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+      }
+    } on ClientException {
+      Fluttertoast.showToast(
+          msg: "Please make sure you are connected to DKU network!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    } on TimeoutException {
+      logger.d("internet issue");
+      Fluttertoast.showToast(
+          msg: "Please make sure you are connected to DKU network!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+      return;
     }
   }
 

@@ -1,34 +1,35 @@
 package com.cuhk.fedcampus
 
 
+import AlarmApi
 import DataApi
 import HuaweiAuthApi
 import LoadDataApi
 import android.content.Intent
 import android.util.Log
 import com.cuhk.fedcampus.health.health.auth.HealthKitAuthActivity
+import com.cuhk.fedcampus.pigeon.AlarmApiClass
 import com.cuhk.fedcampus.pigeon.DataApiClass
 import com.cuhk.fedcampus.pigeon.HuaweiAuthApiClass
 import com.cuhk.fedcampus.pigeon.LoadDataApiClass
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
-
-import io.flutter.plugin.common.MethodChannel.Result as ResultFlutter
-
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.EventChannel.EventSink
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import org.eu.fedcampus.fed_kit.FlowerClient
 import org.eu.fedcampus.fed_kit.Train
-import org.eu.fedcampus.fed_kit.examples.cifar10.DATA_TYPE
-import org.eu.fedcampus.fed_kit.examples.cifar10.Float3DArray
-import org.eu.fedcampus.fed_kit.examples.cifar10.loadData
-import org.eu.fedcampus.fed_kit.examples.cifar10.sampleSpec
-import org.eu.fedcampus.fed_kit.helpers.deviceId
-import org.eu.fedcampus.fed_kit.helpers.loadMappedFile
+import org.eu.fedcampus.fed_kit_examples.cifar10.DATA_TYPE
+import org.eu.fedcampus.fed_kit_examples.cifar10.Float3DArray
+import org.eu.fedcampus.fed_kit_examples.cifar10.loadData
+import org.eu.fedcampus.fed_kit_examples.cifar10.sampleSpec
+import org.eu.fedcampus.fed_kit_train.FlowerClient
+import org.eu.fedcampus.fed_kit_train.helpers.deviceId
+import org.eu.fedcampus.fed_kit_train.helpers.loadMappedFile
+import kotlin.Result
+import io.flutter.plugin.common.MethodChannel.Result as ResultFlutter
 
 class MainActivity : FlutterActivity() {
     val scope = MainScope()
@@ -42,9 +43,10 @@ class MainActivity : FlutterActivity() {
         super.configureFlutterEngine(flutterEngine)
 
         // setup the pigeon file
-        DataApi.setUp(flutterEngine.dartExecutor.binaryMessenger, DataApiClass(this.activity));
+        DataApi.setUp(flutterEngine.dartExecutor.binaryMessenger, DataApiClass(this.activity))
         HuaweiAuthApi.setUp(flutterEngine.dartExecutor.binaryMessenger, HuaweiAuthApiClass(this))
-        LoadDataApi.setUp(flutterEngine.dartExecutor.binaryMessenger,LoadDataApiClass(this))
+        LoadDataApi.setUp(flutterEngine.dartExecutor.binaryMessenger, LoadDataApiClass(this))
+        AlarmApi.setUp(flutterEngine.dartExecutor.binaryMessenger, AlarmApiClass(this))
 
 
         val messager = flutterEngine.dartExecutor.binaryMessenger
@@ -94,9 +96,11 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    fun startActivityForFlutterResult(intent:Intent, requestCode: Int, callback: (Result<Boolean>) -> Unit  ){
-        this.callback= callback
-        startActivityForResult(intent,requestCode)
+    fun startActivityForFlutterResult(
+        intent: Intent, requestCode: Int, callback: (Result<Boolean>) -> Unit
+    ) {
+        this.callback = callback
+        startActivityForResult(intent, requestCode)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -104,16 +108,23 @@ class MainActivity : FlutterActivity() {
         if (requestCode == 1000) {
             if (resultCode == 200) {
                 this.callback(Result.success(true))
-            }
-            else{
+            } else {
                 this.callback(Result.success(false))
             }
-
+        }
+        else if (requestCode == 1001){
+            if (resultCode == 200){
+                this.callback(Result.success(true))
+            }
         }
     }
 
     suspend fun connect(
-        partitionId: Int, host: String, backendUrl: String, startFresh: Boolean, result: ResultFlutter
+        partitionId: Int,
+        host: String,
+        backendUrl: String,
+        startFresh: Boolean,
+        result: ResultFlutter
     ) {
         // TODO: Adapt for the actual workflow.
         train = Train(this, backendUrl, sampleSpec())
@@ -149,4 +160,3 @@ class MainActivity : FlutterActivity() {
         const val TAG = "MainActivity"
     }
 }
-

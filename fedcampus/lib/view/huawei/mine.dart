@@ -9,6 +9,8 @@ import 'package:flutter/services.dart';
 import 'package:fedcampus/view/train_app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../pigeons/alarm.g.dart';
+
 class MinePage extends StatefulWidget {
   const MinePage({super.key});
 
@@ -105,8 +107,24 @@ class _MinePageState extends State<MinePage>
 
   void _loadData() async {
     final host = LoadDataApi();
-    bool ifokay = await host.loaddata();
-    print("load data is $ifokay");
+    final input = await host.loaddata();
+    input.forEach((key, value) {
+      print("input");
+      printDoubleList(key);
+      print("sleep: ${value![0].toString()}");
+      print("------");
+    });
+  }
+
+  void printDoubleList(List<List<double?>?>? list) {
+    list!.forEach((element) {
+      print(element.toString());
+    });
+  }
+
+  void _setAlarm() async {
+    final host = AlarmApi();
+    var x = await host.setAlarm();
   }
 
   @override
@@ -168,6 +186,12 @@ class _MinePageState extends State<MinePage>
               child: const Text('load data'),
               onPressed: () {
                 _loadData();
+              },
+            ),
+            ElevatedButton(
+              child: const Text('Set Alarm for training'),
+              onPressed: () {
+                _setAlarm();
               },
             ),
             Text(log),

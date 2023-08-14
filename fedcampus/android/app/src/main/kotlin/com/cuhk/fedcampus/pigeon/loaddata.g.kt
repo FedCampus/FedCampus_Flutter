@@ -39,7 +39,7 @@ private fun wrapError(exception: Throwable): List<Any?> {
 
 /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
 interface LoadDataApi {
-  fun loaddata(callback: (Result<Boolean>) -> Unit)
+  fun loaddata(callback: (Result<Map<List<List<Double>>, List<Double>>>) -> Unit)
 
   companion object {
     /** The codec used by LoadDataApi. */
@@ -53,7 +53,7 @@ interface LoadDataApi {
         val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.pigeon_example_package.LoadDataApi.loaddata", codec)
         if (api != null) {
           channel.setMessageHandler { _, reply ->
-            api.loaddata() { result: Result<Boolean> ->
+            api.loaddata() { result: Result<Map<List<List<Double>>, List<Double>>> ->
               val error = result.exceptionOrNull()
               if (error != null) {
                 reply.reply(wrapError(error))

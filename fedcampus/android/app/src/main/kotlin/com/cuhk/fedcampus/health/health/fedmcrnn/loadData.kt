@@ -12,8 +12,8 @@ import com.huawei.hms.hihealth.HuaweiHiHealth.getDataController
 import com.huawei.hms.hihealth.data.DataType
 import com.huawei.hms.hihealth.data.Field
 import kotlinx.coroutines.*
-import org.eu.fedcampus.fed_kit.FlowerClient
-import org.eu.fedcampus.fed_kit.examples.fedmcrnn.Float2DArray
+import org.eu.fedcampus.fed_kit_examples.fedmcrnn.Float2DArray
+import org.eu.fedcampus.fed_kit_train.FlowerClient
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -27,29 +27,45 @@ suspend fun loadData(
     val data = getAllDataAvailable(context)
     val input = dataSlide(data)
     dataCleaning(input)
-    for (sample in input) {
-        flowerClient.addSample(sample.first, sample.second, true)
-        // TODO: Legitimate ways to evaluate instead of using the training set.
-        flowerClient.addSample(sample.first, sample.second, false)
+
+    // change the mutable list to a list
+    val inputFinal = mutableMapOf<List<List<Double>>,List<Double>>()
+    for (entry in input){
+        val key= mutableListOf<List<Double>>();
+        for (item in entry.key){
+            val itemFinal = item.toList();
+            key.add(itemFinal)
+        }
+        val keyFinal = key.toList();
+        val valueFinal = entry.value.toList();
+        inputFinal[keyFinal] = valueFinal
     }
+    val inputFinalFinal = inputFinal.toMap();
+
+
+//    for (sample in input) {
+//        flowerClient.addSample(sample.first, sample.second, true)
+//        // TODO: Legitimate ways to evaluate instead of using the training set.
+//        flowerClient.addSample(sample.first, sample.second, false)
+//    }
 }
 
-fun dataCleaning(input: MutableList<Pair<Array<FloatArray>, FloatArray>>) {
+fun dataCleaning(input: MutableMap<MutableList<MutableList<Double>>,MutableList<Double>>) {
     //TODO the elevation is ignored here
     for (data in input) {
-        for (j in 0 until data.first[0].size) {
-            var avg = 0f
+        for (j in 0 until data.key[0].size) {
+            var avg = 0.0
             if (j == 4) {
                 // ignore the elevation
                 continue
             }
-            for (i in 0 until data.first.size) {
-                if (data.first[i][j] == 0f) {
+            for (i in 0 until data.key.size) {
+                if (data.key[i][j] == 0.0) {
                     // check if avg is calculated or not
-                    if (avg == 0f) {
-                        avg = calculateAverage(data.first, j)
+                    if (avg == 0.0) {
+                        avg = calculateAverage(data.key, j)
                     }
-                    data.first[i][j] = avg
+                    data.key[i][j] = avg
                 }
             }
         }
@@ -58,18 +74,18 @@ fun dataCleaning(input: MutableList<Pair<Array<FloatArray>, FloatArray>>) {
 
 lateinit var dataListTest: List<Data>
 
-fun calculateAverage(data: Array<FloatArray>, column: Int): Float {
-    var sum = 0f
+fun calculateAverage(data: MutableList<MutableList<Double>>, column: Int): Double{
+    var sum = 0.0
     var valid = 0
     for (i in data.indices) {
-        if (data[i][column] != 0f) {
+        if (data[i][column] != 0.0) {
             valid++
             sum += data[i][column]
         }
 
     }
     if (valid == 0) {
-        sum = 0f
+        sum = 0.0
     } else {
         sum /= valid
     }
@@ -77,31 +93,52 @@ fun calculateAverage(data: Array<FloatArray>, column: Int): Float {
 }
 
 
-fun dataSlide(data: Pair<Array<FloatArray>, FloatArray>): MutableList<Pair<Array<FloatArray>, FloatArray>> {
-    val inputData = mutableListOf<Pair<Array<FloatArray>, FloatArray>>()
+//fun dataSlide(data: Pair<Array<FloatArray>, FloatArray>): MutableList<Pair<Array<FloatArray>, FloatArray>> {
+//    val inputData = mutableListOf<Pair<Array<FloatArray>, FloatArray>>()
+//    val day = 7
+//    for ((index, element) in data.first.withIndex()) {
+//        if (data.second[index] != 0f) {
+//            //start to record the next 7 inputs
+//            val input = Array(day) { FloatArray(element.size) }
+//            val output = floatArrayOf(data.second[index])
+//            for (i in 0 until day) {
+//                if (index + i >= data.first.size) {
+//                    input[i] = data.first[data.first.size - 1]
+//                } else {
+//                    input[i] = data.first[index + i].clone()
+//                }
+//            }
+//            inputData.add(input to output)
+//        }
+//    }
+//    return inputData
+//}
+
+fun dataSlide(data: Pair<Array<DoubleArray>,DoubleArray>):MutableMap<MutableList<MutableList<Double>>,MutableList<Double>> {
+    val inputData = mutableMapOf <MutableList<MutableList<Double>>,MutableList<Double>>()
     val day = 7
     for ((index, element) in data.first.withIndex()) {
-        if (data.second[index] != 0f) {
+        if (data.second[index] != 0.0) {
             //start to record the next 7 inputs
-            val input = Array(day) { FloatArray(element.size) }
-            val output = floatArrayOf(data.second[index])
+            val input = MutableList(day) {MutableList(element.size) {0.0} }
+            val output = mutableListOf(data.second[index])
             for (i in 0 until day) {
                 if (index + i >= data.first.size) {
-                    input[i] = data.first[data.first.size - 1]
+                    input[i] = data.first[data.first.size - 1].toMutableList()
                 } else {
-                    input[i] = data.first[index + i].clone()
+                    input[i] = data.first[index + i].clone().toMutableList()
                 }
             }
-            inputData.add(input to output)
+            inputData[input] = output
         }
     }
     return inputData
 }
 
 
-suspend fun getAllDataAvailable(context: Context): Pair<Array<FloatArray>, FloatArray> {
+suspend fun getAllDataAvailable(context: Context): Pair<Array<DoubleArray>,DoubleArray> {
     val maximumTime = 1
-    val interval = 25
+    val interval = 24
     var day = DateCalender.add(DateCalender.getCurrentDateNumber(), -1)
     val dataArray = (1..maximumTime).mapNotNull {
         val prevDay = DateCalender.add(day, -interval)
@@ -118,12 +155,12 @@ suspend fun getAllDataAvailable(context: Context): Pair<Array<FloatArray>, Float
     return getDataAll(dataArray)
 }
 
-fun getDataAll(dataArr: List<Pair<Array<FloatArray>, FloatArray>>): Pair<Array<FloatArray>, FloatArray> {
+fun getDataAll(dataArr: List<Pair<Array<DoubleArray>,DoubleArray>>): Pair<Array<DoubleArray>,DoubleArray> {
     val inputLength = dataArr.map { it.first.size }.sum()
     val columnLength = dataArr[0].first[0].size
 
-    val input = Array(inputLength) { FloatArray(columnLength) }
-    val output = FloatArray(inputLength)
+    val input = Array(inputLength) {DoubleArray(columnLength) }
+    val output =DoubleArray(inputLength)
 
     var index = 0
     for (data in dataArr) {
@@ -139,7 +176,7 @@ fun getDataAll(dataArr: List<Pair<Array<FloatArray>, FloatArray>>): Pair<Array<F
 @Throws
 suspend fun getData(
     startEnd: IntArray, context: Context
-): Pair<Array<FloatArray>, FloatArray> {
+): Pair<Array<DoubleArray>,DoubleArray> {
     val exerciseDataArray = arrayOf(
         Triple(
             DataType.DT_CONTINUOUS_CALORIES_BURNT, Field.FIELD_CALORIES_TOTAL, "calorie"
@@ -209,21 +246,27 @@ private suspend fun <T> tryOrNull(tag: String, call: suspend () -> T) = try {
 @SuppressLint("SimpleDateFormat")
 private fun getInput2DArrayAndOutputArray(
     dataList: List<Data>, startEnd: IntArray
-): Pair<Array<FloatArray>, FloatArray> {
+): Pair<Array<DoubleArray>,DoubleArray> {
     // TODO: This part is hard coded just for FedMCRNN
     val sizeOfSingleColumn = DateCalender.IntervalDay(startEnd[0], startEnd[1]) + 1
     val start = startEnd[0]
-    val input2DArray = Array(sizeOfSingleColumn) { FloatArray(TAG_LIST.size) }
-    val outputArray = FloatArray(sizeOfSingleColumn)
+    val input2DArray = Array(sizeOfSingleColumn) { DoubleArray(TAG_LIST.size) }
+    val outputArray =DoubleArray(sizeOfSingleColumn)
     for (data in dataList) {
         val time = SimpleDateFormat("yyyyMMdd").format(Date(data.startTime * 1000L)).toInt()
         val rowIndex = sizeOfSingleColumn - 1 - DateCalender.IntervalDay(start, time)
         if (data.name == "sleep_efficiency") {
-            outputArray[rowIndex] = data.value.toFloat()
+            try{
+            outputArray[rowIndex] = data.value}
+            catch (err: Exception){
+                print(time);
+                print(rowIndex);
+                print(data.toString());
+            }
             continue
         }
         val columnIndex = TAG_LIST.indexOf(data.name)
-        input2DArray[rowIndex][columnIndex] = data.value.toFloat()
+        input2DArray[rowIndex][columnIndex] = data.value
     }
     return input2DArray to outputArray
 }
