@@ -36,6 +36,17 @@ class _SignInState extends State<SignIn> {
     }
   }
 
+  void _toSignUp() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SignUp()),
+    );
+
+    if (result) {
+      Navigator.pop(context, true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
@@ -91,10 +102,7 @@ class _SignInState extends State<SignIn> {
               ),
               const Expanded(child: SizedBox()),
               TextButton(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SignUp()),
-                ),
+                onPressed: () => _toSignUp(),
                 child: Text(
                   'No account? Sign up',
                   style: TextStyle(
