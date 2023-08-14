@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:fedcampus/models/activity_data.dart';
-import 'package:fedcampus/pigeons/datawrapper.dart';
-import 'package:fedcampus/pigeons/messages.g.dart';
+import 'package:fedcampus/pigeon/datawrapper.dart';
+import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/utility/http_client.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/me/user_api.dart';

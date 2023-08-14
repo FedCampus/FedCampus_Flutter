@@ -1,8 +1,8 @@
 package com.cuhk.fedcampus.pigeon
 
+import Data
 import DataApi
 import android.content.Context
-import com.cuhk.fedcampus.health.utils.Data
 import com.cuhk.fedcampus.health.utils.DateCalender
 import com.cuhk.fedcampus.health.utils.exercisedata.CALORIE
 import com.cuhk.fedcampus.health.utils.exercisedata.DISTANCE
@@ -115,6 +115,4 @@ class DataApiClass(context: Context) : DataApi {
             }
         }
     }
-
-
 }

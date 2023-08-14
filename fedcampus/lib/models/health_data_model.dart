@@ -1,15 +1,13 @@
 import 'dart:async';
 
 import 'package:fedcampus/models/health_data.dart';
-import 'package:fedcampus/pigeons/messages.g.dart';
+import 'package:fedcampus/pigeon/datawrapper.dart';
+import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/me/user_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
-import '../pigeons/datawrapper.dart';
-import '../pigeons/huaweiauth.g.dart';
 
 class HealthDataModel extends ChangeNotifier {
   Map<String, double> healthData = HealthData.mapOf();

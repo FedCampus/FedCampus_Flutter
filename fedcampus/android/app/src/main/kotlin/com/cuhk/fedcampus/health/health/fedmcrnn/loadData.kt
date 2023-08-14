@@ -1,9 +1,9 @@
 package com.cuhk.fedcampus.health.health.fedmcrnn
 
+import Data
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
-import com.cuhk.fedcampus.health.utils.Data
 import com.cuhk.fedcampus.health.utils.DateCalender
 import com.cuhk.fedcampus.health.utils.exercisedata.getExerciseData
 import com.cuhk.fedcampus.health.utils.exercisedata.getSleepEfficiencyData
@@ -31,16 +31,16 @@ suspend fun loadData(
     // change the mutable list to a list
     val inputFinal = mutableMapOf<List<List<Double>>, List<Double>>()
     for (entry in input) {
-        val key = mutableListOf<List<Double>>();
+        val key = mutableListOf<List<Double>>()
         for (item in entry.key) {
-            val itemFinal = item.toList();
+            val itemFinal = item.toList()
             key.add(itemFinal)
         }
-        val keyFinal = key.toList();
-        val valueFinal = entry.value.toList();
+        val keyFinal = key.toList()
+        val valueFinal = entry.value.toList()
         inputFinal[keyFinal] = valueFinal
     }
-    val inputFinalFinal = inputFinal.toMap();
+    val inputFinalFinal = inputFinal.toMap()
 
 
 //    for (sample in input) {
@@ -259,9 +259,9 @@ private fun getInput2DArrayAndOutputArray(
             try {
                 outputArray[rowIndex] = data.value
             } catch (err: Exception) {
-                print(time);
-                print(rowIndex);
-                print(data.toString());
+                print(time)
+                print(rowIndex)
+                print(data.toString())
             }
             continue
         }
