@@ -9,7 +9,7 @@ class HTTPClient {
 
   static const login = "${_host}api/login";
 
-  static const logout = "${_host}auth/token/logout/";
+  static const logoutURL = "${_host}auth/token/logout/";
 
   static const data = "${_host}api/data";
 
@@ -33,10 +33,10 @@ class HTTPClient {
     prefs.setString("auth_token", token);
   }
 
-  static Future<bool> Logout() async {
+  static Future<bool> logout() async {
     final headers = <String, String>{};
     try {
-      await HTTPClient.post(logout, headers, null);
+      await HTTPClient.post(logoutURL, headers, null);
       return true;
     } on Exception {
       rethrow;

@@ -139,11 +139,11 @@ class ActivityDataModel extends ChangeNotifier {
       // check if there is data missing
       final responseJson = jsonDecode(response.body);
       List<String> dataMissing = List.empty(growable: true);
-      dataList.forEach((element) {
+      for (final element in dataList) {
         if (responseJson[element] == null) {
           dataMissing.add(element);
         }
-      });
+      }
       if (dataList.isEmpty) {
         _setAndNotify(jsonDecode(response.body));
         return;

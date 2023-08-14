@@ -203,7 +203,7 @@ class _ReportPageState extends State<ReportPage> {
     isAuth = true;
     HuaweiAuthApi host = HuaweiAuthApi();
     try {
-      bool ifAuth = await host.getAuthenticate();
+      await host.getAuthenticate();
       isAuth = false;
       _getData();
       _getLastDayDataAndSend();

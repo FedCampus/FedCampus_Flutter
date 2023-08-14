@@ -17,7 +17,11 @@ class _HuaweiHomeState extends State<HuaweiHome> {
 
   late PageController _pageController;
 
-  final List<Widget> _pages = [ReportPage(), ActivityPage(), MinePage()];
+  final List<Widget> _pages = [
+    const ReportPage(),
+    const ActivityPage(),
+    const MinePage()
+  ];
 
   final methodChannel = const MethodChannel('fed_kit_flutter');
 

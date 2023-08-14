@@ -1,13 +1,8 @@
-import 'dart:convert';
-import 'dart:io';
-import 'package:dio/dio.dart';
 import 'package:fedcampus/models/user_model.dart';
 import 'package:fedcampus/view/me/user_api.dart';
 import 'package:fedcampus/view/widgets/widget.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
 
 import 'package:fedcampus/view/me/preferences.dart';
@@ -66,11 +61,10 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
   }
 
   void _toSignInPage() async {
-    final res = await Navigator.push(
+    await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const SignIn()),
     );
-    print(res);
   }
 
   @override
@@ -229,50 +223,9 @@ class ProfileCard extends StatefulWidget {
 }
 
 class _ProfileCardState extends State<ProfileCard> {
-  String _avatarUrl = '';
-
   @override
   void initState() {
     super.initState();
-    getAvatar();
-  }
-
-  upLoadAvatar() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
-    if (result != null) {
-      File file = File(result.files.single.path ?? '');
-      Dio dio = Dio();
-      FormData formData =
-          FormData.fromMap({"file": await MultipartFile.fromFile(file.path)});
-      logger.d(formData);
-      try {
-        var response = await dio.put('http://192.168.0.107:9999/api/file/10/',
-            data: formData);
-        logger.d(response);
-      } catch (e) {
-        logger.d(e);
-      }
-    } else {
-      // User canceled the picker
-    }
-    getAvatar();
-  }
-
-  getAvatar() async {
-    String responseBody;
-    try {
-      responseBody =
-          (await http.get(Uri.parse('http://192.168.0.107:9999/api/file/10/')))
-              .body;
-    } catch (e) {
-      responseBody = '{"file": "fail"}';
-    }
-    final data = jsonDecode(responseBody);
-    if (mounted) {
-      setState(() {
-        _avatarUrl = data['file'];
-      });
-    }
   }
 
   @override

@@ -27,9 +27,9 @@ class DataWrapper {
   Future<List<Data?>?> getDataList(List<String> nameList, int time) async {
     List<Future<Data?>> list = List.empty(growable: true);
     final host = DataApi();
-    nameList.forEach((element) {
+    for (final element in nameList) {
       list.add(_getData(host, element, time));
-    });
+    }
     try {
       final data = await Future.wait(list);
       data.removeWhere((element) => element == null);
@@ -70,8 +70,8 @@ class DataWrapper {
   Future<Data?> getData(String name, int time) async {
     final host = DataApi();
     List<Data?> dataListOne = await host.getData(name, time, time);
-    print(dataListOne[0]!.value);
-    if (dataListOne.length == 0) {
+    logger.i(dataListOne[0]!.value);
+    if (dataListOne.isEmpty) {
       return null;
     } else {
       return dataListOne[0]!;
@@ -174,6 +174,6 @@ class DataWrapper {
   void test() async {
     final host = DataApi();
     final x = await host.getData("step", 20230809, 20230809);
-    print(x[0]!.value);
+    logger.i(x[0]!.value);
   }
 }

@@ -53,7 +53,7 @@ class _ActivityPageState extends State<ActivityPage> {
   void fuzzData(List<Data?>? data) {
     List<double> error = truncatedNormalSample(data!.length, -10, 10, 0, 1);
     for (var i = 0; i < data.length; i++) {
-      print(error[i]);
+      logger.i(error[i]);
       data[i]!.value = data[i]!.value + error[i];
     }
   }
@@ -89,9 +89,9 @@ class _ActivityPageState extends State<ActivityPage> {
     if (response.statusCode == 200) {
       // show the data
       final responseJson = jsonDecode(response.body);
-      print(ifSent);
+      logger.i(ifSent);
       setState(() {
-        _log = dataNumber.toString() + "\n";
+        _log = "$dataNumber\n";
         jsonDecode(response.body).forEach((index, value) {
           _log += ("$index - $value \n");
         });
@@ -104,11 +104,11 @@ class _ActivityPageState extends State<ActivityPage> {
       // check if there is data missing
       List<String> dataMissing = List.empty(growable: true);
 
-      dataList.forEach((element) {
+      for (final element in dataList) {
         if (responseJson[element] == null) {
           dataMissing.add(element);
         }
-      });
+      }
 
       if (dataList.isEmpty) {
         return;
@@ -119,7 +119,7 @@ class _ActivityPageState extends State<ActivityPage> {
         final data = await dw.getDataList(dataMissing, dataNumber);
         bodyJson = jsonDecode(jsonEncode(data));
 
-        print(bodyJson);
+        logger.i(bodyJson);
         // HTTPClient.post(HTTPClient.fedAnalysis, <String,String>{}, body)
       } on PlatformException catch (error) {
         if (error.message == "java.lang.SecurityException: 50005") {

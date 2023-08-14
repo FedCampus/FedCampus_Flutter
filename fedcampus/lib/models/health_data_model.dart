@@ -92,7 +92,7 @@ class HealthDataModel extends ChangeNotifier {
   void authAndGetData() async {
     HuaweiAuthApi host = HuaweiAuthApi();
     try {
-      bool ifAuth = await host.getAuthenticate();
+      await host.getAuthenticate();
       getData();
       final dw = DataWrapper();
       dw.getLastDayDataAndSend();

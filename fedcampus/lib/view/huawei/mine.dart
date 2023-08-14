@@ -1,6 +1,7 @@
 import 'package:fedcampus/pigeons/huaweiauth.g.dart';
 import 'package:fedcampus/pigeons/loaddata.g.dart';
 import 'package:fedcampus/utility/http_client.dart';
+import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/register.dart';
 import 'package:fedcampus/view/signin.dart';
 
@@ -55,7 +56,7 @@ class _MinePageState extends State<MinePage>
   Future<void> _loginAndGetResult() async {
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => SignIn()),
+      MaterialPageRoute(builder: (context) => const SignIn()),
     );
     if (result != null) {
       //success
@@ -75,8 +76,10 @@ class _MinePageState extends State<MinePage>
 
   void _logout() async {
     try {
-      await HTTPClient.Logout();
-    } on Exception {}
+      await HTTPClient.logout();
+    } on Exception {
+      rethrow;
+    }
 
     setState(() {
       log = "";
@@ -89,7 +92,7 @@ class _MinePageState extends State<MinePage>
   void _register() async {
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => Register()),
+      MaterialPageRoute(builder: (context) => const Register()),
     );
 
     if (result != null) {
@@ -109,22 +112,22 @@ class _MinePageState extends State<MinePage>
     final host = LoadDataApi();
     final input = await host.loaddata();
     input.forEach((key, value) {
-      print("input");
+      logger.i("input");
       printDoubleList(key);
-      print("sleep: ${value![0].toString()}");
-      print("------");
+      logger.i("sleep: ${value![0].toString()}");
+      logger.i("------");
     });
   }
 
   void printDoubleList(List<List<double?>?>? list) {
-    list!.forEach((element) {
-      print(element.toString());
-    });
+    for (final element in list!) {
+      logger.i(element.toString());
+    }
   }
 
   void _setAlarm() async {
     final host = AlarmApi();
-    var x = await host.setAlarm();
+    await host.setAlarm();
   }
 
   @override

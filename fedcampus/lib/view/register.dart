@@ -7,6 +7,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Register extends StatefulWidget {
+  const Register({super.key});
+
   @override
   State<Register> createState() => _RegisterState();
 }
@@ -69,7 +71,9 @@ class _RegisterState extends State<Register> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString("auth_token", token);
       HTTPClient.setToken(token);
-      Navigator.pop(context, {"nickname": _netid, "email": _email});
+      if (mounted) {
+        Navigator.pop(context, {"nickname": _netid, "email": _email});
+      }
     } else {
       showErrorMessage(jsonDecode(response.body)['error'][0]);
     }

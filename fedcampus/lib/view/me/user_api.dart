@@ -123,7 +123,7 @@ class UserApi {
 
   Future<void> logout() async {
     try {
-      await HTTPClient.Logout();
+      await HTTPClient.logout();
     } on http.ClientException catch (e) {
       logger.e('Logout Error, Please Check your Internet Connection');
       throw ('Logout Error, Please Check your Internet Connection', e);
@@ -142,8 +142,7 @@ class UserApi {
   }
 
   loadData() async {
-    // TODO:
     final host = LoadDataApi();
-    final input = await host.loaddata();
+    await host.loaddata();
   }
 }

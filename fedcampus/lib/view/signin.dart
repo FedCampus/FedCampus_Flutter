@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SignIn extends StatefulWidget {
+  const SignIn({super.key});
+
   @override
   State<SignIn> createState() => _SignInState();
 }
@@ -42,7 +44,9 @@ class _SignInState extends State<SignIn> {
       String token = responseJson['auth_token'];
       HTTPClient.setToken(token);
       await prefs.setString("auth_token", token);
-      Navigator.pop(context, responseJson);
+      if (mounted) {
+        Navigator.pop(context, responseJson);
+      }
     } on http.ClientException {
       _showLogInError();
     }

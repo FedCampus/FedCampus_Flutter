@@ -250,7 +250,7 @@ class Date extends StatelessWidget {
         builder: (context) {
           return AlertDialog(
             // title: const Text("Select a day"),
-            content: Container(
+            content: SizedBox(
               width: 200.0,
               height: 200.0,
               child: CalendarDialog(
