@@ -25,6 +25,12 @@ class HTTPClient {
 
   static void setToken(String token) {
     _token = token;
+    _setTokenPreference(token);
+  }
+
+  static void _setTokenPreference(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString("auth_token", token);
   }
 
   static Future<bool> Logout() async {

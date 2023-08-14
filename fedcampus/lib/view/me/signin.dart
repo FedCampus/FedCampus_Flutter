@@ -30,8 +30,9 @@ class _SignInState extends State<SignIn> {
       return;
     }
     if (mounted) {
-      Provider.of<UserModel>(context, listen: false).setUser = user;
+      await Provider.of<UserModel>(context, listen: false).setUser(user);
       showToastMessage('login success', context);
+      Navigator.pop(context, true);
     }
   }
 
@@ -59,7 +60,7 @@ class _SignInState extends State<SignIn> {
                 ),
                 backgroundColor: Theme.of(context).colorScheme.surface,
                 maxRadius: 50 * pixel,
-                minRadius: 60 * pixel,
+                // minRadius: 60 * pixel,
               ),
               const Expanded(child: SizedBox()),
               Text(
@@ -71,12 +72,14 @@ class _SignInState extends State<SignIn> {
               ),
               const Expanded(child: SizedBox()),
               SignInUpTextField(
+                ifObscure: false,
                 field: _username,
                 label: 'Email',
                 onChanged: (value) => {_username = value},
               ),
               const Expanded(flex: 2, child: SizedBox()),
               SignInUpTextField(
+                ifObscure: true,
                 field: _password,
                 label: 'Password',
                 onChanged: (value) => {_password = value},

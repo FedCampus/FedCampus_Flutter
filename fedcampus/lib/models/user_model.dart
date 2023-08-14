@@ -15,11 +15,13 @@ class UserModel extends ChangeNotifier {
 
   bool get isLogin => user['loggedIn'];
 
-  set setUser(Map<String, dynamic> user) {
+  setUser(Map<String, dynamic> user) async {
     this.user = user;
-    userApi.prefs.setBool("login", user['loggedIn']);
-    userApi.prefs.setString("userName", user['userName']);
-    userApi.prefs.setString("email", user['email']);
+    await Future.wait([
+      userApi.prefs.setBool("login", user['loggedIn']),
+      userApi.prefs.setString("userName", user['userName']),
+      userApi.prefs.setString("email", user['email'])
+    ]);
     notifyListeners();
   }
 

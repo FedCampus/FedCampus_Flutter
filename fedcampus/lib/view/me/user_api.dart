@@ -108,7 +108,7 @@ class UserApi {
       final responseJson = jsonDecode(response.body);
       if (response.statusCode == 200) {
         final token = responseJson['auth_token'];
-        _pref.setString("auth_token", token);
+        // _pref.setString("auth_token", token);
         HTTPClient.setToken(token);
       } else {
         logger.e(Exception(responseJson['error'][0]));

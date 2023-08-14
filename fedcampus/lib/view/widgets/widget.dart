@@ -64,15 +64,17 @@ class FedIcon extends StatelessWidget {
 }
 
 class SignInUpTextField extends StatefulWidget {
-  const SignInUpTextField({
-    super.key,
-    required this.field,
-    required this.label,
-    required this.onChanged,
-  });
+  const SignInUpTextField(
+      {super.key,
+      required this.field,
+      required this.label,
+      required this.onChanged,
+      required this.ifObscure});
 
   final String field;
   final String label;
+  final bool ifObscure;
+
   final void Function(String) onChanged;
 
   @override
@@ -111,6 +113,7 @@ class _SignInUpTextFieldState extends State<SignInUpTextField> {
           child: Focus(
             onFocusChange: onTextFieldFocus,
             child: TextFormField(
+              obscureText: widget.ifObscure,
               initialValue: widget.field,
               onChanged: widget.onChanged,
               decoration: InputDecoration(
