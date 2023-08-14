@@ -1,7 +1,8 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:fedcampus/pigeons/datawrapper.dart';
+import 'package:fedcampus/pigeon/datawrapper.dart';
+import 'package:fedcampus/pigeon/generated.g.dart';
 
 import 'package:fedcampus/utility/http_client.dart';
 
@@ -9,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sample_statistics/sample_statistics.dart';
 
-import '../../pigeons/messages.g.dart';
 import '../../utility/log.dart';
 
 class ActivityPage extends StatefulWidget {

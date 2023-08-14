@@ -16,7 +16,7 @@ extension FormattedMessage on Exception {
     if (s.startsWith("Exception: ")) {
       return s.substring(11);
     } else if (s.startsWith("(")) {
-      // case when throwing multiple exceptions, for example in order to preserve 
+      // case when throwing multiple exceptions, for example in order to preserve
       // the original exception while throw a new one
       RegExp exp = RegExp(r'Exception: ');
       int start = exp.firstMatch(s)!.start;

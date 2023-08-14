@@ -1,6 +1,6 @@
 package com.cuhk.fedcampus.health.utils.exercisedata
 
-import com.cuhk.fedcampus.health.utils.Data
+import Data
 import com.huawei.hms.hihealth.DataController
 import com.huawei.hms.hihealth.data.DataType
 import com.huawei.hms.hihealth.data.Field
@@ -26,8 +26,8 @@ suspend fun getExerciseData(
 
     return sampleSet.samplePoints.map {
         Data(
-            it.getFieldValue(field).toFloat().toDouble(),
             tag,
+            it.getFieldValue(field).toFloat().toDouble(),
             it.getStartTime(TimeUnit.SECONDS),
             it.getEndTime(TimeUnit.SECONDS)
         )

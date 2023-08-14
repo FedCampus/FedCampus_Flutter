@@ -1,8 +1,7 @@
 import 'dart:convert';
 
 import 'package:fedcampus/models/user.dart';
-import 'package:fedcampus/pigeons/huaweiauth.g.dart';
-import 'package:fedcampus/pigeons/loaddata.g.dart';
+import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:http/http.dart' as http;
 import 'package:fedcampus/utility/http_client.dart';
 import 'package:fedcampus/utility/log.dart';

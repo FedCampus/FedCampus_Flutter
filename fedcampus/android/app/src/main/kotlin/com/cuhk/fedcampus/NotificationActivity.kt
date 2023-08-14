@@ -1,42 +1,47 @@
 package com.cuhk.fedcampus
 
-import android.app.*
+import android.app.Activity
+import android.app.AlarmManager
+import android.app.AlertDialog
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.widget.Button
 import android.widget.DatePicker
 import android.widget.TimePicker
-import androidx.annotation.RequiresApi
-import com.cuhk.fedcampus.health.utils.*
 import com.cuhk.fedcampus.health.utils.Notification
-import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
-import java.util.*
+import com.cuhk.fedcampus.health.utils.channelID
+import com.cuhk.fedcampus.health.utils.messageExtra
+import com.cuhk.fedcampus.health.utils.notificationID
+import com.cuhk.fedcampus.health.utils.titleExtra
+import java.util.Calendar
+import java.util.Date
 
 class NotificationActivity : Activity() {
 
-    lateinit var datePicker : DatePicker
+    lateinit var datePicker: DatePicker
 
-    lateinit var timePicker : TimePicker
+    lateinit var timePicker: TimePicker
 
-    lateinit var submit : Button
+    lateinit var submit: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.notification);
+        setContentView(R.layout.notification)
 
-        this.datePicker = findViewById(R.id.datePicker);
-        this.timePicker = findViewById(R.id.timePicker);
+        this.datePicker = findViewById(R.id.datePicker)
+        this.timePicker = findViewById(R.id.timePicker)
         submit = findViewById(R.id.submitButton)
 
-         createNotificationChannel()
+        createNotificationChannel()
         submit.setOnClickListener { scheduleNotification() }
     }
 
-    private fun createNotificationChannel()
-    {
+    private fun createNotificationChannel() {
         val name = "Notif Channel"
         val desc = "A Description of the Channel"
         val importance = NotificationManager.IMPORTANCE_DEFAULT
@@ -46,8 +51,7 @@ class NotificationActivity : Activity() {
         notificationManager.createNotificationChannel(channel)
     }
 
-    private fun scheduleNotification()
-    {
+    private fun scheduleNotification() {
         val intent = Intent(applicationContext, Notification::class.java)
         val title = "FedKit"
         val message = "Please start the app to train"
@@ -71,8 +75,7 @@ class NotificationActivity : Activity() {
         showAlert(time, title, message)
     }
 
-    private fun showAlert(time: Long, title: String, message: String)
-    {
+    private fun showAlert(time: Long, title: String, message: String) {
         val date = Date(time)
         val dateFormat = android.text.format.DateFormat.getLongDateFormat(applicationContext)
         val timeFormat = android.text.format.DateFormat.getTimeFormat(applicationContext)
@@ -82,18 +85,18 @@ class NotificationActivity : Activity() {
             .setMessage(
                 "Title: " + title +
                         "\nMessage: " + message +
-                        "\nAt: " + dateFormat.format(date) + " " + timeFormat.format(date))
-            .setPositiveButton("Okay"){_,_ ->}
+                        "\nAt: " + dateFormat.format(date) + " " + timeFormat.format(date)
+            )
+            .setPositiveButton("Okay") { _, _ -> }
             .show()
 
-        this.setResult(200);
+        this.setResult(200)
     }
 
-    private fun getTime(): Long
-    {
+    private fun getTime(): Long {
         val minute = timePicker.minute
         val hour = timePicker.hour
-        val day =datePicker.dayOfMonth
+        val day = datePicker.dayOfMonth
         val month = datePicker.month
         val year = datePicker.year
 

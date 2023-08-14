@@ -2,7 +2,6 @@ package com.cuhk.fedcampus.pigeon
 
 import LoadDataApi
 import android.content.Context
-import android.util.Log
 import com.cuhk.fedcampus.health.health.fedmcrnn.dataCleaning
 import com.cuhk.fedcampus.health.health.fedmcrnn.dataSlide
 import com.cuhk.fedcampus.health.health.fedmcrnn.getAllDataAvailable
@@ -31,7 +30,7 @@ class LoadDataApiClass(val context: Context) : LoadDataApi {
 //    }
     override fun loaddata(callback: (Result<Map<List<List<Double>>, List<Double>>>) -> Unit) {
 //        TODO("Not yet implemented")
-        val scope = MainScope();
+        val scope = MainScope()
         println("starting to get data!")
 
         scope.launch {
@@ -43,30 +42,30 @@ class LoadDataApiClass(val context: Context) : LoadDataApi {
             logger("start data sliding")
             val input = dataSlide(data)
             logger("finish data sliding")
-            logger("data cleaning");
-            dataCleaning(input);
+            logger("data cleaning")
+            dataCleaning(input)
             logger("finish data cleaning")
 
-            val inputFinal = mutableMapOf<List<List<Double>>,List<Double>>()
-            for (entry in input){
-                val key= mutableListOf<List<Double>>();
-                for (item in entry.key){
-                    val itemFinal = item.toList();
+            val inputFinal = mutableMapOf<List<List<Double>>, List<Double>>()
+            for (entry in input) {
+                val key = mutableListOf<List<Double>>()
+                for (item in entry.key) {
+                    val itemFinal = item.toList()
                     key.add(itemFinal)
                 }
-                val keyFinal = key.toList();
-                val valueFinal = entry.value.toList();
+                val keyFinal = key.toList()
+                val valueFinal = entry.value.toList()
                 inputFinal[keyFinal] = valueFinal
             }
-            val inputFinalFinal = inputFinal.toMap();
+            val inputFinalFinal = inputFinal.toMap()
 
             callback(Result.success(inputFinalFinal))
         }
 
     }
 
-    fun printInputList(input: List<List<Double>>){
-        for (list in input){
+    fun printInputList(input: List<List<Double>>) {
+        for (list in input) {
             println(list.toDoubleArray().contentToString())
         }
 

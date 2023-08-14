@@ -1,7 +1,7 @@
 //TODO:find better way do adapt different screen size
 
 import 'package:fedcampus/models/health_data_model.dart';
-import 'package:fedcampus/pigeons/datawrapper.dart';
+import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/calendar.dart';
 import 'package:fedcampus/view/widgets/widget.dart';

@@ -1,8 +1,8 @@
 package com.cuhk.fedcampus.health.utils.exercisedata
 
+import Data
 import android.annotation.SuppressLint
 import android.util.Log
-import com.cuhk.fedcampus.health.utils.Data
 import com.cuhk.fedcampus.health.utils.DateCalender
 import com.huawei.hmf.tasks.Task
 import com.huawei.hms.hihealth.DataController
@@ -61,8 +61,8 @@ private suspend fun getStepTimeDatum(
         readStepTime(readReplyTask)
 
     return Data(
-        time.toDouble(),
         tag,
+        time.toDouble(),
         startDate.time / 1000,
         endDate.time / 1000
     )
