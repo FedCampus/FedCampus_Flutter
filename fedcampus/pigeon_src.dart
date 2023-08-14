@@ -50,6 +50,9 @@ abstract class LoadDataApi {
 @HostApi()
 abstract class TrainFedmcrnn {
   @async
+  void initialize(String modelDir, List<int> layersSizes);
+
+  @async
   void loadData(Map<List<List<double>>, List<double>> data);
 
   @async

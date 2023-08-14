@@ -17,9 +17,7 @@ private fun wrapResult(result: Any?): List<Any?> {
 private fun wrapError(exception: Throwable): List<Any?> {
     if (exception is FlutterError) {
         return listOf(
-            exception.code,
-            exception.message,
-            exception.details
+            exception.code, exception.message, exception.details
         )
     } else {
         return listOf(
@@ -37,17 +35,12 @@ private fun wrapError(exception: Throwable): List<Any?> {
  * @property details The error details. Must be a datatype supported by the api codec.
  */
 class FlutterError(
-    val code: String,
-    override val message: String? = null,
-    val details: Any? = null
+    val code: String, override val message: String? = null, val details: Any? = null
 ) : Throwable()
 
 /** Generated class from Pigeon that represents data sent in messages. */
 data class Data(
-    val name: String,
-    val value: Double,
-    val startTime: Long,
-    val endTime: Long
+    val name: String, val value: Double, val startTime: Long, val endTime: Long
 
 ) {
     companion object {
@@ -86,9 +79,7 @@ interface AlarmApi {
         fun setUp(binaryMessenger: BinaryMessenger, api: AlarmApi?) {
             run {
                 val channel = BasicMessageChannel<Any?>(
-                    binaryMessenger,
-                    "dev.flutter.pigeon.fedcampus.AlarmApi.setAlarm",
-                    codec
+                    binaryMessenger, "dev.flutter.pigeon.fedcampus.AlarmApi.setAlarm", codec
                 )
                 if (api != null) {
                     channel.setMessageHandler { _, reply ->
@@ -139,10 +130,7 @@ private object DataApiCodec : StandardMessageCodec() {
 /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
 interface DataApi {
     fun getData(
-        name: String,
-        startTime: Long,
-        endTime: Long,
-        callback: (Result<List<Data>>) -> Unit
+        name: String, startTime: Long, endTime: Long, callback: (Result<List<Data>>) -> Unit
     )
 
     companion object {
@@ -156,9 +144,7 @@ interface DataApi {
         fun setUp(binaryMessenger: BinaryMessenger, api: DataApi?) {
             run {
                 val channel = BasicMessageChannel<Any?>(
-                    binaryMessenger,
-                    "dev.flutter.pigeon.fedcampus.DataApi.getData",
-                    codec
+                    binaryMessenger, "dev.flutter.pigeon.fedcampus.DataApi.getData", codec
                 )
                 if (api != null) {
                     channel.setMessageHandler { message, reply ->
@@ -168,9 +154,7 @@ interface DataApi {
                             args[1].let { if (it is Int) it.toLong() else it as Long }
                         val endTimeArg = args[2].let { if (it is Int) it.toLong() else it as Long }
                         api.getData(
-                            nameArg,
-                            startTimeArg,
-                            endTimeArg
+                            nameArg, startTimeArg, endTimeArg
                         ) { result: Result<List<Data>> ->
                             val error = result.exceptionOrNull()
                             if (error != null) {
@@ -266,9 +250,7 @@ interface LoadDataApi {
         fun setUp(binaryMessenger: BinaryMessenger, api: LoadDataApi?) {
             run {
                 val channel = BasicMessageChannel<Any?>(
-                    binaryMessenger,
-                    "dev.flutter.pigeon.fedcampus.LoadDataApi.loaddata",
-                    codec
+                    binaryMessenger, "dev.flutter.pigeon.fedcampus.LoadDataApi.loaddata", codec
                 )
                 if (api != null) {
                     channel.setMessageHandler { _, reply ->
@@ -292,6 +274,7 @@ interface LoadDataApi {
 
 /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
 interface TrainFedmcrnn {
+    fun initialize(modelDir: String, layersSizes: List<Long>, callback: (Result<Unit>) -> Unit)
     fun loadData(data: Map<List<List<Double>>, List<Double>>, callback: (Result<Unit>) -> Unit)
     fun getParameters(callback: (Result<List<ByteArray>>) -> Unit)
     fun updateParameters(parameters: List<ByteArray>, callback: (Result<Unit>) -> Unit)
@@ -312,9 +295,29 @@ interface TrainFedmcrnn {
         fun setUp(binaryMessenger: BinaryMessenger, api: TrainFedmcrnn?) {
             run {
                 val channel = BasicMessageChannel<Any?>(
-                    binaryMessenger,
-                    "dev.flutter.pigeon.fedcampus.TrainFedmcrnn.loadData",
-                    codec
+                    binaryMessenger, "dev.flutter.pigeon.fedcampus.TrainFedmcrnn.initialize", codec
+                )
+                if (api != null) {
+                    channel.setMessageHandler { message, reply ->
+                        val args = message as List<Any?>
+                        val modelDirArg = args[0] as String
+                        val layersSizesArg = args[1] as List<Long>
+                        api.initialize(modelDirArg, layersSizesArg) { result: Result<Unit> ->
+                            val error = result.exceptionOrNull()
+                            if (error != null) {
+                                reply.reply(wrapError(error))
+                            } else {
+                                reply.reply(wrapResult(null))
+                            }
+                        }
+                    }
+                } else {
+                    channel.setMessageHandler(null)
+                }
+            }
+            run {
+                val channel = BasicMessageChannel<Any?>(
+                    binaryMessenger, "dev.flutter.pigeon.fedcampus.TrainFedmcrnn.loadData", codec
                 )
                 if (api != null) {
                     channel.setMessageHandler { message, reply ->
@@ -380,9 +383,7 @@ interface TrainFedmcrnn {
             }
             run {
                 val channel = BasicMessageChannel<Any?>(
-                    binaryMessenger,
-                    "dev.flutter.pigeon.fedcampus.TrainFedmcrnn.ready",
-                    codec
+                    binaryMessenger, "dev.flutter.pigeon.fedcampus.TrainFedmcrnn.ready", codec
                 )
                 if (api != null) {
                     channel.setMessageHandler { _, reply ->
@@ -400,9 +401,7 @@ interface TrainFedmcrnn {
             }
             run {
                 val channel = BasicMessageChannel<Any?>(
-                    binaryMessenger,
-                    "dev.flutter.pigeon.fedcampus.TrainFedmcrnn.fit",
-                    codec
+                    binaryMessenger, "dev.flutter.pigeon.fedcampus.TrainFedmcrnn.fit", codec
                 )
                 if (api != null) {
                     channel.setMessageHandler { message, reply ->
@@ -445,9 +444,7 @@ interface TrainFedmcrnn {
             }
             run {
                 val channel = BasicMessageChannel<Any?>(
-                    binaryMessenger,
-                    "dev.flutter.pigeon.fedcampus.TrainFedmcrnn.testSize",
-                    codec
+                    binaryMessenger, "dev.flutter.pigeon.fedcampus.TrainFedmcrnn.testSize", codec
                 )
                 if (api != null) {
                     channel.setMessageHandler { _, reply ->
@@ -465,9 +462,7 @@ interface TrainFedmcrnn {
             }
             run {
                 val channel = BasicMessageChannel<Any?>(
-                    binaryMessenger,
-                    "dev.flutter.pigeon.fedcampus.TrainFedmcrnn.evaluate",
-                    codec
+                    binaryMessenger, "dev.flutter.pigeon.fedcampus.TrainFedmcrnn.evaluate", codec
                 )
                 if (api != null) {
                     channel.setMessageHandler { _, reply ->
