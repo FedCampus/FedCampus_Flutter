@@ -31,8 +31,10 @@ class _SignInState extends State<SignIn> {
     }
     if (mounted) {
       await Provider.of<UserModel>(context, listen: false).setUser(user);
-      showToastMessage('login success', context);
-      Navigator.pop(context, true);
+      if (mounted) {
+        showToastMessage('login success', context);
+        Navigator.pop(context, true);
+      }
     }
   }
 
@@ -41,9 +43,13 @@ class _SignInState extends State<SignIn> {
       context,
       MaterialPageRoute(builder: (context) => const SignUp()),
     );
-
+    if (result == null) {
+      return;
+    }
     if (result) {
-      Navigator.pop(context, true);
+      if (mounted) {
+        Navigator.pop(context, true);
+      }
     }
   }
 

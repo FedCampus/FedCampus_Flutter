@@ -111,9 +111,8 @@ class MainActivity : FlutterActivity() {
             } else {
                 this.callback(Result.success(false))
             }
-        }
-        else if (requestCode == 1001){
-            if (resultCode == 200){
+        } else if (requestCode == 1001) {
+            if (resultCode == 200) {
                 this.callback(Result.success(true))
             }
         }

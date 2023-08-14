@@ -29,10 +29,10 @@ suspend fun loadData(
     dataCleaning(input)
 
     // change the mutable list to a list
-    val inputFinal = mutableMapOf<List<List<Double>>,List<Double>>()
-    for (entry in input){
-        val key= mutableListOf<List<Double>>();
-        for (item in entry.key){
+    val inputFinal = mutableMapOf<List<List<Double>>, List<Double>>()
+    for (entry in input) {
+        val key = mutableListOf<List<Double>>();
+        for (item in entry.key) {
             val itemFinal = item.toList();
             key.add(itemFinal)
         }
@@ -50,7 +50,7 @@ suspend fun loadData(
 //    }
 }
 
-fun dataCleaning(input: MutableMap<MutableList<MutableList<Double>>,MutableList<Double>>) {
+fun dataCleaning(input: MutableMap<MutableList<MutableList<Double>>, MutableList<Double>>) {
     //TODO the elevation is ignored here
     for (data in input) {
         for (j in 0 until data.key[0].size) {
@@ -74,7 +74,7 @@ fun dataCleaning(input: MutableMap<MutableList<MutableList<Double>>,MutableList<
 
 lateinit var dataListTest: List<Data>
 
-fun calculateAverage(data: MutableList<MutableList<Double>>, column: Int): Double{
+fun calculateAverage(data: MutableList<MutableList<Double>>, column: Int): Double {
     var sum = 0.0
     var valid = 0
     for (i in data.indices) {
@@ -114,13 +114,13 @@ fun calculateAverage(data: MutableList<MutableList<Double>>, column: Int): Doubl
 //    return inputData
 //}
 
-fun dataSlide(data: Pair<Array<DoubleArray>,DoubleArray>):MutableMap<MutableList<MutableList<Double>>,MutableList<Double>> {
-    val inputData = mutableMapOf <MutableList<MutableList<Double>>,MutableList<Double>>()
+fun dataSlide(data: Pair<Array<DoubleArray>, DoubleArray>): MutableMap<MutableList<MutableList<Double>>, MutableList<Double>> {
+    val inputData = mutableMapOf<MutableList<MutableList<Double>>, MutableList<Double>>()
     val day = 7
     for ((index, element) in data.first.withIndex()) {
         if (data.second[index] != 0.0) {
             //start to record the next 7 inputs
-            val input = MutableList(day) {MutableList(element.size) {0.0} }
+            val input = MutableList(day) { MutableList(element.size) { 0.0 } }
             val output = mutableListOf(data.second[index])
             for (i in 0 until day) {
                 if (index + i >= data.first.size) {
@@ -136,7 +136,7 @@ fun dataSlide(data: Pair<Array<DoubleArray>,DoubleArray>):MutableMap<MutableList
 }
 
 
-suspend fun getAllDataAvailable(context: Context): Pair<Array<DoubleArray>,DoubleArray> {
+suspend fun getAllDataAvailable(context: Context): Pair<Array<DoubleArray>, DoubleArray> {
     val maximumTime = 1
     val interval = 24
     var day = DateCalender.add(DateCalender.getCurrentDateNumber(), -1)
@@ -155,12 +155,12 @@ suspend fun getAllDataAvailable(context: Context): Pair<Array<DoubleArray>,Doubl
     return getDataAll(dataArray)
 }
 
-fun getDataAll(dataArr: List<Pair<Array<DoubleArray>,DoubleArray>>): Pair<Array<DoubleArray>,DoubleArray> {
+fun getDataAll(dataArr: List<Pair<Array<DoubleArray>, DoubleArray>>): Pair<Array<DoubleArray>, DoubleArray> {
     val inputLength = dataArr.map { it.first.size }.sum()
     val columnLength = dataArr[0].first[0].size
 
-    val input = Array(inputLength) {DoubleArray(columnLength) }
-    val output =DoubleArray(inputLength)
+    val input = Array(inputLength) { DoubleArray(columnLength) }
+    val output = DoubleArray(inputLength)
 
     var index = 0
     for (data in dataArr) {
@@ -176,7 +176,7 @@ fun getDataAll(dataArr: List<Pair<Array<DoubleArray>,DoubleArray>>): Pair<Array<
 @Throws
 suspend fun getData(
     startEnd: IntArray, context: Context
-): Pair<Array<DoubleArray>,DoubleArray> {
+): Pair<Array<DoubleArray>, DoubleArray> {
     val exerciseDataArray = arrayOf(
         Triple(
             DataType.DT_CONTINUOUS_CALORIES_BURNT, Field.FIELD_CALORIES_TOTAL, "calorie"
@@ -246,19 +246,19 @@ private suspend fun <T> tryOrNull(tag: String, call: suspend () -> T) = try {
 @SuppressLint("SimpleDateFormat")
 private fun getInput2DArrayAndOutputArray(
     dataList: List<Data>, startEnd: IntArray
-): Pair<Array<DoubleArray>,DoubleArray> {
+): Pair<Array<DoubleArray>, DoubleArray> {
     // TODO: This part is hard coded just for FedMCRNN
     val sizeOfSingleColumn = DateCalender.IntervalDay(startEnd[0], startEnd[1]) + 1
     val start = startEnd[0]
     val input2DArray = Array(sizeOfSingleColumn) { DoubleArray(TAG_LIST.size) }
-    val outputArray =DoubleArray(sizeOfSingleColumn)
+    val outputArray = DoubleArray(sizeOfSingleColumn)
     for (data in dataList) {
         val time = SimpleDateFormat("yyyyMMdd").format(Date(data.startTime * 1000L)).toInt()
         val rowIndex = sizeOfSingleColumn - 1 - DateCalender.IntervalDay(start, time)
         if (data.name == "sleep_efficiency") {
-            try{
-            outputArray[rowIndex] = data.value}
-            catch (err: Exception){
+            try {
+                outputArray[rowIndex] = data.value
+            } catch (err: Exception) {
                 print(time);
                 print(rowIndex);
                 print(data.toString());

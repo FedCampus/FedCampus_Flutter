@@ -29,10 +29,12 @@ class _SignUpState extends State<SignUp> {
       return;
     }
     if (mounted) showToastMessage('sign up sucess', context);
-    // ignore: use_build_context_synchronously
-    await Provider.of<UserModel>(context, listen: false).setUser(user);
-    // ignore: use_build_context_synchronously
-    Navigator.pop(context, true);
+    if (mounted) {
+      await Provider.of<UserModel>(context, listen: false).setUser(user);
+    }
+    if (mounted) {
+      Navigator.pop(context, true);
+    }
   }
 
   @override
