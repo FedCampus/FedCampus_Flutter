@@ -24,7 +24,9 @@ class _HealthState extends State<Health> {
   @override
   void initState() {
     super.initState();
-    refresh();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      refresh();
+    });
   }
 
   void _sendLastDayData() async {
