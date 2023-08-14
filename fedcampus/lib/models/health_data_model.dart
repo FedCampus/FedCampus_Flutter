@@ -60,7 +60,8 @@ class HealthDataModel extends ChangeNotifier {
     date = int.parse(_date);
 
     for (var i in dataList) {
-      healthData[i] = 0;
+      // -1 stands for loading
+      healthData[i] = -1;
     }
 
     try {

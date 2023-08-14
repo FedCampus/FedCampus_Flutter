@@ -14,7 +14,7 @@ class ActivityDataModel extends ChangeNotifier {
   Map<String, dynamic> activityData = ActivityData.create();
   bool isAuth = false;
   bool ifSent = false;
-  bool _loading = false;
+  bool _loading = true;
   late final DataApi host;
 
   String _date = (DateTime.now().year * 10000 +
@@ -61,6 +61,7 @@ class ActivityDataModel extends ChangeNotifier {
   String get date => _date;
 
   Future<void> getActivityDataTest() async {
+    _loading = true;
     for (final (i, dataEntryName) in dataList.indexed) {
       activityData[dataEntryName]["average"] = 15110.045;
       activityData[dataEntryName]["rank"] = '100%';
@@ -133,6 +134,8 @@ class ActivityDataModel extends ChangeNotifier {
       response = await _sendFirstRequest();
     } on PlatformException catch (error) {
       logger.e(error);
+      _loading = false;
+      notifyListeners();
       return;
     }
 

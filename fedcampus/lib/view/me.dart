@@ -82,15 +82,38 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
         SizedBox(
           height: 10 * pixel,
         ),
-        MeText(text: 'Sign in', callback: () => _toSignInPage()),
+        Builder(builder: (context) {
+          if (context.watch<UserModel>().isLogin) {
+            // placeholder since a widget cannot be null
+            return const SizedBox();
+          }
+          return MeText(
+            text: 'Sign in',
+            callback: () => _toSignInPage(),
+          );
+        }),
         SizedBox(
           height: 10 * pixel,
         ),
-        MeText(
-          text: 'Account Settings',
-          callback: () => {},
-        ),
-        const MeDivider(),
+        Builder(builder: (context) {
+          if (context.watch<UserModel>().isLogin) {
+            return MeText(
+              text: 'Account Settings',
+              callback: () => {},
+            );
+          } else {
+            // placeholder since a widget cannot be null
+            return const SizedBox();
+          }
+        }),
+        Builder(builder: (context) {
+          if (context.watch<UserModel>().isLogin) {
+            return const MeDivider();
+          } else {
+            // placeholder since a widget cannot be null
+            return const SizedBox();
+          }
+        }),
         MeText(
           text: 'Preferences',
           callback: () {
@@ -118,11 +141,25 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
           callback: () => {},
         ),
         const MeDivider(),
-        MeText(
-          text: 'Sign out',
-          callback: _logOut,
-        ),
-        const MeDivider(),
+        Builder(builder: (context) {
+          if (context.watch<UserModel>().isLogin) {
+            return MeText(
+              text: 'Sign out',
+              callback: _logOut,
+            );
+          } else {
+            // placeholder since a widget cannot be null
+            return const SizedBox();
+          }
+        }),
+        Builder(builder: (context) {
+          if (context.watch<UserModel>().isLogin) {
+            return const MeDivider();
+          } else {
+            // placeholder since a widget cannot be null
+            return const SizedBox();
+          }
+        }),
         const BottomText(),
       ],
     );

@@ -40,7 +40,7 @@ class _ActivityState extends State<Activity> {
     {
       "entry_name": "stress",
       "icon_path": "assets/images/meter.png",
-      "unit": "mmHg"
+      "unit": "stress"
     },
     {
       "entry_name": "step",
@@ -150,18 +150,29 @@ class _ActivityState extends State<Activity> {
             // because ActivityCard() is flexible vertically, when placed in ListView, the height becomes an issue
             // IntrinsicHeight forces the column to be exactly as big as its contents
             // https://api.flutter.dev/flutter/widgets/SingleChildScrollView-class.html
-            return IntrinsicHeight(
-                child: ActivityCard(
-              rank: Provider.of<ActivityDataModel>(context)
-                  .activityData[entries[index - 1]['entry_name']]["rank"]
-                  .toString(),
-              value: Provider.of<ActivityDataModel>(context)
-                  .activityData[entries[index - 1]['entry_name']]["average"]
-                  .toStringAsFixed(2),
-              unit: entries[index - 1]['unit'] ?? "unit",
-              iconPath:
-                  entries[index - 1]['icon_path'] ?? "assets/images/sleep.png",
-            ));
+            if (Provider.of<ActivityDataModel>(context).loading) {
+              return IntrinsicHeight(
+                  child: ActivityCard(
+                rank: '-',
+                value: '-',
+                unit: entries[index - 1]['unit'] ?? "unit",
+                iconPath: entries[index - 1]['icon_path'] ??
+                    "assets/images/sleep.png",
+              ));
+            } else {
+              return IntrinsicHeight(
+                  child: ActivityCard(
+                rank: Provider.of<ActivityDataModel>(context)
+                    .activityData[entries[index - 1]['entry_name']]["rank"]
+                    .toString(),
+                value: Provider.of<ActivityDataModel>(context)
+                    .activityData[entries[index - 1]['entry_name']]["average"]
+                    .toStringAsFixed(2),
+                unit: entries[index - 1]['unit'] ?? "unit",
+                iconPath: entries[index - 1]['icon_path'] ??
+                    "assets/images/sleep.png",
+              ));
+            }
           }),
     );
   }

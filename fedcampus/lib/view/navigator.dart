@@ -48,6 +48,7 @@ class _BottomNavigatorState extends State<BottomNavigator> {
       appBar: AppBar(
         // backgroundColor: Theme.of(context).colorScheme.primaryContainer,
         backgroundColor: getAppBarColor(_selectedIndex, context),
+        centerTitle: true,
         title: Image.asset(
           'assets/images/title.png',
           height: 35 * pixel,

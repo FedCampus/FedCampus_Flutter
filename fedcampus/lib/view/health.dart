@@ -348,16 +348,13 @@ class Heart extends StatelessWidget {
             const FedIcon(imagePath: 'assets/images/heart_rate_2.png'),
           ],
         ),
-        SizedBox(
-          width: 10 * pixel,
-        ),
+        const Spacer(),
         Column(
           children: [
             Text(
-                Provider.of<HealthDataModel>(context)
-                        .healthData['rest_heart_rate']
-                        ?.toStringAsFixed(2) ??
-                    '0',
+                formatNum(Provider.of<HealthDataModel>(context)
+                        .healthData['rest_heart_rate'] ??
+                    -1),
                 style: TextStyle(
                     fontFamily: 'Montserrat Alternates',
                     fontSize: pixel * 30,
@@ -366,16 +363,16 @@ class Heart extends StatelessWidget {
               height: 33 * pixel,
             ),
             Text(
-                Provider.of<HealthDataModel>(context)
-                        .healthData['exercise_heart_rate']
-                        ?.toStringAsFixed(2) ??
-                    '0',
+                formatNum(Provider.of<HealthDataModel>(context)
+                        .healthData['exercise_heart_rate'] ??
+                    -1),
                 style: TextStyle(
                     fontFamily: 'Montserrat Alternates',
                     fontSize: pixel * 30,
                     color: Theme.of(context).colorScheme.onPrimaryContainer)),
           ],
-        )
+        ),
+        const Spacer(),
       ],
     ));
   }
@@ -389,11 +386,8 @@ class Distance extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
-    String displayText = Provider.of<HealthDataModel>(context)
-            .healthData['distance']
-            ?.toInt()
-            .toString() ??
-        '0';
+    String displayText = formatNum(
+        Provider.of<HealthDataModel>(context).healthData['distance'] ?? -1);
     return FedCard(
       widget: SizedBox(
         width: double.infinity,
@@ -476,27 +470,25 @@ class Stress extends StatelessWidget {
               style: TextStyle(color: Theme.of(context).colorScheme.secondary),
             ),
           ]),
-          SizedBox(
-            width: 10 * pixel,
-          ),
+          const Spacer(),
           Column(
             children: [
               Text(
-                  Provider.of<HealthDataModel>(context)
-                          .healthData['stress']
-                          ?.toStringAsFixed(2) ??
-                      '0',
+                  formatNum(Provider.of<HealthDataModel>(context)
+                          .healthData['stress'] ??
+                      -1),
                   style: TextStyle(
                       fontFamily: 'Montserrat Alternates',
                       fontSize: pixel * 30,
                       color: Theme.of(context).colorScheme.onPrimaryContainer)),
-              Text('mmHg',
+              Text('stress',
                   style: TextStyle(
                       fontFamily: 'Montserrat Alternates',
                       fontSize: pixel * 15,
                       color: Theme.of(context).colorScheme.onPrimaryContainer))
             ],
-          )
+          ),
+          const Spacer(),
         ],
       ),
     );
@@ -511,11 +503,8 @@ class Step extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
-    String displayText = Provider.of<HealthDataModel>(context)
-            .healthData['step']
-            ?.toInt()
-            .toString() ??
-        '0';
+    String displayText = formatNum(
+        Provider.of<HealthDataModel>(context).healthData['step'] ?? -1);
     return FedCard(
         widget: Row(
       children: [
@@ -534,9 +523,7 @@ class Step extends StatelessWidget {
             ),
           ],
         ),
-        SizedBox(
-          width: 10 * pixel,
-        ),
+        const Spacer(),
         Column(
           children: [
             Text(displayText,
@@ -547,7 +534,8 @@ class Step extends StatelessWidget {
                         : pixel * (135 / displayText.length),
                     color: Theme.of(context).colorScheme.onPrimaryContainer)),
           ],
-        )
+        ),
+        const Spacer(),
       ],
     ));
   }
@@ -561,10 +549,8 @@ class Calorie extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
-    String displayText = Provider.of<HealthDataModel>(context)
-            .healthData['calorie']
-            ?.toStringAsFixed(2) ??
-        '0';
+    String displayText = formatNum(
+        Provider.of<HealthDataModel>(context).healthData['calorie'] ?? -1);
     return FedCard(
         widget: Row(
       children: [
@@ -581,9 +567,7 @@ class Calorie extends StatelessWidget {
             ),
           ],
         ),
-        SizedBox(
-          width: 10 * pixel,
-        ),
+        const Spacer(),
         Column(
           children: [
             Text(displayText,
@@ -594,7 +578,8 @@ class Calorie extends StatelessWidget {
                         : pixel * (145 / displayText.length),
                     color: Theme.of(context).colorScheme.onPrimaryContainer)),
           ],
-        )
+        ),
+        const Spacer(),
       ],
     ));
   }
@@ -636,16 +621,13 @@ class IntenseExercise extends StatelessWidget {
             ),
           ],
         ),
-        SizedBox(
-          width: 10 * pixel,
-        ),
+        const Spacer(),
         Column(
           children: [
             Text(
-                Provider.of<HealthDataModel>(context)
-                        .healthData['intensity']
-                        ?.toStringAsFixed(2) ??
-                    '0',
+                formatNum(Provider.of<HealthDataModel>(context)
+                        .healthData['intensity'] ??
+                    -1),
                 style: TextStyle(
                     fontFamily: 'Montserrat Alternates',
                     fontSize: pixel * 30,
@@ -654,9 +636,10 @@ class IntenseExercise extends StatelessWidget {
                 style: TextStyle(
                     fontFamily: 'Montserrat Alternates',
                     fontSize: pixel * 20,
-                    color: Theme.of(context).colorScheme.onPrimaryContainer))
+                    color: Theme.of(context).colorScheme.onPrimaryContainer)),
           ],
-        )
+        ),
+        const Spacer(),
       ],
     ));
   }
@@ -689,24 +672,35 @@ class Sleep extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(
-            width: 10 * pixel,
-          ),
+          const Spacer(),
           Column(
             children: [
               Text(
-                  Provider.of<HealthDataModel>(context)
-                          .healthData['sleep_efficiency']
-                          ?.toStringAsFixed(2) ??
-                      '0',
+                  formatNum(Provider.of<HealthDataModel>(context)
+                          .healthData['sleep_efficiency'] ??
+                      -1),
                   style: TextStyle(
                       fontFamily: 'Montserrat Alternates',
                       fontSize: pixel * 30,
                       color: Theme.of(context).colorScheme.onPrimaryContainer)),
+              Text('effi',
+                  style: TextStyle(
+                      fontFamily: 'Montserrat Alternates',
+                      fontSize: pixel * 20,
+                      color: Theme.of(context).colorScheme.onPrimaryContainer)),
             ],
-          )
+          ),
+          const Spacer(),
         ],
       ),
     );
   }
+}
+
+String formatNum(double num, {decimalPoints = 2}) {
+  String s = num.toStringAsFixed(decimalPoints);
+  if (num == -1) {
+    s = '-';
+  }
+  return s;
 }

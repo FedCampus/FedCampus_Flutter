@@ -1,3 +1,4 @@
+import 'package:fedcampus/models/user.dart';
 import 'package:fedcampus/models/user_model.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/me/user_api.dart';
@@ -21,7 +22,10 @@ class _SignInState extends State<SignIn> {
 
   _signIn() async {
     Map<String, dynamic> user;
-    // user = User.mapOf(userName: 'luyao', email: 'lw337@duke.edu', loggedIn: true);
+    // user =
+    //     User.mapOf(userName: 'luyao', email: 'lw337@duke.edu', loggedIn: true);
+    // await Provider.of<UserModel>(context, listen: false).setUser(user);
+    // return;
     try {
       user = await userApi.signIn(_username, _password);
     } on Exception catch (e) {
