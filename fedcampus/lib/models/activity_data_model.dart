@@ -55,6 +55,8 @@ class ActivityDataModel extends ChangeNotifier {
     getActivityData();
   }
 
+  String get date => _date;
+
   Future<void> getActivityDataTest() async {
     for (final (i, dataEntryName) in dataList.indexed) {
       activityData[dataEntryName]["average"] = '${i.toString()}01';

@@ -61,6 +61,8 @@ class _ActivityState extends State<Activity> {
   @override
   void initState() {
     super.initState();
+    dateTime = DateTime.parse(
+        Provider.of<ActivityDataModel>(context, listen: false).date);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       refresh();
     });
@@ -74,12 +76,12 @@ class _ActivityState extends State<Activity> {
   updateDate(DateTime selectedDate) {
     setState(() {
       dateTime = selectedDate;
-      logger.d(selectedDate);
-      String month = selectedDate.month.toString();
-      if (month.length < 2) month = '0$month';
-      String day = selectedDate.day.toString();
-      if (day.length < 2) day = '0$day';
-      String datecode = '${selectedDate.year}$month$day';
+      logger.i(selectedDate);
+
+      String datecode = (selectedDate.year * 10000 +
+              selectedDate.month * 100 +
+              selectedDate.day)
+          .toString();
       Provider.of<ActivityDataModel>(context, listen: false).date = datecode;
     });
   }
