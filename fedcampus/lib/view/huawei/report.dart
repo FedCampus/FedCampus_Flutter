@@ -1,18 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:fedcampus/pigeons/huaweiauth.g.dart';
+import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/utility/http_client.dart';
 import 'package:fedcampus/utility/log.dart';
-import 'package:fedcampus/pigeons/messages.g.dart';
 import 'package:http/http.dart';
 import 'package:sample_statistics/sample_statistics.dart';
-
-import '../../pigeons/datawrapper.dart';
 
 class ReportPage extends StatefulWidget {
   const ReportPage({super.key});

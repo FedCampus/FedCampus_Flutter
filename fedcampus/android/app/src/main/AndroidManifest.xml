@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-        
-    
+
+
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <application
             android:label="fedcampus"
@@ -8,7 +8,9 @@
             android:name="${applicationName}">
 
 
-        <receiver android:name=".health.utils.Notification" android:enabled="true"/>
+        <receiver
+                android:name=".health.utils.Notification"
+                android:enabled="true" />
 
 
         <activity android:name="com.cuhk.fedcampus.health.health.auth.HealthKitAuthActivity" />

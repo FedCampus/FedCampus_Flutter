@@ -1,8 +1,8 @@
 package com.cuhk.fedcampus.health.utils.exercisedata
 
+import Data
 import android.annotation.SuppressLint
 import android.content.Context
-import com.cuhk.fedcampus.health.utils.Data
 import com.huawei.hmf.tasks.Task
 import com.huawei.hms.hihealth.HealthRecordController
 import com.huawei.hms.hihealth.HuaweiHiHealth
@@ -62,8 +62,8 @@ suspend fun getSleepEfficiencyData(
                 sleepScore = healthRecord.getFieldValue(Field.SLEEP_SCORE).asIntValue().toFloat()
                 data.add(
                     Data(
-                        sleepScore.toDouble(),
                         tag,
+                        sleepScore.toDouble(),
                         healthRecord.getStartTime(TimeUnit.SECONDS),
                         healthRecord.getEndTime(TimeUnit.SECONDS)
                     )

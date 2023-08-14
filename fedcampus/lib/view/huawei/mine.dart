@@ -1,5 +1,4 @@
-import 'package:fedcampus/pigeons/huaweiauth.g.dart';
-import 'package:fedcampus/pigeons/loaddata.g.dart';
+import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/utility/http_client.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/register.dart';
@@ -9,8 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fedcampus/view/train_app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../pigeons/alarm.g.dart';
 
 class MinePage extends StatefulWidget {
   const MinePage({super.key});

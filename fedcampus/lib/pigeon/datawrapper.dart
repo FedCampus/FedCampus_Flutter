@@ -1,15 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:fedcampus/pigeon/generated.g.dart';
+import 'package:fedcampus/utility/log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:fedcampus/utility/http_client.dart';
+import 'package:fedcampus/pigeon/data_extensions.dart';
 import 'package:http/http.dart';
 import 'package:sample_statistics/sample_statistics.dart';
-import '../utility/log.dart';
-import 'messages.g.dart';
 
 class DataWrapper {
   final dataList = [
@@ -124,49 +125,33 @@ class DataWrapper {
 
     fuzzData(dataFuzz);
 
+    final dataJson = dataListJsonEncode(data);
+    final dataFuzzJson = dataListJsonEncode(dataFuzz);
+
     try {
       List<http.Response> responseArr = await Future.wait([
-        HTTPClient.post(HTTPClient.data, <String, String>{}, jsonEncode(data)),
-        HTTPClient.post(
-            HTTPClient.dataDP, <String, String>{}, jsonEncode(dataFuzz))
+        HTTPClient.post(HTTPClient.data, <String, String>{}, dataJson),
+        // TODO: Data DP Algorithm!!!
+        HTTPClient.post(HTTPClient.dataDP, <String, String>{}, dataFuzzJson)
       ]).timeout(const Duration(seconds: 5));
       // TODO: Time out for 5 seconds.
 
+      logger.i("Data Status Code ${responseArr[0].statusCode} : $dataJson");
       logger.i(
-          "Data Status Code ${responseArr[0].statusCode} : ${jsonEncode(data)}");
-      logger.i(
-          "Data DP Status Code ${responseArr[1].statusCode} : ${jsonEncode(dataFuzz)}");
+          "Data DP Status Code ${responseArr[1].statusCode} : $dataFuzzJson");
       if (responseArr[0].statusCode == 401) {
         // user login
-        Fluttertoast.showToast(
-            msg: "Please Login for federated analysis.",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        dataWrapperToast("Please Login for federated analysis.");
       }
     } on ClientException {
-      Fluttertoast.showToast(
-          msg: "Please make sure you are connected to DKU network!",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0);
+      remindDkuNetwork();
     } on TimeoutException {
       logger.d("internet issue");
-      Fluttertoast.showToast(
-          msg: "Please make sure you are connected to DKU network!",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0);
+      remindDkuNetwork();
       return;
+    } catch (err, stackTrace) {
+      logger.e("$err\n$stackTrace");
+      dataWrapperToast("Unknown issue: $err. Please try again later.");
     }
   }
 
@@ -176,3 +161,20 @@ class DataWrapper {
     logger.i(x[0]!.value);
   }
 }
+
+void remindDkuNetwork() =>
+    dataWrapperToast("Please make sure you are connected to DKU network!");
+
+void dataWrapperToast(String msg) => Fluttertoast.showToast(
+    msg: msg,
+    toastLength: Toast.LENGTH_SHORT,
+    gravity: ToastGravity.CENTER,
+    timeInSecForIosWeb: 1,
+    backgroundColor: Colors.red,
+    textColor: Colors.white,
+    fontSize: 16.0);
+
+/// Manually calls `.toJson` on `Data` since the dynamic call from `jsonEncode`
+/// could not find extension methods.
+String dataListJsonEncode(List<Data?> data) =>
+    jsonEncode(data.map((e) => e!.toJson()).toList());
