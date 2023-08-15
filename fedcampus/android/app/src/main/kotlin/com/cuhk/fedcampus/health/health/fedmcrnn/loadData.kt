@@ -228,7 +228,7 @@ private suspend fun <T> tryOrNull(tag: String, call: suspend () -> T) = try {
 }
 
 @SuppressLint("SimpleDateFormat")
-private fun getInput2DArrayAndOutputArray(
+fun getInput2DArrayAndOutputArray(
     dataList: List<Data>, startEnd: IntArray
 ): Pair<Array<DoubleArray>, DoubleArray> {
     // TODO: This part is hard coded just for FedMCRNN
@@ -237,7 +237,7 @@ private fun getInput2DArrayAndOutputArray(
     val input2DArray = Array(sizeOfSingleColumn) { DoubleArray(TAG_LIST.size) }
     val outputArray = DoubleArray(sizeOfSingleColumn)
     for (data in dataList) {
-        val time = SimpleDateFormat("yyyyMMdd").format(Date(data.startTime * 1000L)).toInt()
+        val time = data.endTime.toInt()
         val rowIndex = sizeOfSingleColumn - 1 - DateCalender.IntervalDay(start, time)
         if (data.name == "sleep_efficiency") {
             try {
@@ -250,7 +250,6 @@ private fun getInput2DArrayAndOutputArray(
             continue
         }
         val columnIndex = TAG_LIST.indexOf(data.name)
-        input2DArray[rowIndex][columnIndex] = data.value
     }
     return input2DArray to outputArray
 }

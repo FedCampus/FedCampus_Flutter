@@ -124,7 +124,7 @@ class _ReportPageState extends State<ReportPage> {
       }
       return;
     }
-    List<Data> dataFuzz = List<Data>.from(data!);
+    List<Data> dataFuzz = List<Data>.from(data);
 
     fuzzData(dataFuzz);
 

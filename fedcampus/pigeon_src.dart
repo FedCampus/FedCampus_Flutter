@@ -44,7 +44,8 @@ abstract class HuaweiAuthApi {
 @HostApi()
 abstract class LoadDataApi {
   @async
-  Map<List<List<double>>, List<double>> loaddata();
+  Map<Object?, Object?> loaddata(
+      List<Data> dataList, int startTime, int endTime);
 }
 
 class LossAccuracy {
