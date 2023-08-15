@@ -53,8 +53,7 @@ class _TrainAppState extends State<TrainApp> {
     }
 
     _canPrepare = false;
-    appendLog(
-        'Connecting with Server IP: $host, Port: $backendPort');
+    appendLog('Connecting with Server IP: $host, Port: $backendPort');
 
     try {
       await _prepare(host, backendUrl);
