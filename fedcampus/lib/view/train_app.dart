@@ -70,6 +70,7 @@ class _TrainAppState extends State<TrainApp> {
     final id = await deviceId();
     logger.d('Device ID: $id');
     // TODO: Provide data.
+    _training.infoStream().listen(appendLog);
     await _training.prepare(host.host, backendUrl.toString(), {},
         deviceId: id, startFresh: _startFresh);
     _canTrain = true;
