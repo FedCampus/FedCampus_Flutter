@@ -12,17 +12,11 @@ import com.huawei.hms.hihealth.HuaweiHiHealth.getDataController
 import com.huawei.hms.hihealth.data.DataType
 import com.huawei.hms.hihealth.data.Field
 import kotlinx.coroutines.*
-import org.eu.fedcampus.fed_kit_examples.fedmcrnn.Float2DArray
-import org.eu.fedcampus.fed_kit_train.FlowerClient
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-suspend fun loadData(
-    context: Context,
-    flowerClient: FlowerClient<Float2DArray, FloatArray>,
-    @Suppress("UNUSED_PARAMETER") participantId: Int
-) {
+suspend fun loadData(context: Context): Map<List<List<Double>>, List<Double>> {
 
     val data = getAllDataAvailable(context)
     val input = dataSlide(data)
@@ -40,14 +34,7 @@ suspend fun loadData(
         val valueFinal = entry.value.toList()
         inputFinal[keyFinal] = valueFinal
     }
-    val inputFinalFinal = inputFinal.toMap()
-
-
-//    for (sample in input) {
-//        flowerClient.addSample(sample.first, sample.second, true)
-//        // TODO: Legitimate ways to evaluate instead of using the training set.
-//        flowerClient.addSample(sample.first, sample.second, false)
-//    }
+    return inputFinal.toMap()
 }
 
 fun dataCleaning(input: MutableMap<MutableList<MutableList<Double>>, MutableList<Double>>) {
@@ -218,10 +205,7 @@ suspend fun getData(
         jobs.add(async {
             tryOrNull("getData") {
                 getSleepEfficiencyData(
-                    "sleep_efficiency",
-                    context,
-                    startEnd[0],
-                    DateCalender.add(startEnd[1], 1)
+                    "sleep_efficiency", context, startEnd[0], DateCalender.add(startEnd[1], 1)
                 )
             }
         })
@@ -244,7 +228,7 @@ private suspend fun <T> tryOrNull(tag: String, call: suspend () -> T) = try {
 }
 
 @SuppressLint("SimpleDateFormat")
-private fun getInput2DArrayAndOutputArray(
+fun getInput2DArrayAndOutputArray(
     dataList: List<Data>, startEnd: IntArray
 ): Pair<Array<DoubleArray>, DoubleArray> {
     // TODO: This part is hard coded just for FedMCRNN
@@ -253,7 +237,7 @@ private fun getInput2DArrayAndOutputArray(
     val input2DArray = Array(sizeOfSingleColumn) { DoubleArray(TAG_LIST.size) }
     val outputArray = DoubleArray(sizeOfSingleColumn)
     for (data in dataList) {
-        val time = SimpleDateFormat("yyyyMMdd").format(Date(data.startTime * 1000L)).toInt()
+        val time = data.endTime.toInt()
         val rowIndex = sizeOfSingleColumn - 1 - DateCalender.IntervalDay(start, time)
         if (data.name == "sleep_efficiency") {
             try {
@@ -266,7 +250,6 @@ private fun getInput2DArrayAndOutputArray(
             continue
         }
         val columnIndex = TAG_LIST.indexOf(data.name)
-        input2DArray[rowIndex][columnIndex] = data.value
     }
     return input2DArray to outputArray
 }

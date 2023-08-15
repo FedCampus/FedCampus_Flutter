@@ -1,43 +1,30 @@
 package com.cuhk.fedcampus.pigeon
 
+import Data
 import LoadDataApi
 import android.content.Context
-import com.cuhk.fedcampus.health.health.fedmcrnn.dataCleaning
-import com.cuhk.fedcampus.health.health.fedmcrnn.dataSlide
-import com.cuhk.fedcampus.health.health.fedmcrnn.getAllDataAvailable
-import com.cuhk.fedcampus.health.health.fedmcrnn.logger
+import com.cuhk.fedcampus.health.health.fedmcrnn.*
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
 class LoadDataApiClass(val context: Context) : LoadDataApi {
 
-    //    override fun loaddata(callback: (Result<Boolean>) -> Unit) {
-////        TODO("Not yet implemented")
-//        val scope = MainScope();
-//        scope.launch {
-//            println("load data start")
-//            val data = getAllDataAvailable(context)
-//            val input = dataSlide(data)
-//            Log.i("loaddata", "load data success");
-//            println(data.first.contentToString())
-//            for (arr in data.first) {
-//                print(arr.contentToString() + "\n");
-//            }
-//            println("----")
-//            println(data.second.contentToString())
-//            callback(Result.success(true))
-//        }
-//    }
-    override fun loaddata(callback: (Result<Map<List<List<Double>>, List<Double>>>) -> Unit) {
-//        TODO("Not yet implemented")
+    override fun loaddata(
+        dataList: List<Data>,
+        startTime: Long,
+        endTime: Long,
+        callback: (Result<Map<Any?, Any?>>) -> Unit
+    ) {
+
         val scope = MainScope()
         println("starting to get data!")
 
         scope.launch {
             logger("start data fetching")
-            val data = getAllDataAvailable(context)
+            val startEndArray = intArrayOf(startTime.toInt(), endTime.toInt())
+            print(startEndArray[0].toString()+ " "+ startEndArray[1].toString())
+            val data =getInput2DArrayAndOutputArray(dataList,startEndArray)
             logger("finish data fetching")
-
 
             logger("start data sliding")
             val input = dataSlide(data)
@@ -59,16 +46,9 @@ class LoadDataApiClass(val context: Context) : LoadDataApi {
             }
             val inputFinalFinal = inputFinal.toMap()
 
-            callback(Result.success(inputFinalFinal))
+            callback(Result.success(inputFinalFinal as Map<Any?, Any?>))
         }
-
     }
 
-    fun printInputList(input: List<List<Double>>) {
-        for (list in input) {
-            println(list.toDoubleArray().contentToString())
-        }
-
-    }
 
 }

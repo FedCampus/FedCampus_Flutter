@@ -56,6 +56,12 @@ dependencies:
     sdk: flutter
   auto_size_text: ^3.0.0
 
+  app_set_id: ^1.0.0
+
+  sqflite: ^2.3.0
+  path: ^1.8.3
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

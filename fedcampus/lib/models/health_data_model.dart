@@ -50,6 +50,8 @@ class HealthDataModel extends ChangeNotifier {
   set date(String date) {
     _date = date;
     getData();
+    var dw = DataWrapper();
+    dw.getDayDataAndSendAndTrain(int.parse(_date));
   }
 
   Future<void> getData() async {
@@ -92,7 +94,7 @@ class HealthDataModel extends ChangeNotifier {
       await host.getAuthenticate();
       getData();
       final dw = DataWrapper();
-      dw.getLastDayDataAndSend();
+      dw.getDayDataAndSendAndTrain(int.parse(_date));
     } on PlatformException catch (error) {
       logger.e(error);
     }

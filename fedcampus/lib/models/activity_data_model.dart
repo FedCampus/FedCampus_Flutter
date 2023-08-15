@@ -79,7 +79,7 @@ class ActivityDataModel extends ChangeNotifier {
       try {
         var dw = DataWrapper();
         final data = await dw.getDataList(dataList, dataNumber);
-        bodyJson = jsonDecode(jsonEncode(data));
+        bodyJson = jsonDecode(dataListJsonEncode(data));
         // HTTPClient.post(HTTPClient.fedAnalysis, <String,String>{}, body)
       } on PlatformException catch (error) {
         if (error.message == "java.lang.SecurityException: 50005") {
