@@ -141,7 +141,7 @@ class UserApi {
   }
 
   loadData() async {
-    final host = LoadDataApi();
-    await host.loaddata();
+    // final host = LoadDataApi();
+    // await host.loaddata();
   }
 }

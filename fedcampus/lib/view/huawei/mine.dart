@@ -106,14 +106,14 @@ class _MinePageState extends State<MinePage>
   }
 
   void _loadData() async {
-    final host = LoadDataApi();
-    final input = await host.loaddata();
-    input.forEach((key, value) {
-      logger.i("input");
-      printDoubleList(key);
-      logger.i("sleep: ${value![0].toString()}");
-      logger.i("------");
-    });
+    // final host = LoadDataApi();
+    // final input = await host.loaddata();
+    // input.forEach((key, value) {
+    //   logger.i("input");
+    //   printDoubleList(key);
+    //   logger.i("sleep: ${value![0].toString()}");
+    //   logger.i("------");
+    // });
   }
 
   void printDoubleList(List<List<double?>?>? list) {

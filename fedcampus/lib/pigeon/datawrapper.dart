@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:fedcampus/pigeon/generated.g.dart';
+import 'package:fedcampus/utility/database.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,7 +26,7 @@ class DataWrapper {
     "sleep_efficiency"
   ];
 
-  Future<List<Data?>?> getDataList(List<String> nameList, int time) async {
+  Future<List<Data?>> getDataList(List<String> nameList, int time) async {
     List<Future<Data?>> list = List.empty(growable: true);
     final host = DataApi();
     for (final element in nameList) {
@@ -46,7 +47,7 @@ class DataWrapper {
       List<Data?>? data = await getDataList(nameList, time);
       Map<String, double> res = {};
       // turn the data to a map
-      for (var d in data!) {
+      for (var d in data) {
         res.addAll({d!.name: d.value});
       }
       return res;
@@ -90,6 +91,44 @@ class DataWrapper {
     }
   }
 
+  void _saveToDataBaseAndStartTraining(List<Data?> data, int date) async {
+    final dbapi = DataBaseApi();
+    final database = await dbapi.getDataBase();
+    await dbapi.saveToDB(data, database);
+
+    //start Training
+
+    //1. load data
+    final dataList = await dbapi.getDataList(database, date);
+    logger.i(dataListJsonEncode(dataList));
+
+    //2. Perform data windowing and start Training.
+    final loadDataApi = LoadDataApi();
+    Map<List<List<double>>, List<double>> result = _wrap2DArrayInput(
+        await loadDataApi.loaddata(dataList, dbapi.startTime, date));
+    logger.i(result);
+  }
+
+  Map<List<List<double>>, List<double>> _wrap2DArrayInput(
+      Map<Object?, Object?> result) {
+    Map<List<List<double>>, List<double>> xTrue = {};
+    for (var entry in result.entries) {
+      final value = entry.value as List<Object?>;
+      final key = entry.key as List<Object?>;
+      List<List<double>> twoDarrayTrue = List.empty(growable: true);
+      for (var onedarray in key) {
+        var x1 = (onedarray as List<Object?>);
+        List<double> onedarrayList = List.empty(growable: true);
+        for (final i in x1) {
+          onedarrayList.add(i as double);
+        }
+        twoDarrayTrue.add(onedarrayList);
+      }
+      xTrue[twoDarrayTrue] = [value[0]! as double];
+    }
+    return xTrue;
+  }
+
   void getLastDayDataAndSend({ifToast = false}) async {
     // get the data from the last day
     final now = DateTime.now();
@@ -121,7 +160,9 @@ class DataWrapper {
       }
       return;
     }
-    List<Data> dataFuzz = List<Data>.from(data!);
+    List<Data> dataFuzz = List<Data>.from(data);
+
+    _saveToDataBaseAndStartTraining(data, date);
 
     fuzzData(dataFuzz);
 
