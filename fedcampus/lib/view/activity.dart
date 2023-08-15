@@ -19,38 +19,38 @@ class _ActivityState extends State<Activity> {
   final entries = [
     {
       "entry_name": "step_time",
-      "icon_path": "assets/images/step.png",
+      "icon_path": "assets/svg/step.svg",
       "unit": "min"
     },
     {
       "entry_name": "distance",
-      "icon_path": "assets/images/location.png",
+      "icon_path": "assets/svg/distance.svg",
       "unit": "meters"
     },
     {
       "entry_name": "calorie",
-      "icon_path": "assets/images/calorie.png",
+      "icon_path": "assets/svg/calorie.svg",
       "unit": "kcals"
     },
     {
       "entry_name": "intensity",
-      "icon_path": "assets/images/exercise.png",
+      "icon_path": "assets/svg/exercise.svg",
       "unit": "min"
     },
     {
       "entry_name": "stress",
-      "icon_path": "assets/images/meter.png",
+      "icon_path": "assets/svg/stress.svg",
       "unit": "stress"
     },
     {
       "entry_name": "step",
       "icon_path":
-          "assets/images/step.png", // TODO: distinguish step and step_time icon
+          "assets/svg/step.svg", // TODO: distinguish step and step_time icon
       "unit": "steps"
     },
     {
       "entry_name": "sleep_efficiency",
-      "icon_path": "assets/images/sleep.png",
+      "icon_path": "assets/svg/sleep.svg",
       "unit": "effi"
     },
   ];
@@ -156,8 +156,8 @@ class _ActivityState extends State<Activity> {
                 rank: '-',
                 value: '-',
                 unit: entries[index - 1]['unit'] ?? "unit",
-                iconPath: entries[index - 1]['icon_path'] ??
-                    "assets/images/sleep.png",
+                iconPath:
+                    entries[index - 1]['icon_path'] ?? "assets/svg/sleep.svg",
               ));
             } else {
               return IntrinsicHeight(
@@ -169,8 +169,8 @@ class _ActivityState extends State<Activity> {
                     .activityData[entries[index - 1]['entry_name']]["average"]
                     .toStringAsFixed(2),
                 unit: entries[index - 1]['unit'] ?? "unit",
-                iconPath: entries[index - 1]['icon_path'] ??
-                    "assets/images/sleep.png",
+                iconPath:
+                    entries[index - 1]['icon_path'] ?? "assets/svg/sleep.svg",
               ));
             }
           }),
@@ -203,11 +203,11 @@ class ActivityCard extends StatelessWidget {
             // As stated in https://api.flutter.dev/flutter/widgets/Image/height.html,
             // it is recommended to specify the image size (in order to avoid
             // widget size suddenly changes when the app just loads another page)
-            Image.asset(
-              iconPath,
-              fit: BoxFit.contain,
-              height: pixel * 56,
-              width: pixel * 56,
+            SvgIcon(
+              imagePath: iconPath,
+              colorFilter: ColorFilter.mode(
+                  Theme.of(context).colorScheme.secondaryContainer,
+                  BlendMode.srcIn),
             ),
             const Expanded(
               flex: 2,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class FedCard extends StatelessWidget {
@@ -64,6 +65,32 @@ class FedIcon extends StatelessWidget {
     double pixel = MediaQuery.of(context).size.width / 400;
     return Image.asset(
       imagePath,
+      fit: BoxFit.contain,
+      width: width * pixel,
+      height: height * pixel,
+    );
+  }
+}
+
+class SvgIcon extends StatelessWidget {
+  const SvgIcon({
+    super.key,
+    required this.imagePath,
+    this.height = 50,
+    this.width = 50,
+    this.colorFilter,
+  });
+
+  final String imagePath;
+  final double height;
+  final double width;
+  final ColorFilter? colorFilter;
+  @override
+  Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
+    return SvgPicture.asset(
+      imagePath,
+      colorFilter: colorFilter,
       fit: BoxFit.contain,
       width: width * pixel,
       height: height * pixel,

@@ -332,8 +332,10 @@ class Heart extends StatelessWidget {
         Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const FedIcon(
-              imagePath: 'assets/images/heart_rate.png',
+            const SvgIcon(
+              imagePath: 'assets/svg/heart_rate.svg',
+              width: 45,
+              height: 45,
             ),
             SizedBox(
               height: 10 * pixel,
@@ -345,7 +347,11 @@ class Heart extends StatelessWidget {
             SizedBox(
               height: 10 * pixel,
             ),
-            const FedIcon(imagePath: 'assets/images/heart_rate_2.png'),
+            const SvgIcon(
+              imagePath: 'assets/svg/heart_rate_2.svg',
+              width: 45,
+              height: 45,
+            ),
           ],
         ),
         const Spacer(),
@@ -404,7 +410,7 @@ class Distance extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const FedIcon(imagePath: 'assets/images/location.png'),
+            const SvgIcon(imagePath: 'assets/svg/distance.svg'),
             SizedBox(
               height: 10 * pixel,
             ),
@@ -470,7 +476,7 @@ class Stress extends StatelessWidget {
       widget: Row(
         children: [
           Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-            const FedIcon(imagePath: 'assets/images/meter.png'),
+            const SvgIcon(imagePath: 'assets/svg/stress.svg'),
             SizedBox(
               height: 10 * pixel,
             ),
@@ -524,7 +530,7 @@ class Step extends StatelessWidget {
         Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const FedIcon(imagePath: 'assets/images/step.png'),
+            const SvgIcon(imagePath: 'assets/svg/step.svg'),
             SizedBox(
               height: 10 * pixel,
             ),
@@ -572,7 +578,7 @@ class Calorie extends StatelessWidget {
         Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const FedIcon(imagePath: 'assets/images/calorie.png'),
+            const SvgIcon(imagePath: 'assets/svg/calorie.svg'),
             SizedBox(
               height: 10 * pixel,
             ),
@@ -614,10 +620,8 @@ class IntenseExercise extends StatelessWidget {
         Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const FedIcon(
-              imagePath: 'assets/images/exercise.png',
-              width: 52,
-              height: 63,
+            const SvgIcon(
+              imagePath: 'assets/svg/exercise.svg',
             ),
             SizedBox(
               height: 10 * pixel,
@@ -676,8 +680,10 @@ class Sleep extends StatelessWidget {
           Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const FedIcon(
-                imagePath: 'assets/images/sleep.png',
+              const SvgIcon(
+                imagePath: 'assets/svg/sleep.svg',
+                width: 58,
+                height: 58,
               ),
               SizedBox(
                 height: 10 * pixel,
