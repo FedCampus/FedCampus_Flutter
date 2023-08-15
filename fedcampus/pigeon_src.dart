@@ -47,6 +47,12 @@ abstract class LoadDataApi {
   Map<List<List<double>>, List<double>> loaddata();
 }
 
+class LossAccuracy {
+  LossAccuracy(this.loss, this.accuracy);
+  double loss;
+  double accuracy;
+}
+
 @HostApi()
 abstract class TrainFedmcrnn {
   @async
@@ -71,5 +77,5 @@ abstract class TrainFedmcrnn {
   int testSize();
 
   @async
-  Float64List evaluate();
+  LossAccuracy evaluate();
 }

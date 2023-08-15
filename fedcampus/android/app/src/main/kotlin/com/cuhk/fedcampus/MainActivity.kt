@@ -50,7 +50,7 @@ class MainActivity : FlutterActivity() {
         HuaweiAuthApi.setUp(messenger, HuaweiAuthApiClass(this))
         LoadDataApi.setUp(messenger, LoadDataApiClass(this))
         AlarmApi.setUp(messenger, AlarmApiClass(this))
-        TrainFedmcrnn.setUp(messenger, FedmcrnnClient())
+        TrainFedmcrnn.setUp(messenger, FedmcrnnClient(this, messenger))
 
 
         val messager = flutterEngine.dartExecutor.binaryMessenger

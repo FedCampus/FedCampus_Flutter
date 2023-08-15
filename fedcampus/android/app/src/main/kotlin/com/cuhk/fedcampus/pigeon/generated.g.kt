@@ -64,6 +64,28 @@ data class Data(
     }
 }
 
+/** Generated class from Pigeon that represents data sent in messages. */
+data class LossAccuracy(
+    val loss: Double, val accuracy: Double
+
+) {
+    companion object {
+        @Suppress("UNCHECKED_CAST")
+        fun fromList(list: List<Any?>): LossAccuracy {
+            val loss = list[0] as Double
+            val accuracy = list[1] as Double
+            return LossAccuracy(loss, accuracy)
+        }
+    }
+
+    fun toList(): List<Any?> {
+        return listOf<Any?>(
+            loss,
+            accuracy,
+        )
+    }
+}
+
 /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
 interface AlarmApi {
     fun setAlarm(callback: (Result<Boolean>) -> Unit)
@@ -272,6 +294,32 @@ interface LoadDataApi {
     }
 }
 
+@Suppress("UNCHECKED_CAST")
+private object TrainFedmcrnnCodec : StandardMessageCodec() {
+    override fun readValueOfType(type: Byte, buffer: ByteBuffer): Any? {
+        return when (type) {
+            128.toByte() -> {
+                return (readValue(buffer) as? List<Any?>)?.let {
+                    LossAccuracy.fromList(it)
+                }
+            }
+
+            else -> super.readValueOfType(type, buffer)
+        }
+    }
+
+    override fun writeValue(stream: ByteArrayOutputStream, value: Any?) {
+        when (value) {
+            is LossAccuracy -> {
+                stream.write(128)
+                writeValue(stream, value.toList())
+            }
+
+            else -> super.writeValue(stream, value)
+        }
+    }
+}
+
 /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
 interface TrainFedmcrnn {
     fun initialize(modelDir: String, layersSizes: List<Long>, callback: (Result<Unit>) -> Unit)
@@ -282,12 +330,12 @@ interface TrainFedmcrnn {
     fun fit(epochs: Long, batchSize: Long, callback: (Result<Unit>) -> Unit)
     fun trainingSize(): Long
     fun testSize(): Long
-    fun evaluate(callback: (Result<DoubleArray>) -> Unit)
+    fun evaluate(callback: (Result<LossAccuracy>) -> Unit)
 
     companion object {
         /** The codec used by TrainFedmcrnn. */
         val codec: MessageCodec<Any?> by lazy {
-            StandardMessageCodec()
+            TrainFedmcrnnCodec
         }
 
         /** Sets up an instance of `TrainFedmcrnn` to handle messages through the `binaryMessenger`. */
@@ -466,7 +514,7 @@ interface TrainFedmcrnn {
                 )
                 if (api != null) {
                     channel.setMessageHandler { _, reply ->
-                        api.evaluate { result: Result<DoubleArray> ->
+                        api.evaluate { result: Result<LossAccuracy> ->
                             val error = result.exceptionOrNull()
                             if (error != null) {
                                 reply.reply(wrapError(error))

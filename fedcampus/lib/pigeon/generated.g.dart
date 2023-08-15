@@ -44,6 +44,32 @@ class Data {
   }
 }
 
+class LossAccuracy {
+  LossAccuracy({
+    required this.loss,
+    required this.accuracy,
+  });
+
+  double loss;
+
+  double accuracy;
+
+  Object encode() {
+    return <Object?>[
+      loss,
+      accuracy,
+    ];
+  }
+
+  static LossAccuracy decode(Object result) {
+    result as List<Object?>;
+    return LossAccuracy(
+      loss: result[0]! as double,
+      accuracy: result[1]! as double,
+    );
+  }
+}
+
 class AlarmApi {
   /// Constructor for [AlarmApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
@@ -245,6 +271,29 @@ class LoadDataApi {
   }
 }
 
+class _TrainFedmcrnnCodec extends StandardMessageCodec {
+  const _TrainFedmcrnnCodec();
+  @override
+  void writeValue(WriteBuffer buffer, Object? value) {
+    if (value is LossAccuracy) {
+      buffer.putUint8(128);
+      writeValue(buffer, value.encode());
+    } else {
+      super.writeValue(buffer, value);
+    }
+  }
+
+  @override
+  Object? readValueOfType(int type, ReadBuffer buffer) {
+    switch (type) {
+      case 128:
+        return LossAccuracy.decode(readValue(buffer)!);
+      default:
+        return super.readValueOfType(type, buffer);
+    }
+  }
+}
+
 class TrainFedmcrnn {
   /// Constructor for [TrainFedmcrnn].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
@@ -253,7 +302,7 @@ class TrainFedmcrnn {
       : _binaryMessenger = binaryMessenger;
   final BinaryMessenger? _binaryMessenger;
 
-  static const MessageCodec<Object?> codec = StandardMessageCodec();
+  static const MessageCodec<Object?> codec = _TrainFedmcrnnCodec();
 
   Future<void> initialize(
       String arg_modelDir, List<int?> arg_layersSizes) async {
@@ -449,7 +498,7 @@ class TrainFedmcrnn {
     }
   }
 
-  Future<Float64List> evaluate() async {
+  Future<LossAccuracy> evaluate() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.fedcampus.TrainFedmcrnn.evaluate', codec,
         binaryMessenger: _binaryMessenger);
@@ -471,7 +520,7 @@ class TrainFedmcrnn {
         message: 'Host platform returned null value for non-null return value.',
       );
     } else {
-      return (replyList[0] as Float64List?)!;
+      return (replyList[0] as LossAccuracy?)!;
     }
   }
 }
