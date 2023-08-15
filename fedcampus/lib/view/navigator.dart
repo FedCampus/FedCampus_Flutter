@@ -12,7 +12,7 @@ class BottomNavigator extends StatefulWidget {
 
 class _BottomNavigatorState extends State<BottomNavigator> {
   int _selectedIndex = 0;
-  static final List<Widget> _widgetOptions = <Widget>[
+  final List<Widget> _widgetOptions = <Widget>[
     const Health(),
     const Activity(),
     const Me()
@@ -124,7 +124,7 @@ class _BottomNavigatorState extends State<BottomNavigator> {
           ],
           currentIndex: _selectedIndex,
           onTap: (i) => _onItemTapped(i),
-          selectedItemColor: Colors.amber[800],
+          selectedItemColor: getAppBarColor(_selectedIndex, context),
         ),
       ),
     );

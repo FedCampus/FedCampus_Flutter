@@ -282,20 +282,24 @@ Widget header() {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          value.isLogin
-              ? CircleAvatar(
-                  foregroundImage: NetworkImage(value.user['avatarUrl'] ?? ''),
-                  backgroundImage:
-                      const AssetImage('assets/images/step_activity.png'),
-                  backgroundColor: Theme.of(context).colorScheme.surfaceTint,
-                  radius: 40 * pixel,
-                )
-              : CircleAvatar(
-                  backgroundImage: const AssetImage(
-                      'assets/images/me_nav_icon_inactive.png'),
-                  backgroundColor: Theme.of(context).colorScheme.surfaceTint,
-                  radius: 40 * pixel,
+          ClipOval(
+            child: Stack(
+              children: [
+                Container(
+                  width: 100 * pixel,
+                  height: 100 * pixel,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                  ),
                 ),
+                Image.asset(
+                  'assets/images/me_nav_icon.png',
+                  width: 100 * pixel,
+                  height: 100 * pixel,
+                ),
+              ],
+            ),
+          ),
           Text(
             value.isLogin ? value.user['userName'] : 'Not logged in',
             style: TextStyle(

@@ -352,9 +352,12 @@ class Heart extends StatelessWidget {
         Column(
           children: [
             Text(
-                formatNum(Provider.of<HealthDataModel>(context)
-                        .healthData['rest_heart_rate'] ??
-                    -1),
+                formatNum(
+                  Provider.of<HealthDataModel>(context)
+                      .healthData['rest_heart_rate'],
+                  decimalPoints: 1,
+                  loading: Provider.of<HealthDataModel>(context).loading,
+                ),
                 style: TextStyle(
                     fontFamily: 'Montserrat Alternates',
                     fontSize: pixel * 30,
@@ -363,9 +366,12 @@ class Heart extends StatelessWidget {
               height: 33 * pixel,
             ),
             Text(
-                formatNum(Provider.of<HealthDataModel>(context)
-                        .healthData['exercise_heart_rate'] ??
-                    -1),
+                formatNum(
+                  Provider.of<HealthDataModel>(context)
+                      .healthData['exercise_heart_rate'],
+                  decimalPoints: 1,
+                  loading: Provider.of<HealthDataModel>(context).loading,
+                ),
                 style: TextStyle(
                     fontFamily: 'Montserrat Alternates',
                     fontSize: pixel * 30,
@@ -387,7 +393,10 @@ class Distance extends StatelessWidget {
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
     String displayText = formatNum(
-        Provider.of<HealthDataModel>(context).healthData['distance'] ?? -1);
+      Provider.of<HealthDataModel>(context).healthData['distance'],
+      decimalPoints: 1,
+      loading: Provider.of<HealthDataModel>(context).loading,
+    );
     return FedCard(
       widget: SizedBox(
         width: double.infinity,
@@ -474,9 +483,10 @@ class Stress extends StatelessWidget {
           Column(
             children: [
               Text(
-                  formatNum(Provider.of<HealthDataModel>(context)
-                          .healthData['stress'] ??
-                      -1),
+                  formatNum(
+                    Provider.of<HealthDataModel>(context).healthData['stress'],
+                    loading: Provider.of<HealthDataModel>(context).loading,
+                  ),
                   style: TextStyle(
                       fontFamily: 'Montserrat Alternates',
                       fontSize: pixel * 30,
@@ -504,7 +514,10 @@ class Step extends StatelessWidget {
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
     String displayText = formatNum(
-        Provider.of<HealthDataModel>(context).healthData['step'] ?? -1);
+      Provider.of<HealthDataModel>(context).healthData['step'],
+      decimalPoints: 0,
+      loading: Provider.of<HealthDataModel>(context).loading,
+    );
     return FedCard(
         widget: Row(
       children: [
@@ -550,7 +563,9 @@ class Calorie extends StatelessWidget {
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
     String displayText = formatNum(
-        Provider.of<HealthDataModel>(context).healthData['calorie'] ?? -1);
+      Provider.of<HealthDataModel>(context).healthData['calorie'],
+      loading: Provider.of<HealthDataModel>(context).loading,
+    );
     return FedCard(
         widget: Row(
       children: [
@@ -625,9 +640,11 @@ class IntenseExercise extends StatelessWidget {
         Column(
           children: [
             Text(
-                formatNum(Provider.of<HealthDataModel>(context)
-                        .healthData['intensity'] ??
-                    -1),
+                formatNum(
+                  Provider.of<HealthDataModel>(context).healthData['intensity'],
+                  decimalPoints: 1,
+                  loading: Provider.of<HealthDataModel>(context).loading,
+                ),
                 style: TextStyle(
                     fontFamily: 'Montserrat Alternates',
                     fontSize: pixel * 30,
@@ -676,9 +693,11 @@ class Sleep extends StatelessWidget {
           Column(
             children: [
               Text(
-                  formatNum(Provider.of<HealthDataModel>(context)
-                          .healthData['sleep_efficiency'] ??
-                      -1),
+                  formatNum(
+                    Provider.of<HealthDataModel>(context)
+                        .healthData['sleep_efficiency'],
+                    loading: Provider.of<HealthDataModel>(context).loading,
+                  ),
                   style: TextStyle(
                       fontFamily: 'Montserrat Alternates',
                       fontSize: pixel * 30,
@@ -697,10 +716,8 @@ class Sleep extends StatelessWidget {
   }
 }
 
-String formatNum(double num, {decimalPoints = 2}) {
+String formatNum(double? num, {decimalPoints = 2, loading = false}) {
+  if (loading || num == null) return '-';
   String s = num.toStringAsFixed(decimalPoints);
-  if (num == -1) {
-    s = '-';
-  }
   return s;
 }

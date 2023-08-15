@@ -59,11 +59,6 @@ class HealthDataModel extends ChangeNotifier {
     logger.d(date);
     date = int.parse(_date);
 
-    for (var i in dataList) {
-      // -1 stands for loading
-      healthData[i] = -1;
-    }
-
     try {
       var dw = DataWrapper();
       healthData = await dw.getDataListToMap(dataList, date);
