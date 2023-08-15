@@ -1,4 +1,3 @@
-import 'package:fedcampus/models/user.dart';
 import 'package:fedcampus/models/user_model.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/me/user_api.dart';

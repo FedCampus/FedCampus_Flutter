@@ -62,7 +62,7 @@ class ActivityDataModel extends ChangeNotifier {
 
   Future<void> getActivityDataTest() async {
     _loading = true;
-    for (final (i, dataEntryName) in dataList.indexed) {
+    for (final dataEntryName in dataList) {
       activityData[dataEntryName]["average"] = 15110.045;
       activityData[dataEntryName]["rank"] = '100%';
     }
