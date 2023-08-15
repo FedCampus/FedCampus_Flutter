@@ -46,7 +46,7 @@ class _BottomNavigatorState extends State<BottomNavigator> {
     );
     return Scaffold(
       appBar: AppBar(
-        // backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        toolbarHeight: 50 * pixel,
         backgroundColor: getAppBarColor(_selectedIndex, context),
         centerTitle: true,
         title: Image.asset(
@@ -62,7 +62,6 @@ class _BottomNavigatorState extends State<BottomNavigator> {
           unselectedLabelStyle: textStyle,
           selectedLabelStyle: textStyle,
           // https://stackoverflow.com/a/57126622
-          backgroundColor: Theme.of(context).colorScheme.onPrimary,
           items: const [
             BottomNavigationBarItem(
               label: 'Health',
@@ -88,8 +87,7 @@ class _BottomNavigatorState extends State<BottomNavigator> {
                 imagePath: 'assets/images/me_nav_icon.png',
                 color: Colors.grey,
               ),
-              activeIcon:
-                  NavIcon(imagePath: 'assets/images/me_nav_icon.png'),
+              activeIcon: NavIcon(imagePath: 'assets/images/me_nav_icon.png'),
             ),
           ],
           currentIndex: _selectedIndex,

@@ -206,7 +206,7 @@ class Date extends StatefulWidget {
 class _DateState extends State<Date> {
   DateTime _date = DateTime.now();
 
-  void change(DateTime dateTime) {
+  void _changeWidgetDate(DateTime dateTime) {
     _date = dateTime;
   }
 
@@ -219,12 +219,14 @@ class _DateState extends State<Date> {
         builder: (context) {
           return AlertDialog(
             title: const Text("Select a day"),
+            contentPadding:
+                EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 0),
             content: SizedBox(
-              height: 285 * pixel,
+              height: 271 * pixel,
               width: 300 * pixel,
               child: CalendarDialog(
-                onDateChange: change,
-                primaryColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                onDateChange: _changeWidgetDate,
+                primaryColor: Theme.of(context).colorScheme.primaryContainer,
               ),
             ),
             actions: <Widget>[
@@ -289,8 +291,7 @@ class _DateState extends State<Date> {
                     child: Text(
                       DateFormat.MMMd('en_US').format(widget.date),
                       style: TextStyle(
-                          color:
-                              Theme.of(context).colorScheme.onPrimaryContainer,
+                          color: Theme.of(context).colorScheme.primaryContainer,
                           fontSize: pixel * 22,
                           shadows: [
                             BoxShadow(
@@ -304,7 +305,7 @@ class _DateState extends State<Date> {
                   Text(
                     DateFormat.y('en_US').format(widget.date),
                     style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      color: Theme.of(context).colorScheme.primaryContainer,
                       fontSize: pixel * 17,
                     ),
                   ),
@@ -333,10 +334,13 @@ class Heart extends StatelessWidget {
         Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const SvgIcon(
+            SvgIcon(
               imagePath: 'assets/svg/heart_rate.svg',
               width: 45,
               height: 45,
+              colorFilter: ColorFilter.mode(
+                  Theme.of(context).colorScheme.primaryContainer,
+                  BlendMode.srcIn),
             ),
             SizedBox(
               height: 10 * pixel,
@@ -348,10 +352,13 @@ class Heart extends StatelessWidget {
             SizedBox(
               height: 10 * pixel,
             ),
-            const SvgIcon(
+            SvgIcon(
               imagePath: 'assets/svg/heart_rate_2.svg',
               width: 45,
               height: 45,
+              colorFilter: ColorFilter.mode(
+                  Theme.of(context).colorScheme.primaryContainer,
+                  BlendMode.srcIn),
             ),
           ],
         ),
@@ -365,10 +372,8 @@ class Heart extends StatelessWidget {
                   decimalPoints: 1,
                   loading: Provider.of<HealthDataModel>(context).loading,
                 ),
-                style: TextStyle(
-                    fontFamily: 'Montserrat Alternates',
-                    fontSize: pixel * 30,
-                    color: Theme.of(context).colorScheme.onPrimaryContainer)),
+                style: montserratAlternatesTextStyle(pixel * 30,
+                    Theme.of(context).colorScheme.primaryContainer)),
             SizedBox(
               height: 33 * pixel,
             ),
@@ -379,10 +384,8 @@ class Heart extends StatelessWidget {
                   decimalPoints: 1,
                   loading: Provider.of<HealthDataModel>(context).loading,
                 ),
-                style: TextStyle(
-                    fontFamily: 'Montserrat Alternates',
-                    fontSize: pixel * 30,
-                    color: Theme.of(context).colorScheme.onPrimaryContainer)),
+                style: montserratAlternatesTextStyle(pixel * 30,
+                    Theme.of(context).colorScheme.primaryContainer)),
           ],
         ),
         const Spacer(),
@@ -411,7 +414,12 @@ class Distance extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SvgIcon(imagePath: 'assets/svg/distance.svg'),
+            SvgIcon(
+              imagePath: 'assets/svg/distance.svg',
+              colorFilter: ColorFilter.mode(
+                  Theme.of(context).colorScheme.primaryContainer,
+                  BlendMode.srcIn),
+            ),
             SizedBox(
               height: 10 * pixel,
             ),
@@ -430,28 +438,22 @@ class Distance extends StatelessWidget {
                   text: TextSpan(children: [
                     TextSpan(
                         text: displayText,
-                        style: TextStyle(
-                          fontFamily: 'Montserrat Alternates',
-                          color:
-                              Theme.of(context).colorScheme.onPrimaryContainer,
-                          fontSize: displayText.length < 6
-                              ? pixel * 30
-                              : pixel * (170 / displayText.length),
-                        )),
+                        style: montserratAlternatesTextStyle(
+                            displayText.length < 6
+                                ? pixel * 30
+                                : pixel * (170 / displayText.length),
+                            Theme.of(context).colorScheme.primaryContainer)),
                     WidgetSpan(
                       child: Transform.translate(
                         offset: const Offset(2, -2),
-                        child: Text(
-                          'm',
-                          style: TextStyle(
-                              fontFamily: 'Montserrat Alternates',
-                              fontSize: displayText.length < 6
-                                  ? pixel * 17
-                                  : pixel * (90 / displayText.length),
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onPrimaryContainer),
-                        ),
+                        child: Text('m',
+                            style: montserratAlternatesTextStyle(
+                                displayText.length < 6
+                                    ? pixel * 17
+                                    : pixel * (90 / displayText.length),
+                                Theme.of(context)
+                                    .colorScheme
+                                    .primaryContainer)),
                       ),
                     )
                   ]),
@@ -477,7 +479,12 @@ class Stress extends StatelessWidget {
       widget: Row(
         children: [
           Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-            const SvgIcon(imagePath: 'assets/svg/stress.svg'),
+            SvgIcon(
+              imagePath: 'assets/svg/stress.svg',
+              colorFilter: ColorFilter.mode(
+                  Theme.of(context).colorScheme.primaryContainer,
+                  BlendMode.srcIn),
+            ),
             SizedBox(
               height: 10 * pixel,
             ),
@@ -494,15 +501,11 @@ class Stress extends StatelessWidget {
                     Provider.of<HealthDataModel>(context).healthData['stress'],
                     loading: Provider.of<HealthDataModel>(context).loading,
                   ),
-                  style: TextStyle(
-                      fontFamily: 'Montserrat Alternates',
-                      fontSize: pixel * 30,
-                      color: Theme.of(context).colorScheme.onPrimaryContainer)),
+                  style: montserratAlternatesTextStyle(pixel * 30,
+                      Theme.of(context).colorScheme.primaryContainer)),
               Text('stress',
-                  style: TextStyle(
-                      fontFamily: 'Montserrat Alternates',
-                      fontSize: pixel * 15,
-                      color: Theme.of(context).colorScheme.onPrimaryContainer))
+                  style: montserratAlternatesTextStyle(pixel * 15,
+                      Theme.of(context).colorScheme.primaryContainer))
             ],
           ),
           const Spacer(),
@@ -531,7 +534,12 @@ class Step extends StatelessWidget {
         Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const SvgIcon(imagePath: 'assets/svg/step.svg'),
+            SvgIcon(
+              imagePath: 'assets/svg/step.svg',
+              colorFilter: ColorFilter.mode(
+                  Theme.of(context).colorScheme.primaryContainer,
+                  BlendMode.srcIn),
+            ),
             SizedBox(
               height: 10 * pixel,
             ),
@@ -547,12 +555,11 @@ class Step extends StatelessWidget {
         Column(
           children: [
             Text(displayText,
-                style: TextStyle(
-                    fontFamily: 'Montserrat Alternates',
-                    fontSize: displayText.length < 5
+                style: montserratAlternatesTextStyle(
+                    displayText.length < 5
                         ? pixel * 30
                         : pixel * (135 / displayText.length),
-                    color: Theme.of(context).colorScheme.onPrimaryContainer)),
+                    Theme.of(context).colorScheme.primaryContainer)),
           ],
         ),
         const Spacer(),
@@ -579,7 +586,12 @@ class Calorie extends StatelessWidget {
         Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const SvgIcon(imagePath: 'assets/svg/calorie.svg'),
+            SvgIcon(
+              imagePath: 'assets/svg/calorie.svg',
+              colorFilter: ColorFilter.mode(
+                  Theme.of(context).colorScheme.primaryContainer,
+                  BlendMode.srcIn),
+            ),
             SizedBox(
               height: 10 * pixel,
             ),
@@ -593,12 +605,11 @@ class Calorie extends StatelessWidget {
         Column(
           children: [
             Text(displayText,
-                style: TextStyle(
-                    fontFamily: 'Montserrat Alternates',
-                    fontSize: displayText.length < 6
+                style: montserratAlternatesTextStyle(
+                    displayText.length < 6
                         ? pixel * 30
                         : pixel * (145 / displayText.length),
-                    color: Theme.of(context).colorScheme.onPrimaryContainer)),
+                    Theme.of(context).colorScheme.primaryContainer)),
           ],
         ),
         const Spacer(),
@@ -621,8 +632,11 @@ class IntenseExercise extends StatelessWidget {
         Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const SvgIcon(
+            SvgIcon(
               imagePath: 'assets/svg/exercise.svg',
+              colorFilter: ColorFilter.mode(
+                  Theme.of(context).colorScheme.primaryContainer,
+                  BlendMode.srcIn),
             ),
             SizedBox(
               height: 10 * pixel,
@@ -650,15 +664,11 @@ class IntenseExercise extends StatelessWidget {
                   decimalPoints: 1,
                   loading: Provider.of<HealthDataModel>(context).loading,
                 ),
-                style: TextStyle(
-                    fontFamily: 'Montserrat Alternates',
-                    fontSize: pixel * 30,
-                    color: Theme.of(context).colorScheme.onPrimaryContainer)),
+                style: montserratAlternatesTextStyle(pixel * 30,
+                    Theme.of(context).colorScheme.primaryContainer)),
             Text('min',
-                style: TextStyle(
-                    fontFamily: 'Montserrat Alternates',
-                    fontSize: pixel * 20,
-                    color: Theme.of(context).colorScheme.onPrimaryContainer)),
+                style: montserratAlternatesTextStyle(pixel * 20,
+                    Theme.of(context).colorScheme.primaryContainer)),
           ],
         ),
         const Spacer(),
@@ -681,10 +691,13 @@ class Sleep extends StatelessWidget {
           Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const SvgIcon(
+              SvgIcon(
                 imagePath: 'assets/svg/sleep.svg',
                 width: 58,
                 height: 58,
+                colorFilter: ColorFilter.mode(
+                    Theme.of(context).colorScheme.primaryContainer,
+                    BlendMode.srcIn),
               ),
               SizedBox(
                 height: 10 * pixel,
@@ -705,15 +718,11 @@ class Sleep extends StatelessWidget {
                         .healthData['sleep_efficiency'],
                     loading: Provider.of<HealthDataModel>(context).loading,
                   ),
-                  style: TextStyle(
-                      fontFamily: 'Montserrat Alternates',
-                      fontSize: pixel * 30,
-                      color: Theme.of(context).colorScheme.onPrimaryContainer)),
+                  style: montserratAlternatesTextStyle(pixel * 30,
+                      Theme.of(context).colorScheme.primaryContainer)),
               Text('effi',
-                  style: TextStyle(
-                      fontFamily: 'Montserrat Alternates',
-                      fontSize: pixel * 20,
-                      color: Theme.of(context).colorScheme.onPrimaryContainer)),
+                  style: montserratAlternatesTextStyle(pixel * 20,
+                      Theme.of(context).colorScheme.primaryContainer)),
             ],
           ),
           const Spacer(),
@@ -727,4 +736,13 @@ String formatNum(double? num, {decimalPoints = 2, loading = false}) {
   if (loading || num == null) return '-';
   String s = num.toStringAsFixed(decimalPoints);
   return s;
+}
+
+TextStyle montserratAlternatesTextStyle(double fontSize, Color color) {
+  return TextStyle(
+    fontFamily: 'Montserrat Alternates',
+    fontSize: fontSize,
+    color: color,
+    fontWeight: FontWeight.bold,
+  );
 }

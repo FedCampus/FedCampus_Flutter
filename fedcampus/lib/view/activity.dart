@@ -228,6 +228,7 @@ class ActivityCard extends StatelessWidget {
                               fontSize: value.length < 8
                                   ? pixel * 30
                                   : pixel * (200 / value.length),
+                              fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.primary),
                         ),
                       ),
@@ -242,9 +243,10 @@ class ActivityCard extends StatelessWidget {
                           style: TextStyle(
                               fontFamily: 'Montserrat Alternates',
                               fontSize: pixel * 20,
+                              fontWeight: FontWeight.bold,
                               color: Theme.of(context)
                                   .colorScheme
-                                  .onSecondaryContainer),
+                                  .secondaryContainer),
                         ),
                       ),
                     ],
@@ -264,6 +266,7 @@ class ActivityCard extends StatelessWidget {
                 style: TextStyle(
                     fontFamily: 'Montserrat Alternates',
                     fontSize: pixel * 30,
+                    fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.onSecondaryContainer),
               ),
             ),
@@ -272,7 +275,7 @@ class ActivityCard extends StatelessWidget {
   }
 }
 
-class Date extends StatelessWidget {
+class Date extends StatefulWidget {
   const Date({
     super.key,
     required this.onDateChange,
@@ -283,6 +286,17 @@ class Date extends StatelessWidget {
   final DateTime date;
 
   @override
+  State<Date> createState() => _DateState();
+}
+
+class _DateState extends State<Date> {
+  DateTime _date = DateTime.now();
+
+  void _changeWidgetDate(DateTime dateTime) {
+    _date = dateTime;
+  }
+
+  @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
     Future<bool?> calendarDialog() {
@@ -291,11 +305,13 @@ class Date extends StatelessWidget {
         builder: (context) {
           return AlertDialog(
             title: const Text("Select a day"),
+            contentPadding:
+                EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 0),
             content: SizedBox(
-              height: 285 * pixel,
+              height: 271 * pixel,
               width: 300 * pixel,
               child: CalendarDialog(
-                onDateChange: onDateChange,
+                onDateChange: _changeWidgetDate,
                 primaryColor:
                     Theme.of(context).colorScheme.onSecondaryContainer,
               ),
@@ -304,7 +320,8 @@ class Date extends StatelessWidget {
               TextButton(
                 child: const Text("Confirm"),
                 onPressed: () {
-                  Navigator.of(context).pop(true);
+                  Navigator.of(context).pop();
+                  widget.onDateChange(_date);
                 },
               ),
             ],
@@ -372,7 +389,7 @@ class Date extends StatelessWidget {
                         child: SizedBox(),
                       ),
                       Text(
-                        DateFormat.MMMd('en_US').format(date),
+                        DateFormat.MMMd('en_US').format(widget.date),
                         style: TextStyle(
                             fontSize: pixel * 22,
                             shadows: [
@@ -389,7 +406,7 @@ class Date extends StatelessWidget {
                         child: SizedBox(),
                       ),
                       Text(
-                        DateFormat.E('en_US').format(date),
+                        DateFormat.E('en_US').format(widget.date),
                         style: TextStyle(
                             fontSize: pixel * 22,
                             shadows: [

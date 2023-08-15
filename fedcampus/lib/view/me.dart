@@ -74,10 +74,7 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
     return ListView(
       children: [
         const IntrinsicHeight(
-          child: ProfileCard(
-            date: '1/1',
-            steps: '1111',
-          ),
+          child: ProfileCard(),
         ),
         SizedBox(
           height: 10 * pixel,
@@ -92,9 +89,14 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
             callback: () => _toSignInPage(),
           );
         }),
-        SizedBox(
-          height: 10 * pixel,
-        ),
+        Builder(builder: (context) {
+          if (context.watch<UserModel>().isLogin) {
+            // placeholder since a widget cannot be null
+            return const SizedBox();
+          } else {
+            return const MeDivider();
+          }
+        }),
         Builder(builder: (context) {
           if (context.watch<UserModel>().isLogin) {
             return MeText(
@@ -185,7 +187,10 @@ class BottomText extends StatelessWidget {
         child: Text(
           '·',
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: pixel * 30),
+          style: TextStyle(
+            fontSize: pixel * 30,
+            color: Theme.of(context).colorScheme.onTertiaryContainer,
+          ),
         ),
       ),
       Text(
@@ -248,12 +253,7 @@ class MeText extends StatelessWidget {
 class ProfileCard extends StatefulWidget {
   const ProfileCard({
     super.key,
-    required this.date,
-    required this.steps,
   });
-
-  final String date;
-  final String steps;
 
   @override
   State<ProfileCard> createState() => _ProfileCardState();
@@ -289,7 +289,7 @@ Widget header() {
                   width: 100 * pixel,
                   height: 100 * pixel,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
+                    color: Theme.of(context).colorScheme.tertiaryContainer,
                   ),
                 ),
                 Image.asset(
@@ -299,6 +299,9 @@ Widget header() {
                 ),
               ],
             ),
+          ),
+          SizedBox(
+            height: 10 * pixel,
           ),
           Text(
             value.isLogin ? value.user['userName'] : 'Not logged in',

@@ -64,8 +64,17 @@ class _PreferencesState extends State<Preferences> {
 
   @override
   Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
     return Scaffold(
-      appBar: AppBar(title: Text(AppLocalizations.of(context)!.settings)),
+      appBar: AppBar(
+        toolbarHeight: 50 * pixel,
+        backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
+        centerTitle: true,
+        title: Image.asset(
+          'assets/images/title.png',
+          height: 35 * pixel,
+        ),
+      ),
       body: ListView(
         children: [
           SettingsSwitch(
@@ -145,7 +154,7 @@ class SettingsButton extends StatelessWidget {
             text,
             style: TextStyle(
               fontSize: pixel * 18,
-              color: Theme.of(context).colorScheme.onTertiaryContainer,
+              color: Theme.of(context).colorScheme.primary,
               fontWeight: FontWeight.normal,
             ),
           ),
@@ -179,7 +188,7 @@ class SettingsSwitch extends StatelessWidget {
             text,
             style: TextStyle(
                 fontSize: pixel * 18,
-                color: Theme.of(context).colorScheme.onTertiaryContainer),
+                color: Theme.of(context).colorScheme.primary),
           ),
           Switch(
             value: appState.isDarkModeOn,
@@ -239,14 +248,14 @@ class _SettingsDropDownMenuState extends State<SettingsDropDownMenu> {
             widget.text,
             style: TextStyle(
               fontSize: pixel * 18,
-              color: Theme.of(context).colorScheme.onTertiaryContainer,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
           DropdownButton(
             value: dropdownValue,
             style: TextStyle(
               fontSize: pixel * 18,
-              color: Theme.of(context).colorScheme.onTertiaryContainer,
+              color: Theme.of(context).colorScheme.primary,
             ),
             items: widget.options.map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
@@ -275,7 +284,7 @@ class SettingsDivider extends StatelessWidget {
       thickness: 1,
       indent: 40,
       endIndent: 40,
-      color: Theme.of(context).colorScheme.onTertiaryContainer,
+      color: Theme.of(context).colorScheme.primary,
     );
   }
 }

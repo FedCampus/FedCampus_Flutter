@@ -81,7 +81,7 @@ class _SignInState extends State<SignIn> {
                       width: 100 * pixel,
                       height: 100 * pixel,
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
+                        color: Theme.of(context).colorScheme.tertiaryContainer,
                       ),
                     ),
                     Image.asset(
