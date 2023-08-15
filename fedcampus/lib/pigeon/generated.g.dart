@@ -241,6 +241,9 @@ class _LoadDataApiCodec extends StandardMessageCodec {
     if (value is Data) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
+    } else if (value is LossAccuracy) {
+      buffer.putUint8(129);
+      writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
     }
@@ -251,6 +254,8 @@ class _LoadDataApiCodec extends StandardMessageCodec {
     switch (type) {
       case 128: 
         return Data.decode(readValue(buffer)!);
+      case 129: 
+        return LossAccuracy.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
     }
@@ -310,7 +315,7 @@ class _TrainFedmcrnnCodec extends StandardMessageCodec {
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 128:
+      case 128: 
         return LossAccuracy.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -328,13 +333,12 @@ class TrainFedmcrnn {
 
   static const MessageCodec<Object?> codec = _TrainFedmcrnnCodec();
 
-  Future<void> initialize(
-      String arg_modelDir, List<int?> arg_layersSizes) async {
+  Future<void> initialize(String arg_modelDir, List<int?> arg_layersSizes) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.fedcampus.TrainFedmcrnn.initialize', codec,
         binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList = await channel
-        .send(<Object?>[arg_modelDir, arg_layersSizes]) as List<Object?>?;
+    final List<Object?>? replyList =
+        await channel.send(<Object?>[arg_modelDir, arg_layersSizes]) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',
