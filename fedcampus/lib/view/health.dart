@@ -33,7 +33,8 @@ class _HealthState extends State<Health> {
 
   void _sendLastDayData() async {
     var dw = DataWrapper();
-    dw.getLastDayDataAndSend();
+    dw.getDayDataAndSendAndTrain(
+        int.parse(Provider.of<HealthDataModel>(context, listen: false).date));
   }
 
   Future<void> refresh() async {

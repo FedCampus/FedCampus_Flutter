@@ -129,14 +129,17 @@ class DataWrapper {
     return xTrue;
   }
 
-  void getLastDayDataAndSend({ifToast = false}) async {
+  void getDayDataAndSendAndTrain(int date) async {
     // get the data from the last day
     final now = DateTime.now();
+    final dateNumber = now.year * 10000 + now.month * 100 + now.day;
     final yeasterday = now.add(const Duration(days: -1));
     final yeasterdayDate =
         yeasterday.year * 10000 + yeasterday.month * 100 + yeasterday.day;
-
-    final date = yeasterdayDate;
+    if (dateNumber == date) {
+      //get the last day
+      date = yeasterdayDate;
+    }
 
     late final List<Data?>? data;
     try {
@@ -147,22 +150,20 @@ class DataWrapper {
         // authAndGetData();
       } else if (error.message == "java.lang.SecurityException: 50030") {
         logger.d("internet issue");
-        if (ifToast) {
-          Fluttertoast.showToast(
-              msg: "Internet Connection Issue, please connect to Internet.",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.CENTER,
-              timeInSecForIosWeb: 1,
-              backgroundColor: Colors.red,
-              textColor: Colors.white,
-              fontSize: 16.0);
-        }
+        Fluttertoast.showToast(
+            msg: "Internet Connection Issue, please connect to Internet.",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
       }
       return;
     }
     List<Data> dataFuzz = List<Data>.from(data);
 
-    _saveToDataBaseAndStartTraining(data, date);
+    _saveToDataBaseAndStartTraining(data, yeasterdayDate);
 
     fuzzData(dataFuzz);
 

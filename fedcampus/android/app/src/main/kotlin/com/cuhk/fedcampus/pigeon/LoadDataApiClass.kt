@@ -22,6 +22,7 @@ class LoadDataApiClass(val context: Context) : LoadDataApi {
         scope.launch {
             logger("start data fetching")
             val startEndArray = intArrayOf(startTime.toInt(), endTime.toInt())
+            print(startEndArray[0].toString()+ " "+ startEndArray[1].toString())
             val data =getInput2DArrayAndOutputArray(dataList,startEndArray)
             logger("finish data fetching")
 
