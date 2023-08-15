@@ -1,11 +1,12 @@
 import 'dart:async';
 
+import 'package:app_set_id/app_set_id.dart';
 import 'package:fed_kit/train.dart';
 import 'package:fedcampus/train/fedmcrnn_client.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:flutter/services.dart';
 
-class FedMcrnnTraining {
+class FedmcrnnTraining {
   final _streamCtl = StreamController<String>();
   final mlClient = FedmcrnnClient();
   late Train train;
@@ -35,7 +36,7 @@ class FedMcrnnTraining {
     _sendInfo('Preparation done');
   }
 
-  Future<void> start(Function(String) onInfo) async {
+  void start(Function(String) onInfo) {
     try {
       train.start().listen(onInfo,
           onDone: () => onInfo('Training done'),
@@ -64,5 +65,7 @@ class FedMcrnnTraining {
     logger.e("FedMcrnnTraining: $err\n$stackTrace");
   }
 }
+
+Future<int> deviceId() async => (await AppSetId().getIdentifier()).hashCode;
 
 const dataType = 'FedMCRNN_7x8';

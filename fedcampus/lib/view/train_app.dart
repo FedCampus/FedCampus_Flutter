@@ -1,4 +1,3 @@
-import 'package:app_set_id/app_set_id.dart';
 import 'package:fedcampus/train/fedmcrnn_training.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +11,7 @@ class TrainApp extends StatefulWidget {
 }
 
 class _TrainAppState extends State<TrainApp> {
-  final _training = FedMcrnnTraining();
+  final _training = FedmcrnnTraining();
   final _scrollController = ScrollController();
   final _flServerIPController = TextEditingController();
   final _flServerPortController = TextEditingController();
@@ -77,9 +76,9 @@ class _TrainAppState extends State<TrainApp> {
     appendLog('Ready to train.');
   }
 
-  startTrain() async {
+  startTrain() {
     try {
-      await _training.start(appendLog);
+      _training.start(appendLog);
       _canTrain = false;
     } on PlatformException catch (error, stacktrace) {
       _canTrain = true;
@@ -203,5 +202,3 @@ class InputView extends StatelessWidget {
         ],
       );
 }
-
-Future<int> deviceId() async => (await AppSetId().getIdentifier()).hashCode;

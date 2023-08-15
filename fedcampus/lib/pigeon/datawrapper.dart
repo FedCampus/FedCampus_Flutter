@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:fedcampus/pigeon/generated.g.dart';
+import 'package:fedcampus/train/fedmcrnn_training.dart';
 import 'package:fedcampus/utility/database.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:flutter/material.dart';
@@ -107,6 +108,13 @@ class DataWrapper {
     Map<List<List<double>>, List<double>> result = _wrap2DArrayInput(
         await loadDataApi.loaddata(dataList, dbapi.startTime, date));
     logger.i(result);
+    final id = await deviceId();
+    final training = FedmcrnnTraining();
+    const host = '10.200.102.167'; // TODO: Remove hardcode.
+    const backendUrl = 'http://$host:8000';
+    await training.prepare(host, backendUrl, result, deviceId: id);
+    training
+        .start((info) => logger.d('_saveToDataBaseAndStartTraining: $info'));
   }
 
   Map<List<List<double>>, List<double>> _wrap2DArrayInput(
