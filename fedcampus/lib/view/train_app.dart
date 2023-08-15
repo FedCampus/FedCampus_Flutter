@@ -1,6 +1,5 @@
 import 'package:app_set_id/app_set_id.dart';
-import 'package:fed_kit/train.dart';
-import 'package:fedcampus/train/fedmcrnn_client.dart';
+import 'package:fedcampus/train/fedmcrnn_training.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,8 +12,7 @@ class TrainApp extends StatefulWidget {
 }
 
 class _TrainAppState extends State<TrainApp> {
-  final _mlClient = FedmcrnnClient();
-  late Train train;
+  final _training = FedMcrnnTraining();
   final _scrollController = ScrollController();
   final _flServerIPController = TextEditingController();
   final _flServerPortController = TextEditingController();
@@ -69,37 +67,19 @@ class _TrainAppState extends State<TrainApp> {
   }
 
   _prepare(Uri host, Uri backendUrl) async {
-    train = Train(backendUrl.toString());
     final id = await deviceId();
     logger.d('Device ID: $id');
-    train.enableTelemetry(id);
-    final (model, modelDir) = await train.prepareModel(dataType);
-    appendLog('Prepared model ${model.name}.');
-    final serverData = await train.getServerInfo(startFresh: _startFresh);
-    if (serverData.port == null) {
-      throw Exception(
-          'Flower server port not available", "status ${serverData.status}');
-    }
-    appendLog(
-        'Ready to connected to Flower server on port ${serverData.port}.');
-    await _mlClient.trainer.initialize(modelDir, model.layers_sizes);
-    appendLog('Prepared ML client.');
-    // TODO: Provide real data.
-    await _mlClient.trainer.loadData({});
-    appendLog('Loaded dataset.');
-    await train.prepare(_mlClient, host.host, serverData.port!);
+    // TODO: Provide data.
+    await _training.prepare(host.host, backendUrl.toString(), {},
+        deviceId: id, startFresh: _startFresh);
     _canTrain = true;
     appendLog('Ready to train.');
   }
 
   startTrain() async {
     try {
-      train.start().listen(appendLog,
-          onDone: () => appendLog('Training done.'),
-          onError: (e) => appendLog('Training failed: $e.'),
-          cancelOnError: true);
+      await _training.start(appendLog);
       _canTrain = false;
-      appendLog('Started training.');
     } on PlatformException catch (error, stacktrace) {
       _canTrain = true;
       appendLog('Training failed: ${error.message}.');
@@ -224,5 +204,3 @@ class InputView extends StatelessWidget {
 }
 
 Future<int> deviceId() async => (await AppSetId().getIdentifier()).hashCode;
-
-const dataType = 'FedMCRNN_7x8';

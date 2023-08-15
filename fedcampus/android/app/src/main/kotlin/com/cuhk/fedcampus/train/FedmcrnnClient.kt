@@ -55,6 +55,7 @@ class FedmcrnnClient(val context: Activity, messenger: BinaryMessenger) : TrainF
     ) = tryRun(callback) {
         /// TODO: Remove the following line and use the data passed in.
         val data = com.cuhk.fedcampus.health.health.fedmcrnn.loadData(context)
+        Log.d(TAG, "loadData: data size: ${data.size}.")
         for ((features, labels) in data) {
             val x = features.map { it.toFloatArray() }.toTypedArray()
             val y = labels.toFloatArray()
