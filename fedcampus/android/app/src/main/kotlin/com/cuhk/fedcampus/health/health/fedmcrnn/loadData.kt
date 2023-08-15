@@ -12,17 +12,11 @@ import com.huawei.hms.hihealth.HuaweiHiHealth.getDataController
 import com.huawei.hms.hihealth.data.DataType
 import com.huawei.hms.hihealth.data.Field
 import kotlinx.coroutines.*
-import org.eu.fedcampus.fed_kit_examples.fedmcrnn.Float2DArray
-import org.eu.fedcampus.fed_kit_train.FlowerClient
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-suspend fun loadData(
-    context: Context,
-    flowerClient: FlowerClient<Float2DArray, FloatArray>,
-    @Suppress("UNUSED_PARAMETER") participantId: Int
-) {
+suspend fun loadData(context: Context): Map<List<List<Double>>, List<Double>> {
 
     val data = getAllDataAvailable(context)
     val input = dataSlide(data)
@@ -40,14 +34,7 @@ suspend fun loadData(
         val valueFinal = entry.value.toList()
         inputFinal[keyFinal] = valueFinal
     }
-    val inputFinalFinal = inputFinal.toMap()
-
-
-//    for (sample in input) {
-//        flowerClient.addSample(sample.first, sample.second, true)
-//        // TODO: Legitimate ways to evaluate instead of using the training set.
-//        flowerClient.addSample(sample.first, sample.second, false)
-//    }
+    return inputFinal.toMap()
 }
 
 fun dataCleaning(input: MutableMap<MutableList<MutableList<Double>>, MutableList<Double>>) {
@@ -218,10 +205,7 @@ suspend fun getData(
         jobs.add(async {
             tryOrNull("getData") {
                 getSleepEfficiencyData(
-                    "sleep_efficiency",
-                    context,
-                    startEnd[0],
-                    DateCalender.add(startEnd[1], 1)
+                    "sleep_efficiency", context, startEnd[0], DateCalender.add(startEnd[1], 1)
                 )
             }
         })
