@@ -48,8 +48,17 @@ abstract class LoadDataApi {
       List<Data> dataList, int startTime, int endTime);
 }
 
+class LossAccuracy {
+  LossAccuracy(this.loss, this.accuracy);
+  double loss;
+  double accuracy;
+}
+
 @HostApi()
 abstract class TrainFedmcrnn {
+  @async
+  void initialize(String modelDir, List<int> layersSizes);
+
   @async
   void loadData(Map<List<List<double>>, List<double>> data);
 
@@ -69,5 +78,5 @@ abstract class TrainFedmcrnn {
   int testSize();
 
   @async
-  Float64List evaluate();
+  LossAccuracy evaluate();
 }
