@@ -16,7 +16,6 @@ class _TrainAppState extends State<TrainApp> {
   final _mlClient = FedmcrnnClient();
   late Train train;
   final _scrollController = ScrollController();
-  final _clientPartitionIdController = TextEditingController();
   final _flServerIPController = TextEditingController();
   final _flServerPortController = TextEditingController();
   final _logs = [const Text('Logs will be shown here.')];
@@ -35,12 +34,6 @@ class _TrainAppState extends State<TrainApp> {
   build(BuildContext context) => LayoutBuilder(builder: buildLayout);
 
   prepare() async {
-    int partitionId;
-    try {
-      partitionId = int.parse(_clientPartitionIdController.text);
-    } catch (e) {
-      return appendLog('Invalid client partition id!');
-    }
     Uri host;
     try {
       host = Uri.parse('http://${_flServerIPController.text}');
@@ -61,10 +54,10 @@ class _TrainAppState extends State<TrainApp> {
 
     _canPrepare = false;
     appendLog(
-        'Connecting with Partition ID: $partitionId, Server IP: $host, Port: $backendPort');
+        'Connecting with Server IP: $host, Port: $backendPort');
 
     try {
-      await _prepare(partitionId, host, backendUrl);
+      await _prepare(host, backendUrl);
     } on PlatformException catch (error, stacktrace) {
       _canPrepare = true;
       appendLog('Request failed: ${error.message}.');
@@ -76,7 +69,7 @@ class _TrainAppState extends State<TrainApp> {
     }
   }
 
-  _prepare(int partitionId, Uri host, Uri backendUrl) async {
+  _prepare(Uri host, Uri backendUrl) async {
     train = Train(backendUrl.toString());
     final id = await deviceId();
     logger.d('Device ID: $id');
@@ -127,7 +120,6 @@ class _TrainAppState extends State<TrainApp> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             InputView(
-                clientPartitionIdController: _clientPartitionIdController,
                 flServerIPController: _flServerIPController,
                 flServerPortController: _flServerPortController,
                 startFresh: _startFresh,
@@ -193,13 +185,11 @@ class ButtonsView extends StatelessWidget {
 class InputView extends StatelessWidget {
   const InputView(
       {super.key,
-      required this.clientPartitionIdController,
       required this.flServerIPController,
       required this.flServerPortController,
       required this.startFresh,
       required this.callback});
 
-  final TextEditingController clientPartitionIdController;
   final TextEditingController flServerIPController;
   final TextEditingController flServerPortController;
   final bool startFresh;
@@ -208,14 +198,6 @@ class InputView extends StatelessWidget {
   @override
   build(BuildContext context) => Column(
         children: [
-          TextFormField(
-            controller: clientPartitionIdController,
-            decoration: const InputDecoration(
-              labelText: 'Client Partition ID (1-10)',
-              filled: true,
-            ),
-            keyboardType: TextInputType.number,
-          ),
           TextFormField(
             controller: flServerIPController,
             decoration: const InputDecoration(
