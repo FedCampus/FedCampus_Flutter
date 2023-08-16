@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/train/fedmcrnn_training.dart';
 import 'package:fedcampus/utility/database.dart';
@@ -13,6 +12,7 @@ import 'package:fedcampus/utility/http_client.dart';
 import 'package:fedcampus/pigeon/data_extensions.dart';
 import 'package:http/http.dart';
 import 'package:sample_statistics/sample_statistics.dart';
+import 'package:sqflite/sqflite.dart';
 
 class DataWrapper {
   final dataList = [
@@ -124,6 +124,29 @@ class DataWrapper {
         .start((info) => logger.d('_saveToDataBaseAndStartTraining: $info'));
   }
 
+  void _startTraining(DataBaseApi dbapi, Database database, int date) async {
+    final dataList = await dbapi.getDataList(database, date);
+    logger.i(dataListJsonEncode(dataList));
+
+    //2. Perform data windowing and start Training.
+    final loadDataApi = LoadDataApi();
+    Map<List<List<double>>, List<double>> result = _wrap2DArrayInput(
+        await loadDataApi.loaddata(dataList, dbapi.startTime, date));
+    logger.i(result);
+    final id = await deviceId();
+    final training = FedmcrnnTraining();
+    const host = '10.200.102.167'; // TODO: Remove hardcode.
+    const backendUrl = 'http://$host:8000';
+    logger.i("start Training");
+    try {
+      await training.prepare(host, backendUrl, result, deviceId: id);
+    } on Exception catch (error) {
+      logger.e(error);
+    }
+    training
+        .start((info) => logger.d('_saveToDataBaseAndStartTraining: $info'));
+  }
+
   Map<List<List<double>>, List<double>> _wrap2DArrayInput(
       Map<Object?, Object?> result) {
     Map<List<List<double>>, List<double>> xTrue = {};
@@ -155,10 +178,10 @@ class DataWrapper {
       //get the last day
       date = yeasterdayDate;
     }
-
     late final List<Data?>? data;
     try {
       data = await getDataList(dataList, date);
+      logger.i(data);
     } on PlatformException catch (error) {
       if (error.message == "java.lang.SecurityException: 50005") {
         logger.d("not authenticated");
@@ -181,6 +204,8 @@ class DataWrapper {
     _saveToDataBaseAndStartTraining(data, yeasterdayDate);
 
     fuzzData(dataFuzz);
+
+    print(dataFuzz);
 
     final dataJson = dataListJsonEncode(data);
     final dataFuzzJson = dataListJsonEncode(dataFuzz);

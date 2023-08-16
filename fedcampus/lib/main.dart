@@ -1,3 +1,5 @@
+import 'dart:isolate';
+
 import 'package:fedcampus/models/activity_data_model.dart';
 import 'package:fedcampus/models/health_data_model.dart';
 import 'package:fedcampus/models/user_model.dart';
@@ -71,10 +73,19 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     initSettings(context);
-    _startGettingDataAndTraining();
+    spawnTraining();
   }
 
-  void _startGettingDataAndTraining() async {
+  void spawnTraining() {
+    final receivePort = ReceivePort();
+    RootIsolateToken rootToken = RootIsolateToken.instance!;
+    Isolate.spawn(
+        startGettingDataAndTraining, [receivePort.sendPort, rootToken]);
+  }
+
+  static void startGettingDataAndTraining(List<dynamic> args) async {
+    RootIsolateToken rootToken = args[1];
+    BackgroundIsolateBinaryMessenger.ensureInitialized(rootToken);
     var dw = DataWrapper();
     final now = DateTime.now();
     final dateNumber = now.year * 10000 + now.month * 100 + now.day;

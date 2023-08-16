@@ -4,6 +4,7 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DataBaseApi {
+  // TODO: The start time needs to be changed when launching the app!
   final startTime = 20230700;
 
   Future<Database> getDataBase() async {
