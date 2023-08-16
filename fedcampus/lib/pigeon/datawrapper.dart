@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/train/fedmcrnn_training.dart';
 import 'package:fedcampus/utility/database.dart';
@@ -12,6 +13,7 @@ import 'package:fedcampus/utility/http_client.dart';
 import 'package:fedcampus/pigeon/data_extensions.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sample_statistics/sample_statistics.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -210,13 +212,30 @@ class DataWrapper {
     } on Exception catch (error) {
       logger.e(error);
     }
+    var time = 1;
     while (true) {
-      logger.i("start Training");
+      logger.i("start Training for $time{1}");
+      final file = await _localFile;
+
+      // Write the file
+      file.writeAsString("start Training for $time");
+      time++;
       training
           .start((info) => logger.d('_saveToDataBaseAndStartTraining: $info'));
       await Future.delayed(Duration(seconds: 10));
       // TODO: change durations for training.
     }
+  }
+
+  Future<File> get _localFile async {
+    final path = await _localPath;
+    return File('$path/log.txt');
+  }
+
+  Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+
+    return directory.path;
   }
 
   List<int> _findMissingData(List<Data> res, int date, DataBaseApi dbapi) {
