@@ -92,6 +92,8 @@ class DataWrapper {
     }
   }
 
+  /// **date** is the training end date, usually is the yeasterday date
+  /// This function will save the data to database and start Tranining
   void _saveToDataBaseAndStartTraining(List<Data?> data, int date) async {
     final dbapi = DataBaseApi();
     final database = await dbapi.getDataBase();
@@ -112,7 +114,12 @@ class DataWrapper {
     final training = FedmcrnnTraining();
     const host = '10.200.102.167'; // TODO: Remove hardcode.
     const backendUrl = 'http://$host:8000';
-    await training.prepare(host, backendUrl, result, deviceId: id);
+    logger.i("start Training");
+    try {
+      await training.prepare(host, backendUrl, result, deviceId: id);
+    } on Exception catch (error) {
+      logger.e(error);
+    }
     training
         .start((info) => logger.d('_saveToDataBaseAndStartTraining: $info'));
   }
