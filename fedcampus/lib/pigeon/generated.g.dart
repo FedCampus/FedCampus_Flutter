@@ -84,8 +84,7 @@ class AlarmApi {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.fedcampus.AlarmApi.setAlarm', codec,
         binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(null) as List<Object?>?;
+    final List<Object?>? replyList = await channel.send(null) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -123,7 +122,7 @@ class _DataApiCodec extends StandardMessageCodec {
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 128: 
+      case 128:
         return Data.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -141,12 +140,14 @@ class DataApi {
 
   static const MessageCodec<Object?> codec = _DataApiCodec();
 
-  Future<List<Data?>> getData(String arg_name, int arg_startTime, int arg_endTime) async {
+  Future<List<Data?>> getData(
+      String arg_name, int arg_startTime, int arg_endTime) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.fedcampus.DataApi.getData', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
-        await channel.send(<Object?>[arg_name, arg_startTime, arg_endTime]) as List<Object?>?;
+        await channel.send(<Object?>[arg_name, arg_startTime, arg_endTime])
+            as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -183,8 +184,7 @@ class HuaweiAuthApi {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.fedcampus.HuaweiAuthApi.getAuthenticate', codec,
         binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(null) as List<Object?>?;
+    final List<Object?>? replyList = await channel.send(null) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -210,8 +210,7 @@ class HuaweiAuthApi {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.fedcampus.HuaweiAuthApi.cancelAuthenticate', codec,
         binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(null) as List<Object?>?;
+    final List<Object?>? replyList = await channel.send(null) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -252,9 +251,9 @@ class _LoadDataApiCodec extends StandardMessageCodec {
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 128: 
+      case 128:
         return Data.decode(readValue(buffer)!);
-      case 129: 
+      case 129:
         return LossAccuracy.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -272,12 +271,14 @@ class LoadDataApi {
 
   static const MessageCodec<Object?> codec = _LoadDataApiCodec();
 
-  Future<Map<Object?, Object?>> loaddata(List<Data?> arg_dataList, int arg_startTime, int arg_endTime) async {
+  Future<Map<Object?, Object?>> loaddata(
+      List<Data?> arg_dataList, int arg_startTime, int arg_endTime) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.fedcampus.LoadDataApi.loaddata', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
-        await channel.send(<Object?>[arg_dataList, arg_startTime, arg_endTime]) as List<Object?>?;
+        await channel.send(<Object?>[arg_dataList, arg_startTime, arg_endTime])
+            as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -315,7 +316,7 @@ class _TrainFedmcrnnCodec extends StandardMessageCodec {
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 128: 
+      case 128:
         return LossAccuracy.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -333,12 +334,13 @@ class TrainFedmcrnn {
 
   static const MessageCodec<Object?> codec = _TrainFedmcrnnCodec();
 
-  Future<void> initialize(String arg_modelDir, List<int?> arg_layersSizes) async {
+  Future<void> initialize(
+      String arg_modelDir, List<int?> arg_layersSizes) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.fedcampus.TrainFedmcrnn.initialize', codec,
         binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(<Object?>[arg_modelDir, arg_layersSizes]) as List<Object?>?;
+    final List<Object?>? replyList = await channel
+        .send(<Object?>[arg_modelDir, arg_layersSizes]) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -355,7 +357,8 @@ class TrainFedmcrnn {
     }
   }
 
-  Future<void> loadData(Map<List<List<double?>?>?, List<double?>?> arg_data) async {
+  Future<void> loadData(
+      Map<List<List<double?>?>?, List<double?>?> arg_data) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.fedcampus.TrainFedmcrnn.loadData', codec,
         binaryMessenger: _binaryMessenger);
@@ -381,8 +384,7 @@ class TrainFedmcrnn {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.fedcampus.TrainFedmcrnn.getParameters', codec,
         binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(null) as List<Object?>?;
+    final List<Object?>? replyList = await channel.send(null) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -430,8 +432,7 @@ class TrainFedmcrnn {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.fedcampus.TrainFedmcrnn.ready', codec,
         binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(null) as List<Object?>?;
+    final List<Object?>? replyList = await channel.send(null) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -457,8 +458,8 @@ class TrainFedmcrnn {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.fedcampus.TrainFedmcrnn.fit', codec,
         binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(<Object?>[arg_epochs, arg_batchSize]) as List<Object?>?;
+    final List<Object?>? replyList = await channel
+        .send(<Object?>[arg_epochs, arg_batchSize]) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -479,8 +480,7 @@ class TrainFedmcrnn {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.fedcampus.TrainFedmcrnn.trainingSize', codec,
         binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(null) as List<Object?>?;
+    final List<Object?>? replyList = await channel.send(null) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -506,8 +506,7 @@ class TrainFedmcrnn {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.fedcampus.TrainFedmcrnn.testSize', codec,
         binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(null) as List<Object?>?;
+    final List<Object?>? replyList = await channel.send(null) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -533,8 +532,7 @@ class TrainFedmcrnn {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.fedcampus.TrainFedmcrnn.evaluate', codec,
         binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(null) as List<Object?>?;
+    final List<Object?>? replyList = await channel.send(null) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',

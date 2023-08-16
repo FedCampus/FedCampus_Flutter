@@ -49,12 +49,9 @@ class FedmcrnnClient(val context: Activity, messenger: BinaryMessenger) : TrainF
             FlowerClient(buffer, layersSizes.map { it.toInt() }.toIntArray(), sampleSpec())
     }
 
-    @Suppress("NAME_SHADOWING")
     override fun loadData(
         data: Map<List<List<Double>>, List<Double>>, callback: (Result<Unit>) -> Unit
     ) = tryRun(callback) {
-        /// TODO: Remove the following line and use the data passed in.
-        val data = com.cuhk.fedcampus.health.health.fedmcrnn.loadData(context)
         for ((features, labels) in data) {
             val x = features.map { it.toFloatArray() }.toTypedArray()
             val y = labels.toFloatArray()
