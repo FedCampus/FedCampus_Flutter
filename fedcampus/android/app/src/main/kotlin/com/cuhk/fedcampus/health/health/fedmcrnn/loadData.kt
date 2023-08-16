@@ -240,16 +240,14 @@ fun getInput2DArrayAndOutputArray(
         val time = data.endTime.toInt()
         val rowIndex = sizeOfSingleColumn - 1 - DateCalender.IntervalDay(start, time)
         if (data.name == "sleep_efficiency") {
-            try {
-                outputArray[rowIndex] = data.value
-            } catch (err: Exception) {
-                print(time)
-                print(rowIndex)
-                print(data.toString())
-            }
+            outputArray[rowIndex] = data.value
             continue
         }
         val columnIndex = TAG_LIST.indexOf(data.name)
+        if (columnIndex == -1) {
+            continue
+        }
+        input2DArray[rowIndex][columnIndex] = data.value
     }
     return input2DArray to outputArray
 }

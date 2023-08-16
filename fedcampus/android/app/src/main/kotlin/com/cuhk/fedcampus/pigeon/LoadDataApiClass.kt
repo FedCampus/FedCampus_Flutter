@@ -46,6 +46,14 @@ class LoadDataApiClass(val context: Context) : LoadDataApi {
             }
             val inputFinalFinal = inputFinal.toMap()
 
+            // logging the result
+            for (entry in inputFinalFinal){
+                logger("---input---")
+                for (i in entry.key){
+                    logger(i.toString())
+                }
+                logger("sleep : ${entry.value[0]}" )
+            }
             callback(Result.success(inputFinalFinal as Map<Any?, Any?>))
         }
     }
