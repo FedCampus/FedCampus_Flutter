@@ -247,7 +247,6 @@ class DataWrapper {
     late final List<Data?>? data;
     try {
       data = await getDataList(dataNameList, date);
-      logger.i(data);
     } on PlatformException catch (error) {
       if (error.message == "java.lang.SecurityException: 50005") {
         logger.d("not authenticated");
@@ -265,9 +264,6 @@ class DataWrapper {
       }
       return;
     }
-
-    _saveToDataBaseAndStartTraining(data, yeasterdayDate);
-
     final dataFuzz = fuzzData(data);
 
     final dataJson = dataListJsonEncode(data);
