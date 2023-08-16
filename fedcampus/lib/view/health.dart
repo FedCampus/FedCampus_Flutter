@@ -4,10 +4,13 @@ import 'package:fedcampus/models/health_data_model.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/calendar.dart';
+import 'package:fedcampus/view/me/signin.dart';
+import 'package:fedcampus/view/me/user_api.dart';
 import 'package:fedcampus/view/widgets/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Health extends StatefulWidget {
   const Health({
@@ -29,6 +32,20 @@ class _HealthState extends State<Health> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       refresh();
     });
+    detectFirstTimeLogin();
+  }
+
+  void detectFirstTimeLogin() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (userApi.prefs.getBool("login") == null) {
+      // jump to login page
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const SignIn()),
+        );
+      }
+    }
   }
 
   void _sendLastDayData() async {

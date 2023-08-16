@@ -6,6 +6,7 @@ import 'package:fedcampus/models/user_model.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/home.dart';
+import 'package:fedcampus/view/me/signin.dart';
 import 'package:fedcampus/view/me/user_api.dart';
 import 'package:fedcampus/view/navigator.dart';
 import 'package:flutter/material.dart';

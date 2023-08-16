@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class HTTPClient {
   // TODO: make the _host in the production mode
-  static const _host = "http://10.200.20.31:8006/";
+  static const _host = "http://10.201.8.29:8006/";
 
   static const login = "${_host}api/login";
 
