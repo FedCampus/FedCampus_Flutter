@@ -7,6 +7,7 @@ import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/home.dart';
 import 'package:fedcampus/view/me/user_api.dart';
+import 'package:fedcampus/view/navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -196,7 +197,7 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
       themeMode: appState.isDarkModeOn ? ThemeMode.dark : ThemeMode.light,
-      home: const HomeRoute(),
+      home: const BottomNavigator(),
     );
   }
 }

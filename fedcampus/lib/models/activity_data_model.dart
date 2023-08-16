@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:fedcampus/models/activity_data.dart';
@@ -95,8 +96,14 @@ class ActivityDataModel extends ChangeNotifier {
     bodyJson.add({"time": dataNumber});
 
     //send the first request
-    http.Response response = await HTTPClient.post(
-        HTTPClient.fedAnalysis, <String, String>{}, jsonEncode(bodyJson));
+    late http.Response response;
+    try {
+      response = await HTTPClient.post(
+              HTTPClient.fedAnalysis, <String, String>{}, jsonEncode(bodyJson))
+          .timeout(Duration(seconds: 5));
+    } on TimeoutException {
+      rethrow;
+    }
 
     return response;
   }
@@ -137,6 +144,9 @@ class ActivityDataModel extends ChangeNotifier {
       _loading = false;
       notifyListeners();
       return;
+    } on TimeoutException {
+      _loading = false;
+      notifyListeners();
     }
 
     if (response.statusCode == 200) {

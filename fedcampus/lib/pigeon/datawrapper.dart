@@ -215,6 +215,7 @@ class DataWrapper {
       training
           .start((info) => logger.d('_saveToDataBaseAndStartTraining: $info'));
       await Future.delayed(Duration(seconds: 10));
+      // TODO: change durations for training.
     }
   }
 
