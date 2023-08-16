@@ -5,7 +5,7 @@ import 'package:sqflite/sqflite.dart';
 
 class DataBaseApi {
   // TODO: The start time needs to be changed when launching the app!
-  final startTime = 20230700;
+  final startTime = 20230810;
 
   Future<Database> getDataBase() async {
     final database = openDatabase(
@@ -35,6 +35,20 @@ class DataBaseApi {
     return true;
   }
 
+  /// get the data at the day to database
+  /// if there is no data, [] will be returned
+  Future<List<Data>> getDataFromDBAtDay(int endTime, Database db) async {
+    final List<Map<String, dynamic>> maps =
+        await db.query('data', where: "endTime=?", whereArgs: [endTime]);
+    return List.generate(maps.length, (i) {
+      return Data(
+          name: maps[i]['name'],
+          value: maps[i]['value'],
+          startTime: maps[i]['startTime'],
+          endTime: maps[i]['endTime']);
+    });
+  }
+
   Future<List<Data>> getDataFromDB(int endTime, Database db) async {
     final List<Map<String, dynamic>> maps =
         await db.query('data', where: "endTime=?", whereArgs: [endTime]);
@@ -47,8 +61,8 @@ class DataBaseApi {
     });
   }
 
+  /// get all the data from the starting time till the endTime
   Future<List<Data>> getDataList(Database db, int endTime) async {
-    // get all the data from the starting time till the endTime
     final List<Map<String, dynamic>> maps = await db.query('data',
         where: "endTime >= ? AND  endTime <=?",
         whereArgs: [startTime, endTime]);

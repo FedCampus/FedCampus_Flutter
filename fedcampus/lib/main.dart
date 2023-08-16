@@ -89,7 +89,7 @@ class _MyAppState extends State<MyApp> {
     var dw = DataWrapper();
     final now = DateTime.now();
     final dateNumber = now.year * 10000 + now.month * 100 + now.day;
-    dw.getDayDataAndSendAndTrain(dateNumber);
+    dw.getDataAndTrain(dateNumber);
   }
 
   void initSettings(BuildContext context) async {

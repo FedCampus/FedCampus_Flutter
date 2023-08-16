@@ -11,11 +11,12 @@ import 'package:http/http.dart' as http;
 import 'package:fedcampus/utility/http_client.dart';
 import 'package:fedcampus/pigeon/data_extensions.dart';
 import 'package:http/http.dart';
+import 'package:intl/intl.dart';
 import 'package:sample_statistics/sample_statistics.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DataWrapper {
-  final dataList = [
+  final dataNameList = [
     "step",
     "calorie",
     "distance",
@@ -27,6 +28,10 @@ class DataWrapper {
     "sleep_efficiency"
   ];
 
+  ///Get all the data given the list of tag on the specific datetime number.
+  ///Throw an exception if data fetching get some error.
+  ///50005 if the user is not authenticated, 50030 if the internet connection is down.
+  ///If there is no data for that specifc date, the only data will be {step_time: value: 0}
   Future<List<Data?>> getDataList(List<String> nameList, int time) async {
     List<Future<Data?>> list = List.empty(growable: true);
     final host = DataApi();
@@ -42,6 +47,21 @@ class DataWrapper {
     }
   }
 
+  ///get all the data from Huawei from the time period.
+  ///50005 if the user is not authenticated, 50030 if the internet connection is down.
+  Future<List<Data?>> _getDataListTimePeriod(
+      List<String> nameList, List<int> time) async {
+    List<Future<List<Data?>>> getDataTimePeriod = List.empty(growable: true);
+    for (var i in time) {
+      getDataTimePeriod.add(getDataList(dataNameList, i));
+    }
+    final temp = await Future.wait(getDataTimePeriod);
+    final res = temp.expand((element) => element).toList();
+    return res;
+  }
+
+  ///call getDataList, wrap that into a map.
+  ///50005 if the user is not authenticated, 50030 if the internet connection is down.
   Future<Map<String, double>> getDataListToMap(
       List<String> nameList, int time) async {
     try {
@@ -57,6 +77,7 @@ class DataWrapper {
     }
   }
 
+  ///Get Data Channel.
   Future<Data?> _getData(DataApi host, String name, int time) async {
     try {
       List<Data?> dataListOne = await host.getData(name, time, time);
@@ -70,30 +91,23 @@ class DataWrapper {
     }
   }
 
-  Future<Data?> getData(String name, int time) async {
-    final host = DataApi();
-    List<Data?> dataListOne = await host.getData(name, time, time);
-    logger.i(dataListOne[0]!.value);
-    if (dataListOne.isEmpty) {
-      return null;
-    } else {
-      return dataListOne[0]!;
-    }
-  }
-
-  void fuzzData(List<Data?>? data) {
+  /// fuzz the data with DP algorithm
+  List<Data> fuzzData(List<Data?>? data) {
     List<double> error = truncatedNormalSample(data!.length, -10, 10, 0, 1);
+    List<Data> res = List.empty(growable: true);
     for (var i = 0; i < data.length; i++) {
-      data[i] = Data(
+      res.add(Data(
           name: data[i]!.name,
           value: data[i]!.value + error[i] * 10,
           startTime: data[i]!.startTime,
-          endTime: data[i]!.startTime);
+          endTime: data[i]!.startTime));
     }
+    return res;
   }
 
   /// **date** is the training end date, usually is the yeasterday date
   /// This function will save the data to database and start Tranining
+  /// TODO: Modify this function
   void _saveToDataBaseAndStartTraining(List<Data?> data, int date) async {
     final dbapi = DataBaseApi();
     final database = await dbapi.getDataBase();
@@ -124,6 +138,7 @@ class DataWrapper {
         .start((info) => logger.d('_saveToDataBaseAndStartTraining: $info'));
   }
 
+  /// start Training given the databaseapi, database, and date
   void _startTraining(DataBaseApi dbapi, Database database, int date) async {
     final dataList = await dbapi.getDataList(database, date);
     logger.i(dataListJsonEncode(dataList));
@@ -167,6 +182,57 @@ class DataWrapper {
     return xTrue;
   }
 
+  // TODO: input function when the app starts, date is set to be yeasterday
+  void getDataAndTrain(int date) async {
+    final dbapi = DataBaseApi();
+    final database = await dbapi.getDataBase();
+    // final res = await Future.wait(getListData);
+    final res = await dbapi.getDataList(database, date);
+
+    final dayMissing = _findMissingData(res, date, dbapi);
+
+    final newData = await _getDataListTimePeriod(dataNameList, dayMissing);
+
+    await dbapi.saveToDB(newData, database);
+
+    //Training
+    final dataList = await dbapi.getDataList(database, date);
+    final loadDataApi = LoadDataApi();
+    Map<List<List<double>>, List<double>> result = _wrap2DArrayInput(
+        await loadDataApi.loaddata(dataList, dbapi.startTime, date));
+    logger.i(result);
+    final id = await deviceId();
+    final training = FedmcrnnTraining();
+    const host = '10.200.102.167'; // TODO: Remove hardcode.
+    const backendUrl = 'http://$host:8000';
+    try {
+      await training.prepare(host, backendUrl, result, deviceId: id);
+    } on Exception catch (error) {
+      logger.e(error);
+    }
+    while (true) {
+      logger.i("start Training");
+      training
+          .start((info) => logger.d('_saveToDataBaseAndStartTraining: $info'));
+      await Future.delayed(Duration(seconds: 10));
+    }
+  }
+
+  List<int> _findMissingData(List<Data> res, int date, DataBaseApi dbapi) {
+    var i = dbapi.startTime;
+    const duration = Duration(days: 1);
+    List<int> resMissing = List.empty(growable: true);
+    while (i < date) {
+      if (res.where((element) => element.endTime == i).isEmpty) {
+        resMissing.add(i);
+      }
+      final temp = (DateTime.parse(i.toString()).add(duration));
+      i = temp.year * 10000 + temp.month * 100 + temp.day;
+    }
+    return resMissing;
+  }
+
+  /// TODO: change the function
   void getDayDataAndSendAndTrain(int date) async {
     // get the data from the last day
     final now = DateTime.now();
@@ -180,7 +246,7 @@ class DataWrapper {
     }
     late final List<Data?>? data;
     try {
-      data = await getDataList(dataList, date);
+      data = await getDataList(dataNameList, date);
       logger.i(data);
     } on PlatformException catch (error) {
       if (error.message == "java.lang.SecurityException: 50005") {
@@ -199,13 +265,10 @@ class DataWrapper {
       }
       return;
     }
-    List<Data> dataFuzz = List<Data>.from(data);
 
     _saveToDataBaseAndStartTraining(data, yeasterdayDate);
 
-    fuzzData(dataFuzz);
-
-    print(dataFuzz);
+    final dataFuzz = fuzzData(data);
 
     final dataJson = dataListJsonEncode(data);
     final dataFuzzJson = dataListJsonEncode(dataFuzz);
@@ -213,7 +276,6 @@ class DataWrapper {
     try {
       List<http.Response> responseArr = await Future.wait([
         HTTPClient.post(HTTPClient.data, <String, String>{}, dataJson),
-        // TODO: Data DP Algorithm!!!
         HTTPClient.post(HTTPClient.dataDP, <String, String>{}, dataFuzzJson)
       ]).timeout(const Duration(seconds: 5));
       // TODO: Time out for 5 seconds.
@@ -235,12 +297,6 @@ class DataWrapper {
       logger.e("$err\n$stackTrace");
       dataWrapperToast("Unknown issue: $err. Please try again later.");
     }
-  }
-
-  void test() async {
-    final host = DataApi();
-    final x = await host.getData("step", 20230809, 20230809);
-    logger.i(x[0]!.value);
   }
 }
 
