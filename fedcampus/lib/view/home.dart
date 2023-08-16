@@ -24,6 +24,7 @@ class _HomeRouteState extends State<HomeRoute> {
     double pixel = MediaQuery.of(context).size.width / 400;
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Image.asset(
           'assets/images/title.png',
           height: 35 * pixel,

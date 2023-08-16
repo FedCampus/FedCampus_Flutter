@@ -74,23 +74,48 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
     return ListView(
       children: [
         const IntrinsicHeight(
-          child: ProfileCard(
-            date: '1/1',
-            steps: '1111',
-          ),
+          child: ProfileCard(),
         ),
         SizedBox(
           height: 10 * pixel,
         ),
-        MeText(text: 'Sign in', callback: () => _toSignInPage()),
-        SizedBox(
-          height: 10 * pixel,
-        ),
-        MeText(
-          text: 'Account Settings',
-          callback: () => {},
-        ),
-        const MeDivider(),
+        Builder(builder: (context) {
+          if (context.watch<UserModel>().isLogin) {
+            // placeholder since a widget cannot be null
+            return const SizedBox();
+          }
+          return MeText(
+            text: 'Sign in',
+            callback: () => _toSignInPage(),
+          );
+        }),
+        Builder(builder: (context) {
+          if (context.watch<UserModel>().isLogin) {
+            // placeholder since a widget cannot be null
+            return const SizedBox();
+          } else {
+            return const MeDivider();
+          }
+        }),
+        Builder(builder: (context) {
+          if (context.watch<UserModel>().isLogin) {
+            return MeText(
+              text: 'Account Settings',
+              callback: () => {},
+            );
+          } else {
+            // placeholder since a widget cannot be null
+            return const SizedBox();
+          }
+        }),
+        Builder(builder: (context) {
+          if (context.watch<UserModel>().isLogin) {
+            return const MeDivider();
+          } else {
+            // placeholder since a widget cannot be null
+            return const SizedBox();
+          }
+        }),
         MeText(
           text: 'Preferences',
           callback: () {
@@ -118,11 +143,25 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
           callback: () => {},
         ),
         const MeDivider(),
-        MeText(
-          text: 'Sign out',
-          callback: _logOut,
-        ),
-        const MeDivider(),
+        Builder(builder: (context) {
+          if (context.watch<UserModel>().isLogin) {
+            return MeText(
+              text: 'Sign out',
+              callback: _logOut,
+            );
+          } else {
+            // placeholder since a widget cannot be null
+            return const SizedBox();
+          }
+        }),
+        Builder(builder: (context) {
+          if (context.watch<UserModel>().isLogin) {
+            return const MeDivider();
+          } else {
+            // placeholder since a widget cannot be null
+            return const SizedBox();
+          }
+        }),
         const BottomText(),
       ],
     );
@@ -148,7 +187,10 @@ class BottomText extends StatelessWidget {
         child: Text(
           '·',
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: pixel * 30),
+          style: TextStyle(
+            fontSize: pixel * 30,
+            color: Theme.of(context).colorScheme.onTertiaryContainer,
+          ),
         ),
       ),
       Text(
@@ -211,12 +253,7 @@ class MeText extends StatelessWidget {
 class ProfileCard extends StatefulWidget {
   const ProfileCard({
     super.key,
-    required this.date,
-    required this.steps,
   });
-
-  final String date;
-  final String steps;
 
   @override
   State<ProfileCard> createState() => _ProfileCardState();
@@ -245,20 +282,27 @@ Widget header() {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          value.isLogin
-              ? CircleAvatar(
-                  foregroundImage: NetworkImage(value.user['avatarUrl'] ?? ''),
-                  backgroundImage:
-                      const AssetImage('assets/images/step_activity.png'),
-                  backgroundColor: Theme.of(context).colorScheme.surfaceTint,
-                  radius: 40 * pixel,
-                )
-              : CircleAvatar(
-                  backgroundImage: const AssetImage(
-                      'assets/images/me_nav_icon_inactive.png'),
-                  backgroundColor: Theme.of(context).colorScheme.surfaceTint,
-                  radius: 40 * pixel,
+          ClipOval(
+            child: Stack(
+              children: [
+                Container(
+                  width: 100 * pixel,
+                  height: 100 * pixel,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.tertiaryContainer,
+                  ),
                 ),
+                Image.asset(
+                  'assets/images/me_nav_icon.png',
+                  width: 100 * pixel,
+                  height: 100 * pixel,
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 10 * pixel,
+          ),
           Text(
             value.isLogin ? value.user['userName'] : 'Not logged in',
             style: TextStyle(

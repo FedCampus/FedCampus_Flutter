@@ -90,21 +90,16 @@ flutter:
   assets:
     - assets/images/title.png
     - assets/images/health_nav_icon.png
-    - assets/images/heart_rate.png
-    - assets/images/heart_rate_2.png
-    - assets/images/step.png
-    - assets/images/sleep.png
-    - assets/images/exercise.png
-    - assets/images/calorie.png
-    - assets/images/meter.png
-    - assets/images/location.png
-    - assets/images/title.png
     - assets/images/activity_nav_icon.png
     - assets/images/me_nav_icon.png
-    - assets/images/activity_nav_icon_inactive.png
-    - assets/images/health_nav_icon_inactive.png
-    - assets/images/me_nav_icon_inactive.png
-    - assets/images/step_activity.png
+    - assets/svg/heart_rate.svg
+    - assets/svg/heart_rate_2.svg
+    - assets/svg/distance.svg
+    - assets/svg/stress.svg
+    - assets/svg/step.svg
+    - assets/svg/calorie.svg
+    - assets/svg/exercise.svg
+    - assets/svg/sleep.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

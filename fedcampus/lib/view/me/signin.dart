@@ -21,7 +21,10 @@ class _SignInState extends State<SignIn> {
 
   _signIn() async {
     Map<String, dynamic> user;
-    // user = User.mapOf(userName: 'luyao', email: 'lw337@duke.edu', loggedIn: true);
+    // user =
+    //     User.mapOf(userName: 'luyao', email: 'lw337@duke.edu', loggedIn: true);
+    // await Provider.of<UserModel>(context, listen: false).setUser(user);
+    // return;
     try {
       user = await userApi.signIn(_username, _password);
     } on Exception catch (e) {
@@ -78,7 +81,7 @@ class _SignInState extends State<SignIn> {
                       width: 100 * pixel,
                       height: 100 * pixel,
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
+                        color: Theme.of(context).colorScheme.tertiaryContainer,
                       ),
                     ),
                     Image.asset(

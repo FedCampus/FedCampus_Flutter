@@ -19,38 +19,38 @@ class _ActivityState extends State<Activity> {
   final entries = [
     {
       "entry_name": "step_time",
-      "icon_path": "assets/images/step.png",
+      "icon_path": "assets/svg/step.svg",
       "unit": "min"
     },
     {
       "entry_name": "distance",
-      "icon_path": "assets/images/location.png",
+      "icon_path": "assets/svg/distance.svg",
       "unit": "meters"
     },
     {
       "entry_name": "calorie",
-      "icon_path": "assets/images/calorie.png",
+      "icon_path": "assets/svg/calorie.svg",
       "unit": "kcals"
     },
     {
       "entry_name": "intensity",
-      "icon_path": "assets/images/exercise.png",
+      "icon_path": "assets/svg/exercise.svg",
       "unit": "min"
     },
     {
       "entry_name": "stress",
-      "icon_path": "assets/images/meter.png",
-      "unit": "mmHg"
+      "icon_path": "assets/svg/stress.svg",
+      "unit": "stress"
     },
     {
       "entry_name": "step",
       "icon_path":
-          "assets/images/step.png", // TODO: distinguish step and step_time icon
+          "assets/svg/step.svg", // TODO: distinguish step and step_time icon
       "unit": "steps"
     },
     {
       "entry_name": "sleep_efficiency",
-      "icon_path": "assets/images/sleep.png",
+      "icon_path": "assets/svg/sleep.svg",
       "unit": "effi"
     },
   ];
@@ -69,26 +69,54 @@ class _ActivityState extends State<Activity> {
   }
 
   Future<void> refresh() async {
+    showLoadingBeforeLocalDataAvailable();
     await Provider.of<ActivityDataModel>(context, listen: false)
         .getActivityData();
   }
 
   updateDate(DateTime selectedDate) {
+    showLoadingBeforeLocalDataAvailable();
     setState(() {
       dateTime = selectedDate;
       logger.i(selectedDate);
-
-      String datecode = (selectedDate.year * 10000 +
-              selectedDate.month * 100 +
-              selectedDate.day)
-          .toString();
-      Provider.of<ActivityDataModel>(context, listen: false).date = datecode;
     });
+    String datecode = (selectedDate.year * 10000 +
+            selectedDate.month * 100 +
+            selectedDate.day)
+        .toString();
+    Provider.of<ActivityDataModel>(context, listen: false).date = datecode;
   }
 
-  // https://stackoverflow.com/questions/59681328/safe-way-to-access-list-index
-  T? tryGet<T>(List<T> list, int index) =>
-      index < 0 || index >= list.length ? null : list[index];
+  void showLoadingBeforeLocalDataAvailable() {
+    // we do not use AlertDialog here because it has an intrinsic constraint of minimum width,
+    // as suggested here: https://stackoverflow.com/a/53913355
+    showGeneralDialog(
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.5),
+      pageBuilder: (context, __, ___) {
+        double pixel = MediaQuery.of(context).size.width / 400;
+        logger.d(
+            'loading: ${Provider.of<ActivityDataModel>(context, listen: false).loading}');
+        if (!Provider.of<ActivityDataModel>(context).loading) {
+          Navigator.of(context).pop(true);
+        }
+        return WillPopScope(
+          // https://stackoverflow.com/a/59755386
+          onWillPop: () async => false,
+          child: Material(
+            color: Colors.transparent,
+            child: Center(
+              child: SizedBox(
+                height: 40 * pixel,
+                width: 40 * pixel,
+                child: const CircularProgressIndicator(strokeWidth: 2.0),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -122,18 +150,29 @@ class _ActivityState extends State<Activity> {
             // because ActivityCard() is flexible vertically, when placed in ListView, the height becomes an issue
             // IntrinsicHeight forces the column to be exactly as big as its contents
             // https://api.flutter.dev/flutter/widgets/SingleChildScrollView-class.html
-            return IntrinsicHeight(
-                child: ActivityCard(
-              rank: Provider.of<ActivityDataModel>(context)
-                  .activityData[entries[index - 1]['entry_name']]["rank"]
-                  .toString(),
-              value: Provider.of<ActivityDataModel>(context)
-                  .activityData[entries[index - 1]['entry_name']]["average"]
-                  .toString(),
-              unit: entries[index - 1]['unit'] ?? "unit",
-              iconPath:
-                  entries[index - 1]['icon_path'] ?? "assets/images/sleep.png",
-            ));
+            if (Provider.of<ActivityDataModel>(context).loading) {
+              return IntrinsicHeight(
+                  child: ActivityCard(
+                rank: '-',
+                value: '-',
+                unit: entries[index - 1]['unit'] ?? "unit",
+                iconPath:
+                    entries[index - 1]['icon_path'] ?? "assets/svg/sleep.svg",
+              ));
+            } else {
+              return IntrinsicHeight(
+                  child: ActivityCard(
+                rank: Provider.of<ActivityDataModel>(context)
+                    .activityData[entries[index - 1]['entry_name']]["rank"]
+                    .toString(),
+                value: Provider.of<ActivityDataModel>(context)
+                    .activityData[entries[index - 1]['entry_name']]["average"]
+                    .toStringAsFixed(2),
+                unit: entries[index - 1]['unit'] ?? "unit",
+                iconPath:
+                    entries[index - 1]['icon_path'] ?? "assets/svg/sleep.svg",
+              ));
+            }
           }),
     );
   }
@@ -157,81 +196,86 @@ class ActivityCard extends StatelessWidget {
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
     return FedCard(
+        left: 18,
+        right: 18,
         widget: Row(
-      children: <Widget>[
-        // As stated in https://api.flutter.dev/flutter/widgets/Image/height.html,
-        // it is recommended to specify the image size (in order to avoid
-        // widget size suddenly changes when the app just loads another page)
-        const Expanded(
-          flex: 1,
-          child: SizedBox(),
-        ),
-        Image.asset(
-          iconPath,
-          fit: BoxFit.contain,
-          height: pixel * 56,
-          width: pixel * 56,
-        ),
-        const Expanded(
-          flex: 2,
-          child: SizedBox(),
-        ),
-        Expanded(
-          flex: 7,
-          child: Text(
-            value,
-            style: TextStyle(
-                fontFamily: 'Montserrat Alternates',
-                fontSize: pixel * 30,
-                color: Theme.of(context).colorScheme.primary),
-          ),
-        ),
-        Expanded(
-          flex: 6,
-          child: Column(
-            children: <Widget>[
-              const Expanded(
-                flex: 1,
-                child: SizedBox(),
+          children: <Widget>[
+            // As stated in https://api.flutter.dev/flutter/widgets/Image/height.html,
+            // it is recommended to specify the image size (in order to avoid
+            // widget size suddenly changes when the app just loads another page)
+            SvgIcon(
+              imagePath: iconPath,
+              colorFilter: ColorFilter.mode(
+                  Theme.of(context).colorScheme.secondaryContainer,
+                  BlendMode.srcIn),
+            ),
+            const Expanded(
+              flex: 2,
+              child: SizedBox(),
+            ),
+            Expanded(
+              flex: 9,
+              child: Column(
+                children: <Widget>[
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          value,
+                          textAlign: TextAlign.start,
+                          style: TextStyle(
+                              fontFamily: 'Montserrat Alternates',
+                              fontSize: value.length < 8
+                                  ? pixel * 30
+                                  : pixel * (200 / value.length),
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.primary),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          unit,
+                          textAlign: TextAlign.end,
+                          style: TextStyle(
+                              fontFamily: 'Montserrat Alternates',
+                              fontSize: pixel * 20,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .secondaryContainer),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              Expanded(
-                flex: 1,
-                child: Text(
-                  unit,
-                  style: TextStyle(
-                      fontFamily: 'Montserrat Alternates',
-                      fontSize: pixel * 20,
-                      color:
-                          Theme.of(context).colorScheme.onSecondaryContainer),
-                ),
+            ),
+            const Expanded(
+              flex: 1,
+              child: SizedBox(),
+            ),
+            Expanded(
+              flex: 5,
+              child: Text(
+                rank,
+                textAlign: TextAlign.end,
+                style: TextStyle(
+                    fontFamily: 'Montserrat Alternates',
+                    fontSize: pixel * 30,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onSecondaryContainer),
               ),
-            ],
-          ),
-        ),
-        const Expanded(
-          child: SizedBox(),
-        ),
-        Expanded(
-          flex: 5,
-          child: Text(
-            rank,
-            textAlign: TextAlign.end,
-            style: TextStyle(
-                fontFamily: 'Montserrat Alternates',
-                fontSize: pixel * 30,
-                color: Theme.of(context).colorScheme.onSecondaryContainer),
-          ),
-        ),
-        const Expanded(
-          flex: 1,
-          child: SizedBox(),
-        ),
-      ],
-    ));
+            ),
+          ],
+        ));
   }
 }
 
-class Date extends StatelessWidget {
+class Date extends StatefulWidget {
   const Date({
     super.key,
     required this.onDateChange,
@@ -242,6 +286,17 @@ class Date extends StatelessWidget {
   final DateTime date;
 
   @override
+  State<Date> createState() => _DateState();
+}
+
+class _DateState extends State<Date> {
+  DateTime _date = DateTime.now();
+
+  void _changeWidgetDate(DateTime dateTime) {
+    _date = dateTime;
+  }
+
+  @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
     Future<bool?> calendarDialog() {
@@ -249,12 +304,14 @@ class Date extends StatelessWidget {
         context: context,
         builder: (context) {
           return AlertDialog(
-            // title: const Text("Select a day"),
+            title: const Text("Select a day"),
+            contentPadding:
+                EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 0),
             content: SizedBox(
-              width: 200.0,
-              height: 200.0,
+              height: 271 * pixel,
+              width: 300 * pixel,
               child: CalendarDialog(
-                onDateChange: onDateChange,
+                onDateChange: _changeWidgetDate,
                 primaryColor:
                     Theme.of(context).colorScheme.onSecondaryContainer,
               ),
@@ -263,7 +320,8 @@ class Date extends StatelessWidget {
               TextButton(
                 child: const Text("Confirm"),
                 onPressed: () {
-                  Navigator.of(context).pop(true);
+                  Navigator.of(context).pop();
+                  widget.onDateChange(_date);
                 },
               ),
             ],
@@ -331,7 +389,7 @@ class Date extends StatelessWidget {
                         child: SizedBox(),
                       ),
                       Text(
-                        DateFormat.MMMd('en_US').format(date),
+                        DateFormat.MMMd('en_US').format(widget.date),
                         style: TextStyle(
                             fontSize: pixel * 22,
                             shadows: [
@@ -348,7 +406,7 @@ class Date extends StatelessWidget {
                         child: SizedBox(),
                       ),
                       Text(
-                        DateFormat.E('en_US').format(date),
+                        DateFormat.E('en_US').format(widget.date),
                         style: TextStyle(
                             fontSize: pixel * 22,
                             shadows: [

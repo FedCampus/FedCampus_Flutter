@@ -69,7 +69,7 @@ class _CalendarDialogState extends State<CalendarDialog> {
             padding: EdgeInsets.all(5 * pixel),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10 * pixel),
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              color: widget.primaryColor,
             ),
             child: Text(
               ' ${DateFormat.yMMMM('en_US').format(value)}',
@@ -79,7 +79,7 @@ class _CalendarDialogState extends State<CalendarDialog> {
           ),
         ),
         SizedBox(
-          height: 5 * pixel,
+          height: 12 * pixel,
         ),
         SizedBox(
           height: 200 * pixel,
@@ -119,7 +119,7 @@ class _CalendarDialogState extends State<CalendarDialog> {
               weekendDecoration:
                   textDecoration(Theme.of(context).colorScheme.background),
               todayDecoration: textDecoration(
-                  Theme.of(context).colorScheme.onSecondaryContainer),
+                  Theme.of(context).colorScheme.tertiaryContainer),
               selectedDecoration: textDecoration(widget.primaryColor),
               defaultTextStyle:
                   TextStyle(color: Theme.of(context).colorScheme.primary),
@@ -135,6 +135,9 @@ class _CalendarDialogState extends State<CalendarDialog> {
             onDaySelected: _onDateSelected,
             onPageChanged: _onPageChanged,
           ),
+        ),
+        SizedBox(
+          height: 6 * pixel,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,

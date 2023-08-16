@@ -12,7 +12,7 @@ class BottomNavigator extends StatefulWidget {
 
 class _BottomNavigatorState extends State<BottomNavigator> {
   int _selectedIndex = 0;
-  static final List<Widget> _widgetOptions = <Widget>[
+  final List<Widget> _widgetOptions = <Widget>[
     const Health(),
     const Activity(),
     const Me()
@@ -46,8 +46,9 @@ class _BottomNavigatorState extends State<BottomNavigator> {
     );
     return Scaffold(
       appBar: AppBar(
-        // backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        toolbarHeight: 50 * pixel,
         backgroundColor: getAppBarColor(_selectedIndex, context),
+        centerTitle: true,
         title: Image.asset(
           'assets/images/title.png',
           height: 35 * pixel,
@@ -61,70 +62,63 @@ class _BottomNavigatorState extends State<BottomNavigator> {
           unselectedLabelStyle: textStyle,
           selectedLabelStyle: textStyle,
           // https://stackoverflow.com/a/57126622
-          backgroundColor: Theme.of(context).colorScheme.onPrimary,
-          items: [
+          items: const [
             BottomNavigationBarItem(
               label: 'Health',
-              icon: SizedBox(
-                width: 32 * pixel,
-                height: 32 * pixel,
-                child: Image.asset(
-                  'assets/images/health_nav_icon_inactive.png',
-                  fit: BoxFit.contain,
-                ),
+              icon: NavIcon(
+                imagePath: 'assets/images/health_nav_icon.png',
+                color: Colors.grey,
               ),
-              activeIcon: SizedBox(
-                width: 32 * pixel,
-                height: 32 * pixel,
-                child: Image.asset(
-                  'assets/images/health_nav_icon.png',
-                  fit: BoxFit.contain,
-                ),
-              ),
+              activeIcon:
+                  NavIcon(imagePath: 'assets/images/health_nav_icon.png'),
             ),
             BottomNavigationBarItem(
               label: 'Activity',
-              icon: SizedBox(
-                width: 32 * pixel,
-                height: 32 * pixel,
-                child: Image.asset(
-                  'assets/images/activity_nav_icon_inactive.png',
-                  fit: BoxFit.contain,
-                ),
+              icon: NavIcon(
+                imagePath: 'assets/images/activity_nav_icon.png',
+                color: Colors.grey,
               ),
-              activeIcon: SizedBox(
-                width: 32 * pixel,
-                height: 32 * pixel,
-                child: Image.asset(
-                  'assets/images/activity_nav_icon.png',
-                  fit: BoxFit.contain,
-                ),
-              ),
+              activeIcon:
+                  NavIcon(imagePath: 'assets/images/activity_nav_icon.png'),
             ),
             BottomNavigationBarItem(
               label: 'Me',
-              icon: SizedBox(
-                width: 32 * pixel,
-                height: 32 * pixel,
-                child: Image.asset(
-                  'assets/images/me_nav_icon_inactive.png',
-                  fit: BoxFit.contain,
-                ),
+              icon: NavIcon(
+                imagePath: 'assets/images/me_nav_icon.png',
+                color: Colors.grey,
               ),
-              activeIcon: SizedBox(
-                width: 32 * pixel,
-                height: 32 * pixel,
-                child: Image.asset(
-                  'assets/images/me_nav_icon.png',
-                  fit: BoxFit.contain,
-                ),
-              ),
+              activeIcon: NavIcon(imagePath: 'assets/images/me_nav_icon.png'),
             ),
           ],
           currentIndex: _selectedIndex,
           onTap: (i) => _onItemTapped(i),
-          selectedItemColor: Colors.amber[800],
+          selectedItemColor: getAppBarColor(_selectedIndex, context),
         ),
+      ),
+    );
+  }
+}
+
+class NavIcon extends StatelessWidget {
+  const NavIcon({
+    super.key,
+    required this.imagePath,
+    this.color,
+  });
+
+  final String imagePath;
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
+    return SizedBox(
+      width: 32 * pixel,
+      height: 32 * pixel,
+      child: Image.asset(
+        imagePath,
+        color: color,
+        fit: BoxFit.contain,
       ),
     );
   }
