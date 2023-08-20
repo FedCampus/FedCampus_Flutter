@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
 class TrainingDetail extends StatefulWidget {
+  const TrainingDetail({super.key});
+
   @override
   State<TrainingDetail> createState() => _TrainingDetailState();
 }
@@ -25,7 +27,7 @@ class _TrainingDetailState extends State<TrainingDetail> {
 
   Future<File> get _localFile async {
     final path = await _localPath;
-    return File('$path/log.txt');
+    return File('$path/log');
   }
 
   void getFileOutput() async {
@@ -43,11 +45,45 @@ class _TrainingDetailState extends State<TrainingDetail> {
   Widget build(BuildContext context) {
     // TODO: implement build
     // throw UnimplementedError();
-    return Center(
-        child: Column(
-      children: [
-        Text(contents),
-      ],
-    ));
+    double pixel = MediaQuery.of(context).size.width / 400;
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 50 * pixel,
+        backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
+        centerTitle: true,
+        title: Image.asset(
+          'assets/images/title.png',
+          height: 35 * pixel,
+        ),
+      ),
+      body: Column(
+        children: [
+          Container(
+            height: MediaQuery.of(context).size.height - 200,
+            margin: const EdgeInsets.all(15.0),
+            // adding padding
+
+            padding: const EdgeInsets.all(3.0),
+            decoration: BoxDecoration(
+              // adding borders around the widget
+              border: Border.all(
+                color: Colors.blueAccent,
+                width: 5.0,
+              ),
+            ),
+            child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Text(
+                  contents,
+                  style: TextStyle(
+                    color: Colors.green,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.0,
+                  ),
+                )),
+          ),
+        ],
+      ),
+    );
   }
 }

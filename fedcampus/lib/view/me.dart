@@ -144,6 +144,16 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
           callback: () => {},
         ),
         const MeDivider(),
+        MeText(
+          text: 'Log Output',
+          callback: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => TrainingDetail()),
+            );
+          },
+        ),
+        const MeDivider(),
         Builder(builder: (context) {
           if (context.watch<UserModel>().isLogin) {
             return MeText(

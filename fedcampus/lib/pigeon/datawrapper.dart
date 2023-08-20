@@ -12,7 +12,6 @@ import 'package:http/http.dart' as http;
 import 'package:fedcampus/utility/http_client.dart';
 import 'package:fedcampus/pigeon/data_extensions.dart';
 import 'package:http/http.dart';
-import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sample_statistics/sample_statistics.dart';
 import 'package:sqflite/sqflite.dart';
@@ -202,24 +201,17 @@ class DataWrapper {
     final loadDataApi = LoadDataApi();
     Map<List<List<double>>, List<double>> result = _wrap2DArrayInput(
         await loadDataApi.loaddata(dataList, dbapi.startTime, date));
-    logger.i(result);
+    // logger.i(result);
     final id = await deviceId();
     final training = FedmcrnnTraining();
-    const host = '10.200.102.167'; // TODO: Remove hardcode.
+    const host = '10.201.8.66'; // TODO: Remove hardcode.
     const backendUrl = 'http://$host:8000';
     try {
       await training.prepare(host, backendUrl, result, deviceId: id);
     } on Exception catch (error) {
       logger.e(error);
     }
-    var time = 1;
     while (true) {
-      logger.i("start Training for $time{1}");
-      final file = await _localFile;
-
-      // Write the file
-      file.writeAsString("start Training for $time");
-      time++;
       training
           .start((info) => logger.d('_saveToDataBaseAndStartTraining: $info'));
       await Future.delayed(Duration(seconds: 10));
