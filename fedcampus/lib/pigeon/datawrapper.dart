@@ -207,18 +207,23 @@ class DataWrapper {
     const backendUrl = 'http://$host:8000';
     //iteration loop
     while (true) {
+      await Future.delayed(fiveSeconds);
       final training = FedmcrnnTraining();
-      final completer = Completer();
+      final completer = Completer<bool>();
       try {
         await training.prepare(host, backendUrl, result, deviceId: id);
+        training.train.start().listen(
+            (info) => logger.d('_saveToDataBaseAndStartTraining: $info'),
+            onDone: () => completer.complete(true),
+            onError: (_) => completer.complete(false));
       } on Exception catch (error) {
         logger.e(error);
+        completer.complete(false);
       }
-      training.train.start().listen(
-          (info) => logger.d('_saveToDataBaseAndStartTraining: $info'),
-          onDone: () => completer.complete());
-      await completer.future;
-      await Future.delayed(tenSeconds);
+      final succeeded = await completer.future;
+      if (succeeded) {
+        await Future.delayed(fiveSeconds);
+      }
       // TODO: send log file to server here
       sendLogFileToServer();
     }
@@ -326,4 +331,4 @@ void dataWrapperToast(String msg) => Fluttertoast.showToast(
 String dataListJsonEncode(List<Data?> data) =>
     jsonEncode(data.map((e) => e!.toJson()).toList());
 
-const tenSeconds = Duration(seconds: 10);
+const fiveSeconds = Duration(seconds: 5);
