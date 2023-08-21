@@ -203,20 +203,22 @@ class DataWrapper {
         await loadDataApi.loaddata(dataList, dbapi.startTime, date));
     // logger.i(result);
     final id = await deviceId();
-    final training = FedmcrnnTraining();
     const host = '10.201.8.66'; // TODO: Remove hardcode.
     const backendUrl = 'http://$host:8000';
     //iteration loop
     while (true) {
+      final training = FedmcrnnTraining();
+      final completer = Completer();
       try {
         await training.prepare(host, backendUrl, result, deviceId: id);
       } on Exception catch (error) {
         logger.e(error);
       }
-      training
-          .start((info) => logger.d('_saveToDataBaseAndStartTraining: $info'));
-      await Future.delayed(Duration(seconds: 10));
-      // TODO: change durations for training.
+      training.train.start().listen(
+          (info) => logger.d('_saveToDataBaseAndStartTraining: $info'),
+          onDone: () => completer.complete());
+      await completer.future;
+      await Future.delayed(tenSeconds);
       // TODO: send log file to server here
       sendLogFileToServer();
     }
@@ -224,7 +226,7 @@ class DataWrapper {
 
   Future<void> sendLogFileToServer() async {
     final directory = await getApplicationDocumentsDirectory();
-    final path = directory.path + "/log";
+    final path = "${directory.path}/log";
     File file = File(path);
     //TODO: send log file to server
   }
@@ -323,3 +325,5 @@ void dataWrapperToast(String msg) => Fluttertoast.showToast(
 /// could not find extension methods.
 String dataListJsonEncode(List<Data?> data) =>
     jsonEncode(data.map((e) => e!.toJson()).toList());
+
+const tenSeconds = Duration(seconds: 10);
