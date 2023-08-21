@@ -1,10 +1,9 @@
-import 'dart:isolate';
-
 import 'package:fedcampus/models/activity_data_model.dart';
 import 'package:fedcampus/models/health_data_model.dart';
 import 'package:fedcampus/models/user_model.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/utility/log.dart';
+import 'package:fedcampus/view/home.dart';
 import 'package:fedcampus/view/me/user_api.dart';
 import 'package:fedcampus/view/navigator.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +41,7 @@ void main() async {
             error: error,
           )));
 
+  //TODO: init log
   await Log.initLog();
 }
 
@@ -79,8 +79,6 @@ class _MyAppState extends State<MyApp> {
   }
 
   void spawnTraining() async {
-    //TODO: log init
-
     var dw = DataWrapper();
     final now = DateTime.now();
     final dateNumber = now.year * 10000 + now.month * 100 + now.day;

@@ -206,28 +206,27 @@ class DataWrapper {
     final training = FedmcrnnTraining();
     const host = '10.201.8.66'; // TODO: Remove hardcode.
     const backendUrl = 'http://$host:8000';
-    try {
-      await training.prepare(host, backendUrl, result, deviceId: id);
-    } on Exception catch (error) {
-      logger.e(error);
-    }
+    //iteration loop
     while (true) {
+      try {
+        await training.prepare(host, backendUrl, result, deviceId: id);
+      } on Exception catch (error) {
+        logger.e(error);
+      }
       training
           .start((info) => logger.d('_saveToDataBaseAndStartTraining: $info'));
       await Future.delayed(Duration(seconds: 10));
       // TODO: change durations for training.
+      // TODO: send log file to server here
+      sendLogFileToServer();
     }
   }
 
-  Future<File> get _localFile async {
-    final path = await _localPath;
-    return File('$path/log.txt');
-  }
-
-  Future<String> get _localPath async {
+  Future<void> sendLogFileToServer() async {
     final directory = await getApplicationDocumentsDirectory();
-
-    return directory.path;
+    final path = directory.path + "/log";
+    File file = File(path);
+    //TODO: send log file to server
   }
 
   List<int> _findMissingData(List<Data> res, int date, DataBaseApi dbapi) {
