@@ -75,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     var now = DateTime.now();
 
-    // fetch health data from the last 24 hours
+    // fetch health data from the last 24 hourscd
     List<HealthDataPoint> healthData = await health.getHealthDataFromTypes(
         now.subtract(Duration(days: 1)), now, types);
 

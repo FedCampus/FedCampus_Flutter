@@ -1,6 +1,10 @@
 # google_fit_test_flutter
 
-A new Flutter project.
+This app is for testing the flutter [health](https://pub.dev/packages/health) package.
+A few things that you might need to pay attention to:
+* When you require a new permission, you should uninstall and reinstall the new one on your phone. Otherwise, the permission cannot be granted correctly.
+* This app uses the default Android debug key on your PC/mac, which is different from the signing key in the main app.
+* For anyone who wants to test on your own device, you should check the [API key guide](https://developers.google.com/fit/android/get-api-key) to add your debug key.
 
 ## Getting Started
 
