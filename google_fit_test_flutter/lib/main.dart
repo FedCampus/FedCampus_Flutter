@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fit_test_flutter/health.dart';
-import 'package:google_fit_test_flutter/log.dart';
-import 'package:health/health.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:google_fit_test_flutter/google_health_data_handler.dart';
 
 void main() {
   runApp(const MyApp());
@@ -37,49 +35,23 @@ class _MyHomePageState extends State<MyHomePage> {
   String _log = "";
 
   init() async {
-    testHealth();
+    FedHealthData myHealth = GoogleFit();
+    double result = await myHealth.getData(entry: "step", date: DateTime.now());
+    _appendLog("steps last 24 hours: $result");
   }
 
   @override
   void initState() {
     super.initState();
-    init();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      init();
+    });
   }
 
   void _appendLog(String log) {
     setState(() {
       _log += "\n$log";
     });
-  }
-
-  testHealth() async {
-    // Beacuse this is labled as a dangerous protection level, the permission system will not grant it automaticlly and it requires the user's action. You can prompt the user for it using the permission_handler plugin. Follow the plugin setup instructions and add the following line before requsting the data:
-    await Permission.activityRecognition.request();
-    await Permission.location.request();
-
-    // create a HealthFactory for use in the app, choose if HealthConnect should be used or not
-    HealthFactory health = HealthFactory(useHealthConnectIfAvailable: true);
-
-    // define the types to get
-    var types = [
-      HealthDataType.STEPS,
-      HealthDataType.HEART_RATE,
-      HealthDataType.SLEEP_ASLEEP
-      // HealthDataType.BLOOD_GLUCOSE,
-    ];
-
-    // requesting access to the data types before reading them
-    bool requested = await health.requestAuthorization(types);
-
-    _appendLog("requested: $requested");
-
-    var now = DateTime.now();
-
-    // fetch health data from the last 24 hourscd
-    List<HealthDataPoint> healthData = await health.getHealthDataFromTypes(
-        now.subtract(Duration(days: 1)), now, types);
-
-    _appendLog("healthData: $healthData");
   }
 
   @override
