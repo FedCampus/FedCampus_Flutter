@@ -35,6 +35,35 @@ class _MyHomePageState extends State<MyHomePage> {
     DataNew result1 = await myHealth.getDataDay(
         entry: "step", date: DateTime(now.year, now.month, now.day - 1));
     _appendLog("steps yesterday: ${result1.value}");
+    DataNew result2 = await myHealth.getDataDay(
+        entry: "heart_rate", date: DateTime(now.year, now.month, now.day));
+    _appendLog("avereg heart rate today: ${result2.value}");
+    DataNew result3 = await myHealth.getDataDay(
+        entry: "active_energy_burned",
+        date: DateTime(now.year, now.month, now.day));
+    _appendLog("active_energy_burned today: ${result3.value}");
+    try {
+      DataNew result4 = await myHealth.getDataDay(
+          entry: "distance", date: DateTime(now.year, now.month, now.day + 1));
+      _appendLog("distance today: ${result4.value}");
+    } catch (e) {
+      _appendLog("distance today: $e");
+    }
+    DataNew result5 = await myHealth.getDataDay(
+        entry: "step_time", date: DateTime(now.year, now.month, now.day));
+    _appendLog("step_time today: ${result5.value}");
+
+    Map<String, double?> dataMap = await myHealth.getDataMap(
+        entry: [
+          "step",
+          "heart_rate",
+          "active_energy_burned",
+          "distance",
+          "step_time"
+        ],
+        startTime: DateTime(now.year, now.month, now.day),
+        endTime: DateTime(now.year, now.month, now.day + 1));
+    _appendLog(dataMap.toString());
   }
 
   @override

@@ -45,7 +45,7 @@ void main() async {
           )));
 
   //TODO: init log
-  await Log.initLog();
+  // await Log.initLog();
 }
 
 class ErrorApp extends StatelessWidget {

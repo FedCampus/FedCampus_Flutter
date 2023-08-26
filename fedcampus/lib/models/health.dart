@@ -49,7 +49,8 @@ class DataNew {
 
 class FedHealthData {
   /// abstract class for health data controller on variery of platforms such as Huawei Health, Google Fit
-  Future<bool> authenticate() async {
+  Future<void> authenticate() async {
+    /// throws [Exception] when failed
     throw UnimplementedError();
   }
 
@@ -66,10 +67,12 @@ class FedHealthData {
     required DateTime date,
   }) async {
     DateTime nextDay = DateTime(date.year, date.month, date.day + 1);
-    return getData(entry: entry, startTime: date, endTime: nextDay);
+    DataNew data =
+        await getData(entry: entry, startTime: date, endTime: nextDay);
+    return data;
   }
 
-  Future<List<DataNew>> getDataList({
+  Future<Map<String, double?>> getDataMap({
     required List<String> entry,
     required DateTime startTime,
     required DateTime endTime,
