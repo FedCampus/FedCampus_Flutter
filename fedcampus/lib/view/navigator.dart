@@ -16,7 +16,6 @@ class BottomNavigator extends StatefulWidget {
 class _BottomNavigatorState extends State<BottomNavigator> {
   int _selectedIndex = 0;
   HealthFactory healthFactory = HealthFactory();
-  late final FedHealthData healthDataHandler;
   final List<Widget> _widgetOptions = <Widget>[
     const Health(),
     const Activity(),
@@ -51,48 +50,58 @@ class _BottomNavigatorState extends State<BottomNavigator> {
   }
 
   void detectFirstTimeLogin() async {
-    String? serviceProvider = userApi.prefs.getString("service_provider");
-    if (serviceProvider == null) {
-      if (mounted) {
-        showDialog<bool>(
-          context: context,
-          builder: (context) {
-            double pixel = MediaQuery.of(context).size.width / 400;
-            return AlertDialog(
-              title: const Text("Select a health serivice provider"),
-              contentPadding:
-                  EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 0),
-              content: SizedBox(
-                  height: 271 * pixel,
-                  width: 300 * pixel,
-                  child: Column(
-                    children: [
-                      TextButton(
-                          onPressed: () => userApi.prefs
-                              .setString("service_provider", "huawei"),
-                          child: const Text("Huawei Health")),
-                      TextButton(
-                          onPressed: () => userApi.prefs
-                              .setString("service_provider", "google"),
-                          child: const Text("Google Fit"))
-                    ],
-                  )),
-              // actions: <Widget>[
-              //   TextButton(
-              //     child: const Text("Confirm"),
-              //     onPressed: () {
-              //       Navigator.of(context).pop();
-              //       widget.onDateChange(_date);
-              //     },
-              //   ),
-              // ],
-            );
-          },
-        );
-      }
-    } else {
-      userApi.healthDataHandler = healthFactory.creatHealthDataHandler(serviceProvider);
-    }
+    userApi.healthDataHandler = healthFactory.creatHealthDataHandler("huawei");
+    // String? serviceProvider = userApi.prefs.getString("service_provider");
+    // if (serviceProvider == null) {
+    //   if (mounted) {
+    //     showDialog<bool>(
+    //       context: context,
+    //       builder: (context) {
+    //         double pixel = MediaQuery.of(context).size.width / 400;
+    //         return AlertDialog(
+    //           title: const Text("Select a health serivice provider"),
+    //           contentPadding:
+    //               EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 0),
+    //           content: SizedBox(
+    //               height: 271 * pixel,
+    //               width: 300 * pixel,
+    //               child: Column(
+    //                 children: [
+    //                   TextButton(
+    //                       onPressed: () {
+    //                         userApi.prefs
+    //                             .setString("service_provider", "huawei");
+    //                         userApi.healthDataHandler =
+    //                             healthFactory.creatHealthDataHandler("huawei");
+    //                       },
+    //                       child: const Text("Huawei Health")),
+    //                   TextButton(
+    //                       onPressed: () {
+    //                         userApi.prefs
+    //                             .setString("service_provider", "google");
+    //                         userApi.healthDataHandler =
+    //                             healthFactory.creatHealthDataHandler("google");
+    //                       },
+    //                       child: const Text("Google Fit"))
+    //                 ],
+    //               )),
+    //           // actions: <Widget>[
+    //           //   TextButton(
+    //           //     child: const Text("Confirm"),
+    //           //     onPressed: () {
+    //           //       Navigator.of(context).pop();
+    //           //       widget.onDateChange(_date);
+    //           //     },
+    //           //   ),
+    //           // ],
+    //         );
+    //       },
+    //     );
+    //   }
+    // } else {
+    //   userApi.healthDataHandler =
+    //       healthFactory.creatHealthDataHandler(serviceProvider);
+    // }
   }
 
   @override
