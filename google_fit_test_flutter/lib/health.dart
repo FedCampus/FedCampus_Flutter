@@ -98,7 +98,7 @@ class FedHealthData {
     HealthDataType.ELECTROCARDIOGRAM,
   ];
 
-  void testAvailability() {
+  Future<Map<String, String>> testAvailability() {
     throw UnimplementedError();
   }
 

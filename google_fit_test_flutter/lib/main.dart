@@ -37,13 +37,22 @@ class _MyHomePageState extends State<MyHomePage> {
 
   init() async {
     FedHealthData myHealth = GoogleFit();
-    // myHealth.testAvailability();
     DataNew result = await myHealth.getData(
         entry: "step",
         startTime: DateTime.now().subtract(const Duration(days: 1)),
         endTime: DateTime.now());
     logger.d(result.encode());
     _appendLog("steps last 24 hours: ${result.value}");
+    Map<String, String> testResult = await myHealth.testAvailability();
+    var mapEntries = testResult.entries.toList()
+      ..sort((a, b) => a.value.compareTo(b.value));
+    testResult
+      ..clear()
+      ..addEntries(mapEntries);
+    for (final e in testResult.entries) {
+      _appendLog("${e.key}: ${e.value}");
+      print("${e.key}: ${e.value}");
+    }
   }
 
   @override
@@ -79,11 +88,6 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _appendLog("1212"),
-        tooltip: 'Log',
-        child: const Icon(Icons.add),
       ),
     );
   }

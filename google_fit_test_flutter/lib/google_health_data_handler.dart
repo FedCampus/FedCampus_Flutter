@@ -13,6 +13,8 @@ class GoogleFit extends FedHealthData {
     "step_time": HealthDataType.MOVE_MINUTES,
     "distance": HealthDataType.DISTANCE_DELTA,
     "sleep_asleep": HealthDataType.SLEEP_ASLEEP,
+    "sleep_awake": HealthDataType.SLEEP_AWAKE,
+    "sleep_in_bed": HealthDataType.SLEEP_IN_BED,
 
     // no intense exercise time
     // no stress
@@ -31,25 +33,26 @@ class GoogleFit extends FedHealthData {
       throw Exception("activity recognition permission denied");
     }
     permissionStatus = await Permission.location.request();
-    if (!permissionStatus.isGranted) {
-      throw Exception("location permission denied");
-    }
-    bool requested = await health.requestAuthorization(types);
+    // if (!permissionStatus.isGranted) {
+    //   throw Exception("location permission denied");
+    // }
+    bool requested = await health.requestAuthorization([HealthDataType.STEPS, HealthDataType.SLEEP_AWAKE, HealthDataType.SLEEP_IN_BED, HealthDataType.SLEEP_ASLEEP]);
     if (!requested) throw Exception("google fit authorization denied");
   }
 
   @override
-  void testAvailability() async {
+  Future<Map<String, String>> testAvailability() async {
     Map<String, String> testresult = {};
     for (var type in types) {
       try {
-        await health.requestAuthorization(types);
+        await health.requestAuthorization([type]);
         testresult.addAll({type.name: "availavle"});
       } catch (e) {
         testresult.addAll({type.name: e.toString().substring(0, 17)});
       }
     }
-    logger.e(testresult.toString());
+    logger.d(testresult);
+    return testresult;
   }
 
   @override

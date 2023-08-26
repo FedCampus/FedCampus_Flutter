@@ -6,52 +6,12 @@ import '../../utility/log.dart';
 
 class GoogleFit extends FedHealthData {
   final types = [
-    HealthDataType.ACTIVE_ENERGY_BURNED,
-    HealthDataType.BASAL_ENERGY_BURNED,
-    HealthDataType.BLOOD_GLUCOSE,
-    HealthDataType.BLOOD_OXYGEN,
-    HealthDataType.BLOOD_PRESSURE_DIASTOLIC,
-    HealthDataType.BLOOD_PRESSURE_SYSTOLIC,
-    HealthDataType.BODY_FAT_PERCENTAGE,
-    HealthDataType.BODY_MASS_INDEX,
-    HealthDataType.BODY_TEMPERATURE,
-    HealthDataType.ELECTRODERMAL_ACTIVITY,
-    HealthDataType.HEART_RATE,
-    HealthDataType.HEIGHT,
-    HealthDataType.RESTING_HEART_RATE,
-    HealthDataType.RESPIRATORY_RATE,
-    HealthDataType.PERIPHERAL_PERFUSION_INDEX,
     HealthDataType.STEPS,
-    HealthDataType.WAIST_CIRCUMFERENCE,
-    HealthDataType.WALKING_HEART_RATE,
-    HealthDataType.WEIGHT,
-    HealthDataType.DISTANCE_WALKING_RUNNING,
-    HealthDataType.FLIGHTS_CLIMBED,
+    HealthDataType.HEART_RATE,
+    HealthDataType.ACTIVE_ENERGY_BURNED,
     HealthDataType.MOVE_MINUTES,
     HealthDataType.DISTANCE_DELTA,
-    HealthDataType.MINDFULNESS,
-    HealthDataType.SLEEP_IN_BED,
-    HealthDataType.SLEEP_ASLEEP,
-    HealthDataType.SLEEP_AWAKE,
-    HealthDataType.SLEEP_DEEP,
-    HealthDataType.SLEEP_LIGHT,
-    HealthDataType.SLEEP_REM,
-    HealthDataType.SLEEP_OUT_OF_BED,
-    HealthDataType.SLEEP_SESSION,
-    HealthDataType.WATER,
-    HealthDataType.EXERCISE_TIME,
-    HealthDataType.WORKOUT,
-    HealthDataType.HIGH_HEART_RATE_EVENT,
-    HealthDataType.LOW_HEART_RATE_EVENT,
-    HealthDataType.IRREGULAR_HEART_RATE_EVENT,
-    HealthDataType.HEART_RATE_VARIABILITY_SDNN,
-    HealthDataType.HEADACHE_NOT_PRESENT,
-    HealthDataType.HEADACHE_MILD,
-    HealthDataType.HEADACHE_MODERATE,
-    HealthDataType.HEADACHE_SEVERE,
-    HealthDataType.HEADACHE_UNSPECIFIED,
-    HealthDataType.AUDIOGRAM,
-    HealthDataType.ELECTROCARDIOGRAM,
+    HealthDataType.SLEEP_ASLEEP
   ];
   final Map<String, HealthDataType> healthTypeLookupTable = {
     "step": HealthDataType.STEPS,
@@ -84,14 +44,6 @@ class GoogleFit extends FedHealthData {
       throw Exception("location permission denied");
     }
     Map<String, String> failed = {};
-    for (var type in types) {
-      try {
-        await health.requestAuthorization(types);
-      } catch (e) {
-        failed.addAll({type.name: e.toString().substring(0, 17)});
-      }
-    }
-    logger.d(failed);
     bool requested = await health.requestAuthorization(types);
     if (!requested) throw Exception("google fit authorization denied");
   }
