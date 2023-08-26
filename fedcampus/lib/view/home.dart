@@ -24,20 +24,23 @@ class _HomeRouteState extends State<HomeRoute> {
 
     var types = [
       HealthDataType.STEPS,
-      HealthDataType.BASAL_ENERGY_BURNED,
+      // HealthDataType.BASAL_ENERGY_BURNED,
     ];
-
+    print("-----start auth--------");
     bool requested = await health.requestAuthorization(types);
 
     var now = DateTime.now();
+    print("-----auth finished--------");
 
     List<HealthDataPoint> healthData = await health.getHealthDataFromTypes(
         now.subtract(Duration(days: 1)), now, types);
 
     print(healthData.toString());
+    print("-----------------");
 
     var midnight = DateTime(now.year, now.month, now.day);
     int? steps = await health.getTotalStepsInInterval(midnight, now);
+    print(steps);
   }
 
   @override
@@ -80,7 +83,7 @@ class _HomeRouteState extends State<HomeRoute> {
             child: const Text('Test health model'),
           ),
           ElevatedButton(
-            onPressed: testHealthData,
+            onPressed: testGoogleHealthData,
             child: const Text('Test Google Fit Getting Data'),
           ),
           Text('current language: ${appState.locale}'),
