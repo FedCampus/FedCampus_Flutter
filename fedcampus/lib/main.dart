@@ -4,6 +4,10 @@ import 'package:fedcampus/models/user_model.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/home.dart';
+<<<<<<< HEAD
+=======
+import 'package:fedcampus/view/huawei/huaweihomepage.dart';
+>>>>>>> google-fit-data-fetch
 import 'package:fedcampus/view/me/user_api.dart';
 import 'package:fedcampus/view/navigator.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +39,9 @@ void main() async {
                 create: (context) => ActivityDataModel(),
               ),
             ],
-            child: const MyApp(),
+            child: const MaterialApp(
+              home: HomeRoute(),
+            ),
           )))
       .onError((Exception error, stackTrace) => runApp(ErrorApp(
             error: error,

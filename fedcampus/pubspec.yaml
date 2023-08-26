@@ -49,6 +49,8 @@ dependencies:
   intl: ^0.18.0
   fluttertoast: ^8.2.2
 
+  health: ^8.0.0
+
   normal: ^0.6.0
   sample_statistics: ^0.1.3
 
