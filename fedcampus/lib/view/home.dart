@@ -1,5 +1,6 @@
 import 'package:fedcampus/main.dart';
 import 'package:fedcampus/models/health_data_model.dart';
+import 'package:fedcampus/view/googletest.dart';
 import 'package:fedcampus/view/huawei/huaweihomepage.dart';
 import 'package:fedcampus/view/train_app.dart';
 import 'package:fedcampus/view/navigator.dart';
@@ -83,7 +84,10 @@ class _HomeRouteState extends State<HomeRoute> {
             child: const Text('Test health model'),
           ),
           ElevatedButton(
-            onPressed: testGoogleHealthData,
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const GoogleTestPage()),
+            ),
             child: const Text('Test Google Fit Getting Data'),
           ),
           Text('current language: ${appState.locale}'),
