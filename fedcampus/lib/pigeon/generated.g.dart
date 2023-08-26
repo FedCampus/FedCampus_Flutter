@@ -24,6 +24,15 @@ class Data {
 
   int endTime;
 
+  static int dateTimeToInt(DateTime dateTime) {
+    return dateTime.year * 10000 + dateTime.month * 100 + dateTime.day;
+  }
+
+  static DateTime intToDateTime(int dateCode) {
+    return DateTime(
+        dateCode ~/ 10000, (dateCode % 10000) ~/ 100, dateCode % 100);
+  }
+
   Object encode() {
     return <Object?>[
       name,

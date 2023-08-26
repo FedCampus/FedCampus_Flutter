@@ -6,7 +6,7 @@ import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/utility/http_client.dart';
 import 'package:fedcampus/utility/log.dart';
-import 'package:fedcampus/view/me/user_api.dart';
+import 'package:fedcampus/models/user_api.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;

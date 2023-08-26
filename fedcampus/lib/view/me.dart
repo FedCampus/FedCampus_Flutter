@@ -1,5 +1,5 @@
 import 'package:fedcampus/models/user_model.dart';
-import 'package:fedcampus/view/me/user_api.dart';
+import 'package:fedcampus/models/user_api.dart';
 import 'package:fedcampus/view/trainingDetail.dart';
 import 'package:fedcampus/view/widgets/widget.dart';
 import 'package:flutter/services.dart';

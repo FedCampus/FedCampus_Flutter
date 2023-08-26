@@ -1,4 +1,5 @@
 import 'package:fedcampus/models/health.dart';
+import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:health/health.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -6,65 +7,31 @@ import '../../utility/log.dart';
 
 class GoogleFit extends FedHealthData {
   final types = [
-    HealthDataType.ACTIVE_ENERGY_BURNED,
-    HealthDataType.BASAL_ENERGY_BURNED,
-    HealthDataType.BLOOD_GLUCOSE,
-    HealthDataType.BLOOD_OXYGEN,
-    HealthDataType.BLOOD_PRESSURE_DIASTOLIC,
-    HealthDataType.BLOOD_PRESSURE_SYSTOLIC,
-    HealthDataType.BODY_FAT_PERCENTAGE,
-    HealthDataType.BODY_MASS_INDEX,
-    HealthDataType.BODY_TEMPERATURE,
-    HealthDataType.ELECTRODERMAL_ACTIVITY,
-    HealthDataType.HEART_RATE,
-    HealthDataType.HEIGHT,
-    HealthDataType.RESTING_HEART_RATE,
-    HealthDataType.RESPIRATORY_RATE,
-    HealthDataType.PERIPHERAL_PERFUSION_INDEX,
     HealthDataType.STEPS,
-    HealthDataType.WAIST_CIRCUMFERENCE,
-    HealthDataType.WALKING_HEART_RATE,
-    HealthDataType.WEIGHT,
-    HealthDataType.DISTANCE_WALKING_RUNNING,
-    HealthDataType.FLIGHTS_CLIMBED,
-    HealthDataType.MOVE_MINUTES,
+    HealthDataType.ACTIVE_ENERGY_BURNED,
     HealthDataType.DISTANCE_DELTA,
-    HealthDataType.MINDFULNESS,
-    HealthDataType.SLEEP_IN_BED,
-    HealthDataType.SLEEP_ASLEEP,
-    HealthDataType.SLEEP_AWAKE,
-    HealthDataType.SLEEP_DEEP,
-    HealthDataType.SLEEP_LIGHT,
-    HealthDataType.SLEEP_REM,
-    HealthDataType.SLEEP_OUT_OF_BED,
-    HealthDataType.SLEEP_SESSION,
-    HealthDataType.WATER,
-    HealthDataType.EXERCISE_TIME,
-    HealthDataType.WORKOUT,
-    HealthDataType.HIGH_HEART_RATE_EVENT,
-    HealthDataType.LOW_HEART_RATE_EVENT,
-    HealthDataType.IRREGULAR_HEART_RATE_EVENT,
-    HealthDataType.HEART_RATE_VARIABILITY_SDNN,
-    HealthDataType.HEADACHE_NOT_PRESENT,
-    HealthDataType.HEADACHE_MILD,
-    HealthDataType.HEADACHE_MODERATE,
-    HealthDataType.HEADACHE_SEVERE,
-    HealthDataType.HEADACHE_UNSPECIFIED,
-    HealthDataType.AUDIOGRAM,
-    HealthDataType.ELECTROCARDIOGRAM,
+    HealthDataType.STEPS,
+    HealthDataType.HEART_RATE,
+    HealthDataType.MOVE_MINUTES,
+    HealthDataType.SLEEP_ASLEEP
   ];
   final Map<String, HealthDataType> healthTypeLookupTable = {
     "step": HealthDataType.STEPS,
-    "heart_rate": HealthDataType.HEART_RATE,
-    // no rest_heart_rate, exercise_heart_rate
     "active_energy_burned": HealthDataType.ACTIVE_ENERGY_BURNED,
+    "calorie": HealthDataType.ACTIVE_ENERGY_BURNED,
     // no calorie, which is available in google fit but not in flutter health
-    "step_time": HealthDataType.MOVE_MINUTES,
     "distance": HealthDataType.DISTANCE_DELTA,
-    "sleep_asleep": HealthDataType.SLEEP_ASLEEP,
-
-    // no intense exercise time
+    "stress": HealthDataType.HEART_RATE,
     // no stress
+    "heart_rate": HealthDataType.HEART_RATE,
+    "rest_heart_rate": HealthDataType.HEART_RATE,
+    "exercise_heart_rate": HealthDataType.HEART_RATE,
+    // no rest_heart_rate, exercise_heart_rate
+    "intensity": HealthDataType.HEART_RATE,
+    // no intense exercise time
+    "step_time": HealthDataType.MOVE_MINUTES,
+    "sleep_asleep": HealthDataType.SLEEP_ASLEEP,
+    "sleep_efficiency": HealthDataType.SLEEP_ASLEEP,
     // no sleep_efficiency
   };
   final HealthFactory health =
@@ -97,7 +64,7 @@ class GoogleFit extends FedHealthData {
   }
 
   @override
-  Future<DataNew> getData(
+  Future<Data> getData(
       {required String entry,
       required DateTime startTime,
       required DateTime endTime}) async {
@@ -106,35 +73,18 @@ class GoogleFit extends FedHealthData {
         healthTypeLookupTable[entry] ?? HealthDataType.STEPS,
         startTime,
         endTime);
-    logger.d(healthDataPoint);
     double result = await _aggregateHealthDataPoint(healthDataPoint);
-    if (entry == "heart_rate") {
+    if (["heart_rate", "rest_heart_rate", "exercise_heart_rate"]
+        .contains(entry)) {
       result = await _averageHealthDataPoint(healthDataPoint);
     }
-    DataNew data = DataNew(
-        name: entry, value: result, startTime: startTime, endTime: endTime);
+    Data data = Data(
+        name: entry,
+        value: result,
+        startTime: Data.dateTimeToInt(startTime),
+        endTime: Data.dateTimeToInt(endTime));
 
     return data;
-  }
-
-  @override
-  Future<Map<String, double?>> getDataMap({
-    required List<String> entry,
-    required DateTime startTime,
-    required DateTime endTime,
-  }) async {
-    Map<String, double?> dataMap = {};
-    for (String element in entry) {
-      DataNew data;
-      try {
-        data = await getData(
-            entry: element, startTime: startTime, endTime: endTime);
-        dataMap.addAll({data.name: data.value});
-      } catch (e) {
-        dataMap.addAll({element: null});
-      }
-    }
-    return dataMap;
   }
 
   Future<List<HealthDataPoint>> _getData(

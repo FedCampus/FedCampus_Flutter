@@ -4,7 +4,7 @@ import 'package:fedcampus/models/health_data.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/utility/log.dart';
-import 'package:fedcampus/view/me/user_api.dart';
+import 'package:fedcampus/models/user_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -49,6 +49,8 @@ class HealthDataModel extends ChangeNotifier {
 
   set date(String date) {
     _date = date;
+    logger.d(userApi.healthDataHandler);
+    logger.d(11111);
     getData();
     var dw = DataWrapper();
     dw.getDayDataAndSendAndTrain(int.parse(_date));
@@ -89,15 +91,17 @@ class HealthDataModel extends ChangeNotifier {
   }
 
   void authAndGetData() async {
-    HuaweiAuthApi host = HuaweiAuthApi();
-    try {
-      await host.getAuthenticate();
-      getData();
-      final dw = DataWrapper();
-      dw.getDayDataAndSendAndTrain(int.parse(_date));
-    } on PlatformException catch (error) {
-      logger.e(error);
-    }
+    await userApi.healthDataHandler.authenticate();
+    await getData();
+    // HuaweiAuthApi host = HuaweiAuthApi();
+    // try {
+    //   await host.getAuthenticate();
+    //   getData();
+    //   final dw = DataWrapper();
+    //   dw.getDayDataAndSendAndTrain(int.parse(_date));
+    // } on PlatformException catch (error) {
+    //   logger.e(error);
+    // }
   }
 
   Future<Data?> getDataEntry(DataApi host, String name, int time) async {

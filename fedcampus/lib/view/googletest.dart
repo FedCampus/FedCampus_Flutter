@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/googlefit/google_health_data_handler.dart';
 import '../models/health.dart';
+import '../pigeon/generated.g.dart';
 
 class GoogleTestPage extends StatelessWidget {
   const GoogleTestPage({super.key});
@@ -27,33 +28,45 @@ class _MyHomePageState extends State<MyHomePage> {
   init() async {
     FedHealthData myHealth = GoogleFit();
     DateTime now = DateTime.now();
-    DataNew result = await myHealth.getData(
+    Data result = await myHealth.getData(
         entry: "step",
         startTime: DateTime.now().subtract(const Duration(days: 1)),
         endTime: DateTime.now());
     _appendLog("steps last 24 hours: ${result.value}");
-    DataNew result1 = await myHealth.getDataDay(
+    Data result1 = await myHealth.getDataDay(
         entry: "step", date: DateTime(now.year, now.month, now.day - 1));
     _appendLog("steps yesterday: ${result1.value}");
-    DataNew result2 = await myHealth.getDataDay(
+    Data result2 = await myHealth.getDataDay(
         entry: "heart_rate", date: DateTime(now.year, now.month, now.day));
     _appendLog("avereg heart rate today: ${result2.value}");
-    DataNew result3 = await myHealth.getDataDay(
+    Data result3 = await myHealth.getDataDay(
         entry: "active_energy_burned",
         date: DateTime(now.year, now.month, now.day));
     _appendLog("active_energy_burned today: ${result3.value}");
     try {
-      DataNew result4 = await myHealth.getDataDay(
+      Data result4 = await myHealth.getDataDay(
           entry: "distance", date: DateTime(now.year, now.month, now.day + 1));
       _appendLog("distance today: ${result4.value}");
     } catch (e) {
       _appendLog("distance today: $e");
     }
-    DataNew result5 = await myHealth.getDataDay(
+    Data result5 = await myHealth.getDataDay(
         entry: "step_time", date: DateTime(now.year, now.month, now.day));
     _appendLog("step_time today: ${result5.value}");
 
-    Map<String, double?> dataMap = await myHealth.getDataMap(
+    // Map<String, double?> dataMap = await myHealth.getDataMap(
+    //     entry: [
+    //       "step",
+    //       "heart_rate",
+    //       "active_energy_burned",
+    //       "distance",
+    //       "step_time"
+    //     ],
+    //     startTime: DateTime(now.year, now.month, now.day),
+    //     endTime: DateTime(now.year, now.month, now.day + 1));
+    // _appendLog(dataMap.toString());
+
+    List<Data> dataList = await myHealth.getDataList(
         entry: [
           "step",
           "heart_rate",
@@ -63,7 +76,9 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
         startTime: DateTime(now.year, now.month, now.day),
         endTime: DateTime(now.year, now.month, now.day + 1));
-    _appendLog(dataMap.toString());
+    for (var data in dataList) {
+      _appendLog(data.value.toString());
+    }
   }
 
   @override
