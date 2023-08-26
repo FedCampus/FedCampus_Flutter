@@ -1,5 +1,3 @@
-import 'package:fedcampus/pigeon/generated.g.dart';
-
 class DataNew {
   /// the reason for using date as [DateTime] externally, and use [int] as data representation when
   /// encoded as [List] is for both the ease of handling this custom data type while keep the compability for codec

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fit_test_flutter/health.dart';
 import 'package:google_fit_test_flutter/google_health_data_handler.dart';
+import 'package:google_fit_test_flutter/log.dart';
 
 void main() {
   runApp(const MyApp());
@@ -36,8 +37,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   init() async {
     FedHealthData myHealth = GoogleFit();
-    double result = await myHealth.getData(entry: "step", date: DateTime.now());
-    _appendLog("steps last 24 hours: $result");
+    // myHealth.testAvailability();
+    DataNew result = await myHealth.getData(
+        entry: "step",
+        startTime: DateTime.now().subtract(const Duration(days: 1)),
+        endTime: DateTime.now());
+    logger.d(result.encode());
+    _appendLog("steps last 24 hours: ${result.value}");
   }
 
   @override
