@@ -43,8 +43,6 @@ class HealthDataModel extends ChangeNotifier {
 
   set date(String date) {
     _date = date;
-    logger.d(userApi.healthDataHandler);
-    logger.d(11111);
     getData();
     var dw = DataWrapper();
     dw.getDayDataAndSendAndTrain(int.parse(_date));
