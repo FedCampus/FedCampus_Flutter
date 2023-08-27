@@ -1,9 +1,11 @@
 import 'package:fedcampus/main.dart';
 import 'package:fedcampus/models/health_data_model.dart';
+import 'package:fedcampus/utility/noti.dart';
 import 'package:fedcampus/view/huawei/huaweihomepage.dart';
 import 'package:fedcampus/view/train_app.dart';
 import 'package:fedcampus/view/navigator.dart';
 import 'package:flutter/material.dart';
+import 'package:health/health.dart';
 import 'package:provider/provider.dart';
 
 class HomeRoute extends StatefulWidget {
@@ -16,6 +18,13 @@ class _HomeRouteState extends State<HomeRoute> {
   void testHealthData() async {
     // await Provider.of<HealthDataModel>(context, listen: false).init();
     Provider.of<HealthDataModel>(context, listen: false).getData();
+  }
+
+  void testNoti() {
+    Noti.showBigTextNotification(
+        title: "Message Title",
+        body: "Hello World",
+        fln: flutterLocalNotificationsPlugin);
   }
 
   @override
@@ -56,6 +65,10 @@ class _HomeRouteState extends State<HomeRoute> {
           ElevatedButton(
             onPressed: testHealthData,
             child: const Text('Test health model'),
+          ),
+          ElevatedButton(
+            onPressed: testNoti,
+            child: const Text('Test Notification'),
           ),
           Text('current language: ${appState.locale}'),
         ]),

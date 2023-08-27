@@ -8,6 +8,7 @@ import 'package:fedcampus/view/me/user_api.dart';
 import 'package:fedcampus/view/navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,6 +16,10 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 //make sure you use a context that contains a Navigator instance as parent.
 //https://stackoverflow.com/a/51292613
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
 void main() async {
   // https://stackoverflow.com/a/57775690
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +40,9 @@ void main() async {
                 create: (context) => ActivityDataModel(),
               ),
             ],
-            child: const MyApp(),
+            child: const MaterialApp(
+              home: HomeRoute(),
+            ),
           )))
       .onError((Exception error, stackTrace) => runApp(ErrorApp(
             error: error,
