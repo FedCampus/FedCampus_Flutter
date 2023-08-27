@@ -1,4 +1,3 @@
-import 'package:fedcampus/models/datahandler/health_factory.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/view/activity.dart';
 import 'package:fedcampus/view/me.dart';
