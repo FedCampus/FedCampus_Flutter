@@ -146,3 +146,16 @@ class Customer(models.Model):
 
     def __str__(self):
         return self.nickname
+
+
+class Log(models.Model):
+    def filename(instance, filename):
+        return "logs/" + instance.user.__str__() + "-" + instance.time.__str__()
+        pass
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    time = models.DateTimeField(auto_created=True, auto_now_add=True)
+    file = models.FileField(upload_to=filename)
+
+    def __str__(self) -> str:
+        return self.user.__str__() + " " + self.time.__str__()

@@ -1,14 +1,14 @@
 import logging
 import json
 import time
-import datetime
+import os
 
 from .models import Record
 from .models import SleepTime
 from .models import RecordDP
 from .models import saveRecord
+from .models import Log
 
-from django.contrib.auth import login
 from django.contrib.auth import logout
 from django.db.models import Q
 from django.db.models import Avg
@@ -212,6 +212,29 @@ class Account(APIView):
         logger.info("change account information successfully")
 
         return Response(None)
+
+
+class saveLogFile(APIView):
+    def post(self, request):
+        file = request.data.get("log")
+
+        # check if the user has exceeded its maximum log files
+
+        temp_max_count = 2
+
+        if (
+            Log.objects.filter(user=request.user).exists()
+            and Log.objects.filter(user=request.user).count() >= temp_max_count
+        ):
+            log = Log.objects.filter(user=request.user).order_by("time")
+            os.remove(log[0].file.path)
+            log[0].delete()
+            pass
+        Log.objects.create(user=request.user, file=file)
+        return Response(None)
+        pass
+
+    pass
 
 
 class FedAnalysis(APIView):

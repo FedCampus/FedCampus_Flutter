@@ -14,4 +14,5 @@ urlpatterns = [
     path("logout", views.Logout.as_view(), name="logout"),
     path("account", views.Account.as_view(), name="account"),
     path("fedanalysis", views.FedAnalysis.as_view(), name="fedanalysis"),
+    path("log", views.saveLogFile.as_view(), name="saveLogFile"),
 ]
