@@ -1,5 +1,6 @@
 import 'package:fedcampus/main.dart';
 import 'package:fedcampus/models/health_data_model.dart';
+import 'package:fedcampus/utility/noti.dart';
 import 'package:fedcampus/view/huawei/huaweihomepage.dart';
 import 'package:fedcampus/view/train_app.dart';
 import 'package:fedcampus/view/navigator.dart';
@@ -19,28 +20,11 @@ class _HomeRouteState extends State<HomeRoute> {
     Provider.of<HealthDataModel>(context, listen: false).getData();
   }
 
-  void testGoogleHealthData() async {
-    HealthFactory health = HealthFactory(useHealthConnectIfAvailable: false);
-
-    var types = [
-      HealthDataType.STEPS,
-      // HealthDataType.BASAL_ENERGY_BURNED,
-    ];
-    print("-----start auth--------");
-    bool requested = await health.requestAuthorization(types);
-
-    var now = DateTime.now();
-    print("-----auth finished--------");
-
-    List<HealthDataPoint> healthData = await health.getHealthDataFromTypes(
-        now.subtract(Duration(days: 1)), now, types);
-
-    print(healthData.toString());
-    print("-----------------");
-
-    var midnight = DateTime(now.year, now.month, now.day);
-    int? steps = await health.getTotalStepsInInterval(midnight, now);
-    print(steps);
+  void testNoti() {
+    Noti.showBigTextNotification(
+        title: "Message Title",
+        body: "Hello World",
+        fln: flutterLocalNotificationsPlugin);
   }
 
   @override
@@ -83,8 +67,8 @@ class _HomeRouteState extends State<HomeRoute> {
             child: const Text('Test health model'),
           ),
           ElevatedButton(
-            onPressed: testGoogleHealthData,
-            child: const Text('Test Google Fit Getting Data'),
+            onPressed: testNoti,
+            child: const Text('Test Notification'),
           ),
           Text('current language: ${appState.locale}'),
         ]),
