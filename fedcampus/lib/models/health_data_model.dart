@@ -69,6 +69,7 @@ class HealthDataModel extends ChangeNotifier {
       _loading = false;
       notifyListeners();
     } on PlatformException catch (error) {
+      logger.e(error);
       if (error.message == "java.lang.SecurityException: 50005") {
         logger.d("not authenticated");
         _loading = false;

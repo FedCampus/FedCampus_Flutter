@@ -36,8 +36,10 @@ class FedHealthData {
         data = await getData(
             entry: element, startTime: startTime, endTime: endTime);
         dataList.add(data);
+      } on StateError {
+        // do nothing
       } catch (e) {
-        // add nothing
+        rethrow;
       }
     }
     return dataList;

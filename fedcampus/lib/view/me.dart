@@ -149,7 +149,7 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
           callback: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => TrainingDetail()),
+              MaterialPageRoute(builder: (context) => const TrainingDetail()),
             );
           },
         ),

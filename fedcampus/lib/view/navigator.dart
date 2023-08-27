@@ -1,8 +1,7 @@
-import 'package:fedcampus/models/health.dart';
-import 'package:fedcampus/models/health_factory.dart';
+import 'package:fedcampus/models/datahandler/health_factory.dart';
+import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/view/activity.dart';
 import 'package:fedcampus/view/me.dart';
-import 'package:fedcampus/models/user_api.dart';
 import 'package:flutter/material.dart';
 import 'health.dart';
 
@@ -15,7 +14,6 @@ class BottomNavigator extends StatefulWidget {
 
 class _BottomNavigatorState extends State<BottomNavigator> {
   int _selectedIndex = 0;
-  HealthFactory healthFactory = HealthFactory();
   final List<Widget> _widgetOptions = <Widget>[
     const Health(),
     const Activity(),
@@ -25,9 +23,7 @@ class _BottomNavigatorState extends State<BottomNavigator> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      detectFirstTimeLogin();
-    });
+    spawnTraining();
   }
 
   Color getAppBarColor(int index, BuildContext context) {
@@ -49,59 +45,15 @@ class _BottomNavigatorState extends State<BottomNavigator> {
     });
   }
 
-  void detectFirstTimeLogin() async {
-    userApi.healthDataHandler = healthFactory.creatHealthDataHandler("huawei");
-    // String? serviceProvider = userApi.prefs.getString("service_provider");
-    // if (serviceProvider == null) {
-    //   if (mounted) {
-    //     showDialog<bool>(
-    //       context: context,
-    //       builder: (context) {
-    //         double pixel = MediaQuery.of(context).size.width / 400;
-    //         return AlertDialog(
-    //           title: const Text("Select a health serivice provider"),
-    //           contentPadding:
-    //               EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 0),
-    //           content: SizedBox(
-    //               height: 271 * pixel,
-    //               width: 300 * pixel,
-    //               child: Column(
-    //                 children: [
-    //                   TextButton(
-    //                       onPressed: () {
-    //                         userApi.prefs
-    //                             .setString("service_provider", "huawei");
-    //                         userApi.healthDataHandler =
-    //                             healthFactory.creatHealthDataHandler("huawei");
-    //                       },
-    //                       child: const Text("Huawei Health")),
-    //                   TextButton(
-    //                       onPressed: () {
-    //                         userApi.prefs
-    //                             .setString("service_provider", "google");
-    //                         userApi.healthDataHandler =
-    //                             healthFactory.creatHealthDataHandler("google");
-    //                       },
-    //                       child: const Text("Google Fit"))
-    //                 ],
-    //               )),
-    //           // actions: <Widget>[
-    //           //   TextButton(
-    //           //     child: const Text("Confirm"),
-    //           //     onPressed: () {
-    //           //       Navigator.of(context).pop();
-    //           //       widget.onDateChange(_date);
-    //           //     },
-    //           //   ),
-    //           // ],
-    //         );
-    //       },
-    //     );
-    //   }
-    // } else {
-    //   userApi.healthDataHandler =
-    //       healthFactory.creatHealthDataHandler(serviceProvider);
-    // }
+  void spawnTraining() async {
+    var dw = DataWrapper();
+    final now = DateTime.now();
+    final dateNumber = now.year * 10000 + now.month * 100 + now.day;
+    dw.getDataAndTrain(dateNumber);
+    // final receivePort = ReceivePort();
+    // RootIsolateToken rootToken = RootIsolateToken.instance!;
+    // Isolate.spawn(
+    //     startGettingDataAndTraining, [receivePort.sendPort, rootToken]);
   }
 
   @override

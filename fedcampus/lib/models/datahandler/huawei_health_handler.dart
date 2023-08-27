@@ -1,4 +1,4 @@
-import 'package:fedcampus/models/health.dart';
+import 'package:fedcampus/models/datahandler/health.dart';
 import 'package:fedcampus/models/user_api.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 
@@ -19,12 +19,12 @@ class HuaweiHealth extends FedHealthData {
       List<Data?> dataListOne = await host.getData(
           entry, Data.dateTimeToInt(startTime), Data.dateTimeToInt(endTime));
       if (dataListOne.isEmpty) {
-        // TODO
         return Data(
             name: entry,
             value: -1,
             startTime: Data.dateTimeToInt(startTime),
-            endTime: Data.dateTimeToInt(endTime));
+            endTime: Data.dateTimeToInt(endTime),
+            success: false);
       } else {
         return dataListOne[0]!;
       }

@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:fedcampus/models/googlefit/google_health_data_handler.dart';
-import 'package:fedcampus/models/health.dart';
 import 'package:fedcampus/models/user_api.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/train/fedmcrnn_training.dart';
@@ -37,17 +35,16 @@ class DataWrapper {
   ///50005 if the user is not authenticated, 50030 if the internet connection is down.
   ///If there is no data for that specifc date, the only data will be {step_time: value: 0}
   Future<List<Data?>> getDataList(List<String> nameList, int time) async {
+    // new cross-platform implementation
     DateTime dateTime = Data.intToDateTime(time);
-    Future<List<Data>> result = userApi.healthDataHandler.getDataList(
+    List<Data> result = await userApi.healthDataHandler.getDataList(
         entry: nameList,
-        startTime: DateTime(dateTime.year, dateTime.month, dateTime.day - 1),
-        endTime: DateTime(dateTime.year, dateTime.month, dateTime.day));
-    for (var data in await result) {
-      logger.d(data.value.toString());
-    }
-
+        startTime: DateTime(dateTime.year, dateTime.month, dateTime.day),
+        endTime: DateTime(dateTime.year, dateTime.month, dateTime.day + 1));
+    result.removeWhere((element) => element.success == false);
     return result;
 
+    // ready to be removed
     List<Future<Data?>> list = List.empty(growable: true);
     final host = DataApi();
     for (final element in nameList) {

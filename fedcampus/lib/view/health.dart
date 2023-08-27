@@ -10,7 +10,6 @@ import 'package:fedcampus/view/widgets/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Health extends StatefulWidget {
   const Health({
@@ -32,11 +31,11 @@ class _HealthState extends State<Health> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       refresh();
     });
+    // TODO: reconsider this design and the whether loading can be cancelled
     detectFirstTimeLogin();
   }
 
   void detectFirstTimeLogin() async {
-    final prefs = await SharedPreferences.getInstance();
     if (userApi.prefs.getBool("login") == null) {
       // jump to login page
       if (mounted) {
@@ -57,7 +56,7 @@ class _HealthState extends State<Health> {
   Future<void> refresh() async {
     Provider.of<HealthDataModel>(context, listen: false).getData();
     showLoadingBeforeLocalDataAvailable();
-    // _sendLastDayData();
+    _sendLastDayData();
   }
 
   updateDate(DateTime selectedDate) {

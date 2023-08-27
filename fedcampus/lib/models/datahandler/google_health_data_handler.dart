@@ -1,4 +1,4 @@
-import 'package:fedcampus/models/health.dart';
+import 'package:fedcampus/models/datahandler/health.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:health/health.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -34,13 +34,21 @@ class GoogleFit extends FedHealthData {
     "sleep_efficiency": HealthDataType.SLEEP_ASLEEP,
     // no sleep_efficiency
   };
+  final unAvailableDataTypes = [
+    "sleep_efficiency",
+    "intensity"
+  ]; // totally unavailable
+
   final HealthFactory health =
       HealthFactory(useHealthConnectIfAvailable: false);
+
+  GoogleFit() {
+    authenticate();
+  }
 
   @override
   Future<void> authenticate() async {
     // Beacuse this is labled as a dangerous protection level, the permission system will not grant it automaticlly and it requires the user's action. You can prompt the user for it using the permission_handler plugin. Follow the plugin setup instructions and add the following line before requsting the data:
-    // TODO: handle situations and throw exceptions where permissions are not granted
     PermissionStatus permissionStatus =
         await Permission.activityRecognition.request();
     if (!permissionStatus.isGranted) {
@@ -68,7 +76,6 @@ class GoogleFit extends FedHealthData {
       {required String entry,
       required DateTime startTime,
       required DateTime endTime}) async {
-    // TODO: handle exception
     List<HealthDataPoint> healthDataPoint = await _getData(
         healthTypeLookupTable[entry] ?? HealthDataType.STEPS,
         startTime,
@@ -77,6 +84,14 @@ class GoogleFit extends FedHealthData {
     if (["heart_rate", "rest_heart_rate", "exercise_heart_rate"]
         .contains(entry)) {
       result = await _averageHealthDataPoint(healthDataPoint);
+    }
+    if (unAvailableDataTypes.contains(entry)) {
+      return Data(
+          name: entry,
+          value: -1,
+          startTime: Data.dateTimeToInt(startTime),
+          endTime: Data.dateTimeToInt(endTime),
+          success: false);
     }
     Data data = Data(
         name: entry,
@@ -89,8 +104,6 @@ class GoogleFit extends FedHealthData {
 
   Future<List<HealthDataPoint>> _getData(
       HealthDataType entry, DateTime startTime, DateTime endTime) async {
-    await authenticate();
-
     List<HealthDataPoint> healthData =
         await health.getHealthDataFromTypes(startTime, endTime, [entry]);
 
@@ -104,6 +117,8 @@ class GoogleFit extends FedHealthData {
       result = healthDataPoint
           .map((e) => double.parse(e.value.toString()))
           .reduce((value, element) => value + element);
+    } on StateError {
+      return 0;
     } catch (e) {
       rethrow;
     }
@@ -117,6 +132,8 @@ class GoogleFit extends FedHealthData {
       result = healthDataPoint
           .map((e) => double.parse(e.value.toString()))
           .reduce((value, element) => value + element);
+    } on StateError {
+      return 0;
     } catch (e) {
       rethrow;
     }

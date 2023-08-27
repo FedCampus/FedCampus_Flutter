@@ -4,9 +4,7 @@ import 'package:fedcampus/models/user_model.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/home.dart';
-import 'package:fedcampus/view/huawei/huaweihomepage.dart';
 import 'package:fedcampus/models/user_api.dart';
-import 'package:fedcampus/view/navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -45,7 +43,7 @@ void main() async {
           )));
 
   //TODO: init log
-  // await Log.initLog();
+  await Log.initLog();
 }
 
 class ErrorApp extends StatelessWidget {
@@ -78,18 +76,6 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     initSettings(context);
-    spawnTraining();
-  }
-
-  void spawnTraining() async {
-    var dw = DataWrapper();
-    final now = DateTime.now();
-    final dateNumber = now.year * 10000 + now.month * 100 + now.day;
-    dw.getDataAndTrain(dateNumber);
-    // final receivePort = ReceivePort();
-    // RootIsolateToken rootToken = RootIsolateToken.instance!;
-    // Isolate.spawn(
-    //     startGettingDataAndTraining, [receivePort.sendPort, rootToken]);
   }
 
   static void startGettingDataAndTraining(List<dynamic> args) async {

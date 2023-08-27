@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:fedcampus/models/health.dart';
+import 'package:fedcampus/models/datahandler/health.dart';
 import 'package:fedcampus/models/user.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:http/http.dart' as http;

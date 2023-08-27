@@ -1,10 +1,28 @@
+import 'dart:io';
+
 import 'package:logger/logger.dart';
+import 'package:path_provider/path_provider.dart';
+
+//https://stackoverflow.com/questions/70145480/dart-singleton-with-parameters-global-app-logger
 
 Logger get logger => Log.instance;
 
 class Log extends Logger {
-  Log._() : super(printer: PrettyPrinter(printTime: true));
-  static final instance = Log._();
+  //TODO: change the log out put to console for production
+  // Log._(String filename)
+  //     : super(
+  //           printer: SimplePrinter(printTime: true),
+  //           output: FileOutput(file: File(filename), overrideExisting: true));
+
+  Log._(String filename) : super(printer: PrettyPrinter(printTime: true));
+  static final instance = Log._(filePath);
+
+  static String filePath = "";
+
+  static Future<void> initLog() async {
+    final directory = await getApplicationDocumentsDirectory();
+    filePath = directory.path + "/log";
+  }
 }
 
 extension FormattedMessage on Exception {

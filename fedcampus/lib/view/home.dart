@@ -2,10 +2,9 @@ import 'package:fedcampus/main.dart';
 import 'package:fedcampus/models/health_data_model.dart';
 import 'package:fedcampus/view/googletest.dart';
 import 'package:fedcampus/view/huawei/huaweihomepage.dart';
+import 'package:fedcampus/view/splash.dart';
 import 'package:fedcampus/view/train_app.dart';
-import 'package:fedcampus/view/navigator.dart';
 import 'package:flutter/material.dart';
-import 'package:health/health.dart';
 import 'package:provider/provider.dart';
 
 class HomeRoute extends StatefulWidget {
@@ -16,32 +15,7 @@ class HomeRoute extends StatefulWidget {
 
 class _HomeRouteState extends State<HomeRoute> {
   void testHealthData() async {
-    // await Provider.of<HealthDataModel>(context, listen: false).init();
     Provider.of<HealthDataModel>(context, listen: false).getData();
-  }
-
-  void testGoogleHealthData() async {
-    HealthFactory health = HealthFactory(useHealthConnectIfAvailable: false);
-
-    var types = [
-      HealthDataType.STEPS,
-      // HealthDataType.BASAL_ENERGY_BURNED,
-    ];
-    print("-----start auth--------");
-    bool requested = await health.requestAuthorization(types);
-
-    var now = DateTime.now();
-    print("-----auth finished--------");
-
-    List<HealthDataPoint> healthData = await health.getHealthDataFromTypes(
-        now.subtract(Duration(days: 1)), now, types);
-
-    print(healthData.toString());
-    print("-----------------");
-
-    var midnight = DateTime(now.year, now.month, now.day);
-    int? steps = await health.getTotalStepsInInterval(midnight, now);
-    print(steps);
   }
 
   @override
@@ -69,7 +43,7 @@ class _HomeRouteState extends State<HomeRoute> {
             child: const Text('Open FedCampus App'),
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const BottomNavigator()),
+              MaterialPageRoute(builder: (context) => const Splash()),
             ),
           ),
           ElevatedButton(

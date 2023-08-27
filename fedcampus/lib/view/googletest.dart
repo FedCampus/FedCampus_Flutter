@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../models/googlefit/google_health_data_handler.dart';
-import '../models/health.dart';
+import '../models/datahandler/google_health_data_handler.dart';
+import '../models/datahandler/health.dart';
 import '../pigeon/generated.g.dart';
 
 class GoogleTestPage extends StatelessWidget {

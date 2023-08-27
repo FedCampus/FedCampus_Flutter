@@ -14,6 +14,7 @@ class Data {
     required this.value,
     required this.startTime,
     required this.endTime,
+    this.success = true,
   });
 
   String name;
@@ -23,6 +24,8 @@ class Data {
   int startTime;
 
   int endTime;
+
+  bool success;
 
   static int dateTimeToInt(DateTime dateTime) {
     return dateTime.year * 10000 + dateTime.month * 100 + dateTime.day;

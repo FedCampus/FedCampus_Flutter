@@ -100,7 +100,7 @@ class ActivityDataModel extends ChangeNotifier {
     try {
       response = await HTTPClient.post(
               HTTPClient.fedAnalysis, <String, String>{}, jsonEncode(bodyJson))
-          .timeout(Duration(seconds: 5));
+          .timeout(const Duration(seconds: 5));
     } on TimeoutException {
       rethrow;
     }
