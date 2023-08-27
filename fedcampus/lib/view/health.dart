@@ -30,9 +30,9 @@ class _HealthState extends State<Health> {
         Provider.of<HealthDataModel>(context, listen: false).date);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       refresh();
+      // TODO: reconsider this design and the whether loading can be cancelled
+      detectFirstTimeLogin();
     });
-    // TODO: reconsider this design and the whether loading can be cancelled
-    detectFirstTimeLogin();
   }
 
   void detectFirstTimeLogin() async {
@@ -492,9 +492,9 @@ class Stress extends StatelessWidget {
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
     String displayText = formatNum(
-                    Provider.of<HealthDataModel>(context).healthData['stress'],
-                    loading: Provider.of<HealthDataModel>(context).loading,
-                  );
+      Provider.of<HealthDataModel>(context).healthData['stress'],
+      loading: Provider.of<HealthDataModel>(context).loading,
+    );
     return FedCard(
       widget: Row(
         children: [
@@ -516,8 +516,7 @@ class Stress extends StatelessWidget {
           const Spacer(),
           Column(
             children: [
-              Text(
-                  displayText,
+              Text(displayText,
                   style: montserratAlternatesTextStyle(
                       displayText.length < 6
                           ? pixel * 30

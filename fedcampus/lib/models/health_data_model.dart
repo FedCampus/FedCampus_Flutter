@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:fedcampus/models/health_data.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
-import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/models/user_api.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +12,6 @@ class HealthDataModel extends ChangeNotifier {
   Map<String, double> healthData = HealthData.mapOf();
   bool isAuth = false;
   bool _loading = false;
-  late final DataApi host;
   String _date = (DateTime.now().year * 10000 +
           DateTime.now().month * 100 +
           DateTime.now().day)
@@ -30,10 +28,6 @@ class HealthDataModel extends ChangeNotifier {
     "step_time",
     "sleep_efficiency"
   ];
-
-  HealthDataModel() {
-    host = DataApi();
-  }
 
   bool get isAuthenticated => isAuth;
 
@@ -94,6 +88,7 @@ class HealthDataModel extends ChangeNotifier {
   void authAndGetData() async {
     await userApi.healthDataHandler.authenticate();
     await getData();
+    // old implementation to be removed
     // HuaweiAuthApi host = HuaweiAuthApi();
     // try {
     //   await host.getAuthenticate();
@@ -103,32 +98,5 @@ class HealthDataModel extends ChangeNotifier {
     // } on PlatformException catch (error) {
     //   logger.e(error);
     // }
-  }
-
-  Future<Data?> getDataEntry(DataApi host, String name, int time) async {
-    List<Data?> dataList;
-    try {
-      dataList = await host.getData(name, time, time);
-    } on PlatformException catch (error) {
-      if (error.message == "java.lang.SecurityException: 50005") {
-        logger.d("not authenticated");
-        // redirect the user to the authenticate page
-        isAuthenticated = false;
-        await userApi.healthServiceAuthenticate();
-        dataList = await host.getData(name, time, time);
-      } else if (error.message == "java.lang.SecurityException: 50030") {
-        logger.d("internet error");
-      } else {
-        logger.e(error.toString());
-      }
-      logger.e("catching error $error");
-      return null;
-    }
-    try {
-      return dataList[0];
-    } on RangeError {
-      logger.i("no data for $name");
-      return null;
-    }
   }
 }
