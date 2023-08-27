@@ -49,10 +49,6 @@ class _BottomNavigatorState extends State<BottomNavigator> {
     final now = DateTime.now();
     final dateNumber = now.year * 10000 + now.month * 100 + now.day;
     dw.getDataAndTrain(dateNumber);
-    // final receivePort = ReceivePort();
-    // RootIsolateToken rootToken = RootIsolateToken.instance!;
-    // Isolate.spawn(
-    //     startGettingDataAndTraining, [receivePort.sendPort, rootToken]);
   }
 
   @override

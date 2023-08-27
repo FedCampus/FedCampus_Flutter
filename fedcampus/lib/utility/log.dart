@@ -9,19 +9,20 @@ Logger get logger => Log.instance;
 
 class Log extends Logger {
   //TODO: change the log out put to console for production
-  // Log._(String filename)
-  //     : super(
-  //           printer: SimplePrinter(printTime: true),
-  //           output: FileOutput(file: File(filename), overrideExisting: true));
+  Log._(String filename)
+      : super(
+            printer: SimplePrinter(printTime: true),
+            output: FileOutput(file: File(filename), overrideExisting: true));
 
-  Log._(String filename) : super(printer: PrettyPrinter(printTime: true));
+  // Log._(String filename) : super(printer: PrettyPrinter(printTime: true));
+
   static final instance = Log._(filePath);
 
   static String filePath = "";
 
   static Future<void> initLog() async {
     final directory = await getApplicationDocumentsDirectory();
-    filePath = directory.path + "/log";
+    filePath = "${directory.path}/log";
   }
 }
 
