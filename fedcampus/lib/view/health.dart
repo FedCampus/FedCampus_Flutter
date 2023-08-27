@@ -10,7 +10,6 @@ import 'package:fedcampus/view/widgets/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Health extends StatefulWidget {
   const Health({
@@ -36,7 +35,6 @@ class _HealthState extends State<Health> {
   }
 
   void detectFirstTimeLogin() async {
-    final prefs = await SharedPreferences.getInstance();
     if (userApi.prefs.getBool("login") == null) {
       // jump to login page
       if (mounted) {

@@ -14,7 +14,6 @@ import 'package:fedcampus/pigeon/data_extensions.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sample_statistics/sample_statistics.dart';
-import 'package:sqflite/sqflite.dart';
 
 class DataWrapper {
   final dataNameList = [
@@ -171,15 +170,21 @@ class DataWrapper {
         await Future.delayed(fiveSeconds);
       }
       // TODO: send log file to server here
-      // sendLogFileToServer();
+      sendLogFileToServer();
     }
   }
 
   Future<void> sendLogFileToServer() async {
+    print("Sending Log File to Server");
     final directory = await getApplicationDocumentsDirectory();
     final path = "${directory.path}/log";
-    File file = File(path);
+    // File file = File(path);
     //TODO: send log file to server
+    String uri = "http://10.201.8.29:8006/api/log";
+    var request = http.MultipartRequest("POST", Uri.parse(uri));
+    await HTTPClient.getToken(request.headers);
+    request.files.add(await http.MultipartFile.fromPath("log", path));
+    request.send();
   }
 
   List<int> _findMissingData(List<Data> res, int date, DataBaseApi dbapi) {
