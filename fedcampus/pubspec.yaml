@@ -62,6 +62,7 @@ dependencies:
 
   sqflite: ^2.3.0
   path: ^1.8.3
+  permission_handler: ^10.4.3
 
   flutter_local_notifications: ^15.1.1
 

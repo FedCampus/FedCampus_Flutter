@@ -3,8 +3,8 @@ import 'package:fedcampus/models/health_data_model.dart';
 import 'package:fedcampus/models/user_model.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/utility/log.dart';
-import 'package:fedcampus/view/me/user_api.dart';
-import 'package:fedcampus/view/navigator.dart';
+import 'package:fedcampus/view/home.dart';
+import 'package:fedcampus/models/user_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -77,10 +77,11 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     initSettings(context);
-    spawnTraining();
   }
 
-  void spawnTraining() async {
+  static void startGettingDataAndTraining(List<dynamic> args) async {
+    RootIsolateToken rootToken = args[1];
+    BackgroundIsolateBinaryMessenger.ensureInitialized(rootToken);
     var dw = DataWrapper();
     final now = DateTime.now();
     final dateNumber = now.year * 10000 + now.month * 100 + now.day;
@@ -191,7 +192,7 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
       themeMode: appState.isDarkModeOn ? ThemeMode.dark : ThemeMode.light,
-      home: const BottomNavigator(),
+      home: const HomeRoute(),
     );
   }
 }
