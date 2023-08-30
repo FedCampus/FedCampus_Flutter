@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'package:fedcampus/models/user_api.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/train/fedmcrnn_training.dart';

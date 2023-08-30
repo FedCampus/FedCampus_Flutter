@@ -1,5 +1,7 @@
 import 'package:fedcampus/models/user_model.dart';
 import 'package:fedcampus/models/user_api.dart';
+import 'package:fedcampus/view/me/about.dart';
+import 'package:fedcampus/view/me/privacy_policy.dart';
 import 'package:fedcampus/view/trainingDetail.dart';
 import 'package:fedcampus/view/widgets/widget.dart';
 import 'package:flutter/services.dart';
@@ -137,7 +139,14 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
           callback: _healthServiceCancel,
         ),
         const MeDivider(),
-        MeText(text: 'About', callback: () => {}),
+        MeText(
+            text: 'About',
+            callback: () => {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const About()),
+                  )
+                }),
         const MeDivider(),
         MeText(
           text: 'Help & feedback',
@@ -186,29 +195,18 @@ class BottomText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double pixel = MediaQuery.of(context).size.width / 400;
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Text(
-        'Privacy Policy',
-        style:
-            TextStyle(color: Theme.of(context).colorScheme.onTertiaryContainer),
-      ),
-      SizedBox(
-        width: 30 * pixel,
+      TextButton(
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const PrivacyPolicy()),
+        ),
         child: Text(
-          '·',
-          textAlign: TextAlign.center,
+          'Terms of Service',
           style: TextStyle(
-            fontSize: pixel * 30,
-            color: Theme.of(context).colorScheme.onTertiaryContainer,
-          ),
+              color: Theme.of(context).colorScheme.onTertiaryContainer),
         ),
       ),
-      Text(
-        'Terms of Service',
-        style:
-            TextStyle(color: Theme.of(context).colorScheme.onTertiaryContainer),
-      )
     ]);
   }
 }
