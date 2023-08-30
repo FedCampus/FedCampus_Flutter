@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import os
+import json
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -35,6 +36,17 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.TokenAuthentication",
     ),
 }
+
+# Email Settings
+email = json.load(open("config/email.json", "r"))
+MESSAGE = "Please start the app for at least 5 minutes for training!"
+SUBJECT = "FedCampus"
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = email.get("email_host")
+EMAIL_USE_TLS = False
+EMAIL_PORT = 25
+EMAIL_HOST_USER = email.get("email_username")
+EMAIL_HOST_PASSWORD = email.get("email_password")
 
 # Application definition
 

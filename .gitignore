@@ -20,6 +20,8 @@ logs/
 **gradlew.bat
 fa_backend/fa_backend.sock
 fa_backend/static
+# private email information
+fa_backend/config/email.json
 
 **.vscode
 

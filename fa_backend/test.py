@@ -1,7 +1,15 @@
-# test.py
-# def application(env, start_response):
-# start_response("200 OK", [("Content-Type", "text/html")])
-# return [b"Hello World"]  # python3
-# return ["Hello World"] # python2
+def test(a, b, c):
+    print("Hello World!")
+    print(a + b + c)
 
-print(2312321321321321313210002 // 10000)
+
+j = (
+    test,
+    (
+        1,
+        2,
+        3,
+    ),
+)
+
+j[0](*j[1])

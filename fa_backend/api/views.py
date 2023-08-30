@@ -218,8 +218,7 @@ class saveLogFile(APIView):
     def post(self, request):
         file = request.data.get("log")
 
-        # check if the user has exceeded its maximum log files
-
+        ## TODO : change the max count of the log file for each user
         temp_max_count = 2
 
         if (

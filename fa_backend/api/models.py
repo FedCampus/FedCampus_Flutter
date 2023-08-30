@@ -16,9 +16,9 @@ class Record(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     startTime = models.IntegerField(null=True, blank=True)
     endTime = models.IntegerField(null=True, blank=True)
-    # data = models.JSONField(null=True, blank=True)
     dataType = models.CharField(max_length=10, null=True, blank=True)
     value = models.FloatField(null=True, blank=True)
+    update = models.DateTimeField(auto_now=True)
 
     def saveRecord(user, startTime, endTime, dataType, data):
         try:
@@ -56,6 +56,7 @@ class RecordDP(models.Model):
     # data = models.JSONField(null=True, blank=True)
     dataType = models.CharField(max_length=10, null=True, blank=True)
     value = models.FloatField(null=True, blank=True)
+    update = models.DateTimeField(auto_now=True)
 
     def saveRecord(user, startTime, endTime, dataType, data):
         try:
