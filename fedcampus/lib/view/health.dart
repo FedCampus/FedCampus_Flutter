@@ -30,8 +30,6 @@ class _HealthState extends State<Health> {
         Provider.of<HealthDataModel>(context, listen: false).date);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       refresh();
-      // TODO: reconsider this design and the whether loading can be cancelled
-      detectFirstTimeLogin();
     });
   }
 

@@ -1,5 +1,6 @@
 import 'package:fedcampus/models/datahandler/health_factory.dart';
 import 'package:fedcampus/models/user_api.dart';
+import 'package:fedcampus/view/me/signin.dart';
 import 'package:fedcampus/view/navigator.dart';
 import 'package:flutter/material.dart';
 
@@ -22,6 +23,18 @@ class _SplashState extends State<Splash> {
             MaterialPageRoute(builder: (context) => const BottomNavigator()),
           ));
     });
+  }
+
+  void detectFirstTimeLogin() async {
+    if (userApi.prefs.getBool("login") == null) {
+      // jump to login page
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const SignIn()),
+        );
+      }
+    }
   }
 
   Future<void> detectHealthDataServiceProvider() async {
@@ -55,6 +68,12 @@ class _SplashState extends State<Splash> {
           return ChooseHealthServiceProviderDialog(
               healthFactory: healthFactory);
         },
+      );
+    }
+    if (mounted) {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const SignIn()),
       );
     }
   }
