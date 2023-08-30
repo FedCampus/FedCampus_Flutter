@@ -38,48 +38,100 @@ class _SplashState extends State<Splash> {
     }
   }
 
-  Future<bool?> pickServiceProvider() {
-    return showDialog<bool>(
+  Future<void> pickServiceProvider() async {
+    await showDialog<bool>(
       context: context,
       builder: (context) {
-        double pixel = MediaQuery.of(context).size.width / 400;
         return WillPopScope(
           onWillPop: () async => false,
-          child: AlertDialog(
-            title: const Text("Select a health serivice provider"),
-            contentPadding:
-                EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 0),
-            content: SizedBox(
-                height: 271 * pixel,
-                width: 300 * pixel,
-                child: Column(
-                  children: [
-                    TextButton(
-                        onPressed: () {
-                          userApi.prefs.setString("service_provider", "huawei");
-                          userApi.healthDataHandler =
-                              healthFactory.creatHealthDataHandler("huawei");
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text("Huawei Health")),
-                    TextButton(
-                        onPressed: () {
-                          userApi.prefs.setString("service_provider", "google");
-                          userApi.healthDataHandler =
-                              healthFactory.creatHealthDataHandler("google");
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text("Google Fit"))
-                  ],
-                )),
-          ),
+          child: const FirstDialog(),
         );
       },
     );
+    if (mounted) {
+      await showDialog<bool>(
+        context: context,
+        builder: (context) {
+          return ChooseHealthServiceProviderDialog(
+              healthFactory: healthFactory);
+        },
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox();
+    return const Scaffold();
+  }
+}
+
+class FirstDialog extends StatelessWidget {
+  const FirstDialog({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
+    return AlertDialog(
+      title: const Text("Hello"),
+      contentPadding:
+          EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 0),
+      content: SizedBox(
+          height: 271 * pixel,
+          width: 300 * pixel,
+          child: const Column(
+            children: [Text("Let's walk through a few settings")],
+          )),
+      actions: [
+        TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text("Next"))
+      ],
+    );
+  }
+}
+
+class ChooseHealthServiceProviderDialog extends StatelessWidget {
+  const ChooseHealthServiceProviderDialog({
+    super.key,
+    required this.healthFactory,
+  });
+
+  final HealthDataHandlerFactory healthFactory;
+
+  @override
+  Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
+    return AlertDialog(
+      title: const Text("Select a health serivice provider"),
+      contentPadding:
+          EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 0),
+      content: SizedBox(
+          height: 271 * pixel,
+          width: 300 * pixel,
+          child: Column(
+            children: [
+              TextButton(
+                  onPressed: () {
+                    userApi.prefs.setString("service_provider", "huawei");
+                    userApi.healthDataHandler =
+                        healthFactory.creatHealthDataHandler("huawei");
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("Huawei Health")),
+              TextButton(
+                  onPressed: () {
+                    userApi.prefs.setString("service_provider", "google");
+                    userApi.healthDataHandler =
+                        healthFactory.creatHealthDataHandler("google");
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("Google Fit"))
+            ],
+          )),
+    );
   }
 }
