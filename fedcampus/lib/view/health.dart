@@ -5,12 +5,11 @@ import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/calendar.dart';
 import 'package:fedcampus/view/me/signin.dart';
-import 'package:fedcampus/view/me/user_api.dart';
+import 'package:fedcampus/models/user_api.dart';
 import 'package:fedcampus/view/widgets/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Health extends StatefulWidget {
   const Health({
@@ -31,12 +30,12 @@ class _HealthState extends State<Health> {
         Provider.of<HealthDataModel>(context, listen: false).date);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       refresh();
+      // TODO: reconsider this design and the whether loading can be cancelled
+      detectFirstTimeLogin();
     });
-    detectFirstTimeLogin();
   }
 
   void detectFirstTimeLogin() async {
-    final prefs = await SharedPreferences.getInstance();
     if (userApi.prefs.getBool("login") == null) {
       // jump to login page
       if (mounted) {
@@ -492,6 +491,10 @@ class Stress extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
+    String displayText = formatNum(
+      Provider.of<HealthDataModel>(context).healthData['stress'],
+      loading: Provider.of<HealthDataModel>(context).loading,
+    );
     return FedCard(
       widget: Row(
         children: [
@@ -513,12 +516,11 @@ class Stress extends StatelessWidget {
           const Spacer(),
           Column(
             children: [
-              Text(
-                  formatNum(
-                    Provider.of<HealthDataModel>(context).healthData['stress'],
-                    loading: Provider.of<HealthDataModel>(context).loading,
-                  ),
-                  style: montserratAlternatesTextStyle(pixel * 30,
+              Text(displayText,
+                  style: montserratAlternatesTextStyle(
+                      displayText.length < 6
+                          ? pixel * 30
+                          : pixel * (155 / displayText.length),
                       Theme.of(context).colorScheme.primaryContainer)),
               Text('stress',
                   style: montserratAlternatesTextStyle(pixel * 15,
@@ -643,6 +645,11 @@ class IntenseExercise extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
+    String displayText = formatNum(
+      Provider.of<HealthDataModel>(context).healthData['intensity'],
+      decimalPoints: 1,
+      loading: Provider.of<HealthDataModel>(context).loading,
+    );
     return FedCard(
         widget: Row(
       children: [
@@ -675,13 +682,11 @@ class IntenseExercise extends StatelessWidget {
         const Spacer(),
         Column(
           children: [
-            Text(
-                formatNum(
-                  Provider.of<HealthDataModel>(context).healthData['intensity'],
-                  decimalPoints: 1,
-                  loading: Provider.of<HealthDataModel>(context).loading,
-                ),
-                style: montserratAlternatesTextStyle(pixel * 30,
+            Text(displayText,
+                style: montserratAlternatesTextStyle(
+                    displayText.length < 6
+                        ? pixel * 30
+                        : pixel * (145 / displayText.length),
                     Theme.of(context).colorScheme.primaryContainer)),
             Text('min',
                 style: montserratAlternatesTextStyle(pixel * 20,

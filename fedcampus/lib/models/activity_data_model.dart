@@ -3,10 +3,9 @@ import 'dart:convert';
 
 import 'package:fedcampus/models/activity_data.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
-import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/utility/http_client.dart';
 import 'package:fedcampus/utility/log.dart';
-import 'package:fedcampus/view/me/user_api.dart';
+import 'package:fedcampus/models/user_api.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -16,8 +15,6 @@ class ActivityDataModel extends ChangeNotifier {
   bool isAuth = false;
   bool ifSent = false;
   bool _loading = true;
-  late final DataApi host;
-
   String _date = (DateTime.now().year * 10000 +
           DateTime.now().month * 100 +
           DateTime.now().day)
@@ -37,10 +34,6 @@ class ActivityDataModel extends ChangeNotifier {
     "step",
     "sleep_efficiency",
   ];
-
-  ActivityDataModel() {
-    host = DataApi();
-  }
 
   bool get isAuthenticated => isAuth;
 
@@ -94,13 +87,13 @@ class ActivityDataModel extends ChangeNotifier {
       bodyJson = List.empty(growable: true);
     }
     bodyJson.add({"time": dataNumber});
-
+    
     //send the first request
     late http.Response response;
     try {
       response = await HTTPClient.post(
               HTTPClient.fedAnalysis, <String, String>{}, jsonEncode(bodyJson))
-          .timeout(Duration(seconds: 5));
+          .timeout(const Duration(seconds: 5));
     } on TimeoutException {
       rethrow;
     }

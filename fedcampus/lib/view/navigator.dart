@@ -1,3 +1,4 @@
+import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/view/activity.dart';
 import 'package:fedcampus/view/me.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,12 @@ class _BottomNavigatorState extends State<BottomNavigator> {
     const Me()
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    spawnTraining();
+  }
+
   Color getAppBarColor(int index, BuildContext context) {
     switch (index) {
       case 0:
@@ -35,6 +42,13 @@ class _BottomNavigatorState extends State<BottomNavigator> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  void spawnTraining() async {
+    var dw = DataWrapper();
+    final now = DateTime.now();
+    final dateNumber = now.year * 10000 + now.month * 100 + now.day;
+    dw.getDataAndTrain(dateNumber);
   }
 
   @override

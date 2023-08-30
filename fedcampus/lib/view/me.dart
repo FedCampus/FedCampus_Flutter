@@ -1,5 +1,5 @@
 import 'package:fedcampus/models/user_model.dart';
-import 'package:fedcampus/view/me/user_api.dart';
+import 'package:fedcampus/models/user_api.dart';
 import 'package:fedcampus/view/trainingDetail.dart';
 import 'package:fedcampus/view/widgets/widget.dart';
 import 'package:flutter/services.dart';
@@ -149,7 +149,7 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
           callback: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => TrainingDetail()),
+              MaterialPageRoute(builder: (context) => const TrainingDetail()),
             );
           },
         ),

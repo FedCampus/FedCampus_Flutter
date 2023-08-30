@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:fedcampus/models/datahandler/health.dart';
 import 'package:fedcampus/models/user.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:http/http.dart' as http;
@@ -18,6 +19,8 @@ class UserApi {
   static final instance = UserApi._();
 
   late SharedPreferences _pref;
+
+  late final FedHealthData healthDataHandler;
 
   Future<void> init() async {
     _pref = await SharedPreferences.getInstance();
