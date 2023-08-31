@@ -80,7 +80,7 @@ if __name__ == "__main__":
     alarm = tim.Alarm()
     taskList = [
         (sendReminderEmail, (11, 30, 0), (11, 30, 0)),
-        (sendReminderEmail, (5, 30, 0), (5, 30, 0)),
+        (sendReminderEmail, (17, 30, 0), (17, 30, 0)),
         (sendReminderEmail, (22, 30, 0), (22, 30, 0)),
     ]
     alarm.prepare(taskList)
