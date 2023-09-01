@@ -76,9 +76,7 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
     double pixel = MediaQuery.of(context).size.width / 400;
     return ListView(
       children: [
-        const IntrinsicHeight(
-          child: ProfileCard(),
-        ),
+        const ProfileCard(),
         SizedBox(
           height: 10 * pixel,
         ),
@@ -259,67 +257,53 @@ class MeText extends StatelessWidget {
   }
 }
 
-class ProfileCard extends StatefulWidget {
+class ProfileCard extends StatelessWidget {
   const ProfileCard({
     super.key,
   });
-
-  @override
-  State<ProfileCard> createState() => _ProfileCardState();
-}
-
-class _ProfileCardState extends State<ProfileCard> {
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
     return Container(
       padding: EdgeInsets.fromLTRB(0, 20 * pixel, 0, 0),
-      child: header(),
+      child: Consumer<UserModel>(
+        builder: (BuildContext context, UserModel value, Widget? child) {
+          double pixel = MediaQuery.of(context).size.width / 400;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              ClipOval(
+                child: Stack(
+                  children: [
+                    Container(
+                      width: 100 * pixel,
+                      height: 100 * pixel,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.tertiaryContainer,
+                      ),
+                    ),
+                    Image.asset(
+                      'assets/images/me_nav_icon.png',
+                      width: 100 * pixel,
+                      height: 100 * pixel,
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 10 * pixel,
+              ),
+              Text(
+                value.isLogin ? value.user['userName'] : 'Not logged in',
+                style: TextStyle(
+                    fontSize: pixel * 20,
+                    color: Theme.of(context).colorScheme.onTertiaryContainer),
+              )
+            ],
+          );
+        },
+      ),
     );
   }
-}
-
-Widget header() {
-  return Consumer<UserModel>(
-    builder: (BuildContext context, UserModel value, Widget? child) {
-      double pixel = MediaQuery.of(context).size.width / 400;
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          ClipOval(
-            child: Stack(
-              children: [
-                Container(
-                  width: 100 * pixel,
-                  height: 100 * pixel,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.tertiaryContainer,
-                  ),
-                ),
-                Image.asset(
-                  'assets/images/me_nav_icon.png',
-                  width: 100 * pixel,
-                  height: 100 * pixel,
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 10 * pixel,
-          ),
-          Text(
-            value.isLogin ? value.user['userName'] : 'Not logged in',
-            style: TextStyle(
-                fontSize: pixel * 20,
-                color: Theme.of(context).colorScheme.onTertiaryContainer),
-          )
-        ],
-      );
-    },
-  );
 }
