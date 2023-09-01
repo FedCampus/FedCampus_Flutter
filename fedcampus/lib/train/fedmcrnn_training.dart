@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:app_set_id/app_set_id.dart';
+import 'package:fed_kit/ml_model.dart';
 import 'package:fed_kit/train.dart';
 import 'package:fedcampus/train/fedmcrnn_client.dart';
 import 'package:fedcampus/utility/log.dart';
@@ -28,7 +29,8 @@ class FedmcrnnTraining {
       throw Exception(
           'Flower server port not available", "status ${serverData.status}');
     }
-    await mlClient.trainer.initialize(modelDir, model.layers_sizes);
+    await mlClient.trainer
+        .initialize(modelDir, (model as TFLiteModel).layers_sizes);
     _sendInfo('Initialized trainer');
     await mlClient.trainer.loadData(data);
     _sendInfo('Loaded data of size ${data.length}');
