@@ -11,6 +11,12 @@ class HuaweiHealth extends FedHealthData {
   }
 
   @override
+  Future<void> cancelAuthentication() async {
+    /// TODO: throws [Exception] when failed
+    await userApi.healthServiceCancel();
+  }
+
+  @override
   Future<Data> getData(
       {required String entry,
       required DateTime startTime,

@@ -72,6 +72,12 @@ class GoogleFit extends FedHealthData {
   }
 
   @override
+  Future<void> cancelAuthentication() async {
+    /// TODO: throws [Exception] when failed
+    await health.revokePermissions();
+  }
+
+  @override
   Future<Data> getData(
       {required String entry,
       required DateTime startTime,

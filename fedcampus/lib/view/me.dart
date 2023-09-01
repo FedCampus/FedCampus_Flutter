@@ -43,7 +43,7 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
 
   void _healthServiceAuthenticate() async {
     try {
-      await userApi.healthServiceAuthenticate();
+      await userApi.healthDataHandler.authenticate();
       if (mounted) showToastMessage('you successfully authenticated', context);
     } on Exception catch (e) {
       logger.d(e.toString());
@@ -53,7 +53,7 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
 
   void _healthServiceCancel() async {
     try {
-      await userApi.healthServiceCancel();
+      await userApi.healthDataHandler.cancelAuthentication();
       if (mounted) {
         showToastMessage('you successfully cancelled authenticattion', context);
       }
@@ -128,7 +128,7 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
         ),
         const MeDivider(),
         MeText(
-          text: 'Authentication',
+          text: 'Authenticate',
           callback: _healthServiceAuthenticate,
         ),
         const MeDivider(),

@@ -7,6 +7,11 @@ class FedHealthData {
     throw UnimplementedError();
   }
 
+  Future<void> cancelAuthentication() async {
+    /// throws [Exception] when failed
+    throw UnimplementedError();
+  }
+
   Future<Data> getData({
     required String entry,
     required DateTime startTime,
