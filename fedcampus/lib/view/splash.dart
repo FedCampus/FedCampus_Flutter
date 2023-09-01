@@ -21,76 +21,17 @@ class _SplashState extends State<Splash> {
   @override
   void initState() {
     super.initState();
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   detectHealthDataServiceProvider().then((value) => Navigator.push(
-    //         context,
-    //         MaterialPageRoute(builder: (context) => const BottomNavigator()),
-    //       ));
-    // });
   }
 
-  void detectFirstTimeLogin() async {
-    if (userApi.prefs.getBool("login") == null) {
-      // jump to login page
-      if (mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const SignIn()),
-        );
-      }
-    }
-  }
-
-  void init() {
-    serviceProvider = userApi.prefs.getString("service_provider") ?? "huawei";
+  void createHealthDataHandler() {
+    userApi.prefs.setString("service_provider", serviceProvider);
     userApi.healthDataHandler =
         healthFactory.creatHealthDataHandler(serviceProvider);
   }
 
-  toggleTheme(bool b) async {
+  void toggleTheme(bool b) async {
     userApi.prefs.setBool('isDarkModeOn', b);
     Provider.of<MyAppState>(context, listen: false).toggleTheme(b);
-  }
-
-  Future<void> detectHealthDataServiceProvider() async {
-    String? serviceProvider = userApi.prefs.getString("service_provider");
-    // TODO: choose manually everytime for now
-    serviceProvider = null;
-    if (serviceProvider == null) {
-      if (mounted) {
-        await pickServiceProvider();
-      }
-    } else {
-      userApi.healthDataHandler =
-          healthFactory.creatHealthDataHandler(serviceProvider);
-    }
-  }
-
-  Future<void> pickServiceProvider() async {
-    await showDialog<bool>(
-      context: context,
-      builder: (context) {
-        return WillPopScope(
-          onWillPop: () async => false,
-          child: const FirstDialog(),
-        );
-      },
-    );
-    if (mounted) {
-      await showDialog<bool>(
-        context: context,
-        builder: (context) {
-          return ChooseHealthServiceProviderDialog(
-              healthFactory: healthFactory);
-        },
-      );
-    }
-    if (mounted) {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const SignIn()),
-      );
-    }
   }
 
   Future<void> _pickServiceProvider() async {
@@ -101,26 +42,25 @@ class _SplashState extends State<Splash> {
         return AlertDialog(
           title: const Text("Select a health serivice provider"),
           contentPadding:
-              EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 0),
-          content: SizedBox(
-              height: 271 * pixel,
-              width: 300 * pixel,
-              child: Column(
-                children: [
-                  TextButton(
-                      onPressed: () {
-                        userApi.prefs.setString("service_provider", "huawei");
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text("Huawei Health")),
-                  TextButton(
-                      onPressed: () {
-                        userApi.prefs.setString("service_provider", "google");
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text("Google Fit"))
-                ],
-              )),
+              EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 13),
+          content: IntrinsicHeight(
+            child: Column(
+              children: [
+                TextButton(
+                    onPressed: () {
+                      serviceProvider = "huawei";
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text("Huawei Health")),
+                TextButton(
+                    onPressed: () {
+                      serviceProvider = "google";
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text("Google Fit"))
+              ],
+            ),
+          ),
         );
       },
     );
@@ -134,26 +74,25 @@ class _SplashState extends State<Splash> {
           return AlertDialog(
             title: const Text("Select color mode"),
             contentPadding:
-                EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 0),
-            content: SizedBox(
-                height: 271 * pixel,
-                width: 300 * pixel,
-                child: Column(
-                  children: [
-                    TextButton(
-                        onPressed: () {
-                          toggleTheme(false);
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text("light")),
-                    TextButton(
-                        onPressed: () {
-                          toggleTheme(true);
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text("dark"))
-                  ],
-                )),
+                EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 13),
+            content: IntrinsicHeight(
+              child: Column(
+                children: [
+                  TextButton(
+                      onPressed: () {
+                        toggleTheme(false);
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text("light")),
+                  TextButton(
+                      onPressed: () {
+                        toggleTheme(true);
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text("dark"))
+                ],
+              ),
+            ),
           );
         });
   }
@@ -221,10 +160,18 @@ class _SplashState extends State<Splash> {
               callback: _chooseColorMode,
             ),
             const MeDivider(),
+            MeText(
+              text: 'Sign in',
+              callback: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SignIn()),
+              ),
+            ),
+            const MeDivider(),
             TextButton(
               onPressed: () {
                 {
-                  init();
+                  createHealthDataHandler();
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -258,77 +205,6 @@ class _SplashState extends State<Splash> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class FirstDialog extends StatelessWidget {
-  const FirstDialog({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    double pixel = MediaQuery.of(context).size.width / 400;
-    return AlertDialog(
-      title: const Text("Hello"),
-      contentPadding:
-          EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 0),
-      content: SizedBox(
-          height: 271 * pixel,
-          width: 300 * pixel,
-          child: const Column(
-            children: [Text("Let's walk through a few settings")],
-          )),
-      actions: [
-        TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text("Next"))
-      ],
-    );
-  }
-}
-
-class ChooseHealthServiceProviderDialog extends StatelessWidget {
-  const ChooseHealthServiceProviderDialog({
-    super.key,
-    required this.healthFactory,
-  });
-
-  final HealthDataHandlerFactory healthFactory;
-
-  @override
-  Widget build(BuildContext context) {
-    double pixel = MediaQuery.of(context).size.width / 400;
-    return AlertDialog(
-      title: const Text("Select a health serivice provider"),
-      contentPadding:
-          EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 0),
-      content: SizedBox(
-          height: 271 * pixel,
-          width: 300 * pixel,
-          child: Column(
-            children: [
-              TextButton(
-                  onPressed: () {
-                    userApi.prefs.setString("service_provider", "huawei");
-                    userApi.healthDataHandler =
-                        healthFactory.creatHealthDataHandler("huawei");
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text("Huawei Health")),
-              TextButton(
-                  onPressed: () {
-                    userApi.prefs.setString("service_provider", "google");
-                    userApi.healthDataHandler =
-                        healthFactory.creatHealthDataHandler("google");
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text("Google Fit"))
-            ],
-          )),
     );
   }
 }

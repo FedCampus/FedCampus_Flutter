@@ -194,7 +194,19 @@ class DataWrapper {
     var request = http.MultipartRequest("POST", Uri.parse(uri));
     await HTTPClient.getToken(request.headers);
     request.files.add(await http.MultipartFile.fromPath("log", path));
-    request.send();
+    // TODO: handle exception properly
+    try {
+      await request.send();
+    } catch (e) {
+      Fluttertoast.showToast(
+          msg: e.toString(),
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    }
   }
 
   List<int> _findMissingData(List<Data> res, int date, DataBaseApi dbapi) {

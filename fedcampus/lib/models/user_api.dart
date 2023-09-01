@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:fedcampus/models/datahandler/health.dart';
+import 'package:fedcampus/models/datahandler/health_factory.dart';
 import 'package:fedcampus/models/user.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:http/http.dart' as http;
@@ -24,6 +25,13 @@ class UserApi {
 
   Future<void> init() async {
     _pref = await SharedPreferences.getInstance();
+    // if logged in, initialize healthDataHandler here and skip [Splash], otherwise initialize that in [Splash]
+    if (userApi.prefs.getBool("login") != null) {
+      String serviceProvider =
+          userApi.prefs.getString("service_provider") ?? "huawei";
+      healthDataHandler =
+          HealthDataHandlerFactory().creatHealthDataHandler(serviceProvider);
+    }
     // throw Exception('exceptions in initialization');
   }
 
