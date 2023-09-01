@@ -25,6 +25,8 @@ class UserApi {
 
   Future<void> init() async {
     _pref = await SharedPreferences.getInstance();
+    //TODO: init log
+    await Log.initLog();
     // if logged in, initialize healthDataHandler here and skip [Splash], otherwise initialize that in [Splash]
     if (userApi.prefs.getBool("login") != null) {
       String serviceProvider =

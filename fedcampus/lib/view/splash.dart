@@ -34,7 +34,7 @@ class _SplashState extends State<Splash> {
     Provider.of<MyAppState>(context, listen: false).toggleTheme(b);
   }
 
-  Future<void> _pickServiceProvider() async {
+  Future<void> _splashDialog({required Widget dialogContent}) async {
     await showDialog<bool>(
       context: context,
       builder: (context) {
@@ -43,58 +43,59 @@ class _SplashState extends State<Splash> {
           title: const Text("Select a health serivice provider"),
           contentPadding:
               EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 13),
-          content: IntrinsicHeight(
-            child: Column(
-              children: [
-                TextButton(
-                    onPressed: () {
-                      serviceProvider = "huawei";
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text("Huawei Health")),
-                TextButton(
-                    onPressed: () {
-                      serviceProvider = "google";
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text("Google Fit"))
-              ],
-            ),
-          ),
+          content: dialogContent,
         );
       },
     );
   }
 
+  Future<void> _pickServiceProvider() async {
+    double pixel = MediaQuery.of(context).size.width / 400;
+    _splashDialog(
+        dialogContent: SizedBox(
+      height: 110 * pixel,
+      child: Column(
+        children: [
+          TextButton(
+              onPressed: () {
+                serviceProvider = "huawei";
+                Navigator.of(context).pop();
+              },
+              child: const Text("Huawei Health")),
+          TextButton(
+              onPressed: () {
+                serviceProvider = "google";
+                Navigator.of(context).pop();
+              },
+              child: const Text("Google Fit"))
+        ],
+      ),
+    ));
+  }
+
   Future<void> _chooseColorMode() async {
-    await showDialog<bool>(
-        context: context,
-        builder: (context) {
-          double pixel = MediaQuery.of(context).size.width / 400;
-          return AlertDialog(
-            title: const Text("Select color mode"),
-            contentPadding:
-                EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 13),
-            content: IntrinsicHeight(
-              child: Column(
-                children: [
-                  TextButton(
-                      onPressed: () {
-                        toggleTheme(false);
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text("light")),
-                  TextButton(
-                      onPressed: () {
-                        toggleTheme(true);
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text("dark"))
-                ],
-              ),
-            ),
-          );
-        });
+    double pixel = MediaQuery.of(context).size.width / 400;
+    _splashDialog(
+      dialogContent: SizedBox(
+        height: 110 * pixel,
+        child: Column(
+          children: [
+            TextButton(
+                onPressed: () {
+                  toggleTheme(false);
+                  Navigator.of(context).pop();
+                },
+                child: const Text("light")),
+            TextButton(
+                onPressed: () {
+                  toggleTheme(true);
+                  Navigator.of(context).pop();
+                },
+                child: const Text("dark"))
+          ],
+        ),
+      ),
+    );
   }
 
   @override

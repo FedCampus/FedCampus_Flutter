@@ -1,7 +1,6 @@
 import 'package:fedcampus/models/activity_data_model.dart';
 import 'package:fedcampus/models/health_data_model.dart';
 import 'package:fedcampus/models/user_model.dart';
-import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/models/user_api.dart';
 import 'package:fedcampus/view/navigator.dart';
@@ -16,7 +15,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 //make sure you use a context that contains a Navigator instance as parent.
 //https://stackoverflow.com/a/51292613
 
-void main() async {
+void main() {
   // https://stackoverflow.com/a/57775690
   WidgetsFlutterBinding.ensureInitialized();
   userApi
@@ -41,9 +40,6 @@ void main() async {
       .onError((Exception error, stackTrace) => runApp(ErrorApp(
             error: error,
           )));
-
-  //TODO: init log
-  await Log.initLog();
 }
 
 class ErrorApp extends StatelessWidget {
@@ -76,15 +72,6 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     initSettings(context);
-  }
-
-  static void startGettingDataAndTraining(List<dynamic> args) async {
-    RootIsolateToken rootToken = args[1];
-    BackgroundIsolateBinaryMessenger.ensureInitialized(rootToken);
-    var dw = DataWrapper();
-    final now = DateTime.now();
-    final dateNumber = now.year * 10000 + now.month * 100 + now.day;
-    dw.getDataAndTrain(dateNumber);
   }
 
   void initSettings(BuildContext context) async {

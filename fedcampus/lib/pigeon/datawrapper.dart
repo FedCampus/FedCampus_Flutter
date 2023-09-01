@@ -43,18 +43,18 @@ class DataWrapper {
     return result;
 
     // ready to be removed
-    List<Future<Data?>> list = List.empty(growable: true);
-    final host = DataApi();
-    for (final element in nameList) {
-      list.add(_getData(host, element, time));
-    }
-    try {
-      final data = await Future.wait(list);
-      data.removeWhere((element) => element == null);
-      return data;
-    } on PlatformException {
-      rethrow;
-    }
+    // List<Future<Data?>> list = List.empty(growable: true);
+    // final host = DataApi();
+    // for (final element in nameList) {
+    //   list.add(_getData(host, element, time));
+    // }
+    // try {
+    //   final data = await Future.wait(list);
+    //   data.removeWhere((element) => element == null);
+    //   return data;
+    // } on PlatformException {
+    //   rethrow;
+    // }
   }
 
   ///get all the data from Huawei from the time period.
