@@ -266,7 +266,7 @@ class ProfileCard extends StatelessWidget {
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
     return Container(
-      padding: EdgeInsets.fromLTRB(0, 20 * pixel, 0, 0),
+      padding: EdgeInsets.fromLTRB(0, 28 * pixel, 0, 8),
       child: Consumer<UserModel>(
         builder: (BuildContext context, UserModel value, Widget? child) {
           double pixel = MediaQuery.of(context).size.width / 400;
@@ -275,6 +275,7 @@ class ProfileCard extends StatelessWidget {
             children: <Widget>[
               ClipOval(
                 child: Stack(
+                  alignment: AlignmentDirectional.center,
                   children: [
                     Container(
                       width: 100 * pixel,
@@ -285,8 +286,8 @@ class ProfileCard extends StatelessWidget {
                     ),
                     Image.asset(
                       'assets/images/me_nav_icon.png',
-                      width: 100 * pixel,
-                      height: 100 * pixel,
+                      width: 85 * pixel,
+                      height: 85 * pixel,
                     ),
                   ],
                 ),

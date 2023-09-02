@@ -58,59 +58,55 @@ class _BottomNavigatorState extends State<BottomNavigator> {
       fontSize: 13 * pixel,
       fontFamily: 'Noto Sans',
     );
-    return WillPopScope(
-      // never return to splash screen
-      onWillPop: () async => false,
-      child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 50 * pixel,
-          backgroundColor: getAppBarColor(_selectedIndex, context),
-          centerTitle: true,
-          title: Image.asset(
-            'assets/images/title.png',
-            height: 35 * pixel,
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 50 * pixel,
+        backgroundColor: getAppBarColor(_selectedIndex, context),
+        centerTitle: true,
+        title: Image.asset(
+          'assets/images/title.png',
+          height: 35 * pixel,
         ),
-        body: _widgetOptions.elementAt(_selectedIndex),
-        // https://stackoverflow.com/a/55174433
-        bottomNavigationBar: SizedBox(
-          height: 65 * pixel,
-          child: BottomNavigationBar(
-            unselectedLabelStyle: textStyle,
-            selectedLabelStyle: textStyle,
-            // https://stackoverflow.com/a/57126622
-            items: const [
-              BottomNavigationBarItem(
-                label: 'Health',
-                icon: NavIcon(
-                  imagePath: 'assets/images/health_nav_icon.png',
-                  color: Colors.grey,
-                ),
-                activeIcon:
-                    NavIcon(imagePath: 'assets/images/health_nav_icon.png'),
+      ),
+      body: _widgetOptions.elementAt(_selectedIndex),
+      // https://stackoverflow.com/a/55174433
+      bottomNavigationBar: SizedBox(
+        height: 65 * pixel,
+        child: BottomNavigationBar(
+          unselectedLabelStyle: textStyle,
+          selectedLabelStyle: textStyle,
+          // https://stackoverflow.com/a/57126622
+          items: const [
+            BottomNavigationBarItem(
+              label: 'Health',
+              icon: NavIcon(
+                imagePath: 'assets/images/health_nav_icon.png',
+                color: Colors.grey,
               ),
-              BottomNavigationBarItem(
-                label: 'Activity',
-                icon: NavIcon(
-                  imagePath: 'assets/images/activity_nav_icon.png',
-                  color: Colors.grey,
-                ),
-                activeIcon:
-                    NavIcon(imagePath: 'assets/images/activity_nav_icon.png'),
+              activeIcon:
+                  NavIcon(imagePath: 'assets/images/health_nav_icon.png'),
+            ),
+            BottomNavigationBarItem(
+              label: 'Activity',
+              icon: NavIcon(
+                imagePath: 'assets/images/activity_nav_icon.png',
+                color: Colors.grey,
               ),
-              BottomNavigationBarItem(
-                label: 'Me',
-                icon: NavIcon(
-                  imagePath: 'assets/images/me_nav_icon.png',
-                  color: Colors.grey,
-                ),
-                activeIcon: NavIcon(imagePath: 'assets/images/me_nav_icon.png'),
+              activeIcon:
+                  NavIcon(imagePath: 'assets/images/activity_nav_icon.png'),
+            ),
+            BottomNavigationBarItem(
+              label: 'Me',
+              icon: NavIcon(
+                imagePath: 'assets/images/me_nav_icon.png',
+                color: Colors.grey,
               ),
-            ],
-            currentIndex: _selectedIndex,
-            onTap: (i) => _onItemTapped(i),
-            selectedItemColor: getAppBarColor(_selectedIndex, context),
-          ),
+              activeIcon: NavIcon(imagePath: 'assets/images/me_nav_icon.png'),
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          onTap: (i) => _onItemTapped(i),
+          selectedItemColor: getAppBarColor(_selectedIndex, context),
         ),
       ),
     );

@@ -130,6 +130,7 @@ class _SplashState extends State<Splash> {
             ),
             ClipOval(
               child: Stack(
+                alignment: AlignmentDirectional.center,
                 children: [
                   Container(
                     width: 145 * pixel,
@@ -140,8 +141,8 @@ class _SplashState extends State<Splash> {
                   ),
                   Image.asset(
                     'assets/images/me_nav_icon.png',
-                    width: 145 * pixel,
-                    height: 145 * pixel,
+                    width: 120 * pixel,
+                    height: 120 * pixel,
                   ),
                 ],
               ),

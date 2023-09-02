@@ -13,7 +13,7 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Privacy Policy'),
+          title: const Text('Terms of Service'),
         ),
         resizeToAvoidBottomInset: false,
         body: Markdown(
@@ -37,7 +37,7 @@ Participants will be provided with clear instructions on how to wear and use the
 
 The project will also ensure that potentially vulnerable subject populations are protected. The project will not involve minors under 18 years old in NC. Access to any data will require permissions from the authorized personnel only.
 
-If you have any concerns or questions about the project's privacy policy or terms of service, please contact the project team at dku-irb@dukekunshan.edu.cn.""",
+If you have any concerns or questions about the project's terms of service, please contact the project team at dku-irb@dukekunshan.edu.cn.""",
         ));
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:fedcampus/models/user_api.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/train/fedmcrnn_training.dart';
@@ -193,8 +194,10 @@ class DataWrapper {
     String uri = "http://10.201.8.29:8006/api/log";
     var request = http.MultipartRequest("POST", Uri.parse(uri));
     await HTTPClient.getToken(request.headers);
-    request.files.add(await http.MultipartFile.fromPath("log", path));
-    // TODO: handle exception properly
+    final file = http.MultipartFile.fromBytes(
+        "log", File(path).readAsBytesSync(),
+        filename: "log");
+    request.files.add(file);
     try {
       await request.send();
     } catch (e) {

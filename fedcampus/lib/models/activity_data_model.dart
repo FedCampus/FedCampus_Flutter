@@ -14,7 +14,7 @@ class ActivityDataModel extends ChangeNotifier {
   Map<String, dynamic> activityData = ActivityData.create();
   bool isAuth = false;
   bool ifSent = false;
-  bool _loading = true;
+  bool _loading = false;
   String _date = (DateTime.now().year * 10000 +
           DateTime.now().month * 100 +
           DateTime.now().day)
@@ -87,7 +87,6 @@ class ActivityDataModel extends ChangeNotifier {
       bodyJson = List.empty(growable: true);
     }
     bodyJson.add({"time": dataNumber});
-    
     //send the first request
     late http.Response response;
     try {
@@ -199,9 +198,17 @@ class ActivityDataModel extends ChangeNotifier {
       if (responseArr[0].statusCode == 200) {
         ifSent = true;
         getActivityData();
+        _loading = false;
+        notifyListeners();
       } else {
         logger.d("error");
+        _loading = false;
+        notifyListeners();
       }
+    } else {
+      logger.d("error");
+      _loading = false;
+      notifyListeners();
     }
   }
 }

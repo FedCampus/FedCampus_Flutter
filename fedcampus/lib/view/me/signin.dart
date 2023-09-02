@@ -76,6 +76,7 @@ class _SignInState extends State<SignIn> {
               const Expanded(flex: 1, child: SizedBox()),
               ClipOval(
                 child: Stack(
+                  alignment: AlignmentDirectional.center,
                   children: [
                     Container(
                       width: 100 * pixel,
@@ -86,8 +87,8 @@ class _SignInState extends State<SignIn> {
                     ),
                     Image.asset(
                       'assets/images/me_nav_icon.png',
-                      width: 100 * pixel,
-                      height: 100 * pixel,
+                      width: 85 * pixel,
+                      height: 85 * pixel,
                     ),
                   ],
                 ),
