@@ -1,5 +1,5 @@
 import 'package:fedcampus/models/user.dart';
-import 'package:fedcampus/models/user_api.dart';
+import 'package:fedcampus/utility/global.dart';
 import 'package:flutter/foundation.dart';
 
 class UserModel extends ChangeNotifier {

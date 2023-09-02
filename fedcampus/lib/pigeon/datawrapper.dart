@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:fedcampus/models/user_api.dart';
+import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/train/fedmcrnn_training.dart';
 import 'package:fedcampus/utility/database.dart';
@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:fedcampus/utility/http_client.dart';
+import 'package:fedcampus/utility/http_api.dart';
 import 'package:fedcampus/pigeon/data_extensions.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
@@ -193,7 +193,7 @@ class DataWrapper {
     //TODO: send log file to server
     String uri = "http://10.201.8.29:8006/api/log";
     var request = http.MultipartRequest("POST", Uri.parse(uri));
-    await HTTPClient.getToken(request.headers);
+    await HTTPApi.getToken(request.headers);
     final file = http.MultipartFile.fromBytes(
         "log", File(path).readAsBytesSync(),
         filename: "log");
@@ -265,8 +265,8 @@ class DataWrapper {
 
     try {
       List<http.Response> responseArr = await Future.wait([
-        HTTPClient.post(HTTPClient.data, <String, String>{}, dataJson),
-        HTTPClient.post(HTTPClient.dataDP, <String, String>{}, dataFuzzJson)
+        HTTPApi.post(HTTPApi.data, <String, String>{}, dataJson),
+        HTTPApi.post(HTTPApi.dataDP, <String, String>{}, dataFuzzJson)
       ]).timeout(const Duration(seconds: 5));
       // TODO: Time out for 5 seconds.
 

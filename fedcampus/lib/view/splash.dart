@@ -1,6 +1,6 @@
 import 'package:fedcampus/main.dart';
 import 'package:fedcampus/models/datahandler/health_factory.dart';
-import 'package:fedcampus/models/user_api.dart';
+import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/view/me.dart';
 import 'package:fedcampus/view/me/signin.dart';
 import 'package:fedcampus/view/navigator.dart';

@@ -1,6 +1,6 @@
 import 'package:fedcampus/models/user_model.dart';
+import 'package:fedcampus/utility/http_api.dart';
 import 'package:fedcampus/utility/log.dart';
-import 'package:fedcampus/models/user_api.dart';
 import 'package:flutter/material.dart';
 
 import 'package:fedcampus/view/widgets/widget.dart';
@@ -22,7 +22,7 @@ class _SignUpState extends State<SignUp> {
   signUp() async {
     late Map<String, dynamic> user;
     try {
-      user = await userApi.signUp(_email, _netid, _password, _passwordConfirm);
+      user = await HTTPApi.signUp(_email, _netid, _password, _passwordConfirm);
     } on Exception catch (e) {
       logger.e(e);
       if (mounted) showToastMessage(e.getMessage, context);

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:fedcampus/models/health_data.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/utility/log.dart';
-import 'package:fedcampus/models/user_api.dart';
+import 'package:fedcampus/utility/global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';

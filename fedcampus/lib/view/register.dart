@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-import 'package:fedcampus/utility/http_client.dart';
+import 'package:fedcampus/utility/http_api.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -55,8 +55,8 @@ class _RegisterState extends State<Register> {
 
     // send the request and wait for response
 
-    http.Response response = await HTTPClient.post(
-        HTTPClient.register,
+    http.Response response = await HTTPApi.post(
+        HTTPApi.register,
         <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -70,7 +70,7 @@ class _RegisterState extends State<Register> {
       final token = jsonDecode(response.body)['auth_token'];
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString("auth_token", token);
-      HTTPClient.setToken(token);
+      HTTPApi.setToken(token);
       if (mounted) {
         Navigator.pop(context, {"nickname": _netid, "email": _email});
       }

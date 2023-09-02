@@ -5,7 +5,7 @@ import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/calendar.dart';
 import 'package:fedcampus/view/me/signin.dart';
-import 'package:fedcampus/models/user_api.dart';
+import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/view/widgets/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';

@@ -1,5 +1,5 @@
 import 'package:fedcampus/pigeon/generated.g.dart';
-import 'package:fedcampus/utility/http_client.dart';
+import 'package:fedcampus/utility/http_api.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/register.dart';
 import 'package:fedcampus/view/signin.dart';
@@ -73,7 +73,7 @@ class _MinePageState extends State<MinePage>
 
   void _logout() async {
     try {
-      await HTTPClient.logout();
+      await HTTPApi.logout();
     } on Exception {
       rethrow;
     }

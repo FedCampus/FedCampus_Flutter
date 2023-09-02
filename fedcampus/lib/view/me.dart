@@ -1,5 +1,6 @@
 import 'package:fedcampus/models/user_model.dart';
-import 'package:fedcampus/models/user_api.dart';
+import 'package:fedcampus/utility/global.dart';
+import 'package:fedcampus/utility/http_api.dart';
 import 'package:fedcampus/view/me/about.dart';
 import 'package:fedcampus/view/me/privacy_policy.dart';
 import 'package:fedcampus/view/trainingDetail.dart';
@@ -30,7 +31,7 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
 
   void _logOut() async {
     try {
-      await userApi.logout();
+      await HTTPApi.logout();
       if (mounted) showToastMessage('you successfully logged out', context);
       if (mounted) {
         Provider.of<UserModel>(context, listen: false).setLogin = false;

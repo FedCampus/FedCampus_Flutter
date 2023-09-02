@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:fedcampus/utility/http_client.dart';
+import 'package:fedcampus/utility/http_api.dart';
 import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -22,8 +22,8 @@ class _SignInState extends State<SignIn> {
   void _login() async {
     logger.i("username: $_username , password: $_password");
     try {
-      http.Response response = await HTTPClient.post(
-          HTTPClient.login,
+      http.Response response = await HTTPApi.post(
+          HTTPApi.login,
           <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
           },
@@ -42,7 +42,7 @@ class _SignInState extends State<SignIn> {
       final prefs = await SharedPreferences.getInstance();
       final responseJson = jsonDecode(response.body);
       String token = responseJson['auth_token'];
-      HTTPClient.setToken(token);
+      HTTPApi.setToken(token);
       await prefs.setString("auth_token", token);
       if (mounted) {
         Navigator.pop(context, responseJson);
