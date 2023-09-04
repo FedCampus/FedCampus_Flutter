@@ -83,7 +83,7 @@ class _ActivityState extends State<Activity> {
             selectedDate.day)
         .toString();
     Provider.of<ActivityDataModel>(context, listen: false).date = datecode;
-    showLoadingBeforeLocalDataAvailable();
+    // showLoadingBeforeLocalDataAvailable();
   }
 
   void showLoadingBeforeLocalDataAvailable() {
