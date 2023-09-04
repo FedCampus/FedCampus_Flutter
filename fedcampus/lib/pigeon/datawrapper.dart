@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:fedcampus/utility/fluttertoast.dart';
 import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/train/fedmcrnn_training.dart';
@@ -247,14 +248,7 @@ class DataWrapper {
         // authAndGetData();
       } else if (error.message == "java.lang.SecurityException: 50030") {
         logger.d("internet issue");
-        Fluttertoast.showToast(
-            msg: "Internet Connection Issue, please connect to Internet.",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        FedToast.internetIssue();
       }
       return;
     }

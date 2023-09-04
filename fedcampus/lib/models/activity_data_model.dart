@@ -7,8 +7,11 @@ import 'package:fedcampus/utility/http_api.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/utility/global.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+
+import '../utility/fluttertoast.dart';
 
 class ActivityDataModel extends ChangeNotifier {
   Map<String, dynamic> activityData = ActivityData.create();
@@ -77,9 +80,10 @@ class ActivityDataModel extends ChangeNotifier {
         // HTTPClient.post(HTTPClient.fedAnalysis, <String,String>{}, body)
       } on PlatformException catch (error) {
         if (error.message == "java.lang.SecurityException: 50005") {
-          logger.d("not authenticated");
+          logger.e("not authenticated");
         } else if (error.message == "java.lang.SecurityException: 50030") {
-          logger.d("Internet connection Issue");
+          logger.e("Internet connection Issue");
+          FedToast.internetIssue();
         }
         rethrow;
       }
@@ -131,8 +135,7 @@ class ActivityDataModel extends ChangeNotifier {
 
     try {
       response = await _sendFirstRequest();
-    } on PlatformException catch (error) {
-      logger.e(error);
+    } on PlatformException {
       _loading = false;
       notifyListeners();
       return;
