@@ -204,7 +204,11 @@ class ActivityDataModel extends ChangeNotifier {
         notifyListeners();
       }
     } else {
-      logger.d("error");
+      logger.e(response.statusCode);
+      if (response.statusCode == 401) {
+        // not authenticated, pop an authenticate reminder signing
+        dataWrapperToast("Please Login for federated analysis.");
+      }
       _loading = false;
       notifyListeners();
     }
