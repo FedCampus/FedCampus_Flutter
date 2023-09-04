@@ -1,4 +1,5 @@
 import 'package:fedcampus/models/datahandler/health.dart';
+import 'package:fedcampus/pigeon/data_extensions.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/utility/log.dart';
 
@@ -16,7 +17,8 @@ class HuaweiHealth extends FedHealthData {
   Future<void> cancelAuthentication() async {
     /// TODO: throws [Exception] when failed
     final host = HuaweiAuthApi();
-    await host.cancelAuthenticate();  }
+    await host.cancelAuthenticate();
+  }
 
   @override
   Future<Data> getData(
@@ -25,13 +27,15 @@ class HuaweiHealth extends FedHealthData {
       required DateTime endTime}) async {
     try {
       List<Data?> dataListOne = await host.getData(
-          entry, Data.dateTimeToInt(startTime), Data.dateTimeToInt(endTime));
+          entry,
+          DataExtension.dateTimeToInt(startTime),
+          DataExtension.dateTimeToInt(endTime));
       if (dataListOne.isEmpty) {
         return Data(
             name: entry,
             value: -1,
-            startTime: Data.dateTimeToInt(startTime),
-            endTime: Data.dateTimeToInt(endTime),
+            startTime: DataExtension.dateTimeToInt(startTime),
+            endTime: DataExtension.dateTimeToInt(endTime),
             success: false);
       } else {
         return dataListOne[0]!;

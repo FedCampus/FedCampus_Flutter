@@ -36,7 +36,7 @@ class DataWrapper {
   ///If there is no data for that specifc date, the only data will be {step_time: value: 0}
   Future<List<Data?>> getDataList(List<String> nameList, int time) async {
     // new cross-platform implementation
-    DateTime dateTime = Data.intToDateTime(time);
+    DateTime dateTime = DataExtension.intToDateTime(time);
     List<Data> result = await userApi.healthDataHandler.getDataList(
         entry: nameList,
         startTime: DateTime(dateTime.year, dateTime.month, dateTime.day),

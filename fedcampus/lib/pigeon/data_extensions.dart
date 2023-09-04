@@ -14,6 +14,15 @@ extension DataExtension on Data {
     "sleep_efficiency"
   ];
 
+  static int dateTimeToInt(DateTime dateTime) {
+    return dateTime.year * 10000 + dateTime.month * 100 + dateTime.day;
+  }
+
+  static DateTime intToDateTime(int dateCode) {
+    return DateTime(
+        dateCode ~/ 10000, (dateCode % 10000) ~/ 100, dateCode % 100);
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'name': name,

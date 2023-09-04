@@ -75,7 +75,7 @@ class _TrainingDetailState extends State<TrainingDetail> {
                 scrollDirection: Axis.vertical,
                 child: Text(
                   contents,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.green,
                     fontWeight: FontWeight.bold,
                     fontSize: 20.0,
