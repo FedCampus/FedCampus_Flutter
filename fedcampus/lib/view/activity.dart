@@ -69,13 +69,11 @@ class _ActivityState extends State<Activity> {
   }
 
   Future<void> refresh() async {
+    Provider.of<ActivityDataModel>(context, listen: false).getActivityData();
     showLoadingBeforeLocalDataAvailable();
-    await Provider.of<ActivityDataModel>(context, listen: false)
-        .getActivityData();
   }
 
   updateDate(DateTime selectedDate) {
-    showLoadingBeforeLocalDataAvailable();
     setState(() {
       dateTime = selectedDate;
       logger.i(selectedDate);
@@ -85,6 +83,7 @@ class _ActivityState extends State<Activity> {
             selectedDate.day)
         .toString();
     Provider.of<ActivityDataModel>(context, listen: false).date = datecode;
+    showLoadingBeforeLocalDataAvailable();
   }
 
   void showLoadingBeforeLocalDataAvailable() {

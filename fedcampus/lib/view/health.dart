@@ -5,7 +5,7 @@ import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/calendar.dart';
 import 'package:fedcampus/view/me/signin.dart';
-import 'package:fedcampus/models/user_api.dart';
+import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/view/widgets/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -30,8 +30,6 @@ class _HealthState extends State<Health> {
         Provider.of<HealthDataModel>(context, listen: false).date);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       refresh();
-      // TODO: reconsider this design and the whether loading can be cancelled
-      detectFirstTimeLogin();
     });
   }
 
@@ -107,33 +105,35 @@ class _HealthState extends State<Health> {
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
     return RefreshIndicator(
-      onRefresh: refresh,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Container(
-          margin: EdgeInsets.fromLTRB(
-              22 * pixel, 19 * pixel, 22 * pixel, 10 * pixel),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Expanded(
-                flex: 1,
-                child: LeftColumn(
-                  date: dateTime,
-                  onDateChange: updateDate,
+        onRefresh: refresh,
+        child: LayoutBuilder(builder: (context, constraints) {
+          // height of SingleChildScrollView is unconstrained, so use the height of grandparents
+          return SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Container(
+                height: constraints.maxHeight,
+                padding: EdgeInsets.fromLTRB(
+                    22 * pixel, 19 * pixel, 22 * pixel, 10 * pixel),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 1,
+                      child: LeftColumn(
+                        date: dateTime,
+                        onDateChange: updateDate,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 22 * pixel,
+                    ),
+                    const Expanded(flex: 1, child: RightColumn()),
+                  ],
                 ),
-              ),
-              SizedBox(
-                width: 22 * pixel,
-              ),
-              const Expanded(flex: 1, child: RightColumn()),
-            ],
-          ),
-        ),
-      ),
-    );
+              ));
+        }));
   }
 }
 

@@ -1,5 +1,8 @@
 import 'package:fedcampus/models/user_model.dart';
-import 'package:fedcampus/models/user_api.dart';
+import 'package:fedcampus/utility/global.dart';
+import 'package:fedcampus/utility/http_api.dart';
+import 'package:fedcampus/view/me/about.dart';
+import 'package:fedcampus/view/me/privacy_policy.dart';
 import 'package:fedcampus/view/trainingDetail.dart';
 import 'package:fedcampus/view/widgets/widget.dart';
 import 'package:flutter/services.dart';
@@ -28,7 +31,7 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
 
   void _logOut() async {
     try {
-      await userApi.logout();
+      await HTTPApi.logout();
       if (mounted) showToastMessage('you successfully logged out', context);
       if (mounted) {
         Provider.of<UserModel>(context, listen: false).setLogin = false;
@@ -41,7 +44,7 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
 
   void _healthServiceAuthenticate() async {
     try {
-      await userApi.healthServiceAuthenticate();
+      await userApi.healthDataHandler.authenticate();
       if (mounted) showToastMessage('you successfully authenticated', context);
     } on Exception catch (e) {
       logger.d(e.toString());
@@ -51,7 +54,7 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
 
   void _healthServiceCancel() async {
     try {
-      await userApi.healthServiceCancel();
+      await userApi.healthDataHandler.cancelAuthentication();
       if (mounted) {
         showToastMessage('you successfully cancelled authenticattion', context);
       }
@@ -74,9 +77,7 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
     double pixel = MediaQuery.of(context).size.width / 400;
     return ListView(
       children: [
-        const IntrinsicHeight(
-          child: ProfileCard(),
-        ),
+        const ProfileCard(),
         SizedBox(
           height: 10 * pixel,
         ),
@@ -128,7 +129,7 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
         ),
         const MeDivider(),
         MeText(
-          text: 'Authentication',
+          text: 'Authenticate',
           callback: _healthServiceAuthenticate,
         ),
         const MeDivider(),
@@ -137,7 +138,14 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
           callback: _healthServiceCancel,
         ),
         const MeDivider(),
-        MeText(text: 'About', callback: () => {}),
+        MeText(
+            text: 'About',
+            callback: () => {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const About()),
+                  )
+                }),
         const MeDivider(),
         MeText(
           text: 'Help & feedback',
@@ -186,29 +194,18 @@ class BottomText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double pixel = MediaQuery.of(context).size.width / 400;
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Text(
-        'Privacy Policy',
-        style:
-            TextStyle(color: Theme.of(context).colorScheme.onTertiaryContainer),
-      ),
-      SizedBox(
-        width: 30 * pixel,
+      TextButton(
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const PrivacyPolicy()),
+        ),
         child: Text(
-          '·',
-          textAlign: TextAlign.center,
+          'Terms of Service',
           style: TextStyle(
-            fontSize: pixel * 30,
-            color: Theme.of(context).colorScheme.onTertiaryContainer,
-          ),
+              color: Theme.of(context).colorScheme.onTertiaryContainer),
         ),
       ),
-      Text(
-        'Terms of Service',
-        style:
-            TextStyle(color: Theme.of(context).colorScheme.onTertiaryContainer),
-      )
     ]);
   }
 }
@@ -261,67 +258,54 @@ class MeText extends StatelessWidget {
   }
 }
 
-class ProfileCard extends StatefulWidget {
+class ProfileCard extends StatelessWidget {
   const ProfileCard({
     super.key,
   });
 
   @override
-  State<ProfileCard> createState() => _ProfileCardState();
-}
-
-class _ProfileCardState extends State<ProfileCard> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
     return Container(
-      padding: EdgeInsets.fromLTRB(0, 20 * pixel, 0, 0),
-      child: header(),
+      padding: EdgeInsets.fromLTRB(0, 28 * pixel, 0, 8),
+      child: Consumer<UserModel>(
+        builder: (BuildContext context, UserModel value, Widget? child) {
+          double pixel = MediaQuery.of(context).size.width / 400;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              ClipOval(
+                child: Stack(
+                  alignment: AlignmentDirectional.center,
+                  children: [
+                    Container(
+                      width: 100 * pixel,
+                      height: 100 * pixel,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.tertiaryContainer,
+                      ),
+                    ),
+                    Image.asset(
+                      'assets/images/me_nav_icon.png',
+                      width: 85 * pixel,
+                      height: 85 * pixel,
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 10 * pixel,
+              ),
+              Text(
+                value.isLogin ? value.user['userName'] : 'Not logged in',
+                style: TextStyle(
+                    fontSize: pixel * 20,
+                    color: Theme.of(context).colorScheme.onTertiaryContainer),
+              )
+            ],
+          );
+        },
+      ),
     );
   }
-}
-
-Widget header() {
-  return Consumer<UserModel>(
-    builder: (BuildContext context, UserModel value, Widget? child) {
-      double pixel = MediaQuery.of(context).size.width / 400;
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          ClipOval(
-            child: Stack(
-              children: [
-                Container(
-                  width: 100 * pixel,
-                  height: 100 * pixel,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.tertiaryContainer,
-                  ),
-                ),
-                Image.asset(
-                  'assets/images/me_nav_icon.png',
-                  width: 100 * pixel,
-                  height: 100 * pixel,
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 10 * pixel,
-          ),
-          Text(
-            value.isLogin ? value.user['userName'] : 'Not logged in',
-            style: TextStyle(
-                fontSize: pixel * 20,
-                color: Theme.of(context).colorScheme.onTertiaryContainer),
-          )
-        ],
-      );
-    },
-  );
 }

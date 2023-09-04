@@ -1,14 +1,22 @@
 import 'package:fedcampus/models/datahandler/health.dart';
-import 'package:fedcampus/models/user_api.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
+import 'package:fedcampus/utility/log.dart';
 
 class HuaweiHealth extends FedHealthData {
   final host = DataApi();
 
   @override
   Future<void> authenticate() async {
-    await userApi.healthServiceAuthenticate();
+    logger.d('authenticating');
+    final host = HuaweiAuthApi();
+    await host.getAuthenticate();
   }
+
+  @override
+  Future<void> cancelAuthentication() async {
+    /// TODO: throws [Exception] when failed
+    final host = HuaweiAuthApi();
+    await host.cancelAuthenticate();  }
 
   @override
   Future<Data> getData(

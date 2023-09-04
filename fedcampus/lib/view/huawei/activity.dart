@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 
-import 'package:fedcampus/utility/http_client.dart';
+import 'package:fedcampus/utility/http_api.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -83,8 +83,8 @@ class _ActivityPageState extends State<ActivityPage> {
 
     bodyJson.add({"time": dataNumber});
 
-    http.Response response = await HTTPClient.post(
-        HTTPClient.fedAnalysis, <String, String>{}, jsonEncode(bodyJson));
+    http.Response response = await HTTPApi.post(
+        HTTPApi.fedAnalysis, <String, String>{}, jsonEncode(bodyJson));
 
     if (response.statusCode == 200) {
       // show the data
@@ -131,12 +131,10 @@ class _ActivityPageState extends State<ActivityPage> {
       }
 
       List<http.Response> responseArr = await Future.wait([
-        HTTPClient.post(
-            HTTPClient.data, <String, String>{}, jsonEncode(bodyJson)),
+        HTTPApi.post(HTTPApi.data, <String, String>{}, jsonEncode(bodyJson)),
 
         // TODO: Data DP Algorithm!!!
-        HTTPClient.post(
-            HTTPClient.dataDP, <String, String>{}, jsonEncode(bodyJson))
+        HTTPApi.post(HTTPApi.dataDP, <String, String>{}, jsonEncode(bodyJson))
       ]);
 
       logger.i(

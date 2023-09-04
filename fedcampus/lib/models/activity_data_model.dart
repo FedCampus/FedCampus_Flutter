@@ -3,9 +3,9 @@ import 'dart:convert';
 
 import 'package:fedcampus/models/activity_data.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
-import 'package:fedcampus/utility/http_client.dart';
+import 'package:fedcampus/utility/http_api.dart';
 import 'package:fedcampus/utility/log.dart';
-import 'package:fedcampus/models/user_api.dart';
+import 'package:fedcampus/utility/global.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -14,7 +14,7 @@ class ActivityDataModel extends ChangeNotifier {
   Map<String, dynamic> activityData = ActivityData.create();
   bool isAuth = false;
   bool ifSent = false;
-  bool _loading = true;
+  bool _loading = false;
   String _date = (DateTime.now().year * 10000 +
           DateTime.now().month * 100 +
           DateTime.now().day)
@@ -87,12 +87,11 @@ class ActivityDataModel extends ChangeNotifier {
       bodyJson = List.empty(growable: true);
     }
     bodyJson.add({"time": dataNumber});
-    
     //send the first request
     late http.Response response;
     try {
-      response = await HTTPClient.post(
-              HTTPClient.fedAnalysis, <String, String>{}, jsonEncode(bodyJson))
+      response = await HTTPApi.post(
+              HTTPApi.fedAnalysis, <String, String>{}, jsonEncode(bodyJson))
           .timeout(const Duration(seconds: 5));
     } on TimeoutException {
       rethrow;
@@ -184,11 +183,9 @@ class ActivityDataModel extends ChangeNotifier {
       }
 
       List<http.Response> responseArr = await Future.wait([
-        HTTPClient.post(
-            HTTPClient.data, <String, String>{}, jsonEncode(bodyJson)),
+        HTTPApi.post(HTTPApi.data, <String, String>{}, jsonEncode(bodyJson)),
         // TODO: Data DP Algorithm!!!
-        HTTPClient.post(
-            HTTPClient.dataDP, <String, String>{}, jsonEncode(bodyJson))
+        HTTPApi.post(HTTPApi.dataDP, <String, String>{}, jsonEncode(bodyJson))
       ]);
 
       logger.i(
@@ -199,9 +196,21 @@ class ActivityDataModel extends ChangeNotifier {
       if (responseArr[0].statusCode == 200) {
         ifSent = true;
         getActivityData();
+        _loading = false;
+        notifyListeners();
       } else {
         logger.d("error");
+        _loading = false;
+        notifyListeners();
       }
+    } else {
+      logger.e(response.statusCode);
+      if (response.statusCode == 401) {
+        // not authenticated, pop an authenticate reminder signing
+        dataWrapperToast("Please Login for federated analysis.");
+      }
+      _loading = false;
+      notifyListeners();
     }
   }
 }

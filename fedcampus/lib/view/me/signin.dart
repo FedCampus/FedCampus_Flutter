@@ -1,6 +1,6 @@
 import 'package:fedcampus/models/user_model.dart';
+import 'package:fedcampus/utility/http_api.dart';
 import 'package:fedcampus/utility/log.dart';
-import 'package:fedcampus/models/user_api.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -26,7 +26,7 @@ class _SignInState extends State<SignIn> {
     // await Provider.of<UserModel>(context, listen: false).setUser(user);
     // return;
     try {
-      user = await userApi.signIn(_username, _password);
+      user = await HTTPApi.signIn(_username, _password);
     } on Exception catch (e) {
       logger.d(e.toString());
       if (mounted) showToastMessage(e.getMessage, context);
@@ -76,6 +76,7 @@ class _SignInState extends State<SignIn> {
               const Expanded(flex: 1, child: SizedBox()),
               ClipOval(
                 child: Stack(
+                  alignment: AlignmentDirectional.center,
                   children: [
                     Container(
                       width: 100 * pixel,
@@ -86,8 +87,8 @@ class _SignInState extends State<SignIn> {
                     ),
                     Image.asset(
                       'assets/images/me_nav_icon.png',
-                      width: 100 * pixel,
-                      height: 100 * pixel,
+                      width: 85 * pixel,
+                      height: 85 * pixel,
                     ),
                   ],
                 ),

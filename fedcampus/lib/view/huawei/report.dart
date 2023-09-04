@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:fedcampus/pigeon/generated.g.dart';
-import 'package:fedcampus/utility/http_client.dart';
+import 'package:fedcampus/utility/http_api.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:http/http.dart';
 import 'package:sample_statistics/sample_statistics.dart';
@@ -130,10 +130,9 @@ class _ReportPageState extends State<ReportPage> {
 
     try {
       List<http.Response> responseArr = await Future.wait([
-        HTTPClient.post(HTTPClient.data, <String, String>{}, jsonEncode(data)),
+        HTTPApi.post(HTTPApi.data, <String, String>{}, jsonEncode(data)),
         // TODO: Data DP Algorithm!!!
-        HTTPClient.post(
-            HTTPClient.dataDP, <String, String>{}, jsonEncode(dataFuzz))
+        HTTPApi.post(HTTPApi.dataDP, <String, String>{}, jsonEncode(dataFuzz))
       ]).timeout(const Duration(seconds: 5));
       // TODO: Time out for 5 seconds.
 
