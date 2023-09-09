@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:fedcampus/models/activity_data.dart';
+import 'package:fedcampus/pigeon/data_extensions.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
+import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/utility/http_api.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/utility/global.dart';
@@ -132,7 +135,7 @@ class ActivityDataModel extends ChangeNotifier {
     late dynamic bodyJson;
 
     late http.Response response;
-
+    
     try {
       response = await _sendFirstRequest();
     } on PlatformException {
@@ -171,8 +174,9 @@ class ActivityDataModel extends ChangeNotifier {
       }
       try {
         var dw = DataWrapper();
-        final data = await dw.getDataList(dataMissing, dataNumber);
-        bodyJson = jsonDecode(jsonEncode(data));
+        List<Data?> data = await dw.getDataList(dataMissing, dataNumber);
+        bodyJson = jsonDecode(dataListJsonEncode(data));
+        // bodyJson = jsonDecode(jsonEncode(data));
         // HTTPClient.post(HTTPClient.fedAnalysis, <String,String>{}, body)
       } on PlatformException catch (error) {
         if (error.message == "java.lang.SecurityException: 50005") {
@@ -199,8 +203,6 @@ class ActivityDataModel extends ChangeNotifier {
       if (responseArr[0].statusCode == 200) {
         ifSent = true;
         getActivityData();
-        _loading = false;
-        notifyListeners();
       } else {
         logger.d("error");
         _loading = false;

@@ -81,7 +81,9 @@ class _HealthState extends State<Health> {
         logger.d(
             'loading: ${Provider.of<HealthDataModel>(context, listen: false).loading}');
         if (!Provider.of<HealthDataModel>(context).loading) {
-          Navigator.of(context).pop(true);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.of(context).pop(true);
+          });
         }
         return WillPopScope(
           // https://stackoverflow.com/a/59755386
