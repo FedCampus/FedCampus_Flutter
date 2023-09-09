@@ -3,6 +3,7 @@ import 'package:fedcampus/models/health_data_model.dart';
 import 'package:fedcampus/models/user_model.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/utility/global.dart';
+import 'package:fedcampus/view/home.dart';
 import 'package:fedcampus/view/navigator.dart';
 import 'package:fedcampus/view/splash.dart';
 import 'package:flutter/material.dart';
@@ -180,7 +181,7 @@ class _MyAppState extends State<MyApp> {
       themeMode: appState.isDarkModeOn ? ThemeMode.dark : ThemeMode.light,
       home: userApi.prefs.getBool("login") == null
           ? const Splash()
-          : const BottomNavigator(),
+          : const HomeRoute(),
     );
   }
 }
