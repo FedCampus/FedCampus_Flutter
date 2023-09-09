@@ -179,9 +179,7 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
       themeMode: appState.isDarkModeOn ? ThemeMode.dark : ThemeMode.light,
-      home: userApi.prefs.getBool("login") == null
-          ? const Splash()
-          : const BottomNavigator(),
+      home: const HomeRoute(),
     );
   }
 }
