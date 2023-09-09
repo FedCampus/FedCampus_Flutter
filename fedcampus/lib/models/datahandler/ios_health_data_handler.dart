@@ -1,10 +1,10 @@
 import 'package:fedcampus/models/datahandler/health.dart';
+import 'package:fedcampus/pigeon/data_extensions.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
-import 'package:fedcampus/view/health.dart';
 import 'package:health/health.dart';
 
 class IOSHealth extends FedHealthData {
-  final dataEntry = {
+  final _dataEntry = {
     "step": HealthDataType.STEPS,
     "distance": HealthDataType.DISTANCE_WALKING_RUNNING,
     "calorie": HealthDataType.ACTIVE_ENERGY_BURNED,
@@ -14,6 +14,15 @@ class IOSHealth extends FedHealthData {
     "weight": HealthDataType.WEIGHT,
     "heart_rate": HealthDataType.HEART_RATE,
   };
+
+  final HealthFactory _health =
+      HealthFactory(useHealthConnectIfAvailable: false);
+
+  late final List<HealthDataType> _types;
+
+  IOSHealth() {
+    _types = _dataEntry.values.toList();
+  }
 
   @override
   Future<void> authenticate() async {
@@ -25,11 +34,24 @@ class IOSHealth extends FedHealthData {
     return;
   }
 
-  // @override
-  // Future<Data> getData(
-  //     {required String entry,
-  //     required DateTime startTime,
-  //     required DateTime endTime}) async {
-  //   HealthFactory health = HealthFactory(useHealthConnectIfAvailable: false);
-  // }
+  @override
+  Future<Data> getData(
+      {required String entry,
+      required DateTime startTime,
+      required DateTime endTime}) async {
+    var res = await _health
+        .getHealthDataFromTypes(startTime, endTime, [_dataEntry[entry]!]);
+    var appleHealth =
+        res.where((element) => element.sourceId == "com.huawei.iossporthealth");
+    double sum = appleHealth.fold(
+        0, (value, element) => value + double.parse(element.value.toString()));
+    sum = (entry == "rest_heart_rate" || entry == "heart_rate")
+        ? sum / appleHealth.length
+        : sum;
+    return Data(
+        name: entry,
+        value: sum,
+        startTime: DataExtension.dateTimeToInt(startTime),
+        endTime: DataExtension.dateTimeToInt(endTime));
+  }
 }
