@@ -31,6 +31,9 @@ class _SignInState extends State<SignIn> {
       logger.d(e.toString());
       if (mounted) showToastMessage(e.getMessage, context);
       return;
+    } on Error catch (e) {
+      logger.d(e.toString());
+      return;
     }
     if (mounted) {
       await Provider.of<UserModel>(context, listen: false).setUser(user);

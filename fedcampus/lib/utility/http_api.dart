@@ -165,7 +165,7 @@ class HTTPApi {
       return user;
     } on http.ClientException catch (e) {
       logger.e(e);
-      throw ('Login Error, Please Check your Internet Connection', e);
+      rethrow;
     }
   }
 }
