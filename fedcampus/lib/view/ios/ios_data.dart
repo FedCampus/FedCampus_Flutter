@@ -1,4 +1,3 @@
-import 'package:fedcampus/models/datahandler/health.dart';
 import 'package:fedcampus/models/datahandler/ios_health_data_handler.dart';
 import 'package:fedcampus/pigeon/data_extensions.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +12,8 @@ class IOSDataPage extends StatefulWidget {
 class _IOSDataPageState extends State<IOSDataPage> {
   var _date = DataExtension.dateTimeToInt(DateTime.now()).toString();
 
+  var _text = "";
+
   var dataValue = {
     "step": 0.0,
     "distance": 0.0,
@@ -21,12 +22,11 @@ class _IOSDataPageState extends State<IOSDataPage> {
     "height": 0.0,
     "sleep_time": 0.0,
     "weight": 0.0,
-    "heart_rate": 0.0
+    "heart_rate": 0.0,
   };
 
-  getData(DateTime time) async {
-    print(time);
-    FedHealthData f = IOSHealth();
+  Future<void> getData(DateTime time) async {
+    IOSHealth f = IOSHealth();
 
     var now = time;
     var end = time.add(const Duration(days: 1));
@@ -39,6 +39,18 @@ class _IOSDataPageState extends State<IOSDataPage> {
         dataValue.update(entry.key, (value) => data.value);
       });
     }
+
+    var res = await f.getIOSDayDataList();
+    _text = "";
+    if (res.isEmpty) {
+      return;
+    }
+    for (var i in res) {
+      _text = "$_text\n${i!.date.toString()}\n${i.value.toString()}";
+    }
+    setState(() {
+      _text = _text;
+    });
   }
 
   @override
@@ -74,6 +86,8 @@ class _IOSDataPageState extends State<IOSDataPage> {
               },
             ),
             Text(dataValue.toString()),
+            const Text("-----"),
+            Text(_text)
           ],
         )));
   }
