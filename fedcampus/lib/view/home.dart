@@ -17,10 +17,6 @@ class HomeRoute extends StatefulWidget {
 }
 
 class _HomeRouteState extends State<HomeRoute> {
-  void testHealthData() async {
-    Provider.of<HealthDataModel>(context, listen: false).getData();
-  }
-
   @override
   build(BuildContext context) {
     var appState = context.watch<MyAppState>();
@@ -58,10 +54,6 @@ class _HomeRouteState extends State<HomeRoute> {
               context,
               MaterialPageRoute(builder: (context) => const HuaweiHome()),
             ),
-          ),
-          ElevatedButton(
-            onPressed: testHealthData,
-            child: const Text('Test health model'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.push(
