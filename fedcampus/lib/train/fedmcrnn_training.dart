@@ -28,7 +28,8 @@ class FedmcrnnTraining {
       throw Exception(
           'Flower server port not available", "status ${serverData.status}');
     }
-    await mlClient.trainer.initialize(modelDir, model.layers_sizes);
+    // TODO:Make another function call if on iOS.
+    await mlClient.trainer.initialize(modelDir, model.tflite_layers!);
     _sendInfo('Initialized trainer');
     await mlClient.trainer.loadData(data);
     _sendInfo('Loaded data of size ${data.length}');
