@@ -1,5 +1,6 @@
+import 'package:fedcampus/models/datahandler/ios_health_data_handler.dart';
+import 'package:fedcampus/pigeon/data_extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:health/health.dart';
 
 class IOSDataPage extends StatefulWidget {
   const IOSDataPage({super.key});
@@ -9,48 +10,54 @@ class IOSDataPage extends StatefulWidget {
 }
 
 class _IOSDataPageState extends State<IOSDataPage> {
+  var _date = DataExtension.dateTimeToInt(DateTime.now()).toString();
+
+  var _text = "";
+
   var dataValue = {
-    "step": 0,
-    "distance": 0,
-    "calorie": 0,
-    "static heart rate": 0,
-    "height": 0,
-    "sleep_time": 0,
-    "weight": 0,
-    "heart_rate": 0
+    "step": 0.0,
+    "distance": 0.0,
+    "calorie": 0.0,
+    "rest_heart_rate": 0.0,
+    "height": 0.0,
+    "sleep_time": 0.0,
+    "weight": 0.0,
+    "heart_rate": 0.0,
   };
 
-  getData() async {
-    HealthFactory health = HealthFactory(useHealthConnectIfAvailable: false);
+  Future<void> getData(DateTime time) async {
+    IOSHealth f = IOSHealth();
 
-    var types = [
-      HealthDataType.STEPS,
-      HealthDataType.ACTIVE_ENERGY_BURNED,
-      HealthDataType.DISTANCE_WALKING_RUNNING,
-      HealthDataType.HEART_RATE,
-      HealthDataType.RESTING_HEART_RATE,
-      HealthDataType.WALKING_HEART_RATE,
-      HealthDataType.EXERCISE_TIME,
-      HealthDataType.SLEEP_IN_BED,
-    ];
+    var now = time;
+    var end = time.add(const Duration(days: 1));
+    var midnight = DateTime(now.year, now.month, now.day);
+    for (var entry in dataValue.entries) {
+      var data =
+          await f.getData(entry: entry.key, startTime: midnight, endTime: end);
 
-    bool requested = await health.requestAuthorization(types);
-
-    var now = DateTime.now();
-    var midnight = DateTime(now.year, now.month, now.day - 1);
-
-    var result = await health.getHealthDataFromTypes(midnight, now, types);
-    for (var i in result) {
-      print(i);
+      setState(() {
+        dataValue.update(entry.key, (value) => data.value);
+      });
     }
+
+    var res = await f.getIOSDayDataList();
+    _text = "";
+    if (res.isEmpty) {
+      return;
+    }
+    for (var i in res) {
+      _text = "$_text\n${i!.date.toString()}\n${i.value.toString()}";
+    }
+    setState(() {
+      _text = _text;
+    });
   }
 
   @override
   void initState() {
     super.initState();
     // get data
-
-    getData();
+    getData(DateTime.now());
   }
 
   @override
@@ -64,8 +71,8 @@ class _IOSDataPageState extends State<IOSDataPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
               child: TextFormField(
-                initialValue: "20230909",
-                // onChanged: (value) => {= value},
+                initialValue: _date,
+                onChanged: (value) => {_date = value},
                 decoration: const InputDecoration(
                   border: UnderlineInputBorder(),
                   labelText: 'Date',
@@ -74,9 +81,13 @@ class _IOSDataPageState extends State<IOSDataPage> {
             ),
             ElevatedButton(
               child: const Text('Get Data'),
-              onPressed: () {},
+              onPressed: () {
+                getData(DataExtension.intToDateTime(int.parse(_date)));
+              },
             ),
             Text(dataValue.toString()),
+            const Text("-----"),
+            Text(_text)
           ],
         )));
   }

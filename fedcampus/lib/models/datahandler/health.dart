@@ -24,7 +24,7 @@ class FedHealthData {
     required String entry,
     required DateTime date,
   }) async {
-    DateTime nextDay = DateTime(date.year, date.month, date.day + 1);
+    DateTime nextDay = date.add(const Duration(days: 1));
     Data data = await getData(entry: entry, startTime: date, endTime: nextDay);
     return data;
   }
