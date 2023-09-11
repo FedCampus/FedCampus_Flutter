@@ -1,8 +1,10 @@
 import 'package:fedcampus/main.dart';
 import 'package:fedcampus/models/health_data_model.dart';
+import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/view/googletest.dart';
 import 'package:fedcampus/view/huawei/huaweihomepage.dart';
 import 'package:fedcampus/view/ios/ios_data.dart';
+import 'package:fedcampus/view/navigator.dart';
 import 'package:fedcampus/view/splash.dart';
 import 'package:fedcampus/view/train_app.dart';
 import 'package:flutter/material.dart';
@@ -15,10 +17,6 @@ class HomeRoute extends StatefulWidget {
 }
 
 class _HomeRouteState extends State<HomeRoute> {
-  void testHealthData() async {
-    Provider.of<HealthDataModel>(context, listen: false).getData();
-  }
-
   @override
   build(BuildContext context) {
     var appState = context.watch<MyAppState>();
@@ -44,7 +42,10 @@ class _HomeRouteState extends State<HomeRoute> {
             child: const Text('Open FedCampus App'),
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const Splash()),
+              MaterialPageRoute(
+                  builder: (context) => userApi.prefs.getBool("login") == null
+                      ? const Splash()
+                      : const BottomNavigator()),
             ),
           ),
           ElevatedButton(
@@ -53,10 +54,6 @@ class _HomeRouteState extends State<HomeRoute> {
               context,
               MaterialPageRoute(builder: (context) => const HuaweiHome()),
             ),
-          ),
-          ElevatedButton(
-            onPressed: testHealthData,
-            child: const Text('Test health model'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.push(

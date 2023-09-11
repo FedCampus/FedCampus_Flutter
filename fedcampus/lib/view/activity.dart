@@ -83,7 +83,7 @@ class _ActivityState extends State<Activity> {
             selectedDate.day)
         .toString();
     Provider.of<ActivityDataModel>(context, listen: false).date = datecode;
-    // showLoadingBeforeLocalDataAvailable();
+    showLoadingBeforeLocalDataAvailable();
   }
 
   void showLoadingBeforeLocalDataAvailable() {
@@ -97,7 +97,9 @@ class _ActivityState extends State<Activity> {
         logger.d(
             'loading: ${Provider.of<ActivityDataModel>(context, listen: false).loading}');
         if (!Provider.of<ActivityDataModel>(context).loading) {
-          Navigator.of(context).pop(true);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.of(context).pop(true);
+          });
         }
         return WillPopScope(
           // https://stackoverflow.com/a/59755386

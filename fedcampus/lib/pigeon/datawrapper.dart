@@ -203,7 +203,7 @@ class DataWrapper {
       await request.send();
     } catch (e) {
       Fluttertoast.showToast(
-          msg: e.toString(),
+          msg: "error sending log file to server",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
