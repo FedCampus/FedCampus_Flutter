@@ -133,7 +133,7 @@ class ActivityDataModel extends ChangeNotifier {
     late dynamic bodyJson;
 
     late http.Response response;
-    
+
     try {
       response = await _sendFirstRequest();
     } on PlatformException {
@@ -143,6 +143,7 @@ class ActivityDataModel extends ChangeNotifier {
     } on TimeoutException {
       _loading = false;
       notifyListeners();
+      return;
     }
 
     if (response.statusCode == 200) {

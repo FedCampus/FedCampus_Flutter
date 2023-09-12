@@ -195,12 +195,12 @@ class DataWrapper {
     String uri = "http://10.201.8.29:8006/api/log";
     var request = http.MultipartRequest("POST", Uri.parse(uri));
     await HTTPApi.getToken(request.headers);
-    final file = http.MultipartFile.fromBytes(
-        "log", File(path).readAsBytesSync(),
-        filename: "log");
-    request.files.add(file);
+    // final file = http.MultipartFile.fromBytes(
+    //     "log", File(path).readAsBytesSync(),
+    //     filename: "log");
+    // request.files.add(file);
     try {
-      await request.send();
+      // await request.send();
     } catch (e) {
       Fluttertoast.showToast(
           msg: "error sending log file to server",

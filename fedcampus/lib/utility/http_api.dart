@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:fedcampus/models/user.dart';
 import 'package:fedcampus/utility/log.dart';
+import 'package:fedcampus/utility/my_exceptions.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -130,10 +131,10 @@ class HTTPApi {
     // return user;
     // <<<<< comment this
     if (localUserName.isEmpty) {
-      throw Exception('Username should not be empty');
+      throw ClientException('Username should not be empty');
     }
     if (password.length < 8) {
-      throw Exception("Password's lengh has to be greater than 8");
+      throw ClientException("Password's lengh has to be greater than 8");
     }
     logger.d(localUserName);
     try {
@@ -149,7 +150,7 @@ class HTTPApi {
       if (response.statusCode == 400) {
         // login failed
         logger.e('Bad Credentials, please try again');
-        throw Exception('Bad Credentials, please try again');
+        throw ClientException('Bad Credentials, please try again');
       }
 
       // login success, save token

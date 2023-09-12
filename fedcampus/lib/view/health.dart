@@ -1,5 +1,7 @@
 //TODO:find better way do adapt different screen size
 
+import 'dart:async';
+
 import 'package:fedcampus/models/health_data_model.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/utility/log.dart';
@@ -53,7 +55,9 @@ class _HealthState extends State<Health> {
 
   Future<void> refresh() async {
     Provider.of<HealthDataModel>(context, listen: false).getData();
-    showLoadingBeforeLocalDataAvailable();
+    LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
+    loadingDialog.showLoading();
+    pollLoading(loadingDialog);
     _sendLastDayData();
   }
 
@@ -67,40 +71,21 @@ class _HealthState extends State<Health> {
         selectedDate.day);
     Provider.of<HealthDataModel>(context, listen: false).date =
         datecode.toString();
-    showLoadingBeforeLocalDataAvailable();
+    LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
+    loadingDialog.showLoading();
+    pollLoading(loadingDialog);
   }
 
-  void showLoadingBeforeLocalDataAvailable() {
-    // we do not use AlertDialog here because it has an intrinsic constraint of minimum width,
-    // as suggested here: https://stackoverflow.com/a/53913355
-    showGeneralDialog(
-      context: context,
-      barrierColor: Colors.black.withOpacity(0.5),
-      pageBuilder: (context, __, ___) {
-        double pixel = MediaQuery.of(context).size.width / 400;
-        logger.d(
-            'loading: ${Provider.of<HealthDataModel>(context, listen: false).loading}');
-        if (!Provider.of<HealthDataModel>(context).loading) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            Navigator.of(context).pop(true);
-          });
-        }
-        return WillPopScope(
-          // https://stackoverflow.com/a/59755386
-          onWillPop: () async => false,
-          child: Material(
-            color: Colors.transparent,
-            child: Center(
-              child: SizedBox(
-                height: 40 * pixel,
-                width: 40 * pixel,
-                child: const CircularProgressIndicator(strokeWidth: 2.0),
-              ),
-            ),
-          ),
-        );
-      },
-    );
+  void pollLoading(LoadingDialog loadingDialog) {
+    Timer.periodic(const Duration(milliseconds: 500), (timer) {
+      if (loadingDialog.cancelled) timer.cancel();
+      if (!Provider.of<HealthDataModel>(context, listen: false).loading) {
+        timer.cancel();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          loadingDialog.cancel();
+        });
+      }
+    });
   }
 
   @override

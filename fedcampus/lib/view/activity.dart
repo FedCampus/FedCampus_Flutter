@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fedcampus/models/activity_data_model.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/calendar.dart';
@@ -70,7 +72,9 @@ class _ActivityState extends State<Activity> {
 
   Future<void> refresh() async {
     Provider.of<ActivityDataModel>(context, listen: false).getActivityData();
-    showLoadingBeforeLocalDataAvailable();
+    LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
+    loadingDialog.showLoading();
+    pollLoading(loadingDialog);
   }
 
   updateDate(DateTime selectedDate) {
@@ -83,40 +87,21 @@ class _ActivityState extends State<Activity> {
             selectedDate.day)
         .toString();
     Provider.of<ActivityDataModel>(context, listen: false).date = datecode;
-    showLoadingBeforeLocalDataAvailable();
+    LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
+    loadingDialog.showLoading();
+    pollLoading(loadingDialog);
   }
 
-  void showLoadingBeforeLocalDataAvailable() {
-    // we do not use AlertDialog here because it has an intrinsic constraint of minimum width,
-    // as suggested here: https://stackoverflow.com/a/53913355
-    showGeneralDialog(
-      context: context,
-      barrierColor: Colors.black.withOpacity(0.5),
-      pageBuilder: (context, __, ___) {
-        double pixel = MediaQuery.of(context).size.width / 400;
-        logger.d(
-            'loading: ${Provider.of<ActivityDataModel>(context, listen: false).loading}');
-        if (!Provider.of<ActivityDataModel>(context).loading) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            Navigator.of(context).pop(true);
-          });
-        }
-        return WillPopScope(
-          // https://stackoverflow.com/a/59755386
-          onWillPop: () async => false,
-          child: Material(
-            color: Colors.transparent,
-            child: Center(
-              child: SizedBox(
-                height: 40 * pixel,
-                width: 40 * pixel,
-                child: const CircularProgressIndicator(strokeWidth: 2.0),
-              ),
-            ),
-          ),
-        );
-      },
-    );
+  void pollLoading(LoadingDialog loadingDialog) {
+    Timer.periodic(const Duration(milliseconds: 500), (timer) {
+      if (loadingDialog.cancelled) timer.cancel();
+      if (!Provider.of<ActivityDataModel>(context, listen: false).loading) {
+        timer.cancel();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          loadingDialog.cancel();
+        });
+      }
+    });
   }
 
   @override
