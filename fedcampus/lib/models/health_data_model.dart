@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:math';
 
 import 'package:fedcampus/models/health_data.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
@@ -57,7 +59,23 @@ class HealthDataModel extends ChangeNotifier {
 
     try {
       var dw = DataWrapper();
+      String? cachedData = userApi.prefs.getString("health$date");
+      if (cachedData != null) {
+        healthData = Map.castFrom<String, dynamic, String, double>(
+            json.decode(cachedData));
+        logger.e(healthData["query_time"]);
+        if (DateTime.now().millisecondsSinceEpoch -
+                (healthData["query_time"] ?? 0.0) <
+            1800000) {
+          _loading = false;
+          notifyListeners();
+          return;
+        }
+      }
       healthData = await dw.getDataListToMap(dataList, date);
+      healthData["query_time"] =
+          DateTime.now().millisecondsSinceEpoch.toDouble();
+      userApi.prefs.setString("health$date", json.encode(healthData));
       _loading = false;
       notifyListeners();
     } on PlatformException catch (error) {
