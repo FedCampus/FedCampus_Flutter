@@ -53,8 +53,8 @@ class _HealthState extends State<Health> {
         int.parse(Provider.of<HealthDataModel>(context, listen: false).date));
   }
 
-  Future<void> refresh() async {
-    Provider.of<HealthDataModel>(context, listen: false).getData();
+  Future<void> refresh({bool forcedRefresh = false}) async {
+    Provider.of<HealthDataModel>(context, listen: false).getData(forcedRefresh: forcedRefresh);
     LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
     loadingDialog.showLoading();
     pollLoading(loadingDialog);
@@ -92,7 +92,7 @@ class _HealthState extends State<Health> {
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
     return RefreshIndicator(
-        onRefresh: refresh,
+        onRefresh: () => refresh(forcedRefresh: true),
         child: LayoutBuilder(builder: (context, constraints) {
           // height of SingleChildScrollView is unconstrained, so use the height of grandparents
           return SingleChildScrollView(

@@ -50,7 +50,7 @@ class HealthDataModel extends ChangeNotifier {
     dw.getDayDataAndSendAndTrain(int.parse(_date));
   }
 
-  Future<void> getData() async {
+  Future<void> getData({bool forcedRefresh = false}) async {
     _loading = true;
     notifyListeners();
     int date = 0;
@@ -60,7 +60,7 @@ class HealthDataModel extends ChangeNotifier {
     try {
       var dw = DataWrapper();
       String? cachedData = userApi.prefs.getString("health$date");
-      if (cachedData != null) {
+      if (!forcedRefresh && (cachedData != null)) {
         healthData = Map.castFrom<String, dynamic, String, double>(
             json.decode(cachedData));
         logger.e(healthData["query_time"]);
