@@ -65,6 +65,7 @@ class _BottomNavigatorState extends State<BottomNavigator> {
           toolbarHeight: 50 * pixel,
           backgroundColor: getAppBarColor(_selectedIndex, context),
           centerTitle: true,
+          automaticallyImplyLeading: false,
           title: Image.asset(
             'assets/images/title.png',
             height: 35 * pixel,

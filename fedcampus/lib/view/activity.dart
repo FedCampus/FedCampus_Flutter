@@ -70,8 +70,9 @@ class _ActivityState extends State<Activity> {
     });
   }
 
-  Future<void> refresh() async {
-    Provider.of<ActivityDataModel>(context, listen: false).getActivityData();
+  Future<void> refresh({bool forcedRefresh = false}) async {
+    Provider.of<ActivityDataModel>(context, listen: false)
+        .getActivityData(forcedRefresh: forcedRefresh);
     LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
     loadingDialog.showLoading();
     pollLoading(loadingDialog);
@@ -108,7 +109,7 @@ class _ActivityState extends State<Activity> {
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
     return RefreshIndicator(
-      onRefresh: refresh,
+      onRefresh: () => refresh(forcedRefresh: true),
       child: ListView.separated(
           separatorBuilder: (context, index) => const SizedBox(height: 11),
           itemCount: 8,
