@@ -19,10 +19,22 @@ class Global {
     //TODO: init log
     await Log.initLog();
     // if logged in, initialize healthDataHandler here and skip [Splash], otherwise initialize that in [Splash]
-    if (_prefs.getBool("login") != null) {
-      String serviceProvider = _prefs.getString("service_provider") ?? "huawei";
-      healthDataHandler =
-          HealthDataHandlerFactory().creatHealthDataHandler(serviceProvider);
+    String splashScreenPolicy =
+        userApi.prefs.getString("slpash_screen") ?? "always";
+    switch (splashScreenPolicy) {
+      case "always":
+      case "is_logged_in":
+        if (_prefs.getBool("login") != null) {
+          String serviceProvider =
+              _prefs.getString("service_provider") ?? "huawei";
+          healthDataHandler = HealthDataHandlerFactory()
+              .creatHealthDataHandler(serviceProvider);
+        }
+      case "never":
+        String serviceProvider =
+            _prefs.getString("service_provider") ?? "huawei";
+        healthDataHandler =
+            HealthDataHandlerFactory().creatHealthDataHandler(serviceProvider);
     }
     // throw Exception('exceptions in initialization');
   }

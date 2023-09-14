@@ -42,10 +42,22 @@ class _HomeRouteState extends State<HomeRoute> {
             child: const Text('Open FedCampus App'),
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(
-                  builder: (context) => userApi.prefs.getBool("login") == null
-                      ? const Splash()
-                      : const BottomNavigator()),
+              MaterialPageRoute(builder: (context) {
+                String splashScreenPolicy =
+                    userApi.prefs.getString("slpash_screen") ?? "always";
+                switch (splashScreenPolicy) {
+                  case "always":
+                    return const Splash();
+                  case "is_logged_in":
+                    return userApi.prefs.getBool("login") == null
+                        ? const Splash()
+                        : const BottomNavigator();
+                  case "never":
+                    return const BottomNavigator();
+                  default:
+                    return const Splash();
+                }
+              }),
             ),
           ),
           ElevatedButton(

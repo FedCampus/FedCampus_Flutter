@@ -115,6 +115,7 @@ class ActivityDataModel extends ChangeNotifier {
         DateTime.now().millisecondsSinceEpoch.toDouble();
     userApi.prefs.setString("activity$date", json.encode(activityData));
     _loading = false;
+    logger.e(activityData);
     notifyListeners();
   }
 
@@ -136,6 +137,7 @@ class ActivityDataModel extends ChangeNotifier {
               (activityData["query_time"] ?? 0.0) <
           1800000) {
         _loading = false;
+        logger.e(activityData);
         notifyListeners();
         return;
       }

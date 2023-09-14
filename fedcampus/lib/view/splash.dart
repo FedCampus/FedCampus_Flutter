@@ -34,13 +34,14 @@ class _SplashState extends State<Splash> {
     Provider.of<MyAppState>(context, listen: false).toggleTheme(b);
   }
 
-  Future<void> _splashDialog({required Widget dialogContent}) async {
+  Future<void> _splashDialog(
+      {required Widget dialogContent, required String title}) async {
     await showDialog<bool>(
       context: context,
       builder: (context) {
         double pixel = MediaQuery.of(context).size.width / 400;
         return AlertDialog(
-          title: const Text("Select a health serivice provider"),
+          title: Text(title),
           contentPadding:
               EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 13),
           content: dialogContent,
@@ -52,30 +53,32 @@ class _SplashState extends State<Splash> {
   Future<void> _pickServiceProvider() async {
     double pixel = MediaQuery.of(context).size.width / 400;
     _splashDialog(
+        title: "Select a health serivice provider",
         dialogContent: SizedBox(
-      height: 110 * pixel,
-      child: Column(
-        children: [
-          TextButton(
-              onPressed: () {
-                serviceProvider = "huawei";
-                Navigator.of(context).pop();
-              },
-              child: const Text("Huawei Health")),
-          TextButton(
-              onPressed: () {
-                serviceProvider = "google";
-                Navigator.of(context).pop();
-              },
-              child: const Text("Google Fit"))
-        ],
-      ),
-    ));
+          height: 110 * pixel,
+          child: Column(
+            children: [
+              TextButton(
+                  onPressed: () {
+                    serviceProvider = "huawei";
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("Huawei Health")),
+              TextButton(
+                  onPressed: () {
+                    serviceProvider = "google";
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("Google Fit"))
+            ],
+          ),
+        ));
   }
 
   Future<void> _chooseColorMode() async {
     double pixel = MediaQuery.of(context).size.width / 400;
     _splashDialog(
+      title: "Choose Color Mode",
       dialogContent: SizedBox(
         height: 110 * pixel,
         child: Column(
@@ -96,6 +99,37 @@ class _SplashState extends State<Splash> {
         ),
       ),
     );
+  }
+
+  Future<void> _splashScreenSettings() async {
+    double pixel = MediaQuery.of(context).size.width / 400;
+    _splashDialog(
+        title: "Splash Screen Settings",
+        dialogContent: SizedBox(
+          height: 165 * pixel,
+          child: Column(
+            children: [
+              TextButton(
+                  onPressed: () {
+                    userApi.prefs.setString("slpash_screen", "always");
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("Always show")),
+              TextButton(
+                  onPressed: () {
+                    userApi.prefs.setString("slpash_screen", "is_logged_in");
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("Show if not logged")),
+              TextButton(
+                  onPressed: () {
+                    userApi.prefs.setString("slpash_screen", "never");
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("Do not show")),
+            ],
+          ),
+        ));
   }
 
   @override
@@ -168,6 +202,11 @@ class _SplashState extends State<Splash> {
                 context,
                 MaterialPageRoute(builder: (context) => const SignIn()),
               ),
+            ),
+            const MeDivider(),
+            MeText(
+              text: 'Welcome Page Settings',
+              callback: _splashScreenSettings,
             ),
             const MeDivider(),
             TextButton(
