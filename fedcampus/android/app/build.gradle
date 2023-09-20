@@ -58,7 +58,7 @@ android {
         applicationId "com.cuhk.fedcampus"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion 28
+        minSdkVersion 29
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
@@ -87,6 +87,7 @@ flutter {
 dependencies {
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.work:work-runtime-ktx:2.8.1'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
 
     implementation 'androidx.window:window:1.0.0'
     implementation 'androidx.window:window-java:1.0.0'
