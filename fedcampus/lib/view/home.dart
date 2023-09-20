@@ -1,5 +1,6 @@
 import 'package:fedcampus/main.dart';
 import 'package:fedcampus/models/health_data_model.dart';
+import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/view/googletest.dart';
 import 'package:fedcampus/view/huawei/huaweihomepage.dart';
@@ -10,6 +11,8 @@ import 'package:fedcampus/view/train_app.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../pigeon/data_extensions.dart';
+
 class HomeRoute extends StatefulWidget {
   const HomeRoute({super.key});
   @override
@@ -17,6 +20,12 @@ class HomeRoute extends StatefulWidget {
 }
 
 class _HomeRouteState extends State<HomeRoute> {
+  test() {
+    final host = AppUsageStats();
+    host.getData("calorie", DataExtension.dateTimeToInt(DateTime.now()),
+        DataExtension.dateTimeToInt(DateTime.now()));
+  }
+
   @override
   build(BuildContext context) {
     var appState = context.watch<MyAppState>();
@@ -43,8 +52,8 @@ class _HomeRouteState extends State<HomeRoute> {
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (context) {
-                String splashScreenPolicy =
-                    userApi.prefs.getString("slpash_screen") ?? "always";
+                String? splashScreenPolicy =
+                    userApi.prefs.getString("slpash_screen");
                 switch (splashScreenPolicy) {
                   case "always":
                     return const Splash();
@@ -80,6 +89,10 @@ class _HomeRouteState extends State<HomeRoute> {
               MaterialPageRoute(builder: (context) => const IOSDataPage()),
             ),
             child: const Text('ios'),
+          ),
+          ElevatedButton(
+            onPressed: test,
+            child: const Text('Open App Usage Stats Test Page'),
           ),
           Text('current language: ${appState.locale}'),
         ]),
