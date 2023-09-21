@@ -33,9 +33,15 @@ class AppUsageStatsClass(activity: Activity) : AppUsageStats {
       callback: (Result<List<Data>>) -> Unit,
   ) {
     val scope = MainScope()
-    val response = getAppUsage(startTime, endTime)
-    val data = listOf(Data("total_time_foreground", response, startTime, endTime))
-    scope.launch { callback(Result.success(data)) }
+    try {
+      scope.launch {
+        val response = getAppUsage(startTime, endTime)
+        val data = listOf(Data("total_time_foreground", response, startTime, endTime))
+        callback(Result.success(data))
+      }
+    } catch (err: Exception) {
+      callback(Result.failure(err))
+    }
   }
 
   private fun getAppUsage(
