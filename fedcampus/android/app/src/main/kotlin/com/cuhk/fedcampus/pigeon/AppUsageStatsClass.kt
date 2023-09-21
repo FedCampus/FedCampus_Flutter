@@ -4,7 +4,6 @@ import AppUsageStats
 import Data
 import android.app.Activity
 import android.app.AppOpsManager
-import android.app.usage.UsageEvents
 import android.app.usage.UsageStatsManager
 import android.content.Context
 import android.content.Intent
@@ -13,12 +12,15 @@ import android.os.Process
 import android.provider.Settings
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.startActivity
+import java.time.LocalDate
+import java.time.ZoneId
+import java.util.*
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
 class AppUsageStatsClass(activity: Activity) : AppUsageStats {
-  val activity: Activity
+  private val activity: Activity
+  private val filterList = listOf("com.android.launcher")
 
   init {
     this.activity = activity
@@ -31,13 +33,15 @@ class AppUsageStatsClass(activity: Activity) : AppUsageStats {
       callback: (Result<List<Data>>) -> Unit,
   ) {
     val scope = MainScope()
-    Log.i("APP", "hello")
-    getAppUsage()
-    val data = listOf(Data("test", 1.0, 1, 1))
+    val response = getAppUsage(startTime, endTime)
+    val data = listOf(Data("total_time_foreground", response, startTime, endTime))
     scope.launch { callback(Result.success(data)) }
   }
 
-  private fun getAppUsage() {
+  private fun getAppUsage(
+      startTime: Long,
+      endTime: Long,
+  ): Double {
     Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS).apply {
       activity.startActivity(
           activity.intent,
@@ -53,27 +57,49 @@ class AppUsageStatsClass(activity: Activity) : AppUsageStats {
         )
       }
     }
+    val dcode1: Long = startTime
+    val dcode2: Long = endTime
+    val date =
+        LocalDate.of(
+            (dcode1 / 10000).toInt(),
+            ((dcode1 % 10000) / 100).toInt(),
+            (dcode1 % 100).toInt()
+        )
+    val date2 =
+        LocalDate.of(
+            (dcode2 / 10000).toInt(),
+            ((dcode2 % 10000) / 100).toInt(),
+            (dcode2 % 100).toInt()
+        )
+    val zoneId: ZoneId = ZoneId.systemDefault()
+    val epoch1: Long = (date.atStartOfDay(zoneId).toEpochSecond() + 43200) * 1000
+    val epoch2: Long = (date2.atStartOfDay(zoneId).toEpochSecond() - 39600) * 1000
+    println(epoch1)
+    println(epoch2)
 
-    var foregroundAppPackageName: String? = null
-    val currentTime = System.currentTimeMillis()
-    // The `queryEvents` method takes in the `beginTime` and `endTime` to retrieve the usage
-    // events.
-    // In our case, beginTime = currentTime - 10 minutes ( 1000 * 60 * 10 milliseconds )
-    // and endTime = currentTime
     val usageStatsManager =
         activity.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
 
-    Log.e("APP", currentTime.toString())
+    val usageEvents = usageStatsManager.queryUsageStats(0, epoch1, epoch2)
 
-    val usageEvents = usageStatsManager.queryUsageStats(0, 1693065600000, currentTime)
-    val usageEvent = UsageEvents.Event()
+    var totalTimeInForeground = 0
 
     for (e in usageEvents) {
       Log.e(
           "App",
           "${e.packageName} ${e.lastTimeUsed} ${e.firstTimeStamp} ${e.lastTimeStamp} ${e.totalTimeInForeground / 60000} ${e.totalTimeVisible / 60000}"
       )
+
+      if (!filterPackageName(e.packageName)) {
+        totalTimeInForeground += (e.totalTimeVisible / 60000).toInt()
+      }
     }
+    Log.e("App", totalTimeInForeground.toString())
+    return totalTimeInForeground.toDouble()
+  }
+
+  private fun filterPackageName(packageName: String): Boolean {
+    return filterList.contains(packageName)
   }
 
   private fun checkUsageStatsPermission(): Boolean {

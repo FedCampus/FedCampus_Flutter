@@ -30,15 +30,27 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
   String log = "";
 
   void _logOut() async {
+    LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
+    loadingDialog.showLoading();
     try {
       await HTTPApi.logout();
-      if (mounted) showToastMessage('you successfully logged out', context);
-      if (mounted) {
-        Provider.of<UserModel>(context, listen: false).setLogin = false;
-      }
     } on Exception catch (e) {
       logger.d(e.toString());
-      if (mounted) showToastMessage(e.getMessage, context);
+      if (mounted) _showIfDialogNotCancelled(e, e.getMessage, loadingDialog);
+    }
+    if (mounted && !loadingDialog.cancelled) {
+      Provider.of<UserModel>(context, listen: false).setLogin = false;
+      showToastMessage('you successfully logged out', context);
+    }
+    loadingDialog.cancel();
+  }
+
+  void _showIfDialogNotCancelled(
+      Exception e, String message, LoadingDialog loadingDialog) {
+    logger.e(e);
+    if (mounted && !loadingDialog.cancelled) {
+      showToastMessage(message, context);
+      loadingDialog.cancel();
     }
   }
 

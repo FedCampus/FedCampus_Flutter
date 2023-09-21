@@ -44,14 +44,12 @@ class _SignInState extends State<SignIn> {
       _showIfDialogNotCancelled(e, "Log in error", loadingDialog);
       return;
     }
-    loadingDialog.cancel();
-    if (mounted) {
-      await Provider.of<UserModel>(context, listen: false).setUser(user);
-      if (mounted) {
-        showToastMessage('login success', context);
-        Navigator.pop(context, true);
-      }
+    if (mounted && !loadingDialog.cancelled) {
+      Provider.of<UserModel>(context, listen: false).setUser(user);
+      showToastMessage('login success', context);
+      Navigator.pop(context, true);
     }
+    loadingDialog.cancel();
   }
 
   void _showIfDialogNotCancelled(

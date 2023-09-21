@@ -2,6 +2,7 @@ import 'package:fedcampus/main.dart';
 import 'package:fedcampus/models/health_data_model.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/utility/global.dart';
+import 'package:fedcampus/view/app_usage_stats_test.dart';
 import 'package:fedcampus/view/googletest.dart';
 import 'package:fedcampus/view/huawei/huaweihomepage.dart';
 import 'package:fedcampus/view/ios/ios_data.dart';
@@ -20,12 +21,6 @@ class HomeRoute extends StatefulWidget {
 }
 
 class _HomeRouteState extends State<HomeRoute> {
-  test() {
-    final host = AppUsageStats();
-    host.getData("calorie", DataExtension.dateTimeToInt(DateTime.now()),
-        DataExtension.dateTimeToInt(DateTime.now()));
-  }
-
   @override
   build(BuildContext context) {
     var appState = context.watch<MyAppState>();
@@ -91,8 +86,10 @@ class _HomeRouteState extends State<HomeRoute> {
             child: const Text('ios'),
           ),
           ElevatedButton(
-            onPressed: test,
-            child: const Text('Open App Usage Stats Test Page'),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AppUsageStatsTest()),
+            ),            child: const Text('Open App Usage Stats Test Page'),
           ),
           Text('current language: ${appState.locale}'),
         ]),
