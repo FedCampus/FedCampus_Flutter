@@ -46,9 +46,9 @@ class HTTPApi {
       });
 
       return await http.post(Uri.parse(url), headers: headers, body: body);
-    } on Exception {
+    } catch (e) {
       rethrow;
-    } finally {}
+    }
   }
 
   static Future<bool> getToken(Map<String, String>? headers) async {
@@ -72,6 +72,7 @@ class HTTPApi {
       logger.e('Logout Error, Please Check your Internet Connection');
       throw ('Logout Error, Please Check your Internet Connection', e);
     } catch (e) {
+      logger.e(e);
       rethrow;
     }
   }
@@ -80,16 +81,16 @@ class HTTPApi {
       String password, String passwordConfirm) async {
     // check if email ends in duke.edu
     if (!email.endsWith("@duke.edu")) {
-      throw Exception("Email has to end with @duke.edu");
+      throw ClientException("Email has to end with @duke.edu");
     }
     if (netid == "") {
-      throw Exception("Please Enter Your Netid!");
+      throw ClientException("Please Enter Your Netid!");
     }
     if (password.length < 8) {
-      throw Exception("Password's lengh has to be greater than 8");
+      throw ClientException("Password's lengh has to be greater than 8");
     }
     if (password != passwordConfirm) {
-      throw Exception("The two passwords are different!");
+      throw ClientException("The two passwords are different!");
     }
 
     // send the request and wait for response
@@ -114,7 +115,7 @@ class HTTPApi {
         logger.e(Exception(responseJson['error'][0]));
         throw Exception(responseJson['error'][0]);
       }
-    } on http.ClientException catch (e) {
+    } catch (e) {
       logger.e(e);
       throw ('Login Error, Please Check your Internet Connection', e);
     }
@@ -164,7 +165,7 @@ class HTTPApi {
           email: responseJson['email'],
           loggedIn: true);
       return user;
-    } on http.ClientException catch (e) {
+    } catch (e) {
       logger.e(e);
       rethrow;
     }

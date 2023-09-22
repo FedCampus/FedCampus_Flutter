@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fedcampus/models/user_model.dart';
 import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/utility/http_api.dart';
@@ -27,16 +29,18 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
   bool get wantKeepAlive => true;
   final methodChannel = const MethodChannel('fed_kit_flutter');
 
-  String log = "";
-
   void _logOut() async {
     LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
     loadingDialog.showLoading();
     try {
-      await HTTPApi.logout();
+      await HTTPApi.logout().timeout(const Duration(seconds: 5));
+    } on TimeoutException catch (e) {
+      _showIfDialogNotCancelled(
+          e, "Please check your internet connection", loadingDialog);
+      return;
     } on Exception catch (e) {
-      logger.d(e.toString());
-      if (mounted) _showIfDialogNotCancelled(e, e.getMessage, loadingDialog);
+      _showIfDialogNotCancelled(e, e.getMessage, loadingDialog);
+      return;
     }
     if (mounted && !loadingDialog.cancelled) {
       Provider.of<UserModel>(context, listen: false).setLogin = false;
