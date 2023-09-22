@@ -540,6 +540,7 @@ private object AppUsageStatsCodec : StandardMessageCodec() {
 /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
 interface AppUsageStats {
   fun getData(name: String, startTime: Long, endTime: Long, callback: (Result<List<Data>>) -> Unit)
+  fun getAuthenticate(callback: (Result<Unit>) -> Unit)
 
   companion object {
     /** The codec used by AppUsageStats. */
@@ -564,6 +565,23 @@ interface AppUsageStats {
               } else {
                 val data = result.getOrNull()
                 reply.reply(wrapResult(data))
+              }
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.fedcampus.AppUsageStats.getAuthenticate", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            api.getAuthenticate() { result: Result<Unit> ->
+              val error = result.exceptionOrNull()
+              if (error != null) {
+                reply.reply(wrapError(error))
+              } else {
+                reply.reply(wrapResult(null))
               }
             }
           }

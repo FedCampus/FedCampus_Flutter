@@ -85,4 +85,7 @@ abstract class TrainFedmcrnn {
 abstract class AppUsageStats {
   @async
   List<Data> getData(String name, int startTime, int endTime);
+
+  @async
+  void getAuthenticate();
 }

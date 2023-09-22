@@ -4,6 +4,7 @@ import AppUsageStats
 import Data
 import android.app.Activity
 import android.app.AppOpsManager
+import android.app.usage.UsageStats
 import android.app.usage.UsageStatsManager
 import android.content.Context
 import android.content.Intent
@@ -33,14 +34,30 @@ class AppUsageStatsClass(activity: Activity) : AppUsageStats {
       callback: (Result<List<Data>>) -> Unit,
   ) {
     val scope = MainScope()
-    try {
-      scope.launch {
+    scope.launch {
+      try {
         val response = getAppUsage(startTime, endTime)
         val data = listOf(Data("total_time_foreground", response, startTime, endTime))
         callback(Result.success(data))
+      } catch (err: Exception) {
+        Log.e("App", err.toString())
+        callback(Result.failure(err))
       }
-    } catch (err: Exception) {
-      callback(Result.failure(err))
+    }
+  }
+
+  override fun getAuthenticate(callback: (Result<Unit>) -> Unit) {
+    val scope = MainScope()
+    scope.launch {
+      try {
+        Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS).apply {
+          activity.startActivity(
+              this,
+          )
+        }
+      } catch (err: Exception) {
+        callback(Result.failure(err))
+      }
     }
   }
 
@@ -53,15 +70,8 @@ class AppUsageStatsClass(activity: Activity) : AppUsageStats {
           activity.intent,
       )
     }
-    if (checkUsageStatsPermission()) {
-      // Implement further app logic here
-    } else {
-      // Navigate the user to the permission settings
-      Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS).apply {
-        activity.startActivity(
-            this,
-        )
-      }
+    if (!checkUsageStatsPermission()) {
+      throw Exception("No PACKAGE_USAGE_STATS granted")
     }
     val dcode1: Long = startTime
     val dcode2: Long = endTime
@@ -86,9 +96,13 @@ class AppUsageStatsClass(activity: Activity) : AppUsageStats {
     val usageStatsManager =
         activity.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
 
-    val usageEvents = usageStatsManager.queryUsageStats(0, epoch1, epoch2)
+    val usageEvents: List<UsageStats> = usageStatsManager.queryUsageStats(0, epoch1, epoch2)
 
     var totalTimeInForeground = 0
+
+    if (usageEvents.isEmpty()) {
+      throw Exception("No PACKAGE_USAGE_STATS granted")
+    }
 
     for (e in usageEvents) {
       Log.e(
