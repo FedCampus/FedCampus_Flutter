@@ -4,6 +4,7 @@ import 'package:fedcampus/models/user_model.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/view/home.dart';
+import 'package:fedcampus/view/navigator.dart';
 import 'package:fedcampus/view/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -178,8 +179,24 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
       themeMode: appState.isDarkModeOn ? ThemeMode.dark : ThemeMode.light,
-      home: const HomeRoute(),
+      home: startUpPage(),
     );
+  }
+
+  StatefulWidget startUpPage() {
+    String? splashScreenPolicy = userApi.prefs.getString("slpash_screen");
+    switch (splashScreenPolicy) {
+      case "always":
+        return const Splash();
+      case "is_logged_in":
+        return userApi.prefs.getBool("login") == null
+            ? const Splash()
+            : const BottomNavigator();
+      case "never":
+        return const BottomNavigator();
+      default:
+        return const Splash();
+    }
   }
 }
 

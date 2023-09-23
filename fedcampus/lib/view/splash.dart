@@ -120,7 +120,7 @@ class _SplashState extends State<Splash> {
                     userApi.prefs.setString("slpash_screen", "is_logged_in");
                     Navigator.of(context).pop();
                   },
-                  child: const Text("Show if not logged")),
+                  child: const Text("Show if not logged in")),
               TextButton(
                   onPressed: () {
                     userApi.prefs.setString("slpash_screen", "never");
