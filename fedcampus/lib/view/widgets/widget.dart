@@ -49,6 +49,63 @@ class FedCard extends StatelessWidget {
   }
 }
 
+class ClickableFedCard extends StatelessWidget {
+  const ClickableFedCard({
+    super.key,
+    required this.widget,
+    required this.callBack,
+    this.left = 10,
+    this.top = 17,
+    this.right = 10,
+    this.bottom = 14,
+  });
+  final Widget widget;
+  final void Function() callBack;
+  final double left;
+  final double top;
+  final double right;
+  final double bottom;
+
+  @override
+  Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.onBackground,
+        borderRadius: BorderRadius.circular(24 * pixel),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.shadow,
+            offset: Offset(0 * pixel, 4 * pixel),
+            blurRadius: 2 * pixel,
+          ),
+          BoxShadow(
+            color: Theme.of(context).colorScheme.outline,
+            offset: Offset(0 * pixel, -1 * pixel),
+            blurRadius: 1 * pixel,
+          ),
+          BoxShadow(
+            color: Theme.of(context).colorScheme.outline,
+            offset: Offset(0 * pixel, 4 * pixel),
+            blurRadius: 2 * pixel,
+          ),
+        ],
+      ),
+      child: TextButton(
+        onPressed: callBack,
+        style: TextButton.styleFrom(
+          backgroundColor: Theme.of(context).colorScheme.onBackground,
+          padding: EdgeInsets.fromLTRB(
+              14 * pixel, 18 * pixel, 14 * pixel, 17 * pixel),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24 * pixel)),
+        ),
+        child: widget,
+      ),
+    );
+  }
+}
+
 class FedIcon extends StatelessWidget {
   const FedIcon({
     super.key,

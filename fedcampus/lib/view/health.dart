@@ -6,6 +6,7 @@ import 'package:fedcampus/models/health_data_model.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/calendar.dart';
+import 'package:fedcampus/view/chart.dart';
 import 'package:fedcampus/view/me/signin.dart';
 import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/view/widgets/widget.dart';
@@ -54,7 +55,8 @@ class _HealthState extends State<Health> {
   }
 
   Future<void> refresh({bool forcedRefresh = false}) async {
-    Provider.of<HealthDataModel>(context, listen: false).getData(forcedRefresh: forcedRefresh);
+    Provider.of<HealthDataModel>(context, listen: false)
+        .getData(forcedRefresh: forcedRefresh);
     LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
     loadingDialog.showLoading();
     pollLoading(loadingDialog);
@@ -213,39 +215,40 @@ class _DateState extends State<Date> {
     _date = dateTime;
   }
 
+  Future<bool?> calendarDialog() {
+    double pixel = MediaQuery.of(context).size.width / 400;
+    return showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Select a day"),
+          contentPadding:
+              EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 0),
+          content: SizedBox(
+            height: 271 * pixel,
+            width: 300 * pixel,
+            child: CalendarDialog(
+              onDateChange: _changeWidgetDate,
+              primaryColor: Theme.of(context).colorScheme.primaryContainer,
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Confirm"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                widget.onDateChange(_date);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
-    Future<bool?> calendarDialog() {
-      return showDialog<bool>(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text("Select a day"),
-            contentPadding:
-                EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 0),
-            content: SizedBox(
-              height: 271 * pixel,
-              width: 300 * pixel,
-              child: CalendarDialog(
-                onDateChange: _changeWidgetDate,
-                primaryColor: Theme.of(context).colorScheme.primaryContainer,
-              ),
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: const Text("Confirm"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  widget.onDateChange(_date);
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
-
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.onBackground,
@@ -534,43 +537,50 @@ class Step extends StatelessWidget {
       decimalPoints: 0,
       loading: Provider.of<HealthDataModel>(context).loading,
     );
-    return FedCard(
-        widget: Row(
-      children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SvgIcon(
-              imagePath: 'assets/svg/step.svg',
-              colorFilter: ColorFilter.mode(
-                  Theme.of(context).colorScheme.primaryContainer,
-                  BlendMode.srcIn),
-            ),
-            SizedBox(
-              height: 10 * pixel,
-            ),
-            Text(
-              'Step',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.secondary,
+    return ClickableFedCard(
+      widget: Row(
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SvgIcon(
+                imagePath: 'assets/svg/step.svg',
+                colorFilter: ColorFilter.mode(
+                    Theme.of(context).colorScheme.primaryContainer,
+                    BlendMode.srcIn),
               ),
-            ),
-          ],
-        ),
-        const Spacer(),
-        Column(
-          children: [
-            Text(displayText,
-                style: montserratAlternatesTextStyle(
-                    displayText.length < 5
-                        ? pixel * 30
-                        : pixel * (135 / displayText.length),
-                    Theme.of(context).colorScheme.primaryContainer)),
-          ],
-        ),
-        const Spacer(),
-      ],
-    ));
+              SizedBox(
+                height: 10 * pixel,
+              ),
+              Text(
+                'Step',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+              ),
+            ],
+          ),
+          const Spacer(),
+          Column(
+            children: [
+              Text(displayText,
+                  style: montserratAlternatesTextStyle(
+                      displayText.length < 5
+                          ? pixel * 30
+                          : pixel * (135 / displayText.length),
+                      Theme.of(context).colorScheme.primaryContainer)),
+            ],
+          ),
+          const Spacer(),
+        ],
+      ),
+      callBack: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const DetailsChart()),
+        );
+      },
+    );
   }
 }
 
