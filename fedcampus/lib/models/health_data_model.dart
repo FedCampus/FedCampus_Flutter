@@ -1,16 +1,18 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:fedcampus/models/health_data.dart';
+import 'package:fedcampus/models/screen_data.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/utility/global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import '../../utility/calendar.dart' as calendar;
 
 class HealthDataModel extends ChangeNotifier {
   Map<String, double> healthData = HealthData.mapOf();
+  Map<String, double> screenData = ScreenData.mapOf();
   bool isAuth = false;
   bool _loading = false;
   String _date = (DateTime.now().year * 10000 +
@@ -44,38 +46,33 @@ class HealthDataModel extends ChangeNotifier {
 
   set date(String date) {
     _date = date;
-    getData();
+    getBodyData();
+    getScreenData();
     var dw = DataWrapper();
     dw.getDayDataAndSendAndTrain(int.parse(_date));
   }
 
-  Future<void> getData({bool forcedRefresh = false}) async {
+  Future<void> getScreenData({bool forcedRefresh = false}) async {
+    Map<String, double> res = await userApi.screenTimeDataHandler.getDataMap(
+        entry: [""],
+        startTime: calendar.intToDateTime(int.parse(date)),
+        endTime: calendar
+            .intToDateTime(int.parse(date))
+            .add(const Duration(days: 1)));
+    screenData.addAll(res);
+    logger.e(screenData);
+    notifyListeners();
+  }
+
+  Future<void> getBodyData({bool forcedRefresh = false}) async {
     _loading = true;
     notifyListeners();
-    int date = 0;
-    logger.d(date);
-    date = int.parse(_date);
-
+    int date = int.parse(_date);
     try {
-      var dw = DataWrapper();
-      String? cachedData = userApi.prefs.getString("health$date");
-      if (!forcedRefresh && (cachedData != null)) {
-        healthData = Map.castFrom<String, dynamic, String, double>(
-            json.decode(cachedData));
-        logger.e(healthData["query_time"]);
-        if (DateTime.now().millisecondsSinceEpoch -
-                (healthData["query_time"] ?? 0.0) <
-            1800000) {
-          _loading = false;
-          notifyListeners();
-          return;
-        }
-      }
-      healthData = await dw.getDataListToMap(dataList, date);
-      healthData["query_time"] =
-          DateTime.now().millisecondsSinceEpoch.toDouble();
-      userApi.prefs.setString("health$date", json.encode(healthData));
+      healthData = await userApi.healthDataHandler
+          .getCachedBodyData(calendar.intToDateTime(date), dataList);
       _loading = false;
+      logger.e(healthData);
       notifyListeners();
     } on PlatformException catch (error) {
       logger.e(error);
@@ -102,7 +99,7 @@ class HealthDataModel extends ChangeNotifier {
 
   void authAndGetData() async {
     await userApi.healthDataHandler.authenticate();
-    await getData();
+    await getBodyData();
     // old implementation to be removed
     // HuaweiAuthApi host = HuaweiAuthApi();
     // try {

@@ -36,18 +36,6 @@ class _HealthState extends State<Health> {
     });
   }
 
-  void detectFirstTimeLogin() async {
-    if (userApi.prefs.getBool("login") == null) {
-      // jump to login page
-      if (mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const SignIn()),
-        );
-      }
-    }
-  }
-
   void _sendLastDayData() async {
     var dw = DataWrapper();
     dw.getDayDataAndSendAndTrain(
@@ -56,7 +44,7 @@ class _HealthState extends State<Health> {
 
   Future<void> refresh({bool forcedRefresh = false}) async {
     Provider.of<HealthDataModel>(context, listen: false)
-        .getData(forcedRefresh: forcedRefresh);
+        .getBodyData(forcedRefresh: forcedRefresh);
     LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
     loadingDialog.showLoading();
     pollLoading(loadingDialog);
@@ -577,8 +565,7 @@ class Step extends StatelessWidget {
       callBack: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-              builder: (context) =>  DetailsChart()),
+          MaterialPageRoute(builder: (context) => DetailsChart()),
         );
       },
     );

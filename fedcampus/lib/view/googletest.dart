@@ -66,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
     //     endTime: DateTime(now.year, now.month, now.day + 1));
     // _appendLog(dataMap.toString());
 
-    List<Data> dataList = await myHealth.getDataList(
+    List<Data?> dataList = await myHealth.getDataList(
         entry: [
           "step",
           "heart_rate",
@@ -77,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
         startTime: DateTime(now.year, now.month, now.day),
         endTime: DateTime(now.year, now.month, now.day + 1));
     for (var data in dataList) {
-      _appendLog(data.value.toString());
+      _appendLog(data!.value.toString());
     }
   }
 

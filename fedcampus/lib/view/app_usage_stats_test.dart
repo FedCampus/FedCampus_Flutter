@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../pigeon/data_extensions.dart';
 import '../pigeon/generated.g.dart';
 import '../utility/log.dart';
 import '../../utility/calendar.dart' as calendar;

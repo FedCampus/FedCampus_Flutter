@@ -1,5 +1,6 @@
 import 'package:fedcampus/models/datahandler/health.dart';
 import 'package:fedcampus/models/datahandler/health_factory.dart';
+import 'package:fedcampus/models/datahandler/screen_time_data_handler.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,6 +14,8 @@ class Global {
   late SharedPreferences _prefs;
 
   late final FedHealthData healthDataHandler;
+
+  final ScreenTimeData screenTimeDataHandler = ScreenTimeData();
 
   Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();

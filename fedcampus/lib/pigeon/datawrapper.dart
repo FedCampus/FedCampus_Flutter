@@ -34,7 +34,7 @@ class DataWrapper {
   ///Throw an exception if data fetching get some error.
   ///50005 if the user is not authenticated, 50030 if the internet connection is down.
   ///If there is no data for that specifc date, the only data will be {step_time: value: 0}
-  Future<List<Data?>> getDataList(List<String> nameList, int time) async {
+  Future<List<Data>> getDataList(List<String> nameList, int time) async {
     // new cross-platform implementation
     DateTime dateTime = calendar.intToDateTime(time);
     List<Data> result = await userApi.healthDataHandler.getDataList(
@@ -77,11 +77,11 @@ class DataWrapper {
   Future<Map<String, double>> getDataListToMap(
       List<String> nameList, int time) async {
     try {
-      List<Data?>? data = await getDataList(nameList, time);
+      List<Data> data = await getDataList(nameList, time);
       Map<String, double> res = {};
       // turn the data to a map
       for (var d in data) {
-        res.addAll({d!.name: d.value});
+        res.addAll({d.name: d.value});
       }
       return res;
     } on PlatformException {

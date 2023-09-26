@@ -1,4 +1,9 @@
+import 'dart:convert';
+
 import 'package:fedcampus/pigeon/generated.g.dart';
+import '../../utility/calendar.dart' as calendar;
+import '../../utility/global.dart';
+import '../../utility/log.dart';
 
 class FedHealthData {
   /// abstract class for health data controller on variery of platforms such as Huawei Health, Google Fit
@@ -44,18 +49,18 @@ class FedHealthData {
       } on StateError {
         // do nothing
       } catch (e) {
-        rethrow;
+        logger.e(e);
       }
     }
     return dataList;
   }
 
-  Future<Map<String, double?>> getDataMap({
+  Future<Map<String, double>> getDataMap({
     required List<String> entry,
     required DateTime startTime,
     required DateTime endTime,
   }) async {
-    Map<String, double?> dataMap = {};
+    Map<String, double> dataMap = {};
     for (String element in entry) {
       Data data;
       try {
@@ -63,9 +68,34 @@ class FedHealthData {
             entry: element, startTime: startTime, endTime: endTime);
         dataMap.addAll({data.name: data.value});
       } catch (e) {
-        dataMap.addAll({element: null});
+        logger.e(e);
       }
     }
     return dataMap;
+  }
+
+  Future<Map<String, double>> getCachedBodyData(
+      DateTime dateTime, List<String> dataList) async {
+    Map<String, double> healthData;
+    String? cachedData = userApi.prefs.getString("health$dateTime");
+    if (cachedData != null) {
+      healthData = Map.castFrom<String, dynamic, String, double>(
+          json.decode(cachedData));
+      logger.e(healthData["query_time"]);
+      if (DateTime.now().millisecondsSinceEpoch -
+              (healthData["query_time"] ?? 0.0) >
+          1800000) {
+        healthData = await getDataMap(
+            entry: dataList,
+            startTime: dateTime,
+            endTime: dateTime.add(const Duration(days: 1)));
+      }
+    } else {
+      healthData = await getDataMap(
+          entry: dataList,
+          startTime: dateTime,
+          endTime: dateTime.add(const Duration(days: 1)));
+    }
+    return healthData;
   }
 }
