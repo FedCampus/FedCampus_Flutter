@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../pigeon/data_extensions.dart';
 import '../pigeon/generated.g.dart';
 import '../utility/log.dart';
+import '../../utility/calendar.dart' as calendar;
 
 class AppUsageStatsTest extends StatefulWidget {
   const AppUsageStatsTest({
@@ -15,9 +16,8 @@ class AppUsageStatsTest extends StatefulWidget {
 
 class _AppUsageStatsTestState extends State<AppUsageStatsTest> {
   String _log = "";
-  String _startDate =
-      (DataExtension.dateTimeToInt(DateTime.now()) - 1).toString();
-  String _endDate = (DataExtension.dateTimeToInt(DateTime.now())).toString();
+  String _startDate = (calendar.dateTimeToInt(DateTime.now()) - 1).toString();
+  String _endDate = (calendar.dateTimeToInt(DateTime.now())).toString();
 
   @override
   void initState() {

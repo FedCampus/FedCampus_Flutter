@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:fedcampus/models/health_data.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';

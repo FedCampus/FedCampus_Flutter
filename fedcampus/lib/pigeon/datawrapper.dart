@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'package:fedcampus/utility/fluttertoast.dart';
 import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
@@ -16,6 +15,7 @@ import 'package:fedcampus/pigeon/data_extensions.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sample_statistics/sample_statistics.dart';
+import '../../utility/calendar.dart' as calendar;
 
 class DataWrapper {
   final dataNameList = [
@@ -36,7 +36,7 @@ class DataWrapper {
   ///If there is no data for that specifc date, the only data will be {step_time: value: 0}
   Future<List<Data?>> getDataList(List<String> nameList, int time) async {
     // new cross-platform implementation
-    DateTime dateTime = DataExtension.intToDateTime(time);
+    DateTime dateTime = calendar.intToDateTime(time);
     List<Data> result = await userApi.healthDataHandler.getDataList(
         entry: nameList,
         startTime: DateTime(dateTime.year, dateTime.month, dateTime.day),

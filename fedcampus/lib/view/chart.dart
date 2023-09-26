@@ -1,8 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-
-import '../pigeon/data_extensions.dart';
-import '../pigeon/generated.g.dart';
+import 'package:provider/provider.dart';
+import '../models/health_data_model.dart';
+import '../utility/calendar.dart';
 import '../utility/log.dart';
 import 'dart:math';
 
@@ -16,6 +16,7 @@ class DetailsChart extends StatefulWidget {
 }
 
 class _DetailsChartState extends State<DetailsChart> {
+  late DateTime date;
   List<double> dataList = [9999, 12306, 3333, 6666, 7777, 2222, 8888];
   List<BarChartGroupData> barGroupData = [];
 
@@ -23,6 +24,8 @@ class _DetailsChartState extends State<DetailsChart> {
   void initState() {
     super.initState();
     getBarGroupData();
+    date = DateTime.parse(
+        Provider.of<HealthDataModel>(context, listen: false).date);
   }
 
   List<BarChartGroupData> getBarGroupData() {
@@ -42,42 +45,48 @@ class _DetailsChartState extends State<DetailsChart> {
         title: const Text("Health details"),
       ),
       body: Center(
-        child: SizedBox(
-          height: 450 * pixel,
-          child: BarChart(
-            BarChartData(
-              barGroups: barGroupData,
-              // maxY: 12001,
-              gridData: const FlGridData(
-                drawHorizontalLine: true,
-                drawVerticalLine: false,
-              ),
-              titlesData: FlTitlesData(
-                leftTitles: AxisTitles(
-                  sideTitles: SideTitles(showTitles: false),
-                ),
-                topTitles: AxisTitles(
-                  sideTitles: SideTitles(showTitles: false),
-                ),
-                rightTitles: AxisTitles(
-                  sideTitles:
-                      SideTitles(reservedSize: 50 * pixel, showTitles: true),
-                ),
-              ),
-              borderData: FlBorderData(
-                border: const Border(
-                  bottom: BorderSide(
-                    color: Colors.black,
-                    width: 1.0,
-                    style: BorderStyle.solid,
+        child: Column(
+          children: [
+            Text(
+                "${findWeekFirstDay(date).toString()} - ${findWeekLastDay(date).toString()}"),
+            SizedBox(
+              height: 450 * pixel,
+              child: BarChart(
+                BarChartData(
+                  barGroups: barGroupData,
+                  // maxY: 12001,
+                  gridData: const FlGridData(
+                    drawHorizontalLine: true,
+                    drawVerticalLine: false,
+                  ),
+                  titlesData: FlTitlesData(
+                    leftTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    rightTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                          reservedSize: 50 * pixel, showTitles: true),
+                    ),
+                  ),
+                  borderData: FlBorderData(
+                    border: const Border(
+                      bottom: BorderSide(
+                        color: Colors.black,
+                        width: 1.0,
+                        style: BorderStyle.solid,
+                      ),
+                    ),
                   ),
                 ),
+                swapAnimationDuration:
+                    const Duration(milliseconds: 150), // Optional
+                swapAnimationCurve: Curves.linear, // Optional
               ),
             ),
-            swapAnimationDuration:
-                const Duration(milliseconds: 150), // Optional
-            swapAnimationCurve: Curves.linear, // Optional
-          ),
+          ],
         ),
       ),
     );

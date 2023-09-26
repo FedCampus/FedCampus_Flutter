@@ -577,7 +577,8 @@ class Step extends StatelessWidget {
       callBack: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const DetailsChart()),
+          MaterialPageRoute(
+              builder: (context) =>  DetailsChart()),
         );
       },
     );
