@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -7,12 +9,12 @@ Logger get logger => Log.instance;
 
 class Log extends Logger {
   //TODO: change the log out put to console for production
-  // Log._(String filename)
-  //     : super(
-  //           printer: SimplePrinter(printTime: true),
-  //           output: FileOutput(file: File(filename), overrideExisting: true));
+  Log._(String filename)
+      : super(
+            printer: SimplePrinter(printTime: true),
+            output: FileOutput(file: File(filename), overrideExisting: true));
 
-  Log._(String filename) : super(printer: PrettyPrinter(printTime: true));
+  // Log._(String filename) : super(printer: PrettyPrinter(printTime: true));
 
   static final instance = Log._(filePath);
 
