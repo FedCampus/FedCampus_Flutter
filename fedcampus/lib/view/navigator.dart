@@ -73,7 +73,7 @@ class _BottomNavigatorState extends State<BottomNavigator> {
         body: _widgetOptions.elementAt(_selectedIndex),
         // https://stackoverflow.com/a/55174433
         bottomNavigationBar: SizedBox(
-          height: 65 * pixel,
+          height: 100 * pixel,
           child: BottomNavigationBar(
             unselectedLabelStyle: textStyle,
             selectedLabelStyle: textStyle,

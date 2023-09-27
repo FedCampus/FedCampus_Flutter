@@ -142,48 +142,48 @@ class DataWrapper {
 
   // TODO: input function when the app starts, date is set to be yeasterday
   void getDataAndTrain(int date) async {
-    final dbapi = DataBaseApi();
-    final database = await dbapi.getDataBase();
-    // final res = await Future.wait(getListData);
-    final res = await dbapi.getDataList(database, date);
+    // final dbapi = DataBaseApi();
+    // final database = await dbapi.getDataBase();
+    // // final res = await Future.wait(getListData);
+    // final res = await dbapi.getDataList(database, date);
 
-    final dayMissing = _findMissingData(res, date, dbapi);
+    // final dayMissing = _findMissingData(res, date, dbapi);
 
-    final newData = await _getDataListTimePeriod(dataNameList, dayMissing);
+    // final newData = await _getDataListTimePeriod(dataNameList, dayMissing);
 
-    await dbapi.saveToDB(newData, database);
+    // await dbapi.saveToDB(newData, database);
 
-    //Training
-    final dataList = await dbapi.getDataList(database, date);
-    final loadDataApi = LoadDataApi();
-    Map<List<List<double>>, List<double>> result = _wrap2DArrayInput(
-        await loadDataApi.loaddata(dataList, dbapi.startTime, date));
-    // logger.i(result);
-    final id = await deviceId();
-    const host = '10.201.8.66'; // TODO: Remove hardcode.
-    const backendUrl = 'http://$host:8000';
-    //iteration loop
-    while (true) {
-      await Future.delayed(fiveSeconds);
-      final training = FedmcrnnTraining();
-      final completer = Completer<bool>();
-      try {
-        await training.prepare(host, backendUrl, result, deviceId: id);
-        training.train.start().listen(
-            (info) => logger.d('_saveToDataBaseAndStartTraining: $info'),
-            onDone: () => completer.complete(true),
-            onError: (_) => completer.complete(false));
-      } on Exception catch (error) {
-        logger.e(error);
-        completer.complete(false);
-      }
-      final succeeded = await completer.future;
-      if (succeeded) {
-        await Future.delayed(fiveSeconds);
-      }
-      // TODO: send log file to server here
-      sendLogFileToServer();
-    }
+    // //Training
+    // final dataList = await dbapi.getDataList(database, date);
+    // final loadDataApi = LoadDataApi();
+    // Map<List<List<double>>, List<double>> result = _wrap2DArrayInput(
+    //     await loadDataApi.loaddata(dataList, dbapi.startTime, date));
+    // // logger.i(result);
+    // final id = await deviceId();
+    // const host = '10.201.8.66'; // TODO: Remove hardcode.
+    // const backendUrl = 'http://$host:8000';
+    // //iteration loop
+    // while (true) {
+    //   await Future.delayed(fiveSeconds);
+    //   final training = FedmcrnnTraining();
+    //   final completer = Completer<bool>();
+    //   try {
+    //     await training.prepare(host, backendUrl, result, deviceId: id);
+    //     training.train.start().listen(
+    //         (info) => logger.d('_saveToDataBaseAndStartTraining: $info'),
+    //         onDone: () => completer.complete(true),
+    //         onError: (_) => completer.complete(false));
+    //   } on Exception catch (error) {
+    //     logger.e(error);
+    //     completer.complete(false);
+    //   }
+    //   final succeeded = await completer.future;
+    //   if (succeeded) {
+    //     await Future.delayed(fiveSeconds);
+    //   }
+    //   // TODO: send log file to server here
+    //   sendLogFileToServer();
+    // }
   }
 
   Future<void> sendLogFileToServer() async {

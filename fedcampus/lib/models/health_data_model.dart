@@ -57,7 +57,8 @@ class HealthDataModel extends ChangeNotifier {
 
     try {
       var dw = DataWrapper();
-      healthData = await dw.getDataListToMap(dataList, date);
+      // create fake data
+      healthData = {"step": 100};
       _loading = false;
       notifyListeners();
     } on PlatformException catch (error) {
