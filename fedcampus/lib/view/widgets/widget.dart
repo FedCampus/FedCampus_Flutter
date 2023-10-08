@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+import '../../utility/event_bus.dart';
+import '../../utility/log.dart';
+
 class FedCard extends StatelessWidget {
   const FedCard({
     super.key,
@@ -315,28 +318,41 @@ class SmallLoadingDialog extends LoadingDialog {
   @override
   void showLoading() {
     double pixel = MediaQuery.of(context).size.width / 400;
+
+    bus.on("loading_done", (arg) {
+      logger.e("loading_done");
+      bus.off("loading_done");
+      if (!cancelled) cancel();
+    });
+
     showDialog<bool>(
         context: context,
         builder: (context) {
-          return AlertDialog(
-            title: const Text("Loading"),
-            content: Row(
-              children: [
-                const Spacer(),
-                SizedBox(
-                  height: 40 * pixel,
-                  width: 40 * pixel,
-                  child: const CircularProgressIndicator(strokeWidth: 2.0),
+          return WillPopScope(
+            onWillPop: () async {
+              cancelled = true;
+              return true;
+            },
+            child: AlertDialog(
+              title: const Text("Loading"),
+              content: Row(
+                children: [
+                  const Spacer(),
+                  SizedBox(
+                    height: 40 * pixel,
+                    width: 40 * pixel,
+                    child: const CircularProgressIndicator(strokeWidth: 2.0),
+                  ),
+                  const Spacer(),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: cancel,
+                  child: const Text("Cancel"),
                 ),
-                const Spacer(),
               ],
             ),
-            actions: [
-              TextButton(
-                onPressed: cancel,
-                child: const Text("Cancel"),
-              ),
-            ],
           );
         });
   }

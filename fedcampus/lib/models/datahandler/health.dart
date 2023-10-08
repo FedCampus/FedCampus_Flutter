@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:fedcampus/pigeon/generated.g.dart';
-import '../../utility/calendar.dart' as calendar;
 import '../../utility/global.dart';
 import '../../utility/log.dart';
 
@@ -75,7 +74,8 @@ class FedHealthData {
   }
 
   Future<Map<String, double>> getCachedBodyData(
-      DateTime dateTime, List<String> dataList) async {
+      DateTime dateTime, List<String> dataList,
+      {bool forcedRefresh = false}) async {
     Map<String, double> healthData;
     String? cachedData = userApi.prefs.getString("health$dateTime");
     if (cachedData != null) {

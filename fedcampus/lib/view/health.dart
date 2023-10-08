@@ -7,8 +7,6 @@ import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/calendar.dart';
 import 'package:fedcampus/view/chart.dart';
-import 'package:fedcampus/view/me/signin.dart';
-import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/view/widgets/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -47,7 +45,6 @@ class _HealthState extends State<Health> {
         .getBodyData(forcedRefresh: forcedRefresh);
     LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
     loadingDialog.showLoading();
-    pollLoading(loadingDialog);
     _sendLastDayData();
   }
 
@@ -63,19 +60,6 @@ class _HealthState extends State<Health> {
         datecode.toString();
     LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
     loadingDialog.showLoading();
-    pollLoading(loadingDialog);
-  }
-
-  void pollLoading(LoadingDialog loadingDialog) {
-    Timer.periodic(const Duration(milliseconds: 500), (timer) {
-      if (loadingDialog.cancelled) timer.cancel();
-      if (!Provider.of<HealthDataModel>(context, listen: false).loading) {
-        timer.cancel();
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          loadingDialog.cancel();
-        });
-      }
-    });
   }
 
   @override
@@ -84,7 +68,7 @@ class _HealthState extends State<Health> {
     return RefreshIndicator(
         onRefresh: () => refresh(forcedRefresh: true),
         child: LayoutBuilder(builder: (context, constraints) {
-          // height of SingleChildScrollView is unconstrained, so use the height of grandparents
+          // height of SingleChildScrollView is unconstrained, so the container uses the height of grandparents
           return SingleChildScrollView(
               scrollDirection: Axis.vertical,
               physics: const AlwaysScrollableScrollPhysics(),
@@ -565,7 +549,7 @@ class Step extends StatelessWidget {
       callBack: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => DetailsChart()),
+          MaterialPageRoute(builder: (context) => const DetailsChart()),
         );
       },
     );

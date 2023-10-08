@@ -7,8 +7,8 @@ import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/utility/global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import '../../utility/calendar.dart' as calendar;
+import '../utility/event_bus.dart';
 
 class HealthDataModel extends ChangeNotifier {
   Map<String, double> healthData = HealthData.mapOf();
@@ -69,32 +69,27 @@ class HealthDataModel extends ChangeNotifier {
     notifyListeners();
     int date = int.parse(_date);
     try {
-      healthData = await userApi.healthDataHandler
-          .getCachedBodyData(calendar.intToDateTime(date), dataList);
-      _loading = false;
-      logger.e(healthData);
-      notifyListeners();
+      healthData = await userApi.healthDataHandler.getCachedBodyData(
+          calendar.intToDateTime(date), dataList,
+          forcedRefresh: forcedRefresh);
+      setAndNotify();
     } on PlatformException catch (error) {
       logger.e(error);
+      setAndNotify();
       if (error.message == "java.lang.SecurityException: 50005") {
-        logger.d("not authenticated");
-        _loading = false;
-        authAndGetData();
+        bus.emit("toast_error", "Not authenticated.");
       } else if (error.message == "java.lang.SecurityException: 50030") {
-        logger.d("internet issue");
-        _loading = false;
-        notifyListeners();
-        Fluttertoast.showToast(
-            msg: "Internet Connection Issue, please connect to Internet.",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        bus.emit("Internet Connection Issue, please connect to Internet.",
+            "Internet Connection Issue, please connect to Internet.");
       }
       return;
     }
+  }
+
+  void setAndNotify() {
+    bus.emit("loading_done");
+    _loading = false;
+    notifyListeners();
   }
 
   void authAndGetData() async {
