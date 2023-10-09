@@ -514,3 +514,81 @@ interface TrainFedmcrnn {
     }
   }
 }
+@Suppress("UNCHECKED_CAST")
+private object AppUsageStatsCodec : StandardMessageCodec() {
+  override fun readValueOfType(type: Byte, buffer: ByteBuffer): Any? {
+    return when (type) {
+      128.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          Data.fromList(it)
+        }
+      }
+      else -> super.readValueOfType(type, buffer)
+    }
+  }
+  override fun writeValue(stream: ByteArrayOutputStream, value: Any?)   {
+    when (value) {
+      is Data -> {
+        stream.write(128)
+        writeValue(stream, value.toList())
+      }
+      else -> super.writeValue(stream, value)
+    }
+  }
+}
+
+/** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+interface AppUsageStats {
+  fun getData(name: String, startTime: Long, endTime: Long, callback: (Result<List<Data>>) -> Unit)
+  fun getAuthenticate(callback: (Result<Unit>) -> Unit)
+
+  companion object {
+    /** The codec used by AppUsageStats. */
+    val codec: MessageCodec<Any?> by lazy {
+      AppUsageStatsCodec
+    }
+    /** Sets up an instance of `AppUsageStats` to handle messages through the `binaryMessenger`. */
+    @Suppress("UNCHECKED_CAST")
+    fun setUp(binaryMessenger: BinaryMessenger, api: AppUsageStats?) {
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.fedcampus.AppUsageStats.getData", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val nameArg = args[0] as String
+            val startTimeArg = args[1].let { if (it is Int) it.toLong() else it as Long }
+            val endTimeArg = args[2].let { if (it is Int) it.toLong() else it as Long }
+            api.getData(nameArg, startTimeArg, endTimeArg) { result: Result<List<Data>> ->
+              val error = result.exceptionOrNull()
+              if (error != null) {
+                reply.reply(wrapError(error))
+              } else {
+                val data = result.getOrNull()
+                reply.reply(wrapResult(data))
+              }
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.fedcampus.AppUsageStats.getAuthenticate", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            api.getAuthenticate() { result: Result<Unit> ->
+              val error = result.exceptionOrNull()
+              if (error != null) {
+                reply.reply(wrapError(error))
+              } else {
+                reply.reply(wrapResult(null))
+              }
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+    }
+  }
+}

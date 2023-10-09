@@ -111,7 +111,11 @@ class ActivityDataModel extends ChangeNotifier {
       activityData[key]['average'] = value['avg'];
       activityData[key]['rank'] = ("${value['ranking']}%");
     });
+    activityData["query_time"] =
+        DateTime.now().millisecondsSinceEpoch.toDouble();
+    userApi.prefs.setString("activity$date", json.encode(activityData));
     _loading = false;
+    logger.e(activityData);
     notifyListeners();
   }
 
@@ -122,10 +126,22 @@ class ActivityDataModel extends ChangeNotifier {
     }
   }
 
-  Future<void> getActivityData() async {
+  Future<void> getActivityData({bool forcedRefresh = false}) async {
     _loading = true;
     notifyListeners();
-
+    String? cachedData = userApi.prefs.getString("activity$date");
+    if (!forcedRefresh && (cachedData != null)) {
+      logger.d("cached activity data");
+      activityData = json.decode(cachedData);
+      if (DateTime.now().millisecondsSinceEpoch -
+              (activityData["query_time"] ?? 0.0) <
+          1800000) {
+        _loading = false;
+        logger.e(activityData);
+        notifyListeners();
+        return;
+      }
+    }
     _clearAll();
     // get data and send to the server
     final dataNumber = int.parse(_date);
@@ -133,7 +149,7 @@ class ActivityDataModel extends ChangeNotifier {
     late dynamic bodyJson;
 
     late http.Response response;
-    
+
     try {
       response = await _sendFirstRequest();
     } on PlatformException {
@@ -143,6 +159,7 @@ class ActivityDataModel extends ChangeNotifier {
     } on TimeoutException {
       _loading = false;
       notifyListeners();
+      return;
     }
 
     if (response.statusCode == 200) {

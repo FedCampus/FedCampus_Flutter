@@ -1,9 +1,9 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:fedcampus/models/datahandler/health.dart';
-import 'package:fedcampus/pigeon/data_extensions.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:health/health.dart';
+import '../../utility/calendar.dart' as calendar;
 
 class IOSDayData {
   int date = 0;
@@ -66,8 +66,8 @@ class IOSHealth extends FedHealthData {
     return Data(
         name: entry,
         value: sum,
-        startTime: DataExtension.dateTimeToInt(startTime),
-        endTime: DataExtension.dateTimeToInt(endTime));
+        startTime: calendar.dateTimeToInt(startTime),
+        endTime: calendar.dateTimeToInt(endTime));
   }
 
   /// get the IOS Day Data from the previous 10 days
@@ -88,7 +88,7 @@ class IOSHealth extends FedHealthData {
               .compareTo(i) ==
           0);
       IOSDayData iosDayData = IOSDayData();
-      iosDayData.date = DataExtension.dateTimeToInt(i);
+      iosDayData.date = calendar.dateTimeToInt(i);
       for (var key in iosDayData.value.keys) {
         final res = dayData.where((element) => element.type == _dataEntry[key]);
         double value = (res).fold(

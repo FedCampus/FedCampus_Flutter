@@ -1,9 +1,9 @@
 import 'package:fedcampus/models/datahandler/health.dart';
-import 'package:fedcampus/pigeon/data_extensions.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:health/health.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../utility/calendar.dart' as calendar;
 import '../../utility/log.dart';
 
 class GoogleFit extends FedHealthData {
@@ -96,15 +96,15 @@ class GoogleFit extends FedHealthData {
       return Data(
           name: entry,
           value: -1,
-          startTime: DataExtension.dateTimeToInt(startTime),
-          endTime: DataExtension.dateTimeToInt(endTime),
+          startTime: calendar.dateTimeToInt(startTime),
+          endTime: calendar.dateTimeToInt(endTime),
           success: false);
     }
     Data data = Data(
         name: entry,
         value: result,
-        startTime: DataExtension.dateTimeToInt(startTime),
-        endTime: DataExtension.dateTimeToInt(endTime));
+        startTime: calendar.dateTimeToInt(startTime),
+        endTime: calendar.dateTimeToInt(endTime));
 
     return data;
   }

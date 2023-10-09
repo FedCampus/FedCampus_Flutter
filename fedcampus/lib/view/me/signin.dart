@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:fedcampus/models/user_model.dart';
 import 'package:fedcampus/utility/http_api.dart';
 import 'package:fedcampus/utility/log.dart';
+import 'package:fedcampus/utility/my_exceptions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -25,22 +28,36 @@ class _SignInState extends State<SignIn> {
     //     User.mapOf(userName: 'luyao', email: 'lw337@duke.edu', loggedIn: true);
     // await Provider.of<UserModel>(context, listen: false).setUser(user);
     // return;
+    LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
+    loadingDialog.showLoading();
     try {
-      user = await HTTPApi.signIn(_username, _password);
-    } on Exception catch (e) {
-      logger.d(e.toString());
-      if (mounted) showToastMessage(e.getMessage, context);
+      user = await HTTPApi.signIn(_username, _password)
+          .timeout(const Duration(seconds: 5));
+    } on TimeoutException catch (e) {
+      _showIfDialogNotCancelled(
+          e, "Please check your internet connection", loadingDialog);
       return;
-    } on Error catch (e) {
-      logger.d(e.toString());
+    } on MyException catch (e) {
+      _showIfDialogNotCancelled(e, e.toString(), loadingDialog);
+      return;
+    } on Exception catch (e) {
+      _showIfDialogNotCancelled(e, "Log in error", loadingDialog);
       return;
     }
-    if (mounted) {
-      await Provider.of<UserModel>(context, listen: false).setUser(user);
-      if (mounted) {
-        showToastMessage('login success', context);
-        Navigator.pop(context, true);
-      }
+    if (mounted && !loadingDialog.cancelled) {
+      Provider.of<UserModel>(context, listen: false).setUser(user);
+      showToastMessage('login success', context);
+      Navigator.pop(context, true);
+    }
+    loadingDialog.cancel();
+  }
+
+  void _showIfDialogNotCancelled(
+      Exception e, String message, LoadingDialog loadingDialog) {
+    logger.e(e);
+    if (mounted && !loadingDialog.cancelled) {
+      showToastMessage(message, context);
+      loadingDialog.cancel();
     }
   }
 

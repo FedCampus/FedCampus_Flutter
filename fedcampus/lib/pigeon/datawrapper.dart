@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'package:fedcampus/utility/fluttertoast.dart';
 import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
@@ -16,6 +15,7 @@ import 'package:fedcampus/pigeon/data_extensions.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sample_statistics/sample_statistics.dart';
+import '../../utility/calendar.dart' as calendar;
 
 class DataWrapper {
   final dataNameList = [
@@ -34,9 +34,9 @@ class DataWrapper {
   ///Throw an exception if data fetching get some error.
   ///50005 if the user is not authenticated, 50030 if the internet connection is down.
   ///If there is no data for that specifc date, the only data will be {step_time: value: 0}
-  Future<List<Data?>> getDataList(List<String> nameList, int time) async {
+  Future<List<Data>> getDataList(List<String> nameList, int time) async {
     // new cross-platform implementation
-    DateTime dateTime = DataExtension.intToDateTime(time);
+    DateTime dateTime = calendar.intToDateTime(time);
     List<Data> result = await userApi.healthDataHandler.getDataList(
         entry: nameList,
         startTime: DateTime(dateTime.year, dateTime.month, dateTime.day),
@@ -77,11 +77,11 @@ class DataWrapper {
   Future<Map<String, double>> getDataListToMap(
       List<String> nameList, int time) async {
     try {
-      List<Data?>? data = await getDataList(nameList, time);
+      List<Data> data = await getDataList(nameList, time);
       Map<String, double> res = {};
       // turn the data to a map
       for (var d in data) {
-        res.addAll({d!.name: d.value});
+        res.addAll({d.name: d.value});
       }
       return res;
     } on PlatformException {
@@ -195,12 +195,12 @@ class DataWrapper {
     String uri = "http://10.201.8.29:8006/api/log";
     var request = http.MultipartRequest("POST", Uri.parse(uri));
     await HTTPApi.getToken(request.headers);
-    final file = http.MultipartFile.fromBytes(
-        "log", File(path).readAsBytesSync(),
-        filename: "log");
-    request.files.add(file);
+    // final file = http.MultipartFile.fromBytes(
+    //     "log", File(path).readAsBytesSync(),
+    //     filename: "log");
+    // request.files.add(file);
     try {
-      await request.send();
+      // await request.send();
     } catch (e) {
       Fluttertoast.showToast(
           msg: "error sending log file to server",

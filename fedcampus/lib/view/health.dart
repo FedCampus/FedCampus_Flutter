@@ -1,11 +1,12 @@
 //TODO:find better way do adapt different screen size
 
+import 'dart:async';
+
 import 'package:fedcampus/models/health_data_model.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/calendar.dart';
-import 'package:fedcampus/view/me/signin.dart';
-import 'package:fedcampus/utility/global.dart';
+import 'package:fedcampus/view/chart.dart';
 import 'package:fedcampus/view/widgets/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -33,27 +34,17 @@ class _HealthState extends State<Health> {
     });
   }
 
-  void detectFirstTimeLogin() async {
-    if (userApi.prefs.getBool("login") == null) {
-      // jump to login page
-      if (mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const SignIn()),
-        );
-      }
-    }
-  }
-
   void _sendLastDayData() async {
     var dw = DataWrapper();
     dw.getDayDataAndSendAndTrain(
         int.parse(Provider.of<HealthDataModel>(context, listen: false).date));
   }
 
-  Future<void> refresh() async {
-    Provider.of<HealthDataModel>(context, listen: false).getData();
-    showLoadingBeforeLocalDataAvailable();
+  Future<void> refresh({bool forcedRefresh = false}) async {
+    Provider.of<HealthDataModel>(context, listen: false)
+        .getBodyData(forcedRefresh: forcedRefresh);
+    LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
+    loadingDialog.showLoading();
     _sendLastDayData();
   }
 
@@ -67,49 +58,17 @@ class _HealthState extends State<Health> {
         selectedDate.day);
     Provider.of<HealthDataModel>(context, listen: false).date =
         datecode.toString();
-    showLoadingBeforeLocalDataAvailable();
-  }
-
-  void showLoadingBeforeLocalDataAvailable() {
-    // we do not use AlertDialog here because it has an intrinsic constraint of minimum width,
-    // as suggested here: https://stackoverflow.com/a/53913355
-    showGeneralDialog(
-      context: context,
-      barrierColor: Colors.black.withOpacity(0.5),
-      pageBuilder: (context, __, ___) {
-        double pixel = MediaQuery.of(context).size.width / 400;
-        logger.d(
-            'loading: ${Provider.of<HealthDataModel>(context, listen: false).loading}');
-        if (!Provider.of<HealthDataModel>(context).loading) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            Navigator.of(context).pop(true);
-          });
-        }
-        return WillPopScope(
-          // https://stackoverflow.com/a/59755386
-          onWillPop: () async => false,
-          child: Material(
-            color: Colors.transparent,
-            child: Center(
-              child: SizedBox(
-                height: 40 * pixel,
-                width: 40 * pixel,
-                child: const CircularProgressIndicator(strokeWidth: 2.0),
-              ),
-            ),
-          ),
-        );
-      },
-    );
+    LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
+    loadingDialog.showLoading();
   }
 
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
     return RefreshIndicator(
-        onRefresh: refresh,
+        onRefresh: () => refresh(forcedRefresh: true),
         child: LayoutBuilder(builder: (context, constraints) {
-          // height of SingleChildScrollView is unconstrained, so use the height of grandparents
+          // height of SingleChildScrollView is unconstrained, so the container uses the height of grandparents
           return SingleChildScrollView(
               scrollDirection: Axis.vertical,
               physics: const AlwaysScrollableScrollPhysics(),
@@ -228,39 +187,40 @@ class _DateState extends State<Date> {
     _date = dateTime;
   }
 
+  Future<bool?> calendarDialog() {
+    double pixel = MediaQuery.of(context).size.width / 400;
+    return showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Select a day"),
+          contentPadding:
+              EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 0),
+          content: SizedBox(
+            height: 271 * pixel,
+            width: 300 * pixel,
+            child: CalendarDialog(
+              onDateChange: _changeWidgetDate,
+              primaryColor: Theme.of(context).colorScheme.primaryContainer,
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Confirm"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                widget.onDateChange(_date);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
-    Future<bool?> calendarDialog() {
-      return showDialog<bool>(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text("Select a day"),
-            contentPadding:
-                EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 0),
-            content: SizedBox(
-              height: 271 * pixel,
-              width: 300 * pixel,
-              child: CalendarDialog(
-                onDateChange: _changeWidgetDate,
-                primaryColor: Theme.of(context).colorScheme.primaryContainer,
-              ),
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: const Text("Confirm"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  widget.onDateChange(_date);
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
-
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.onBackground,
@@ -549,43 +509,50 @@ class Step extends StatelessWidget {
       decimalPoints: 0,
       loading: Provider.of<HealthDataModel>(context).loading,
     );
-    return FedCard(
-        widget: Row(
-      children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SvgIcon(
-              imagePath: 'assets/svg/step.svg',
-              colorFilter: ColorFilter.mode(
-                  Theme.of(context).colorScheme.primaryContainer,
-                  BlendMode.srcIn),
-            ),
-            SizedBox(
-              height: 10 * pixel,
-            ),
-            Text(
-              'Step',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.secondary,
+    return ClickableFedCard(
+      widget: Row(
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SvgIcon(
+                imagePath: 'assets/svg/step.svg',
+                colorFilter: ColorFilter.mode(
+                    Theme.of(context).colorScheme.primaryContainer,
+                    BlendMode.srcIn),
               ),
-            ),
-          ],
-        ),
-        const Spacer(),
-        Column(
-          children: [
-            Text(displayText,
-                style: montserratAlternatesTextStyle(
-                    displayText.length < 5
-                        ? pixel * 30
-                        : pixel * (135 / displayText.length),
-                    Theme.of(context).colorScheme.primaryContainer)),
-          ],
-        ),
-        const Spacer(),
-      ],
-    ));
+              SizedBox(
+                height: 10 * pixel,
+              ),
+              Text(
+                'Step',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+              ),
+            ],
+          ),
+          const Spacer(),
+          Column(
+            children: [
+              Text(displayText,
+                  style: montserratAlternatesTextStyle(
+                      displayText.length < 5
+                          ? pixel * 30
+                          : pixel * (135 / displayText.length),
+                      Theme.of(context).colorScheme.primaryContainer)),
+            ],
+          ),
+          const Spacer(),
+        ],
+      ),
+      callBack: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const DetailsChart()),
+        );
+      },
+    );
   }
 }
 
@@ -757,7 +724,7 @@ class Sleep extends StatelessWidget {
 }
 
 String formatNum(double? num, {decimalPoints = 2, loading = false}) {
-  if (loading || num == null) return '-';
+  if (loading || num == -1 || num == null ) return '-';
   String s = num.toStringAsFixed(decimalPoints);
   return s;
 }

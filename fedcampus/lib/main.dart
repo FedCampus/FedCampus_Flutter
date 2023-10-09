@@ -4,13 +4,17 @@ import 'package:fedcampus/models/user_model.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/view/home.dart';
+import 'package:fedcampus/view/navigator.dart';
 import 'package:fedcampus/view/splash.dart';
+import 'package:fedcampus/view/widgets/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import 'utility/event_bus.dart';
 
 //make sure you use a context that contains a Navigator instance as parent.
 //https://stackoverflow.com/a/51292613
@@ -75,6 +79,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   void initSettings(BuildContext context) async {
+    // receives all toast error message from the beginning of the app
+    initEventBus(context);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (!mounted) return;
     MyAppState myAppState = Provider.of<MyAppState>(context, listen: false);
@@ -98,6 +104,16 @@ class _MyAppState extends State<MyApp> {
       logger.e(e);
     }
     myAppState.setLocale(locale);
+  }
+
+  void initEventBus(BuildContext context) {
+    bus.on("toast_error", (arg) {
+      showToastMessage(arg, context);
+    });
+    bus.on("app_usage_stats_error", (arg) {
+      // userApi.screenTimeDataHandler.authenticate();
+      showToastMessage("You have not granted usage access permission", context);
+    });
   }
 
   @override
@@ -178,8 +194,24 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
       themeMode: appState.isDarkModeOn ? ThemeMode.dark : ThemeMode.light,
-      home: const HomeRoute(),
+      home: startUpPage(),
     );
+  }
+
+  StatefulWidget startUpPage() {
+    String? splashScreenPolicy = userApi.prefs.getString("slpash_screen");
+    switch (splashScreenPolicy) {
+      case "always":
+        return const Splash();
+      case "is_logged_in":
+        return userApi.prefs.getBool("login") == null
+            ? const Splash()
+            : const BottomNavigator();
+      case "never":
+        return const BottomNavigator();
+      default:
+        return const Splash();
+    }
   }
 }
 

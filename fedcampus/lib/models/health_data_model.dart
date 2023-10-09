@@ -1,15 +1,18 @@
 import 'dart:async';
 
 import 'package:fedcampus/models/health_data.dart';
+import 'package:fedcampus/models/screen_data.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/utility/global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import '../../utility/calendar.dart' as calendar;
+import '../utility/event_bus.dart';
 
 class HealthDataModel extends ChangeNotifier {
   Map<String, double> healthData = HealthData.mapOf();
+  Map<String, double> screenData = ScreenData.mapOf();
   bool isAuth = false;
   bool _loading = false;
   String _date = (DateTime.now().year * 10000 +
@@ -43,49 +46,61 @@ class HealthDataModel extends ChangeNotifier {
 
   set date(String date) {
     _date = date;
-    getData();
+    getBodyData();
+    getScreenData();
     var dw = DataWrapper();
     dw.getDayDataAndSendAndTrain(int.parse(_date));
   }
 
-  Future<void> getData() async {
+  Future<void> getScreenData({bool forcedRefresh = false}) async {
+    Map<String, double> res = {};
+    try {
+      res = await userApi.screenTimeDataHandler.getDataMap(
+          entry: [""],
+          startTime: calendar.intToDateTime(int.parse(date)),
+          endTime: calendar
+              .intToDateTime(int.parse(date))
+              .add(const Duration(days: 1)));
+    } catch (e) {
+      logger.e(e);
+      bus.emit("app_usage_stats_error", "Not authenticated.");
+    }
+    screenData.addAll(res);
+    logger.e(screenData);
+    notifyListeners();
+  }
+
+  Future<void> getBodyData({bool forcedRefresh = false}) async {
     _loading = true;
     notifyListeners();
-    int date = 0;
-    logger.d(date);
-    date = int.parse(_date);
-
+    int date = int.parse(_date);
     try {
-      var dw = DataWrapper();
-      healthData = await dw.getDataListToMap(dataList, date);
-      _loading = false;
-      notifyListeners();
+      healthData = await userApi.healthDataHandler.getCachedBodyData(
+          calendar.intToDateTime(date), dataList,
+          forcedRefresh: forcedRefresh);
+      setAndNotify();
     } on PlatformException catch (error) {
       logger.e(error);
+      setAndNotify();
       if (error.message == "java.lang.SecurityException: 50005") {
-        logger.d("not authenticated");
-        _loading = false;
-        authAndGetData();
+        bus.emit("toast_error", "Not authenticated.");
       } else if (error.message == "java.lang.SecurityException: 50030") {
-        logger.d("internet issue");
-        _loading = false;
-        notifyListeners();
-        Fluttertoast.showToast(
-            msg: "Internet Connection Issue, please connect to Internet.",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        bus.emit("Internet Connection Issue, please connect to Internet.",
+            "Internet Connection Issue, please connect to Internet.");
       }
       return;
     }
   }
 
+  void setAndNotify() {
+    bus.emit("loading_done");
+    _loading = false;
+    notifyListeners();
+  }
+
   void authAndGetData() async {
     await userApi.healthDataHandler.authenticate();
-    await getData();
+    await getBodyData();
     // old implementation to be removed
     // HuaweiAuthApi host = HuaweiAuthApi();
     // try {
