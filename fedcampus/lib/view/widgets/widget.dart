@@ -315,8 +315,10 @@ class FullScreenLoadingDialog extends LoadingDialog {
 class SmallLoadingDialog extends LoadingDialog {
   SmallLoadingDialog({required this.context});
   final BuildContext context;
+  // wait 0.5 second to show the dialog, if it survives till that moment (due to early loading done), set [_shown] to true
+  bool _shown = false;
   @override
-  void showLoading() {
+  void showLoading() async {
     double pixel = MediaQuery.of(context).size.width / 400;
 
     bus.on("loading_done", (arg) {
@@ -325,43 +327,52 @@ class SmallLoadingDialog extends LoadingDialog {
       if (!cancelled) cancel();
     });
 
-    showDialog<bool>(
-        context: context,
-        builder: (context) {
-          return WillPopScope(
-            onWillPop: () async {
-              cancelled = true;
-              return true;
-            },
-            child: AlertDialog(
-              title: const Text("Loading"),
-              content: Row(
-                children: [
-                  const Spacer(),
-                  SizedBox(
-                    height: 40 * pixel,
-                    width: 40 * pixel,
-                    child: const CircularProgressIndicator(strokeWidth: 2.0),
+    await Future.delayed(const Duration(milliseconds: 500));
+    _shown = true;
+
+    if (cancelled) return;
+
+    if (context.mounted) {
+      showDialog<bool>(
+          context: context,
+          builder: (context) {
+            return WillPopScope(
+              onWillPop: () async {
+                cancelled = true;
+                return true;
+              },
+              child: AlertDialog(
+                title: const Text("Loading"),
+                content: Row(
+                  children: [
+                    const Spacer(),
+                    SizedBox(
+                      height: 40 * pixel,
+                      width: 40 * pixel,
+                      child: const CircularProgressIndicator(strokeWidth: 2.0),
+                    ),
+                    const Spacer(),
+                  ],
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: cancel,
+                    child: const Text("Cancel"),
                   ),
-                  const Spacer(),
                 ],
               ),
-              actions: [
-                TextButton(
-                  onPressed: cancel,
-                  child: const Text("Cancel"),
-                ),
-              ],
-            ),
-          );
-        });
+            );
+          });
+    }
   }
 
   @override
   void cancel() {
     cancelled = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Navigator.of(context).pop(true);
-    });
+    if (_shown) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(context).pop(true);
+      });
+    }
   }
 }

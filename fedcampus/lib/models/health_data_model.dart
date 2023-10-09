@@ -32,15 +32,7 @@ class HealthDataModel extends ChangeNotifier {
     "sleep_efficiency"
   ];
 
-  bool get isAuthenticated => isAuth;
-
   String get date => _date;
-
-  set isAuthenticated(bool auth) {
-    isAuth = auth;
-    userApi.prefs.setBool("login", auth);
-    notifyListeners();
-  }
 
   bool get loading => _loading;
 
@@ -62,7 +54,7 @@ class HealthDataModel extends ChangeNotifier {
               .intToDateTime(int.parse(date))
               .add(const Duration(days: 1)));
     } catch (e) {
-      logger.e(e);
+      // logger.e(e);
       bus.emit("app_usage_stats_error", "Not authenticated.");
     }
     screenData.addAll(res);
@@ -75,7 +67,7 @@ class HealthDataModel extends ChangeNotifier {
     notifyListeners();
     int date = int.parse(_date);
     try {
-      healthData = await userApi.healthDataHandler.getCachedBodyData(
+      healthData = await userApi.healthDataHandler.getCachedBodyDataDay(
           calendar.intToDateTime(date), dataList,
           forcedRefresh: forcedRefresh);
       setAndNotify();

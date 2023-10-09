@@ -69,40 +69,15 @@ class FedHealthData {
             entry: element, startTime: startTime, endTime: endTime);
         dataMap.addAll({data.name: data.value});
       } catch (e) {
+        // -1 is a flag that is used to indicate no data/invalid data
+        dataMap.addAll({element: -1});
         logger.e(e);
       }
     }
     return dataMap;
   }
 
-  Future<Map<String, double>> getCachedBodyDataLegacy(
-      DateTime dateTime, List<String> dataList,
-      {bool forcedRefresh = false}) async {
-    // deprecated, old implementation which uses [SharedPreferences]
-    Map<String, double> healthData;
-    String? cachedData = userApi.prefs.getString("health$dateTime");
-    if (cachedData != null) {
-      healthData = Map.castFrom<String, dynamic, String, double>(
-          json.decode(cachedData));
-      logger.e(healthData["query_time"]);
-      if (DateTime.now().millisecondsSinceEpoch -
-              (healthData["query_time"] ?? 0.0) >
-          1800000) {
-        healthData = await getDataMap(
-            entry: dataList,
-            startTime: dateTime,
-            endTime: dateTime.add(const Duration(days: 1)));
-      }
-    } else {
-      healthData = await getDataMap(
-          entry: dataList,
-          startTime: dateTime,
-          endTime: dateTime.add(const Duration(days: 1)));
-    }
-    return healthData;
-  }
-
-  Future<Map<String, double>> getCachedBodyData(
+  Future<Map<String, double>> getCachedBodyDataDay(
       DateTime dateTime, List<String> dataList,
       {bool forcedRefresh = false}) async {
     // according to https://github.com/tekartik/sqflite/blob/master/sqflite/doc/usage_recommendations.md#single-database-connection,
@@ -120,11 +95,13 @@ class FedHealthData {
       for (var i in dataList) {
         List<Map<String, Object?>> result =
             await healthDatabase.getData(calendar.dateTimeToInt(dateTime), i);
+        logger.e(result);
         if (result.isEmpty) {
           dirtyDataList.add(i);
-        } else if ((DateTime.now().millisecondsSinceEpoch -
-                (result[0]["time_modified"] as int)) <
-            1800000) {
+        } else if ((dateTime.day != DateTime.now().day) ||
+            (((DateTime.now().millisecondsSinceEpoch -
+                    (result[0]["time_modified"] as int)) <
+                1800000))) {
           healthData.addAll({i: result[0]["value"] as double});
         } else {
           logger.e(i);
@@ -132,6 +109,7 @@ class FedHealthData {
         }
       }
     }
+    logger.e(dirtyDataList);
 
     Map<String, double> dirtyHealthData = await getDataMap(
         entry: dirtyDataList,

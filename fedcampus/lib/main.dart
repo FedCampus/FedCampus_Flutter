@@ -203,14 +203,16 @@ class _MyAppState extends State<MyApp> {
     switch (splashScreenPolicy) {
       case "always":
         return const Splash();
-      case "is_logged_in":
-        return userApi.prefs.getBool("login") == null
-            ? const Splash()
-            : const BottomNavigator();
+      case "is_logged_in": // default
+        return (userApi.prefs.getBool("login") ?? false)
+            ? const BottomNavigator()
+            : const Splash();
       case "never":
         return const BottomNavigator();
       default:
-        return const Splash();
+        return (userApi.prefs.getBool("login") ?? false)
+            ? const BottomNavigator()
+            : const Splash();
     }
   }
 }

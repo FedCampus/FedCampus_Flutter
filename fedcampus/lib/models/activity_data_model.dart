@@ -39,15 +39,7 @@ class ActivityDataModel extends ChangeNotifier {
     "sleep_efficiency",
   ];
 
-  bool get isAuthenticated => isAuth;
-
   bool get loading => _loading;
-
-  set isAuthenticated(bool auth) {
-    isAuth = auth;
-    userApi.prefs.setBool("login", auth);
-    notifyListeners();
-  }
 
   set date(String date) {
     _date = date;

@@ -26,8 +26,9 @@ class Global {
         userApi.prefs.getString("slpash_screen") ?? "always";
     switch (splashScreenPolicy) {
       case "always":
+        break;
       case "is_logged_in":
-        if (_prefs.getBool("login") != null) {
+        if (_prefs.getBool("login") ?? false) {
           String serviceProvider =
               _prefs.getString("service_provider") ?? "huawei";
           healthDataHandler = HealthDataHandlerFactory()

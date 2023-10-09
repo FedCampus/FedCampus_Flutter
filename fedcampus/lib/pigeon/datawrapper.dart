@@ -35,7 +35,6 @@ class DataWrapper {
   ///50005 if the user is not authenticated, 50030 if the internet connection is down.
   ///If there is no data for that specifc date, the only data will be {step_time: value: 0}
   Future<List<Data>> getDataList(List<String> nameList, int time) async {
-    // new cross-platform implementation
     DateTime dateTime = calendar.intToDateTime(time);
     List<Data> result = await userApi.healthDataHandler.getDataList(
         entry: nameList,
@@ -43,20 +42,6 @@ class DataWrapper {
         endTime: DateTime(dateTime.year, dateTime.month, dateTime.day + 1));
     result.removeWhere((element) => element.success == false);
     return result;
-
-    // ready to be removed
-    // List<Future<Data?>> list = List.empty(growable: true);
-    // final host = DataApi();
-    // for (final element in nameList) {
-    //   list.add(_getData(host, element, time));
-    // }
-    // try {
-    //   final data = await Future.wait(list);
-    //   data.removeWhere((element) => element == null);
-    //   return data;
-    // } on PlatformException {
-    //   rethrow;
-    // }
   }
 
   ///get all the data from Huawei from the time period.

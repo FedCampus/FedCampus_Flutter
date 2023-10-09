@@ -52,7 +52,7 @@ class ScreenTimeData {
             entry: element, startTime: startTime, endTime: endTime);
         dataMap.addAll({data.name: data.value});
       } catch (e) {
-        logger.e(e);
+        // logger.e(e);
         rethrow;
       }
     }
