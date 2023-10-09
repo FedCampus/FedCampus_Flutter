@@ -43,9 +43,9 @@ class _HealthState extends State<Health> {
   Future<void> refresh({bool forcedRefresh = false}) async {
     Provider.of<HealthDataModel>(context, listen: false)
         .getBodyData(forcedRefresh: forcedRefresh);
-    _sendLastDayData();
     LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
     loadingDialog.showLoading();
+    _sendLastDayData();
   }
 
   updateDate(DateTime selectedDate) {

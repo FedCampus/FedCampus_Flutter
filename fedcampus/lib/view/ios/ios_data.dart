@@ -33,8 +33,8 @@ class _IOSDataPageState extends State<IOSDataPage> {
     var end = time.add(const Duration(days: 1));
     var midnight = DateTime(now.year, now.month, now.day);
     for (var entry in dataValue.entries) {
-      var data =
-          await f.getData(entry: entry.key, startTime: midnight, endTime: end);
+      var data = await f.getDataInterval(
+          entry: entry.key, startTime: midnight, endTime: end);
 
       setState(() {
         dataValue.update(entry.key, (value) => data.value);

@@ -28,7 +28,7 @@ class _MyHomePageState extends State<MyHomePage> {
   init() async {
     FedHealthData myHealth = GoogleFit();
     DateTime now = DateTime.now();
-    Data result = await myHealth.getData(
+    Data result = await myHealth.getDataInterval(
         entry: "step",
         startTime: DateTime.now().subtract(const Duration(days: 1)),
         endTime: DateTime.now());
@@ -66,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
     //     endTime: DateTime(now.year, now.month, now.day + 1));
     // _appendLog(dataMap.toString());
 
-    List<Data?> dataList = await myHealth.getDataList(
+    List<Data?> dataList = await myHealth.getDataListInterval(
         entry: [
           "step",
           "heart_rate",

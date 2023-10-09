@@ -1,24 +1,24 @@
-import 'dart:convert';
-
 import 'package:fedcampus/pigeon/generated.g.dart';
 import '../../utility/global.dart';
 import '../../utility/health_database.dart';
 import '../../utility/log.dart';
 import '../../utility/calendar.dart' as calendar;
 
+/// Abstract class for health data controller on variery of platforms such as Huawei Health, Google Fit.
+/// The interface provides methods to get [Data] from an interval or a day; it also supports get a list of [Data] from a list of types.
+/// The implementations are [List] centered, and [Map] implementations are based on [List], which is inspired from Flutter [Health](https://pub.dev/packages/health)
 class FedHealthData {
-  /// abstract class for health data controller on variery of platforms such as Huawei Health, Google Fit
   Future<void> authenticate() async {
-    /// throws [Exception] when failed
+    // throws [Exception] when failed
     throw UnimplementedError();
   }
 
   Future<void> cancelAuthentication() async {
-    /// throws [Exception] when failed
+    // throws [Exception] when failed
     throw UnimplementedError();
   }
 
-  Future<Data> getData({
+  Future<Data> getDataInterval({
     required String entry,
     required DateTime startTime,
     required DateTime endTime,
@@ -31,11 +31,13 @@ class FedHealthData {
     required DateTime date,
   }) async {
     DateTime nextDay = date.add(const Duration(days: 1));
-    Data data = await getData(entry: entry, startTime: date, endTime: nextDay);
+    Data data =
+        await getDataInterval(entry: entry, startTime: date, endTime: nextDay);
     return data;
   }
 
-  Future<List<Data>> getDataList({
+  /// when some entries went wrong, this method return other fine entries
+  Future<List<Data>> getDataListInterval({
     required List<String> entry,
     required DateTime startTime,
     required DateTime endTime,
@@ -44,11 +46,9 @@ class FedHealthData {
     for (String element in entry) {
       Data data;
       try {
-        data = await getData(
+        data = await getDataInterval(
             entry: element, startTime: startTime, endTime: endTime);
         dataList.add(data);
-      } on StateError {
-        // do nothing
       } catch (e) {
         logger.e(e);
       }
@@ -56,71 +56,57 @@ class FedHealthData {
     return dataList;
   }
 
-  Future<Map<String, double>> getDataMap({
+  Future<Map<String, double>> getValueMapInterval({
     required List<String> entry,
     required DateTime startTime,
     required DateTime endTime,
   }) async {
-    Map<String, double> dataMap = {};
-    for (String element in entry) {
-      Data data;
-      try {
-        data = await getData(
-            entry: element, startTime: startTime, endTime: endTime);
-        dataMap.addAll({data.name: data.value});
-      } catch (e) {
-        // -1 is a flag that is used to indicate no data/invalid data
-        dataMap.addAll({element: -1});
-        logger.e(e);
-      }
-    }
-    return dataMap;
+    throw UnimplementedError();
   }
 
-  Future<Map<String, double>> getCachedBodyDataDay(
-      DateTime dateTime, List<String> dataList,
+  /// first try to retrieve from database. If time is today, only allow 30 min cache, otherwise always use cached data unless forced refresh
+  /// when some entries went wrong, this method return other fine entries
+  Future<List<Data>> getCachedDataListDay(List<String> nameList, int time,
       {bool forcedRefresh = false}) async {
+    DateTime dateTime = calendar.intToDateTime(time);
     // according to https://github.com/tekartik/sqflite/blob/master/sqflite/doc/usage_recommendations.md#single-database-connection,
     // it is safe to call [openDatabase] every time you need, since the option [singleInstance] ensures single database connection
     HealthDatabase healthDatabase = await HealthDatabase.create();
-
-    Map<String, double> healthData = {};
+    List<Data> healthData = [];
     List<String> dirtyDataList = [];
-
     if (forcedRefresh) {
-      dirtyDataList = dataList;
+      dirtyDataList = nameList;
     } else {
-      // logger.d(await healthDatabase.getDataList());
-      // try to get data from DB, if < 30 min
-      for (var i in dataList) {
-        List<Map<String, Object?>> result =
+      for (var i in nameList) {
+        List<Map<String, Object?>> re =
             await healthDatabase.getData(calendar.dateTimeToInt(dateTime), i);
-        logger.e(result);
-        if (result.isEmpty) {
+        if (re.isEmpty) {
           dirtyDataList.add(i);
-        } else if ((dateTime.day != DateTime.now().day) ||
-            (((DateTime.now().millisecondsSinceEpoch -
-                    (result[0]["time_modified"] as int)) <
-                1800000))) {
-          healthData.addAll({i: result[0]["value"] as double});
+        } else if ((dateTime.day != DateTime.now().day) || _isDirtyData(re)) {
+          healthData.add(Data(
+            name: i,
+            value: re[0]["value"] as double,
+            startTime: time,
+            endTime: calendar.dateTimeToInt(
+                calendar.intToDateTime(time).add(const Duration(days: 1))),
+          ));
         } else {
-          logger.e(i);
           dirtyDataList.add(i);
         }
       }
     }
-    logger.e(dirtyDataList);
 
-    Map<String, double> dirtyHealthData = await getDataMap(
-        entry: dirtyDataList,
-        startTime: dateTime,
-        endTime: dateTime.add(const Duration(days: 1)));
+    List<Data> dirtyHealthData = await userApi.healthDataHandler
+        .getDataListInterval(
+            entry: dirtyDataList,
+            startTime: DateTime(dateTime.year, dateTime.month, dateTime.day),
+            endTime: DateTime(dateTime.year, dateTime.month, dateTime.day + 1));
 
     // write newly queried data into DB
-    for (final e in dirtyHealthData.entries) {
+    for (final e in dirtyHealthData) {
       healthDatabase.insert(
         HealthDBData(
-          name: e.key,
+          name: e.name,
           value: e.value,
           time: calendar.dateTimeToInt(dateTime),
           timeModified: DateTime.now().millisecondsSinceEpoch,
@@ -129,6 +115,30 @@ class FedHealthData {
     }
 
     healthData.addAll(dirtyHealthData);
+
+    return healthData;
+  }
+
+  bool _isDirtyData(List<Map<String, Object?>> re) {
+    return (((DateTime.now().millisecondsSinceEpoch -
+            (re[0]["time_modified"] as int)) <
+        1800000));
+  }
+
+  /// when some entries went wrong, this method return other fine entries
+  Future<Map<String, double>> getCachedValueMapDay(
+      DateTime dateTime, List<String> dataList,
+      {bool forcedRefresh = false}) async {
+    Map<String, double> healthData = {};
+
+    List<Data> result = await getCachedDataListDay(
+      dataList,
+      calendar.dateTimeToInt(dateTime),
+      forcedRefresh: forcedRefresh,
+    );
+    for (var d in result) {
+      if (d.success) healthData.addAll({d.name: d.value});
+    }
 
     return healthData;
   }

@@ -79,7 +79,7 @@ class GoogleFit extends FedHealthData {
   }
 
   @override
-  Future<Data> getData(
+  Future<Data> getDataInterval(
       {required String entry,
       required DateTime startTime,
       required DateTime endTime}) async {

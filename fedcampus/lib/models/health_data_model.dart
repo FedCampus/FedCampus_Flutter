@@ -67,9 +67,10 @@ class HealthDataModel extends ChangeNotifier {
     notifyListeners();
     int date = int.parse(_date);
     try {
-      healthData = await userApi.healthDataHandler.getCachedBodyDataDay(
+      healthData = await userApi.healthDataHandler.getCachedValueMapDay(
           calendar.intToDateTime(date), dataList,
           forcedRefresh: forcedRefresh);
+      // if the code block here is sync, need to add a zero delay to avoid event not being able to be received
       setAndNotify();
     } on PlatformException catch (error) {
       logger.e(error);
@@ -85,9 +86,13 @@ class HealthDataModel extends ChangeNotifier {
   }
 
   void setAndNotify() {
-    bus.emit("loading_done");
-    _loading = false;
-    notifyListeners();
+    Future.delayed(const Duration()).then((value) {
+      {
+        bus.emit("loading_done");
+        _loading = false;
+        notifyListeners();
+      }
+    });
   }
 
   void authAndGetData() async {

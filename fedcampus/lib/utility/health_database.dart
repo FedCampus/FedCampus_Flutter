@@ -3,16 +3,12 @@ import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-import 'log.dart';
-
 class HealthDatabase {
   late final Database db;
   HealthDatabase._();
 
   // https://stackoverflow.com/a/59304510
   static Future<HealthDatabase> create() async {
-    logger.e("create() (public factory)");
-
     // Call the private constructor
     var component = HealthDatabase._();
 

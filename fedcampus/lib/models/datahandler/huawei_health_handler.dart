@@ -21,25 +21,22 @@ class HuaweiHealth extends FedHealthData {
   }
 
   @override
-  Future<Data> getData(
+  Future<Data> getDataInterval(
       {required String entry,
       required DateTime startTime,
       required DateTime endTime}) async {
-    try {
-      List<Data?> dataListOne = await host.getData(entry,
-          calendar.dateTimeToInt(startTime), calendar.dateTimeToInt(endTime));
-      if (dataListOne.isEmpty) {
-        return Data(
-            name: entry,
-            value: -1,
-            startTime: calendar.dateTimeToInt(startTime),
-            endTime: calendar.dateTimeToInt(endTime),
-            success: false);
-      } else {
-        return dataListOne[0]!;
-      }
-    } on Exception {
-      rethrow;
+    List<Data?> dataListOne = await host.getData(entry,
+        calendar.dateTimeToInt(startTime), calendar.dateTimeToInt(endTime));
+    if (dataListOne.isEmpty) {
+      // the program does not go wrong, but no valid data, and thus should be omitted in FA
+      return Data(
+          name: entry,
+          value: -1,
+          startTime: calendar.dateTimeToInt(startTime),
+          endTime: calendar.dateTimeToInt(endTime),
+          success: false);
+    } else {
+      return dataListOne[0]!;
     }
   }
 }

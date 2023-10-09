@@ -1,6 +1,5 @@
 import '../../pigeon/generated.g.dart';
 import '../../utility/calendar.dart' as calendar;
-import '../../utility/event_bus.dart';
 import '../../utility/log.dart';
 
 class ScreenTimeData {
