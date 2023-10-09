@@ -509,7 +509,7 @@ class Step extends StatelessWidget {
       decimalPoints: 0,
       loading: Provider.of<HealthDataModel>(context).loading,
     );
-    return ClickableFedCard(
+    return FedCard(
       widget: Row(
         children: [
           Column(
@@ -546,12 +546,12 @@ class Step extends StatelessWidget {
           const Spacer(),
         ],
       ),
-      callBack: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const DetailsChart()),
-        );
-      },
+      // callBack: () {
+      //   Navigator.push(
+      //     context,
+      //     MaterialPageRoute(builder: (context) => const DetailsChart()),
+      //   );
+      // },
     );
   }
 }
