@@ -112,7 +112,7 @@ class _MyAppState extends State<MyApp> {
     });
     bus.on("app_usage_stats_error", (arg) {
       // userApi.screenTimeDataHandler.authenticate();
-      showToastMessage("You have not granted usage access permission", context);
+      // showToastMessage("You have not granted usage access permission", context);
     });
   }
 
