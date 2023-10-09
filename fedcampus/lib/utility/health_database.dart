@@ -74,16 +74,16 @@ class HealthDatabase {
     await db.update(
       'data',
       data.toMap(),
-      where: 'time = ?',
-      whereArgs: [data.time],
+      where: 'time = ? and name = ?',
+      whereArgs: [data.time, data.name],
     );
   }
 
-  Future<void> deleteData(int time) async {
+  Future<void> deleteData(int time, String name) async {
     await db.delete(
       'data',
-      where: 'time = ?',
-      whereArgs: [time],
+      where: 'time = ? and name = ?',
+      whereArgs: [time, name],
     );
   }
 }
