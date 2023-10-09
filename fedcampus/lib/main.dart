@@ -80,9 +80,7 @@ class _MyAppState extends State<MyApp> {
 
   void initSettings(BuildContext context) async {
     // receives all toast error message from the beginning of the app
-    bus.on("toast_error", (arg) {
-      showToastMessage(arg, context);
-    });
+    initEventBus(context);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (!mounted) return;
     MyAppState myAppState = Provider.of<MyAppState>(context, listen: false);
@@ -106,6 +104,16 @@ class _MyAppState extends State<MyApp> {
       logger.e(e);
     }
     myAppState.setLocale(locale);
+  }
+
+  void initEventBus(BuildContext context) {
+    bus.on("toast_error", (arg) {
+      showToastMessage(arg, context);
+    });
+    bus.on("app_usage_stats_error", (arg) {
+      // userApi.screenTimeDataHandler.authenticate();
+      showToastMessage("You have not granted usage access permission", context);
+    });
   }
 
   @override

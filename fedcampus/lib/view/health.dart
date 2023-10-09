@@ -724,7 +724,7 @@ class Sleep extends StatelessWidget {
 }
 
 String formatNum(double? num, {decimalPoints = 2, loading = false}) {
-  if (loading || num == null) return '-';
+  if (loading || num == -1 || num == null ) return '-';
   String s = num.toStringAsFixed(decimalPoints);
   return s;
 }

@@ -105,6 +105,8 @@ class FedHealthData {
   Future<Map<String, double>> getCachedBodyData(
       DateTime dateTime, List<String> dataList,
       {bool forcedRefresh = false}) async {
+    // according to https://github.com/tekartik/sqflite/blob/master/sqflite/doc/usage_recommendations.md#single-database-connection,
+    // it is safe to call [openDatabase] every time you need, since the option [singleInstance] ensures single database connection
     HealthDatabase healthDatabase = await HealthDatabase.create();
 
     Map<String, double> healthData = {};
@@ -131,13 +133,13 @@ class FedHealthData {
       }
     }
 
-    Map<String, double> additionalHealthData = await getDataMap(
+    Map<String, double> dirtyHealthData = await getDataMap(
         entry: dirtyDataList,
         startTime: dateTime,
         endTime: dateTime.add(const Duration(days: 1)));
 
     // write newly queried data into DB
-    for (final e in additionalHealthData.entries) {
+    for (final e in dirtyHealthData.entries) {
       healthDatabase.insert(
         HealthDBData(
           name: e.key,
@@ -148,7 +150,7 @@ class FedHealthData {
       );
     }
 
-    healthData.addAll(additionalHealthData);
+    healthData.addAll(dirtyHealthData);
 
     return healthData;
   }

@@ -1,5 +1,6 @@
 import '../../pigeon/generated.g.dart';
 import '../../utility/calendar.dart' as calendar;
+import '../../utility/event_bus.dart';
 import '../../utility/log.dart';
 
 class ScreenTimeData {
@@ -52,8 +53,14 @@ class ScreenTimeData {
         dataMap.addAll({data.name: data.value});
       } catch (e) {
         logger.e(e);
+        rethrow;
       }
     }
     return dataMap;
+  }
+
+  Future<void> authenticate() async {
+    await host.getAuthenticate();
+    return;
   }
 }

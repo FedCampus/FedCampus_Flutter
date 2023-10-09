@@ -1,6 +1,9 @@
 // https://book.flutterchina.club/chapter8/eventbus.html
 // Subscriber callback signature
-typedef void EventCallback(arg);
+// https://dart.dev/language/typedefs
+// typedef void EventCallback(arg);
+// recommended syntax
+typedef EventCallback<T> = void Function(T arg);
 
 class EventBus {
 // Private constructor

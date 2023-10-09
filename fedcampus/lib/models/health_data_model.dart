@@ -53,12 +53,18 @@ class HealthDataModel extends ChangeNotifier {
   }
 
   Future<void> getScreenData({bool forcedRefresh = false}) async {
-    Map<String, double> res = await userApi.screenTimeDataHandler.getDataMap(
-        entry: [""],
-        startTime: calendar.intToDateTime(int.parse(date)),
-        endTime: calendar
-            .intToDateTime(int.parse(date))
-            .add(const Duration(days: 1)));
+    Map<String, double> res = {};
+    try {
+      res = await userApi.screenTimeDataHandler.getDataMap(
+          entry: [""],
+          startTime: calendar.intToDateTime(int.parse(date)),
+          endTime: calendar
+              .intToDateTime(int.parse(date))
+              .add(const Duration(days: 1)));
+    } catch (e) {
+      logger.e(e);
+      bus.emit("app_usage_stats_error", "Not authenticated.");
+    }
     screenData.addAll(res);
     logger.e(screenData);
     notifyListeners();
