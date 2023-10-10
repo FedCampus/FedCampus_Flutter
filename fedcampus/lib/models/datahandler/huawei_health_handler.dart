@@ -45,8 +45,9 @@ class HuaweiHealth extends FedHealthData {
       logger.e(error);
       if (error.message == "java.lang.SecurityException: 50005") {
         throw AuthenticationException("java.lang.SecurityException: 50005");
-      } else if (error.message == "java.lang.SecurityException: 50030") {
-        throw ClientException(
+      } else if (error.message == "java.lang.SecurityException: 50030" ||
+          error.message == "java.lang.SecurityException: 50008") {
+        throw InternetConnectionException(
             "Internet Connection Issue, please connect to Internet");
       }
       rethrow;

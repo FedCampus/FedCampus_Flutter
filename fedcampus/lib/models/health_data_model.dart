@@ -77,6 +77,10 @@ class HealthDataModel extends ChangeNotifier {
       setAndNotify();
       bus.emit("toast_error", "Not authenticated.");
       await userApi.healthDataHandler.authenticate();
+    } on InternetConnectionException catch (error) {
+      logger.e(error);
+      setAndNotify();
+      bus.emit("toast_error", "Internet connection error, cannot connet to health data handler server.");
     }
     setAndNotify();
   }
