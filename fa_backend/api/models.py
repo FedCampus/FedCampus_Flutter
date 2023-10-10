@@ -50,9 +50,8 @@ def saveRecord(Model, user, data):
             & Q(dataType=data.get("name"))
         )[0]
         value = record.value
-        if not value == float(data.get("value")):
-            record.value = float(data.get("value"))
-            record.save()
+        record.value = float(data.get("value"))
+        record.save()
         logger.info(f"rewrite record {data}")
     except:
         record = Model.objects.create(
