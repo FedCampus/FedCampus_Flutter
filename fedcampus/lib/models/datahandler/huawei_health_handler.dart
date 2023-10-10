@@ -1,6 +1,8 @@
 import 'package:fedcampus/models/datahandler/health.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/utility/log.dart';
+import 'package:fedcampus/utility/my_exceptions.dart';
+import 'package:flutter/services.dart';
 import '../../utility/calendar.dart' as calendar;
 
 class HuaweiHealth extends FedHealthData {
@@ -25,18 +27,32 @@ class HuaweiHealth extends FedHealthData {
       {required String entry,
       required DateTime startTime,
       required DateTime endTime}) async {
-    List<Data?> dataListOne = await host.getData(entry,
-        calendar.dateTimeToInt(startTime), calendar.dateTimeToInt(endTime));
-    if (dataListOne.isEmpty) {
-      // the program does not go wrong, but no valid data, and thus should be omitted in FA
-      return Data(
-          name: entry,
-          value: -1,
-          startTime: calendar.dateTimeToInt(startTime),
-          endTime: calendar.dateTimeToInt(endTime),
-          success: false);
-    } else {
-      return dataListOne[0]!;
+    try {
+      List<Data?> dataListOne = await host.getData(entry,
+          calendar.dateTimeToInt(startTime), calendar.dateTimeToInt(endTime));
+      if (dataListOne.isEmpty) {
+        // the program does not go wrong, but no valid data, and thus should be omitted in FA
+        return Data(
+            name: entry,
+            value: -1,
+            startTime: calendar.dateTimeToInt(startTime),
+            endTime: calendar.dateTimeToInt(endTime),
+            success: false);
+      } else {
+        return dataListOne[0]!;
+      }
+    } on PlatformException catch (error) {
+      logger.e(error);
+      if (error.message == "java.lang.SecurityException: 50005") {
+        throw AuthenticationException("java.lang.SecurityException: 50005");
+      }
+      rethrow;
+      // else if (error.message == "java.lang.SecurityException: 50030") {
+      //   bus.emit("Internet Connection Issue, please connect to Internet.",
+      //       "Internet Connection Issue, please connect to Internet.");
+      // }
+    } catch (e) {
+      rethrow;
     }
   }
 }

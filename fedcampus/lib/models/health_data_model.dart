@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../utility/calendar.dart' as calendar;
 import '../utility/event_bus.dart';
+import '../utility/my_exceptions.dart';
 
 class HealthDataModel extends ChangeNotifier {
   Map<String, double> healthData = HealthData.mapOf();
@@ -72,17 +73,13 @@ class HealthDataModel extends ChangeNotifier {
           forcedRefresh: forcedRefresh);
       // if the code block here is sync, need to add a zero delay to avoid event not being able to be received
       setAndNotify();
-    } on PlatformException catch (error) {
+    } on AuthenticationException catch (error) {
       logger.e(error);
       setAndNotify();
-      if (error.message == "java.lang.SecurityException: 50005") {
-        bus.emit("toast_error", "Not authenticated.");
-      } else if (error.message == "java.lang.SecurityException: 50030") {
-        bus.emit("Internet Connection Issue, please connect to Internet.",
-            "Internet Connection Issue, please connect to Internet.");
-      }
-      return;
+      await userApi.healthDataHandler.authenticate();
+      bus.emit("toast_error", "Not authenticated.");
     }
+    return;
   }
 
   void setAndNotify() {

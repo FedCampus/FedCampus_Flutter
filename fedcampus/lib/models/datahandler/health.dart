@@ -36,7 +36,8 @@ class FedHealthData {
     return data;
   }
 
-  /// when some entries went wrong, this method return other fine entries
+  /// ~~when some entries went wrong, this method return other fine entries~~
+  /// when some entries went wrong, this method throws [Exception] even if some succeeds
   Future<List<Data>> getDataListInterval({
     required List<String> entry,
     required DateTime startTime,
@@ -51,6 +52,7 @@ class FedHealthData {
         dataList.add(data);
       } catch (e) {
         logger.e(e);
+        rethrow;
       }
     }
     return dataList;
@@ -65,7 +67,8 @@ class FedHealthData {
   }
 
   /// first try to retrieve from database. If time is today, only allow 30 min cache, otherwise always use cached data unless forced refresh
-  /// when some entries went wrong, this method return other fine entries
+  /// ~~when some entries went wrong, this method return other fine entries~~
+  /// when some entries went wrong, this method throws [Exception] even if some succeeds
   Future<List<Data>> getCachedDataListDay(List<String> nameList, int time,
       {bool forcedRefresh = false}) async {
     DateTime dateTime = calendar.intToDateTime(time);
@@ -125,7 +128,8 @@ class FedHealthData {
         1800000));
   }
 
-  /// when some entries went wrong, this method return other fine entries
+  /// ~~when some entries went wrong, this method return other fine entries~~
+  /// when some entries went wrong, this method throws [Exception] even if some succeeds
   Future<Map<String, double>> getCachedValueMapDay(
       DateTime dateTime, List<String> dataList,
       {bool forcedRefresh = false}) async {
