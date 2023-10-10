@@ -13,7 +13,7 @@ class Global {
 
   late SharedPreferences _prefs;
 
-  late final FedHealthData healthDataHandler;
+  late FedHealthData healthDataHandler;
 
   final ScreenTimeData screenTimeDataHandler = ScreenTimeData();
 
@@ -24,23 +24,17 @@ class Global {
     // if logged in, initialize healthDataHandler here and skip [Splash], otherwise initialize that in [Splash]
     String splashScreenPolicy =
         userApi.prefs.getString("slpash_screen") ?? "always";
+    healthDataHandler = HealthDataHandlerFactory().creatHealthDataHandler(
+        _prefs.getString("service_provider") ?? "huawei");
     switch (splashScreenPolicy) {
       case "always":
         break;
       case "is_logged_in":
-        if (_prefs.getBool("login") ?? false) {
-          String serviceProvider =
-              _prefs.getString("service_provider") ?? "huawei";
-          healthDataHandler = HealthDataHandlerFactory()
-              .creatHealthDataHandler(serviceProvider);
-        }
+        if (_prefs.getBool("login") ?? false) {}
       case "never":
-        String serviceProvider =
-            _prefs.getString("service_provider") ?? "huawei";
-        healthDataHandler =
-            HealthDataHandlerFactory().creatHealthDataHandler(serviceProvider);
     }
     // throw Exception('exceptions in initialization');
+    return;
   }
 
   SharedPreferences get prefs => _prefs;
