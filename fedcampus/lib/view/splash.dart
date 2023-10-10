@@ -16,7 +16,7 @@ class Splash extends StatefulWidget {
 
 class _SplashState extends State<Splash> {
   HealthDataHandlerFactory healthFactory = HealthDataHandlerFactory();
-  String serviceProvider = "huawei";
+  String serviceProvider = userApi.prefs.getString("service_provider") ?? "huawei";
 
   @override
   void initState() {

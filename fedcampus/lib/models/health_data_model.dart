@@ -6,9 +6,9 @@ import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/utility/global.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../../utility/calendar.dart' as calendar;
 import '../utility/event_bus.dart';
+import '../utility/my_exceptions.dart';
 
 class HealthDataModel extends ChangeNotifier {
   Map<String, double> healthData = HealthData.mapOf();
@@ -55,7 +55,7 @@ class HealthDataModel extends ChangeNotifier {
               .add(const Duration(days: 1)));
     } catch (e) {
       // logger.e(e);
-      bus.emit("app_usage_stats_error", "Not authenticated.");
+      // bus.emit("app_usage_stats_error", "Not authenticated.");
     }
     screenData.addAll(res);
     logger.e(screenData);
@@ -72,17 +72,17 @@ class HealthDataModel extends ChangeNotifier {
           forcedRefresh: forcedRefresh);
       // if the code block here is sync, need to add a zero delay to avoid event not being able to be received
       setAndNotify();
-    } on PlatformException catch (error) {
+    } on AuthenticationException catch (error) {
       logger.e(error);
       setAndNotify();
-      if (error.message == "java.lang.SecurityException: 50005") {
-        bus.emit("toast_error", "Not authenticated.");
-      } else if (error.message == "java.lang.SecurityException: 50030") {
-        bus.emit("Internet Connection Issue, please connect to Internet.",
-            "Internet Connection Issue, please connect to Internet.");
-      }
-      return;
+      bus.emit("toast_error", "Not authenticated.");
+      await userApi.healthDataHandler.authenticate();
+    } on InternetConnectionException catch (error) {
+      logger.e(error);
+      setAndNotify();
+      bus.emit("toast_error", "Internet connection error, cannot connet to health data handler server.");
     }
+    setAndNotify();
   }
 
   void setAndNotify() {
@@ -93,20 +93,5 @@ class HealthDataModel extends ChangeNotifier {
         notifyListeners();
       }
     });
-  }
-
-  void authAndGetData() async {
-    await userApi.healthDataHandler.authenticate();
-    await getBodyData();
-    // old implementation to be removed
-    // HuaweiAuthApi host = HuaweiAuthApi();
-    // try {
-    //   await host.getAuthenticate();
-    //   getData();
-    //   final dw = DataWrapper();
-    //   dw.getDayDataAndSendAndTrain(int.parse(_date));
-    // } on PlatformException catch (error) {
-    //   logger.e(error);
-    // }
   }
 }

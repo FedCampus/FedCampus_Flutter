@@ -16,3 +16,7 @@ class ClientException extends MyException {
 class InternetConnectionException extends MyException {
   InternetConnectionException(super._message);
 }
+
+class AuthenticationException extends MyException {
+  AuthenticationException(super._message);
+}

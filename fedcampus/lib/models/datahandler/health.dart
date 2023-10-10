@@ -36,7 +36,8 @@ class FedHealthData {
     return data;
   }
 
-  /// when some entries went wrong, this method return other fine entries
+  /// ~~when some entries went wrong, this method return other fine entries~~
+  /// when some entries went wrong, this method throws [Exception] even if some succeeds
   Future<List<Data>> getDataListInterval({
     required List<String> entry,
     required DateTime startTime,
@@ -51,6 +52,7 @@ class FedHealthData {
         dataList.add(data);
       } catch (e) {
         logger.e(e);
+        rethrow;
       }
     }
     return dataList;
@@ -64,8 +66,19 @@ class FedHealthData {
     throw UnimplementedError();
   }
 
-  /// first try to retrieve from database. If time is today, only allow 30 min cache, otherwise always use cached data unless forced refresh
-  /// when some entries went wrong, this method return other fine entries
+  /// first try to retrieve from database. If time is today, only allow 30 min cache, otherwise always use cached data unless forced refresh.
+  /// ~~when some entries went wrong, this method return other fine entries.~~
+  /// when some entries went wrong, this method throws [Exception] even if some succeeds.
+  /// children of this class should throw [AuthenticationException] if not authenticated, which will cause [HealthDataModel] to call `authenticate()`.
+  ///
+  /// subclass implementation:
+  ///   1. Huawei: good
+  ///   2. Google: not perfect because FLutter Health only throws exceptions when the data is not available on the platform,
+  ///   but when the data is not rqeusted by [requestAuthorization], Flutter Health does not throw exceptions.
+  ///   Specifically, native code prints the error but the method channel does not throw a [PlatformException] in ways like `callback(Result.failure(err))`,
+  ///   and what we can see is just logging info in the console.
+  ///   Therefore, GoogleFit has to call `authenticate()` upon instantiation. Luckily, unlike Huawei, this process does not redirect to another page, which is acceptable.
+  ///   3. iOS: TODO
   Future<List<Data>> getCachedDataListDay(List<String> nameList, int time,
       {bool forcedRefresh = false}) async {
     DateTime dateTime = calendar.intToDateTime(time);
@@ -125,7 +138,8 @@ class FedHealthData {
         1800000));
   }
 
-  /// when some entries went wrong, this method return other fine entries
+  /// ~~when some entries went wrong, this method return other fine entries~~
+  /// when some entries went wrong, this method throws [Exception] even if some succeeds
   Future<Map<String, double>> getCachedValueMapDay(
       DateTime dateTime, List<String> dataList,
       {bool forcedRefresh = false}) async {

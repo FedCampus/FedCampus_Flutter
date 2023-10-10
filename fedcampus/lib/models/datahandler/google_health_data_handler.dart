@@ -5,6 +5,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../../utility/calendar.dart' as calendar;
 import '../../utility/log.dart';
+import '../../utility/my_exceptions.dart';
 
 class GoogleFit extends FedHealthData {
   final types = [
@@ -83,10 +84,16 @@ class GoogleFit extends FedHealthData {
       {required String entry,
       required DateTime startTime,
       required DateTime endTime}) async {
-    List<HealthDataPoint> healthDataPoint = await _getData(
-        healthTypeLookupTable[entry] ?? HealthDataType.STEPS,
-        startTime,
-        endTime);
+    List<HealthDataPoint> healthDataPoint = [];
+    try {
+      healthDataPoint = await _getData(
+          healthTypeLookupTable[entry] ?? HealthDataType.STEPS,
+          startTime,
+          endTime);
+    } catch (e) {
+      logger.e(e);
+      throw AuthenticationException("Google Fit error");
+    }
     double result = await _aggregateHealthDataPoint(healthDataPoint);
     if (["heart_rate", "rest_heart_rate", "exercise_heart_rate"]
         .contains(entry)) {
