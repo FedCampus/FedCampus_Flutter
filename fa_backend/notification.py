@@ -12,7 +12,7 @@ from django.db.models import Q
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "fedapp.settings")
 django.setup()
 
-from django.core.mail import send_mail
+from django.core.mail import send_mass_mail
 from django.conf import settings
 from django.contrib.auth.models import User
 
@@ -66,11 +66,11 @@ def sendReminderEmail(*timeTuple):
         return
 
     ## send email
-    send_mail(
-        subject=settings.SUBJECT,
-        message=settings.MESSAGE,
-        from_email=settings.EMAIL_HOST_USER,
-        recipient_list=user,
+    send_mass_mail(
+        (
+            (settings.SUBJECT, settings.MESSAGE, settings.EMAIL_HOST_USER, [u])
+            for u in user
+        )
     )
 
 
