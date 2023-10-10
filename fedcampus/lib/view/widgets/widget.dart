@@ -369,7 +369,7 @@ class SmallLoadingDialog extends LoadingDialog {
   @override
   void cancel() {
     cancelled = true;
-    if (_shown) {
+    if (_shown && context.mounted) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.of(context).pop(true);
       });

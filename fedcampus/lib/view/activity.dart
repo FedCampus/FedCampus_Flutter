@@ -96,7 +96,8 @@ class _ActivityState extends State<Activity> {
   void pollLoading(LoadingDialog loadingDialog) {
     Timer.periodic(const Duration(milliseconds: 500), (timer) {
       if (loadingDialog.cancelled) timer.cancel();
-      if (!Provider.of<ActivityDataModel>(context, listen: false).loading) {
+      if (mounted &&
+          !Provider.of<ActivityDataModel>(context, listen: false).loading) {
         timer.cancel();
         WidgetsBinding.instance.addPostFrameCallback((_) {
           loadingDialog.cancel();
