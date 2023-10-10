@@ -6,7 +6,6 @@ import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/utility/global.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../../utility/calendar.dart' as calendar;
 import '../utility/event_bus.dart';
 import '../utility/my_exceptions.dart';
@@ -56,7 +55,7 @@ class HealthDataModel extends ChangeNotifier {
               .add(const Duration(days: 1)));
     } catch (e) {
       // logger.e(e);
-      bus.emit("app_usage_stats_error", "Not authenticated.");
+      // bus.emit("app_usage_stats_error", "Not authenticated.");
     }
     screenData.addAll(res);
     logger.e(screenData);
@@ -76,10 +75,10 @@ class HealthDataModel extends ChangeNotifier {
     } on AuthenticationException catch (error) {
       logger.e(error);
       setAndNotify();
-      await userApi.healthDataHandler.authenticate();
       bus.emit("toast_error", "Not authenticated.");
+      await userApi.healthDataHandler.authenticate();
     }
-    return;
+    setAndNotify();
   }
 
   void setAndNotify() {
@@ -90,20 +89,5 @@ class HealthDataModel extends ChangeNotifier {
         notifyListeners();
       }
     });
-  }
-
-  void authAndGetData() async {
-    await userApi.healthDataHandler.authenticate();
-    await getBodyData();
-    // old implementation to be removed
-    // HuaweiAuthApi host = HuaweiAuthApi();
-    // try {
-    //   await host.getAuthenticate();
-    //   getData();
-    //   final dw = DataWrapper();
-    //   dw.getDayDataAndSendAndTrain(int.parse(_date));
-    // } on PlatformException catch (error) {
-    //   logger.e(error);
-    // }
   }
 }
