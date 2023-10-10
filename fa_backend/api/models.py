@@ -19,30 +19,6 @@ class Record(models.Model):
     value = models.FloatField(null=True, blank=True)
     update = models.DateTimeField(auto_now=True)
 
-    def saveRecord(user, startTime, endTime, dataType, data):
-        try:
-            record = Record.objects.filter(
-                Q(user=user)
-                & Q(startTime=startTime)
-                & Q(endTime=endTime)
-                & Q(dataType=dataType)
-            )[0]
-            value = record.value
-            if not value == float(data.get("value")):
-                # record.data = data
-                record.value = float(data.get("value"))
-                record.save()
-        except:
-            record = Record.objects.create(
-                user=user,
-                startTime=startTime,
-                endTime=endTime,
-                # data=data,
-                dataType=dataType,
-                value=data.get("value"),
-            )
-            logger.info(f"record created {data}")
-
     def __str__(self):
         return str(self.startTime)[0:9] + " " + str(self.dataType)
 
@@ -57,62 +33,33 @@ class RecordDP(models.Model):
     value = models.FloatField(null=True, blank=True)
     update = models.DateTimeField(auto_now=True)
 
-    def saveRecord(user, startTime, endTime, dataType, data):
-        try:
-            record = RecordDP.objects.filter(
-                Q(user=user)
-                & Q(startTime=startTime)
-                & Q(endTime=endTime)
-                & Q(dataType=dataType)
-            )[0]
-            value = record.data.get("value")
-            if not value == data.get("value"):
-                # record.data = data
-                record.value = float(data.get("value"))
-                record.save()
-        except:
-            record = RecordDP.objects.create(
-                user=user,
-                startTime=startTime,
-                endTime=endTime,
-                # data=data,
-                dataType=dataType,
-                value=data.get("value"),
-            )
-            logger.info(f"record created {data}")
-
     def __str__(self):
         return (
             str(self.startTime)[0:8] + " " + str(self.dataType) + " " + str(self.user)
         )
 
 
-def saveRecord(Data, user, startTime, endTime, dataType, data):
+def saveRecord(Model, user, data):
     ## judge if it is sleep efficiency?
 
-    if dataType == "sleep_efficiency":
-        # deal with sleep effieicny
-        startTime = startTime // 1000000 * 1000000
-        endTime = endTime // 1000000 * 1000000
-        pass
-
     try:
-        record = Data.objects.filter(
+        record = Model.objects.filter(
             Q(user=user)
-            & Q(startTime=startTime)
-            & Q(endTime=endTime)
-            & Q(dataType=dataType)
+            & Q(startTime=data.get("startTime"))
+            & Q(endTime=data.get("endTime"))
+            & Q(dataType=data.get("name"))
         )[0]
         value = record.value
         if not value == float(data.get("value")):
             record.value = float(data.get("value"))
             record.save()
+        logger.info(f"rewrite record {data}")
     except:
-        record = Data.objects.create(
+        record = Model.objects.create(
             user=user,
-            startTime=startTime,
-            endTime=endTime,
-            dataType=dataType,
+            startTime=data.get("startTime"),
+            endTime=data.get("endTime"),
+            dataType=data.get("name"),
             value=data.get("value"),
         )
         logger.info(f"record created {data}")

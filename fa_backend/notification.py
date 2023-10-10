@@ -14,8 +14,6 @@ django.setup()
 
 from django.core.mail import send_mail
 from django.conf import settings
-from api.models import Record
-from api.models import Customer
 from django.contrib.auth.models import User
 
 email = json.load(open("config/email.json", "r"))
@@ -23,7 +21,7 @@ email = json.load(open("config/email.json", "r"))
 ## Email Settings
 
 ## TODO: Whitelist users
-whitelist = ["js1139@duke.edu", "sh623@duke.edu", "as1233@duke.edu"]
+whitelist = ["js1139@duke.edu", "as1233@duke.edu"]
 
 
 def getTimeCST(record):
