@@ -23,6 +23,7 @@ class _BottomNavigatorState extends State<BottomNavigator> {
   void initState() {
     super.initState();
     spawnTraining();
+    sendFAData();
   }
 
   Color getAppBarColor(int index, BuildContext context) {
@@ -49,6 +50,17 @@ class _BottomNavigatorState extends State<BottomNavigator> {
     final now = DateTime.now();
     final dateNumber = now.year * 10000 + now.month * 100 + now.day;
     dw.getDataAndTrain(dateNumber);
+  }
+
+  void sendFAData() async {
+    // send FA data periodically so that the server can keep track of the update of the user if they constantly open the app
+    var dw = DataWrapper();
+    final now = DateTime.now();
+    final dateNumber = now.year * 10000 + now.month * 100 + now.day;
+    while (true) {
+      dw.getDayDataAndSendAndTrain(dateNumber);
+      await Future.delayed(const Duration(hours: 2));
+    }
   }
 
   @override
