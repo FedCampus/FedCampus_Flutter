@@ -45,7 +45,7 @@ class GoogleFit extends FedHealthData {
       HealthFactory(useHealthConnectIfAvailable: false);
 
   GoogleFit() {
-    // authenticate();
+    authenticate();
   }
 
   @override
