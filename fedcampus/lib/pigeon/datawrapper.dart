@@ -152,7 +152,7 @@ class DataWrapper {
         await training.prepare(host, backendUrl, result, deviceId: id);
         training.train.start().listen(
             (info) => logger.d('_saveToDataBaseAndStartTraining: $info'),
-            onDone: () => completer.complete(true),
+            onDone: () => completer.isCompleted ? () : completer.complete(true),
             onError: (_) => completer.complete(false));
       } on Exception catch (error) {
         logger.e(error);

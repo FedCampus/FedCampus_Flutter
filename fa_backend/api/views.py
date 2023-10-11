@@ -88,26 +88,10 @@ class Data(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
-        logger.info("received data: " + str(request.data))
+        logger.info(f"received data: from user {request.user} " + str(request.data))
 
-        for i in request.data:
-            data = i
-            saveRecord(
-                Record,
-                user=request.user,
-                data=data,
-                startTime=int(
-                    time.strftime(
-                        "%Y%m%d%H%M%S", time.localtime(data.get("startTime") + 28800)
-                    )
-                ),
-                endTime=int(
-                    time.strftime(
-                        "%Y%m%d%H%M%S", time.localtime(data.get("startTime") + 28800)
-                    )
-                ),
-                dataType=data.get("name"),
-            )
+        [saveRecord(Record, request.user, data) for data in request.data]
+
         return Response(None)
 
 
@@ -118,24 +102,8 @@ class DataDP(APIView):
     def post(self, request):
         logger.info("received data dp: " + str(request.data))
 
-        for i in request.data:
-            data = i
-            saveRecord(
-                RecordDP,
-                user=request.user,
-                data=data,
-                startTime=int(
-                    time.strftime(
-                        "%Y%m%d%H%M%S", time.localtime(data.get("startTime") + 28800)
-                    )
-                ),
-                endTime=int(
-                    time.strftime(
-                        "%Y%m%d%H%M%S", time.localtime(data.get("startTime") + 28800)
-                    )
-                ),
-                dataType=data.get("name"),
-            )
+        [saveRecord(RecordDP, request.user, data) for data in request.data]
+
         return Response(None)
 
 
