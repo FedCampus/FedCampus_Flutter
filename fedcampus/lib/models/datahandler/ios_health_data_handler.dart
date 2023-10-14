@@ -2,6 +2,7 @@
 
 import 'package:fedcampus/models/datahandler/health.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
+import 'package:fedcampus/utility/log.dart';
 import 'package:health/health.dart';
 import '../../utility/calendar.dart' as calendar;
 
@@ -35,6 +36,7 @@ class IOSHealth extends FedHealthData {
   late final List<HealthDataType> _types;
 
   IOSHealth() {
+    logger.d("Using IOS Health.");
     _types = _dataEntry.values.toList();
   }
 
