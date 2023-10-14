@@ -52,6 +52,7 @@ class HealthDataModel extends ChangeNotifier {
   }
 
   Future<void> getBodyData({bool forcedRefresh = false}) async {
+    forcedRefresh = Platform.isIOS ? true : false;
     _loading = true;
     notifyListeners();
     int date = int.parse(_date);
