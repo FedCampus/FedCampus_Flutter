@@ -12,8 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../utility/event_bus.dart';
-
 class Health extends StatefulWidget {
   const Health({
     super.key,
@@ -47,9 +45,6 @@ class _HealthState extends State<Health> {
         .getBodyData(forcedRefresh: forcedRefresh);
     LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
     loadingDialog.showLoading();
-    bus.on("loading_done", (arg) {
-      if (!loadingDialog.cancelled) loadingDialog.cancel();
-    });
     _sendLastDayData();
   }
 
@@ -65,9 +60,6 @@ class _HealthState extends State<Health> {
         datecode.toString();
     LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
     loadingDialog.showLoading();
-    bus.on("loading_done", (arg) {
-      if (!loadingDialog.cancelled) loadingDialog.cancel();
-    });
   }
 
   @override

@@ -13,11 +13,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
-import '../utility/event_bus.dart';
 import '../utility/fluttertoast.dart';
 
 class ActivityDataModel extends ChangeNotifier {
   Map<String, dynamic> activityData = ActivityData.create();
+  bool isAuth = false;
   bool ifSent = false;
   bool _loading = false;
   String _date = (DateTime.now().year * 10000 +
@@ -37,10 +37,21 @@ class ActivityDataModel extends ChangeNotifier {
   set date(String date) {
     _date = date;
     ifSent = false;
+    // _getActivityData();
+    // getActivityDataTest();
     getActivityData();
   }
 
   String get date => _date;
+
+  Future<void> getActivityDataTest() async {
+    _loading = false;
+    for (final dataEntryName in dataList) {
+      activityData[dataEntryName]["average"] = 15110.045;
+      activityData[dataEntryName]["rank"] = '100%';
+    }
+    notifyListeners();
+  }
 
   Future<http.Response> _sendFirstRequest() async {
     final dataNumber = int.parse(_date);
@@ -89,7 +100,9 @@ class ActivityDataModel extends ChangeNotifier {
     activityData["query_time"] =
         DateTime.now().millisecondsSinceEpoch.toDouble();
     userApi.prefs.setString("activity$date", json.encode(activityData));
-    _notify();
+    _loading = false;
+    logger.e(activityData);
+    notifyListeners();
   }
 
   void _clearAll() {
@@ -102,7 +115,7 @@ class ActivityDataModel extends ChangeNotifier {
   }
 
   Future<void> getActivityData({bool forcedRefresh = false}) async {
-    forcedRefresh = Platform.isIOS ? true : forcedRefresh;
+    Platform.isIOS ? forcedRefresh = true : Null;
     _loading = true;
     notifyListeners();
     String? cachedData = userApi.prefs.getString("activity$date");
@@ -112,7 +125,9 @@ class ActivityDataModel extends ChangeNotifier {
       if (DateTime.now().millisecondsSinceEpoch -
               (activityData["query_time"] ?? 0.0) <
           1800000) {
-        _notify();
+        _loading = false;
+        logger.e(activityData);
+        notifyListeners();
         return;
       }
     }
@@ -127,10 +142,12 @@ class ActivityDataModel extends ChangeNotifier {
     try {
       response = await _sendFirstRequest();
     } on PlatformException {
-      _notify();
+      _loading = false;
+      notifyListeners();
       return;
     } on TimeoutException {
-      _notify();
+      _loading = false;
+      notifyListeners();
       return;
     } on SocketException {
       dataWrapperToast("Please Connect To Internet");
@@ -174,7 +191,8 @@ class ActivityDataModel extends ChangeNotifier {
         } else if (error.message == "java.lang.SecurityException: 50030") {
           logger.d("Internet connection Issue");
         }
-        _notify();
+        _loading = false;
+        notifyListeners();
         return;
       }
 
@@ -194,7 +212,8 @@ class ActivityDataModel extends ChangeNotifier {
         getActivityData();
       } else {
         logger.d("error");
-        _notify();
+        _loading = false;
+        notifyListeners();
       }
     } else {
       logger.e(response.statusCode);
@@ -202,13 +221,8 @@ class ActivityDataModel extends ChangeNotifier {
         // not authenticated, pop an authenticate reminder signing
         dataWrapperToast("Please Login for federated analysis.");
       }
-      _notify();
+      _loading = false;
+      notifyListeners();
     }
-  }
-
-  void _notify() {
-    _loading = false;
-    bus.emit("activity_loading_done");
-    notifyListeners();
   }
 }
