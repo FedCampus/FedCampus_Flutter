@@ -216,29 +216,11 @@ class FedAnalysis(APIView):
                 startTime = data.get("time")
                 continue
             dataList.append(data.get("name"))
-            saveRecord(
-                Data=RecordDP,
-                user=request.user,
-                dataType=data.get("name"),
-                startTime=int(
-                    time.strftime(
-                        "%Y%m%d%H%M%S",
-                        time.localtime(data.get("startTime") + 28800),
-                    )
-                ),
-                endTime=int(
-                    time.strftime(
-                        "%Y%m%d%H%M%S",
-                        time.localtime(data.get("startTime") + 28800),
-                    )
-                ),
-                data=data,
-            )
+            saveRecord(RecordDP, request.user, data)
+        print(dataList)
         return Response(self.calculateAverageAndRanking(request, startTime))
 
     def calculateAverageAndRanking(self, request, dateTime):
-        dateTime = dateTime * 1000000
-
         resultJson = {}
 
         for dataType in FA_DATA:

@@ -46,10 +46,8 @@ def saveRecord(Model, user, data):
         record = Model.objects.filter(
             Q(user=user)
             & Q(startTime=data.get("startTime"))
-            & Q(endTime=data.get("endTime"))
             & Q(dataType=data.get("name"))
         )[0]
-        value = record.value
         record.value = float(data.get("value"))
         record.save()
         logger.info(f"rewrite record {data}")
@@ -70,18 +68,6 @@ class SleepTime(models.Model):
     startTime = models.IntegerField()
     endTime = models.IntegerField()
     data = models.JSONField(null=True, blank=True)
-
-    def saveRecord(user, startTime, endTime, data):
-        try:
-            record = SleepTime.objects.filter(
-                Q(user=user) & Q(startTime=startTime) & Q(endTime=endTime)
-            )[0]
-        except:
-            sleepTime = SleepTime.objects.create(
-                user=user, startTime=startTime, endTime=endTime, data=data
-            )
-            logger.info("sleep Time data created")
-            pass
 
 
 class Customer(models.Model):

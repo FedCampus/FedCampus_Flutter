@@ -15,6 +15,7 @@
 **.venv/
 
 logs/
+fa_backend/media/android/
 
 **gradlew
 **gradlew.bat
