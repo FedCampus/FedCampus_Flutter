@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../utility/event_bus.dart';
+
 class Activity extends StatefulWidget {
   const Activity({
     super.key,
@@ -76,7 +78,9 @@ class _ActivityState extends State<Activity> {
         .getActivityData(forcedRefresh: forcedRefresh);
     LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
     loadingDialog.showLoading();
-    pollLoading(loadingDialog);
+    bus.on("activity_loading_done", (arg) {
+      if (!loadingDialog.cancelled) loadingDialog.cancel();
+    });
   }
 
   updateDate(DateTime selectedDate) {
@@ -91,19 +95,8 @@ class _ActivityState extends State<Activity> {
     Provider.of<ActivityDataModel>(context, listen: false).date = datecode;
     LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
     loadingDialog.showLoading();
-    pollLoading(loadingDialog);
-  }
-
-  void pollLoading(LoadingDialog loadingDialog) {
-    Timer.periodic(const Duration(milliseconds: 500), (timer) {
-      if (loadingDialog.cancelled) timer.cancel();
-      if (mounted &&
-          !Provider.of<ActivityDataModel>(context, listen: false).loading) {
-        timer.cancel();
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          loadingDialog.cancel();
-        });
-      }
+    bus.on("activity_loading_done", (arg) {
+      if (!loadingDialog.cancelled) loadingDialog.cancel();
     });
   }
 
