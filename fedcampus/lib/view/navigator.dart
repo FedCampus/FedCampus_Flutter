@@ -25,7 +25,7 @@ class _BottomNavigatorState extends State<BottomNavigator> {
   void initState() {
     super.initState();
     Platform.isAndroid ? spawnTraining() : Null;
-    // sendFAData();
+    sendFAData();
   }
 
   Color getAppBarColor(int index, BuildContext context) {
