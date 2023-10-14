@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io' show Platform;
 
 import 'package:fedcampus/models/activity_data.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
@@ -29,20 +30,13 @@ class ActivityDataModel extends ChangeNotifier {
           DateTime.now().day)
       .toString();
 
-  final dataList = [
-    "step_time",
-    "distance",
-    "calorie",
-    "intensity",
-    "stress",
-    "step",
-    "sleep_efficiency",
-  ];
+  final dataList = DataWrapper.dataNameList;
 
   bool get loading => _loading;
 
   set date(String date) {
     _date = date;
+    ifSent = false;
     // _getActivityData();
     // getActivityDataTest();
     getActivityData();
@@ -112,13 +106,16 @@ class ActivityDataModel extends ChangeNotifier {
   }
 
   void _clearAll() {
-    for (final s in dataList) {
-      activityData[s]["average"] = 0;
-      activityData[s]["rank"] = "0";
-    }
+    activityData.forEach((key, value) {
+      if (key != "query_time") {
+        activityData[key]['average'] = 0.0;
+        activityData[key]['rank'] = 0.0;
+      }
+    });
   }
 
   Future<void> getActivityData({bool forcedRefresh = false}) async {
+    Platform.isIOS ? forcedRefresh = true : Null;
     _loading = true;
     notifyListeners();
     String? cachedData = userApi.prefs.getString("activity$date");
