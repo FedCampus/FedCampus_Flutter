@@ -47,42 +47,36 @@ class HealthDataModel extends ChangeNotifier {
       // bus.emit("app_usage_stats_error", "Not authenticated.");
     }
     screenData.addAll(res);
-    logger.e(screenData);
+    logger.i(screenData);
     notifyListeners();
   }
 
   Future<void> getBodyData({bool forcedRefresh = false}) async {
-    forcedRefresh = Platform.isIOS ? true : false;
+    forcedRefresh = Platform.isIOS ? true : forcedRefresh;
     _loading = true;
     notifyListeners();
     int date = int.parse(_date);
     try {
       healthData = await userApi.healthDataHandler.getCachedValueMapDay(
           calendar.intToDateTime(date), DataWrapper.dataNameList,
-          forcedRefresh: forcedRefresh);
-      // if the code block here is sync, need to add a zero delay to avoid event not being able to be received
-      setAndNotify();
+          forcedRefresh: Platform.isIOS ? true : forcedRefresh);
+      _notify();
     } on AuthenticationException catch (error) {
       logger.e(error);
-      setAndNotify();
+      _notify();
       bus.emit("toast_error", "Not authenticated.");
       await userApi.healthDataHandler.authenticate();
     } on InternetConnectionException catch (error) {
       logger.e(error);
-      setAndNotify();
+      _notify();
       bus.emit("toast_error",
           "Internet connection error, cannot connet to health data handler server.");
     }
-    setAndNotify();
   }
 
-  void setAndNotify() {
-    Future.delayed(const Duration()).then((value) {
-      {
-        bus.emit("loading_done");
-        _loading = false;
-        notifyListeners();
-      }
-    });
+  void _notify() {
+    bus.emit("loading_done");
+    _loading = false;
+    notifyListeners();
   }
 }

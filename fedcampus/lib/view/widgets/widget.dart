@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-import '../../utility/event_bus.dart';
-import '../../utility/log.dart';
-
 class FedCard extends StatelessWidget {
   const FedCard({
     super.key,
@@ -313,21 +310,19 @@ class FullScreenLoadingDialog extends LoadingDialog {
 }
 
 class SmallLoadingDialog extends LoadingDialog {
-  SmallLoadingDialog({required this.context});
+  SmallLoadingDialog({
+    required this.context,
+    this.showAfterMilliseconds = 500,
+  });
   final BuildContext context;
-  // wait 0.5 second to show the dialog, if it survives till that moment (due to early loading done), set [_shown] to true
+  final int showAfterMilliseconds;
   bool _shown = false;
   @override
   void showLoading() async {
     double pixel = MediaQuery.of(context).size.width / 400;
 
-    bus.on("loading_done", (arg) {
-      logger.e("loading_done");
-      bus.off("loading_done");
-      if (!cancelled) cancel();
-    });
-
-    await Future.delayed(const Duration(milliseconds: 500));
+    // wait `showAfterMilliseconds` second to show the dialog, if it survives till that moment (due to early loading done), set [_shown] to true
+    await Future.delayed(Duration(milliseconds: showAfterMilliseconds));
     _shown = true;
 
     if (cancelled) return;
