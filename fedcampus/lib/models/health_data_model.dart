@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:fedcampus/models/health_data.dart';
 import 'package:fedcampus/models/screen_data.dart';
@@ -19,18 +20,6 @@ class HealthDataModel extends ChangeNotifier {
           DateTime.now().month * 100 +
           DateTime.now().day)
       .toString();
-
-  static final dataList = [
-    "step",
-    "calorie",
-    "distance",
-    "stress",
-    "rest_heart_rate",
-    "intensity",
-    "exercise_heart_rate",
-    "step_time",
-    "sleep_efficiency"
-  ];
 
   String get date => _date;
 
@@ -68,7 +57,7 @@ class HealthDataModel extends ChangeNotifier {
     int date = int.parse(_date);
     try {
       healthData = await userApi.healthDataHandler.getCachedValueMapDay(
-          calendar.intToDateTime(date), dataList,
+          calendar.intToDateTime(date), DataWrapper.dataNameList,
           forcedRefresh: forcedRefresh);
       // if the code block here is sync, need to add a zero delay to avoid event not being able to be received
       setAndNotify();
@@ -80,7 +69,8 @@ class HealthDataModel extends ChangeNotifier {
     } on InternetConnectionException catch (error) {
       logger.e(error);
       setAndNotify();
-      bus.emit("toast_error", "Internet connection error, cannot connet to health data handler server.");
+      bus.emit("toast_error",
+          "Internet connection error, cannot connet to health data handler server.");
     }
     setAndNotify();
   }

@@ -1,8 +1,10 @@
 import 'package:fedcampus/models/datahandler/health.dart';
 import 'package:fedcampus/models/datahandler/health_factory.dart';
+import 'package:fedcampus/models/datahandler/ios_health_data_handler.dart';
 import 'package:fedcampus/models/datahandler/screen_time_data_handler.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io' show Platform;
 
 Global get userApi => Global.instance;
 
@@ -24,8 +26,10 @@ class Global {
     // if logged in, initialize healthDataHandler here and skip [Splash], otherwise initialize that in [Splash]
     String splashScreenPolicy =
         userApi.prefs.getString("slpash_screen") ?? "always";
-    healthDataHandler = HealthDataHandlerFactory().creatHealthDataHandler(
-        _prefs.getString("service_provider") ?? "huawei");
+    healthDataHandler = Platform.isAndroid
+        ? HealthDataHandlerFactory().creatHealthDataHandler(
+            _prefs.getString("service_provider") ?? "huawei")
+        : IOSHealth();
     switch (splashScreenPolicy) {
       case "always":
         break;

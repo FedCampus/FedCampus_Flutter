@@ -1,3 +1,5 @@
+import "dart:io" show Platform;
+
 import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/view/activity.dart';
 import 'package:fedcampus/view/me.dart';
@@ -22,8 +24,8 @@ class _BottomNavigatorState extends State<BottomNavigator> {
   @override
   void initState() {
     super.initState();
-    spawnTraining();
-    sendFAData();
+    Platform.isAndroid ? spawnTraining() : Null;
+    // sendFAData();
   }
 
   Color getAppBarColor(int index, BuildContext context) {

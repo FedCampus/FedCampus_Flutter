@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io' show Platform;
 import 'package:fedcampus/utility/fluttertoast.dart';
 import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
@@ -17,17 +18,19 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sample_statistics/sample_statistics.dart';
 
 class DataWrapper {
-  final dataNameList = [
-    "step",
-    "calorie",
-    "distance",
-    "stress",
-    "rest_heart_rate",
-    "intensity",
-    "exercise_heart_rate",
-    "step_time",
-    "sleep_efficiency"
-  ];
+  static final dataNameList = Platform.isAndroid
+      ? [
+          "step",
+          "calorie",
+          "distance",
+          "stress",
+          "rest_heart_rate",
+          "intensity",
+          "exercise_heart_rate",
+          "step_time",
+          "sleep_efficiency"
+        ]
+      : ["step", "distance", "rest_heart_rate", "heart_rate", "calorie"];
 
   ///Get all the data given the list of tag on the specific datetime number.
   ///Throw an exception if data fetching get some error.

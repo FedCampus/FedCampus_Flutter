@@ -46,6 +46,7 @@ class FedHealthData {
     List<Data> dataList = [];
     for (String element in entry) {
       Data data;
+      print(element);
       try {
         data = await getDataInterval(
             entry: element, startTime: startTime, endTime: endTime);
