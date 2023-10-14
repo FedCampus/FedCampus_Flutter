@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io' show Platform;
+import 'dart:io' show Platform, SocketException;
 
 import 'package:fedcampus/models/activity_data.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
@@ -148,6 +148,9 @@ class ActivityDataModel extends ChangeNotifier {
     } on TimeoutException {
       _loading = false;
       notifyListeners();
+      return;
+    } on SocketException {
+      dataWrapperToast("Please Connect To Internet");
       return;
     }
 
