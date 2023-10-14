@@ -102,11 +102,11 @@ class ActivityDataModel extends ChangeNotifier {
   }
 
   Future<void> getActivityData({bool forcedRefresh = false}) async {
-    forcedRefresh = Platform.isIOS ? true : forcedRefresh;
+    bool newForcedRefresh = Platform.isIOS ? true : forcedRefresh;
     _loading = true;
     notifyListeners();
     String? cachedData = userApi.prefs.getString("activity$date");
-    if (!forcedRefresh && (cachedData != null)) {
+    if (!newForcedRefresh && (cachedData != null)) {
       logger.d("cached activity data");
       activityData = json.decode(cachedData);
       if (DateTime.now().millisecondsSinceEpoch -
