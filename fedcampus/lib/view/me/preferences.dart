@@ -1,9 +1,15 @@
+import 'dart:io';
+
 import 'package:fedcampus/main.dart';
+import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../../models/datahandler/health_factory.dart';
+import '../../utility/health_database.dart';
+import '../widgets/widget.dart';
 
 class Preferences extends StatefulWidget {
   const Preferences({
@@ -15,23 +21,17 @@ class Preferences extends StatefulWidget {
 }
 
 class _PreferencesState extends State<Preferences> {
-  late SharedPreferences prefs;
-
   List<String> list = <String>['English', 'Simplified Chinese', 'Japanese'];
+  List<String> dataProviders = <String>['Huawei Health', 'Google Fit'];
 
   @override
   void initState() {
     super.initState();
-    initSettings();
   }
 
   toggleTheme(bool b, BuildContext context) async {
-    prefs.setBool('isDarkModeOn', b);
+    userApi.prefs.setBool('isDarkModeOn', b);
     Provider.of<MyAppState>(context, listen: false).toggleTheme(b);
-  }
-
-  void initSettings() async {
-    prefs = await SharedPreferences.getInstance();
   }
 
   void setLocale(String locale) {
@@ -40,26 +40,42 @@ class _PreferencesState extends State<Preferences> {
       case 'English':
         Provider.of<MyAppState>(context, listen: false)
             .setLocale(const Locale('en', 'US'));
-        prefs.setString('locale', 'en_US');
+        userApi.prefs.setString('locale', 'en_US');
       case 'Simplified Chinese':
         Provider.of<MyAppState>(context, listen: false)
             .setLocale(const Locale('zh', 'CN'));
-        prefs.setString('locale', 'zh_CN');
-
+        userApi.prefs.setString('locale', 'zh_CN');
       case 'Japanese':
         Provider.of<MyAppState>(context, listen: false)
             .setLocale(const Locale('ja', 'JP'));
-        prefs.setString('locale', 'ja_JP');
-
+        userApi.prefs.setString('locale', 'ja_JP');
       default:
         Provider.of<MyAppState>(context, listen: false)
             .setLocale(const Locale('en', 'US'));
-        prefs.setString('locale', 'en_US');
+        userApi.prefs.setString('locale', 'en_US');
     }
   }
 
-  void resetPreferences() {
+  void setDataProvider(String dataProvider) {
+    String dataProviderString;
+    logger.d(dataProvider);
+    switch (dataProvider) {
+      case 'Huawei Health':
+        dataProviderString = "huawei";
+      case 'Google Fit':
+        dataProviderString = "google";
+      default:
+        dataProviderString = "huawei";
+    }
+    userApi.prefs.setString("service_provider", dataProviderString);
+    userApi.healthDataHandler =
+        HealthDataHandlerFactory().creatHealthDataHandler(dataProviderString);
+  }
+
+  void resetPreferences() async {
     Provider.of<MyAppState>(context, listen: false).resetPreferences();
+    HealthDatabase healthDatabase = await HealthDatabase.create();
+    healthDatabase.clear();
   }
 
   @override
@@ -77,20 +93,46 @@ class _PreferencesState extends State<Preferences> {
       ),
       body: ListView(
         children: [
-          SettingsSwitch(
-            text: AppLocalizations.of(context)!.dark_mode,
-            callback: toggleTheme,
-          ),
-          const SettingsDivider(),
-          SettingsDropDownMenu(
-            text: AppLocalizations.of(context)!.language,
-            callback: setLocale,
-            options: list,
-          ),
-          const SettingsDivider(),
-          SettingsButton(
-            text: AppLocalizations.of(context)!.reset_preferences,
-            callback: resetPreferences,
+          WidgetListWithDivider(
+            color: Theme.of(context).colorScheme.primary,
+            children: [
+              SettingsSwitch(
+                text: AppLocalizations.of(context)!.dark_mode,
+                callback: toggleTheme,
+              ),
+              if (false) // TODO: disable language selection
+                // ignore: dead_code
+                SettingsDropDownMenu(
+                  text: AppLocalizations.of(context)!.language,
+                  callback: setLocale,
+                  options: list,
+                  defaultValue: switch (
+                      Provider.of<MyAppState>(context, listen: false)
+                          .locale
+                          .languageCode) {
+                    'en' => 'English',
+                    'zh' => 'Simplified Chinese',
+                    'ja' => 'Japanese',
+                    _ => "English",
+                  },
+                ),
+              if (Platform.isAndroid)
+                SettingsDropDownMenu(
+                  text: "Health Data Provider",
+                  callback: setDataProvider,
+                  options: dataProviders,
+                  defaultValue: switch (
+                      userApi.prefs.getString("service_provider")) {
+                    "huawei" => "Huawei Health",
+                    "google" => "Google Fit",
+                    _ => "Huawei Health"
+                  },
+                ),
+              SettingsButton(
+                text: AppLocalizations.of(context)!.reset_preferences,
+                callback: resetPreferences,
+              ),
+            ],
           ),
         ],
       ),
@@ -206,33 +248,27 @@ class SettingsDropDownMenu extends StatefulWidget {
     required this.text,
     required this.callback,
     required this.options,
+    required this.defaultValue,
   });
 
   final String text;
   final List<String> options;
   final void Function(String) callback;
+  final String defaultValue;
 
   @override
   State<SettingsDropDownMenu> createState() => _SettingsDropDownMenuState();
 }
 
 class _SettingsDropDownMenuState extends State<SettingsDropDownMenu> {
-  late String dropdownValue;
+  String dropdownValue = "";
   late MyAppState appState;
 
   @override
   void initState() {
     super.initState();
-    appState = Provider.of<MyAppState>(context, listen: false);
-    var languageCode = appState.locale.languageCode;
-    switch (languageCode) {
-      case 'en':
-        dropdownValue = 'English';
-      case 'zh':
-        dropdownValue = 'Simplified Chinese';
-      case 'ja':
-        dropdownValue = 'Japanese';
-    }
+    dropdownValue = widget.defaultValue;
+    logger.e(dropdownValue);
   }
 
   @override
@@ -263,28 +299,10 @@ class _SettingsDropDownMenuState extends State<SettingsDropDownMenu> {
                 child: Text(value),
               );
             }).toList(),
-            onChanged: (s) => widget.callback(s ?? 'en'),
+            onChanged: (s) => widget.callback(s ?? widget.defaultValue),
           )
         ],
       ),
-    );
-  }
-}
-
-class SettingsDivider extends StatelessWidget {
-  const SettingsDivider({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    double pixel = MediaQuery.of(context).size.width / 400;
-    return Divider(
-      height: 1 * pixel,
-      thickness: 1,
-      indent: 40,
-      endIndent: 40,
-      color: Theme.of(context).colorScheme.primary,
     );
   }
 }

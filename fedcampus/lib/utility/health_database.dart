@@ -82,6 +82,13 @@ class HealthDatabase {
       whereArgs: [time, name],
     );
   }
+
+  Future<void> clear() async {
+    await db.delete(
+      'data',
+      where: '1 = 1',
+    );
+  }
 }
 
 class HealthDBData {

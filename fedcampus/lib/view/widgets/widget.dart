@@ -371,3 +371,52 @@ class SmallLoadingDialog extends LoadingDialog {
     }
   }
 }
+
+class WidgetListWithDivider extends StatelessWidget {
+  const WidgetListWithDivider({
+    super.key,
+    required this.children,
+    required this.color,
+  });
+
+  final List<Widget> children;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget elementToInsert = MeDivider(
+      color: color,
+    );
+    List<Widget> childrenWithMeDividerInserted = [];
+    childrenWithMeDividerInserted = children
+        .sublist(0, children.length - 1)
+        .expand((Widget item) => [item, elementToInsert])
+        .toList()
+      ..add(children.last);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: childrenWithMeDividerInserted,
+    );
+  }
+}
+
+class MeDivider extends StatelessWidget {
+  const MeDivider({
+    super.key,
+    required this.color,
+  });
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
+    return Divider(
+      height: 1 * pixel,
+      thickness: 1,
+      indent: 50,
+      endIndent: 50,
+      color: color,
+    );
+  }
+}

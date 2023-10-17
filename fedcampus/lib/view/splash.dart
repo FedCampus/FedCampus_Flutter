@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fedcampus/main.dart';
 import 'package:fedcampus/models/datahandler/health_factory.dart';
 import 'package:fedcampus/utility/global.dart';
@@ -6,6 +8,8 @@ import 'package:fedcampus/view/me/signin.dart';
 import 'package:fedcampus/view/navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import 'widgets/widget.dart';
 
 class Splash extends StatefulWidget {
   const Splash({super.key});
@@ -16,7 +20,8 @@ class Splash extends StatefulWidget {
 
 class _SplashState extends State<Splash> {
   HealthDataHandlerFactory healthFactory = HealthDataHandlerFactory();
-  String serviceProvider = userApi.prefs.getString("service_provider") ?? "huawei";
+  String serviceProvider =
+      userApi.prefs.getString("service_provider") ?? "huawei";
 
   @override
   void initState() {
@@ -25,8 +30,9 @@ class _SplashState extends State<Splash> {
 
   void createHealthDataHandler() {
     userApi.prefs.setString("service_provider", serviceProvider);
-    userApi.healthDataHandler =
-        healthFactory.creatHealthDataHandler(serviceProvider);
+    userApi.healthDataHandler = Platform.isAndroid
+        ? HealthDataHandlerFactory().creatHealthDataHandler(serviceProvider)
+        : HealthDataHandlerFactory().creatHealthDataHandler("ios");
   }
 
   void toggleTheme(bool b) async {
@@ -185,49 +191,47 @@ class _SplashState extends State<Splash> {
               flex: 3,
               child: SizedBox(),
             ),
-            const MeDivider(),
-            MeText(
-              text: 'Data Provider',
-              callback: _pickServiceProvider,
-            ),
-            const MeDivider(),
-            MeText(
-              text: 'Color Mode',
-              callback: _chooseColorMode,
-            ),
-            const MeDivider(),
-            MeText(
-              text: 'Sign in',
-              callback: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const SignIn()),
-              ),
-            ),
-            const MeDivider(),
-            MeText(
-              text: 'Welcome Page Settings',
-              callback: _splashScreenSettings,
-            ),
-            const MeDivider(),
-            TextButton(
-              onPressed: () {
-                {
-                  createHealthDataHandler();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const BottomNavigator()),
-                  );
-                }
-              },
-              child: Text(
-                'click to continue',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onTertiaryContainer,
-                  fontSize: pixel * 18,
-                ),
-              ),
-            ),
+            WidgetListWithDivider(
+                color: Theme.of(context).colorScheme.onTertiaryContainer,
+                children: [
+                  if (Platform.isAndroid)
+                    MeText(
+                      text: 'Data Provider',
+                      callback: _pickServiceProvider,
+                    ),
+                  MeText(
+                    text: 'Color Mode',
+                    callback: _chooseColorMode,
+                  ),
+                  MeText(
+                    text: 'Sign in',
+                    callback: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const SignIn()),
+                    ),
+                  ),
+                  MeText(
+                    text: 'Welcome Page Settings',
+                    callback: _splashScreenSettings,
+                  ),
+                  MeText(
+                    text: 'click to continue',
+                    textStyle: TextStyle(
+                        fontSize: pixel * 18,
+                        color:
+                            Theme.of(context).colorScheme.onTertiaryContainer),
+                    callback: () {
+                      {
+                        createHealthDataHandler();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const BottomNavigator()),
+                        );
+                      }
+                    },
+                  ),
+                ]),
             const Expanded(
               flex: 3,
               child: SizedBox(),

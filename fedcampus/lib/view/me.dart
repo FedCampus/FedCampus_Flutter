@@ -97,107 +97,73 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
         SizedBox(
           height: 10 * pixel,
         ),
-        Builder(builder: (context) {
-          if (context.watch<UserModel>().isLogin) {
-            // placeholder since a widget cannot be null
-            return const SizedBox();
-          }
-          return MeText(
-            text: 'Sign in',
-            callback: () => _toSignInPage(),
-          );
-        }),
-        Builder(builder: (context) {
-          if (context.watch<UserModel>().isLogin) {
-            // placeholder since a widget cannot be null
-            return const SizedBox();
-          } else {
-            return const MeDivider();
-          }
-        }),
-        Builder(builder: (context) {
-          if (context.watch<UserModel>().isLogin) {
-            return MeText(
-              text: 'Account Settings',
+        WidgetListWithDivider(
+          color: Theme.of(context).colorScheme.onTertiaryContainer,
+          children: [
+            // A few words on this design: I actually do not like to use `if` in this way:
+            // this is weird, by using if as an expression, I can conditionally include (evaluate) some element in the list [] literal
+            // I would prefer ternary expression, but in that way I have to include an empty container, which problematic for [ListTile]
+            // Using `if` is the most succinct way, otherwise I would have to turn the [] list literal into another method handling the logic for building the list
+            if (!context.watch<UserModel>().isLogin)
+              MeText(
+                text: 'Sign in',
+                callback: () => _toSignInPage(),
+              ),
+            if (context.watch<UserModel>().isLogin)
+              MeText(
+                text: 'Account Settings',
+                callback: () => {},
+              ),
+            MeText(
+              text: 'Preferences',
+              callback: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Preferences()),
+                );
+              },
+            ),
+            if (userApi.healthDataHandler.canAuthenticate())
+              MeText(
+                text: 'Authenticate',
+                callback: _healthServiceAuthenticate,
+              ),
+            if (userApi.healthDataHandler.canAuthenticate())
+              MeText(
+                text: 'Cancel authentication',
+                callback: _healthServiceCancel,
+              ),
+            MeText(
+              text: 'About',
+              callback: () => {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const About()),
+                )
+              },
+            ),
+            MeText(
+              text: 'Help & feedback',
               callback: () => {},
-            );
-          } else {
-            // placeholder since a widget cannot be null
-            return const SizedBox();
-          }
-        }),
-        Builder(builder: (context) {
-          if (context.watch<UserModel>().isLogin) {
-            return const MeDivider();
-          } else {
-            // placeholder since a widget cannot be null
-            return const SizedBox();
-          }
-        }),
-        MeText(
-          text: 'Preferences',
-          callback: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const Preferences()),
-            );
-          },
+            ),
+            MeText(
+              text: 'Log Output',
+              callback: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const TrainingDetail()),
+                );
+              },
+            ),
+            if (context.watch<UserModel>().isLogin)
+              MeText(
+                text: 'Sign out',
+                callback: _logOut,
+              ),
+            const BottomText(),
+          ],
         ),
-        const MeDivider(),
-        MeText(
-          text: 'Authenticate',
-          callback: _healthServiceAuthenticate,
-        ),
-        const MeDivider(),
-        MeText(
-          text: 'Cancel authentication',
-          callback: _healthServiceCancel,
-        ),
-        const MeDivider(),
-        MeText(
-            text: 'About',
-            callback: () => {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const About()),
-                  )
-                }),
-        const MeDivider(),
-        MeText(
-          text: 'Help & feedback',
-          callback: () => {},
-        ),
-        const MeDivider(),
-        MeText(
-          text: 'Log Output',
-          callback: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const TrainingDetail()),
-            );
-          },
-        ),
-        const MeDivider(),
-        Builder(builder: (context) {
-          if (context.watch<UserModel>().isLogin) {
-            return MeText(
-              text: 'Sign out',
-              callback: _logOut,
-            );
-          } else {
-            // placeholder since a widget cannot be null
-            return const SizedBox();
-          }
-        }),
-        Builder(builder: (context) {
-          if (context.watch<UserModel>().isLogin) {
-            return const MeDivider();
-          } else {
-            // placeholder since a widget cannot be null
-            return const SizedBox();
-          }
-        }),
-        const BottomText(),
       ],
     );
   }
@@ -226,33 +192,17 @@ class BottomText extends StatelessWidget {
   }
 }
 
-class MeDivider extends StatelessWidget {
-  const MeDivider({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    double pixel = MediaQuery.of(context).size.width / 400;
-    return Divider(
-      height: 1 * pixel,
-      thickness: 1,
-      indent: 50,
-      endIndent: 50,
-      color: Theme.of(context).colorScheme.onTertiaryContainer,
-    );
-  }
-}
-
 class MeText extends StatelessWidget {
   const MeText({
     super.key,
     required this.text,
     required this.callback,
+    this.textStyle,
   });
 
   final String text;
   final void Function() callback;
+  final TextStyle? textStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -264,9 +214,10 @@ class MeText extends StatelessWidget {
         onPressed: callback,
         child: Text(
           text,
-          style: TextStyle(
-              fontSize: pixel * 20,
-              color: Theme.of(context).colorScheme.onTertiaryContainer),
+          style: textStyle ??
+              TextStyle(
+                  fontSize: pixel * 20,
+                  color: Theme.of(context).colorScheme.onTertiaryContainer),
           textAlign: TextAlign.center,
         ),
       ),
