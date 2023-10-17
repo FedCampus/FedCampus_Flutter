@@ -1,6 +1,6 @@
 import 'package:fedcampus/models/datahandler/google_health_data_handler.dart';
 import 'package:fedcampus/models/datahandler/huawei_health_handler.dart';
-import 'package:fedcampus/models/datahandler/health.dart';
+import 'package:fedcampus/models/datahandler/health_handler.dart';
 import 'package:fedcampus/models/datahandler/ios_health_data_handler.dart';
 import 'package:fedcampus/utility/log.dart';
 

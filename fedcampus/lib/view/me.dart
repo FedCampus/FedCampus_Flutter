@@ -98,6 +98,7 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
           height: 10 * pixel,
         ),
         WidgetListWithDivider(
+          color: Theme.of(context).colorScheme.onTertiaryContainer,
           children: [
             // A few words on this design: I actually do not like to use `if` in this way:
             // this is weird, by using if as an expression, I can conditionally include (evaluate) some element in the list [] literal
@@ -122,14 +123,16 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
                 );
               },
             ),
-            MeText(
-              text: 'Authenticate',
-              callback: _healthServiceAuthenticate,
-            ),
-            MeText(
-              text: 'Cancel authentication',
-              callback: _healthServiceCancel,
-            ),
+            if (userApi.healthDataHandler.canAuthenticate())
+              MeText(
+                text: 'Authenticate',
+                callback: _healthServiceAuthenticate,
+              ),
+            if (userApi.healthDataHandler.canAuthenticate())
+              MeText(
+                text: 'Cancel authentication',
+                callback: _healthServiceCancel,
+              ),
             MeText(
               text: 'About',
               callback: () => {
@@ -166,27 +169,6 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
   }
 }
 
-class WidgetListWithDivider extends StatelessWidget {
-  const WidgetListWithDivider({super.key, required this.children});
-
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    Widget elementToInsert = const MeDivider();
-    List<Widget> childrenWithMeDividerInserted = [];
-    childrenWithMeDividerInserted = children
-        .sublist(0, children.length - 1)
-        .expand((Widget item) => [item, elementToInsert])
-        .toList()
-      ..add(children.last);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: childrenWithMeDividerInserted,
-    );
-  }
-}
-
 class BottomText extends StatelessWidget {
   const BottomText({
     super.key,
@@ -210,33 +192,17 @@ class BottomText extends StatelessWidget {
   }
 }
 
-class MeDivider extends StatelessWidget {
-  const MeDivider({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    double pixel = MediaQuery.of(context).size.width / 400;
-    return Divider(
-      height: 1 * pixel,
-      thickness: 1,
-      indent: 50,
-      endIndent: 50,
-      color: Theme.of(context).colorScheme.onTertiaryContainer,
-    );
-  }
-}
-
 class MeText extends StatelessWidget {
   const MeText({
     super.key,
     required this.text,
     required this.callback,
+    this.textStyle,
   });
 
   final String text;
   final void Function() callback;
+  final TextStyle? textStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -248,9 +214,10 @@ class MeText extends StatelessWidget {
         onPressed: callback,
         child: Text(
           text,
-          style: TextStyle(
-              fontSize: pixel * 20,
-              color: Theme.of(context).colorScheme.onTertiaryContainer),
+          style: textStyle ??
+              TextStyle(
+                  fontSize: pixel * 20,
+                  color: Theme.of(context).colorScheme.onTertiaryContainer),
           textAlign: TextAlign.center,
         ),
       ),

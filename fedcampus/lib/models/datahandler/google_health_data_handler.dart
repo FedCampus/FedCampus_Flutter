@@ -1,4 +1,4 @@
-import 'package:fedcampus/models/datahandler/health.dart';
+import 'package:fedcampus/models/datahandler/health_handler.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:health/health.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -46,6 +46,11 @@ class GoogleFit extends FedHealthData {
 
   GoogleFit() {
     authenticate();
+  }
+
+  @override
+  bool canAuthenticate() {
+    return false;
   }
 
   @override

@@ -1,6 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'package:fedcampus/models/datahandler/health.dart';
+import 'package:fedcampus/models/datahandler/health_handler.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:health/health.dart';
@@ -38,6 +38,11 @@ class IOSHealth extends FedHealthData {
   IOSHealth() {
     logger.d("Using IOS Health.");
     _types = _dataEntry.values.toList();
+  }
+
+  @override
+  bool canAuthenticate() {
+    return false;
   }
 
   @override

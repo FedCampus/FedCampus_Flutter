@@ -8,6 +8,10 @@ import '../../utility/calendar.dart' as calendar;
 /// The interface provides methods to get [Data] from an interval or a day; it also supports get a list of [Data] from a list of types.
 /// The implementations are [List] centered, and [Map] implementations are based on [List], which is inspired from Flutter [Health](https://pub.dev/packages/health)
 class FedHealthData {
+  bool canAuthenticate() {
+    throw UnimplementedError();
+  }
+
   Future<void> authenticate() async {
     // throws [Exception] when failed
     throw UnimplementedError();

@@ -1,4 +1,4 @@
-import 'package:fedcampus/models/datahandler/health.dart';
+import 'package:fedcampus/models/datahandler/health_handler.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/utility/my_exceptions.dart';
@@ -7,6 +7,10 @@ import '../../utility/calendar.dart' as calendar;
 
 class HuaweiHealth extends FedHealthData {
   final host = DataApi();
+  @override
+  bool canAuthenticate() {
+    return true;
+  }
 
   @override
   Future<void> authenticate() async {
