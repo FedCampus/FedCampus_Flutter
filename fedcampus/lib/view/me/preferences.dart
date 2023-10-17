@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../models/datahandler/health_factory.dart';
+import '../../utility/health_database.dart';
 import '../widgets/widget.dart';
 
 class Preferences extends StatefulWidget {
@@ -71,8 +72,10 @@ class _PreferencesState extends State<Preferences> {
         HealthDataHandlerFactory().creatHealthDataHandler(dataProviderString);
   }
 
-  void resetPreferences() {
+  void resetPreferences() async {
     Provider.of<MyAppState>(context, listen: false).resetPreferences();
+    HealthDatabase healthDatabase = await HealthDatabase.create();
+    healthDatabase.clear();
   }
 
   @override

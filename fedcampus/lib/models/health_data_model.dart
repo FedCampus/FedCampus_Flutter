@@ -59,6 +59,7 @@ class HealthDataModel extends ChangeNotifier {
       healthData = await userApi.healthDataHandler.getCachedValueMapDay(
           calendar.intToDateTime(date), DataWrapper.dataNameList,
           forcedRefresh: Platform.isIOS ? true : forcedRefresh);
+      logger.d(healthData);
       _notify();
     } on AuthenticationException catch (error) {
       logger.e(error);
@@ -74,6 +75,7 @@ class HealthDataModel extends ChangeNotifier {
   }
 
   void _notify() {
+    logger.d("loading_done");
     bus.emit("loading_done");
     _loading = false;
     notifyListeners();
