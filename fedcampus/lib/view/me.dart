@@ -97,7 +97,7 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
         SizedBox(
           height: 10 * pixel,
         ),
-        ListTile(
+        WidgetListWithDivider(
           children: [
             // A few words on this design: I actually do not like to use `if` in this way:
             // this is weird, by using if as an expression, I can conditionally include (evaluate) some element in the list [] literal
@@ -166,8 +166,8 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
   }
 }
 
-class ListTile extends StatelessWidget {
-  const ListTile({super.key, required this.children});
+class WidgetListWithDivider extends StatelessWidget {
+  const WidgetListWithDivider({super.key, required this.children});
 
   final List<Widget> children;
 
