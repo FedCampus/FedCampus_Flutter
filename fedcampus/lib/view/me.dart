@@ -97,108 +97,92 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
         SizedBox(
           height: 10 * pixel,
         ),
-        Builder(builder: (context) {
-          if (context.watch<UserModel>().isLogin) {
-            // placeholder since a widget cannot be null
-            return const SizedBox();
-          }
-          return MeText(
-            text: 'Sign in',
-            callback: () => _toSignInPage(),
-          );
-        }),
-        Builder(builder: (context) {
-          if (context.watch<UserModel>().isLogin) {
-            // placeholder since a widget cannot be null
-            return const SizedBox();
-          } else {
-            return const MeDivider();
-          }
-        }),
-        Builder(builder: (context) {
-          if (context.watch<UserModel>().isLogin) {
-            return MeText(
-              text: 'Account Settings',
+        ListTile(
+          children: [
+            // A few words on this design: I actually do not like to use `if` in this way:
+            // this is weird, by using if as an expression, I can conditionally include (evaluate) some element in the list [] literal
+            // I would prefer ternary expression, but in that way I have to include an empty container, which problematic for [ListTile]
+            // Using `if` is the most succinct way, otherwise I would have to turn the [] list literal into another method handling the logic for building the list
+            if (!context.watch<UserModel>().isLogin)
+              MeText(
+                text: 'Sign in',
+                callback: () => _toSignInPage(),
+              ),
+            if (context.watch<UserModel>().isLogin)
+              MeText(
+                text: 'Account Settings',
+                callback: () => {},
+              ),
+            MeText(
+              text: 'Preferences',
+              callback: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Preferences()),
+                );
+              },
+            ),
+            MeText(
+              text: 'Authenticate',
+              callback: _healthServiceAuthenticate,
+            ),
+            MeText(
+              text: 'Cancel authentication',
+              callback: _healthServiceCancel,
+            ),
+            MeText(
+              text: 'About',
+              callback: () => {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const About()),
+                )
+              },
+            ),
+            MeText(
+              text: 'Help & feedback',
               callback: () => {},
-            );
-          } else {
-            // placeholder since a widget cannot be null
-            return const SizedBox();
-          }
-        }),
-        Builder(builder: (context) {
-          if (context.watch<UserModel>().isLogin) {
-            return const MeDivider();
-          } else {
-            // placeholder since a widget cannot be null
-            return const SizedBox();
-          }
-        }),
-        MeText(
-          text: 'Preferences',
-          callback: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const Preferences()),
-            );
-          },
+            ),
+            MeText(
+              text: 'Log Output',
+              callback: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const TrainingDetail()),
+                );
+              },
+            ),
+            if (context.watch<UserModel>().isLogin)
+              MeText(
+                text: 'Sign out',
+                callback: _logOut,
+              ),
+            const BottomText(),
+          ],
         ),
-        const MeDivider(),
-        MeText(
-          text: 'Authenticate',
-          callback: _healthServiceAuthenticate,
-        ),
-        const MeDivider(),
-        MeText(
-          text: 'Cancel authentication',
-          callback: _healthServiceCancel,
-        ),
-        const MeDivider(),
-        MeText(
-            text: 'About',
-            callback: () => {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const About()),
-                  )
-                }),
-        const MeDivider(),
-        MeText(
-          text: 'Help & feedback',
-          callback: () => {},
-        ),
-        const MeDivider(),
-        MeText(
-          text: 'Log Output',
-          callback: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const TrainingDetail()),
-            );
-          },
-        ),
-        const MeDivider(),
-        Builder(builder: (context) {
-          if (context.watch<UserModel>().isLogin) {
-            return MeText(
-              text: 'Sign out',
-              callback: _logOut,
-            );
-          } else {
-            // placeholder since a widget cannot be null
-            return const SizedBox();
-          }
-        }),
-        Builder(builder: (context) {
-          if (context.watch<UserModel>().isLogin) {
-            return const MeDivider();
-          } else {
-            // placeholder since a widget cannot be null
-            return const SizedBox();
-          }
-        }),
-        const BottomText(),
       ],
+    );
+  }
+}
+
+class ListTile extends StatelessWidget {
+  const ListTile({super.key, required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget elementToInsert = const MeDivider();
+    List<Widget> childrenWithMeDividerInserted = [];
+    childrenWithMeDividerInserted = children
+        .sublist(0, children.length - 1)
+        .expand((Widget item) => [item, elementToInsert])
+        .toList()
+      ..add(children.last);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: childrenWithMeDividerInserted,
     );
   }
 }
