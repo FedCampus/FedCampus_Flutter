@@ -203,13 +203,14 @@ class _SplashState extends State<Splash> {
                     text: 'Color Mode',
                     callback: _chooseColorMode,
                   ),
-                  MeText(
-                    text: 'Sign in',
-                    callback: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const SignIn()),
+                  if (!(userApi.prefs.getBool("login") ?? false))
+                    MeText(
+                      text: 'Sign in',
+                      callback: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const SignIn()),
+                      ),
                     ),
-                  ),
                   MeText(
                     text: 'Welcome Page Settings',
                     callback: _splashScreenSettings,

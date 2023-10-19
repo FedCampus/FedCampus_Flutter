@@ -200,18 +200,16 @@ class _MyAppState extends State<MyApp> {
   StatefulWidget startUpPage() {
     String? splashScreenPolicy = userApi.prefs.getString("slpash_screen");
     switch (splashScreenPolicy) {
-      case "always":
+      case "always": // default
         return const Splash();
-      case "is_logged_in": // default
+      case "is_logged_in":
         return (userApi.prefs.getBool("login") ?? false)
             ? const BottomNavigator()
             : const Splash();
       case "never":
         return const BottomNavigator();
       default:
-        return (userApi.prefs.getBool("login") ?? false)
-            ? const BottomNavigator()
-            : const Splash();
+        return const Splash();
     }
   }
 }
