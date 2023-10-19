@@ -224,7 +224,9 @@ class _SplashState extends State<Splash> {
                     callback: () {
                       {
                         createHealthDataHandler();
-                        Navigator.push(
+                        // disable returning back to splash screen;
+                        // if setting [WillPopScope] in next route, the app does not exit on consecutive back gesture.
+                        Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                               builder: (context) => const BottomNavigator()),
