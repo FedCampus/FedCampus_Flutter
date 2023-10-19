@@ -44,7 +44,7 @@ class _HealthState extends State<Health> {
 
   Future<void> refresh({bool forcedRefresh = false}) async {
     Provider.of<HealthDataModel>(context, listen: false)
-        .getBodyData(forcedRefresh: forcedRefresh);
+        .getAllData(forcedRefresh: forcedRefresh);
     LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
     loadingDialog.showLoading();
     bus.on("loading_done", (arg) {
@@ -169,6 +169,10 @@ class RightColumn extends StatelessWidget {
           height: 21 * pixel,
         ),
         const Sleep(),
+        SizedBox(
+          height: 21 * pixel,
+        ),
+        const ScreenTime()
       ],
     );
   }
@@ -720,6 +724,61 @@ class Sleep extends StatelessWidget {
                   style: montserratAlternatesTextStyle(pixel * 30,
                       Theme.of(context).colorScheme.primaryContainer)),
               Text('effi',
+                  style: montserratAlternatesTextStyle(pixel * 20,
+                      Theme.of(context).colorScheme.primaryContainer)),
+            ],
+          ),
+          const Spacer(),
+        ],
+      ),
+    );
+  }
+}
+
+class ScreenTime extends StatelessWidget {
+  const ScreenTime({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
+    return FedCard(
+      widget: Row(
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SvgIcon(
+                imagePath: 'assets/svg/sleep.svg',
+                width: 58,
+                height: 58,
+                colorFilter: ColorFilter.mode(
+                    Theme.of(context).colorScheme.primaryContainer,
+                    BlendMode.srcIn),
+              ),
+              SizedBox(
+                height: 10 * pixel,
+              ),
+              Text(
+                'Screen\nTime',
+                style:
+                    TextStyle(color: Theme.of(context).colorScheme.secondary),
+              ),
+            ],
+          ),
+          const Spacer(),
+          Column(
+            children: [
+              Text(
+                  formatNum(
+                      Provider.of<HealthDataModel>(context)
+                          .healthData['total_time_foreground'],
+                      loading: Provider.of<HealthDataModel>(context).loading,
+                      decimalPoints: 0),
+                  style: montserratAlternatesTextStyle(pixel * 30,
+                      Theme.of(context).colorScheme.primaryContainer)),
+              Text('min',
                   style: montserratAlternatesTextStyle(pixel * 20,
                       Theme.of(context).colorScheme.primaryContainer)),
             ],
