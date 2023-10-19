@@ -11,6 +11,7 @@ class HealthData {
     double stepTime = 0,
     double sleepEfficiency = 0,
     double queryTime = 0,
+    double totalTimeForeground = 0,
   }) {
     return {
       "step": step,
@@ -22,7 +23,8 @@ class HealthData {
       "exercise_heart_rate": exerciseHeartRate,
       "step_time": stepTime,
       "sleep_efficiency": sleepEfficiency,
-      "query_time": queryTime
+      "query_time": queryTime,
+      "total_time_foreground": totalTimeForeground,
     };
   }
 }

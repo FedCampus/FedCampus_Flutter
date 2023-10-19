@@ -78,6 +78,32 @@ class _PreferencesState extends State<Preferences> {
     healthDatabase.clear();
   }
 
+  void resetPreferencesConfirmDialog() {
+    showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Confirmation"),
+          content:
+              const Text('Are you sure you want to remove all local settings?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Cancel"),
+              onPressed: () => Navigator.of(context).pop(false),
+            ),
+            TextButton(
+              child: const Text("Confirm"),
+              onPressed: () {
+                resetPreferences();
+                Navigator.of(context).pop(true);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
@@ -129,9 +155,12 @@ class _PreferencesState extends State<Preferences> {
                   },
                 ),
               SettingsButton(
-                text: AppLocalizations.of(context)!.reset_preferences,
-                callback: resetPreferences,
+                text: "Phone usage access settings",
+                callback: () => userApi.screenTimeDataHandler.authenticate(),
               ),
+              SettingsButton(
+                  text: AppLocalizations.of(context)!.reset_preferences,
+                  callback: resetPreferencesConfirmDialog),
             ],
           ),
         ],
@@ -152,32 +181,6 @@ class SettingsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Future<bool?> removeSettingsDialog() {
-      return showDialog<bool>(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text("Confirmation"),
-            content: const Text(
-                'Are you sure you want to remove all local settings?'),
-            actions: <Widget>[
-              TextButton(
-                child: const Text("Cancel"),
-                onPressed: () => Navigator.of(context).pop(false),
-              ),
-              TextButton(
-                child: const Text("Confirm"),
-                onPressed: () {
-                  callback();
-                  Navigator.of(context).pop(true);
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
-
     double pixel = MediaQuery.of(context).size.width / 400;
     return Container(
       padding:
@@ -185,7 +188,7 @@ class SettingsButton extends StatelessWidget {
       child: SizedBox(
         width: double.infinity,
         child: TextButton(
-          onPressed: removeSettingsDialog,
+          onPressed: callback,
           style: TextButton.styleFrom(
             alignment: Alignment.centerLeft,
             minimumSize: Size.zero, // Set this
@@ -299,7 +302,12 @@ class _SettingsDropDownMenuState extends State<SettingsDropDownMenu> {
                 child: Text(value),
               );
             }).toList(),
-            onChanged: (s) => widget.callback(s ?? widget.defaultValue),
+            onChanged: (s) {
+              setState(() {
+                dropdownValue = s ?? widget.defaultValue;
+              });
+              widget.callback(s ?? widget.defaultValue);
+            },
           )
         ],
       ),

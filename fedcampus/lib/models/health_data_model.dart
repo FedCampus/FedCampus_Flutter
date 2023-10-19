@@ -27,10 +27,14 @@ class HealthDataModel extends ChangeNotifier {
 
   set date(String date) {
     _date = date;
-    getBodyData();
-    getScreenData();
+    getAllData();
     var dw = DataWrapper();
     dw.getDayDataAndSendAndTrain(int.parse(_date));
+  }
+
+  void getAllData({bool forcedRefresh = false}) {
+    getBodyData(forcedRefresh: forcedRefresh);
+    getScreenData();
   }
 
   Future<void> getScreenData({bool forcedRefresh = false}) async {
@@ -43,11 +47,14 @@ class HealthDataModel extends ChangeNotifier {
               .intToDateTime(int.parse(date))
               .add(const Duration(days: 1)));
     } catch (e) {
-      // logger.e(e);
-      // bus.emit("app_usage_stats_error", "Not authenticated.");
+      logger.e(e);
+      bus.emit("app_usage_stats_error",
+          "You have not granted the permission to access phone usage, go to preferences of this application to redirect to system settings page");
     }
     screenData.addAll(res);
     logger.i(screenData);
+    healthData.addAll(screenData);
+    logger.e(healthData);
     notifyListeners();
   }
 
@@ -56,9 +63,9 @@ class HealthDataModel extends ChangeNotifier {
     notifyListeners();
     int date = int.parse(_date);
     try {
-      healthData = await userApi.healthDataHandler.getCachedValueMapDay(
+      healthData.addAll(await userApi.healthDataHandler.getCachedValueMapDay(
           calendar.intToDateTime(date), DataWrapper.dataNameList,
-          forcedRefresh: Platform.isIOS ? true : forcedRefresh);
+          forcedRefresh: Platform.isIOS ? true : forcedRefresh));
       logger.d(healthData);
       _notify();
     } on AuthenticationException catch (error) {
