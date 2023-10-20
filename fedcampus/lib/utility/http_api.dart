@@ -23,6 +23,8 @@ class HTTPApi {
 
   static const fedAnalysis = "${_host}api/fedanalysis";
 
+  static const account = "${_host}api/account";
+
   static var _checkToken = false;
 
   static var _token = "";
