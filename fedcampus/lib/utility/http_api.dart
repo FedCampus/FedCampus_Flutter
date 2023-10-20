@@ -172,4 +172,33 @@ class HTTPApi {
       rethrow;
     }
   }
+
+  static Future<void> accountSettings(
+      bool isFaculty, int grade, int gender) async {
+    bool isMale = switch (gender) {
+      1 => true,
+      2 => false,
+      _ => false,
+    };
+    try {
+      http.Response response = await HTTPApi.post(
+          HTTPApi.account,
+          <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          jsonEncode(<String, dynamic>{
+            "faculty": isFaculty,
+            "student": grade,
+            "male": isMale,
+          }));
+      if (response.statusCode == 400) {
+        logger.e('Bad Credentials, please try again');
+        throw ClientException('Bad Credentials, please try again');
+      }
+      logger.i("account setting success");
+    } catch (e) {
+      logger.e(e);
+      rethrow;
+    }
+  }
 }

@@ -34,14 +34,14 @@ class _SignInState extends State<SignIn> {
       user = await HTTPApi.signIn(_username, _password)
           .timeout(const Duration(seconds: 5));
     } on TimeoutException catch (e) {
-      _showIfDialogNotCancelled(
-          e, "Please check your internet connection", loadingDialog);
+      loadingDialog.showIfDialogNotCancelled(
+          e, "Please check your internet connection");
       return;
     } on MyException catch (e) {
-      _showIfDialogNotCancelled(e, e.toString(), loadingDialog);
+      loadingDialog.showIfDialogNotCancelled(e, e.toString());
       return;
     } on Exception catch (e) {
-      _showIfDialogNotCancelled(e, "Log in error", loadingDialog);
+      loadingDialog.showIfDialogNotCancelled(e, "Log in error");
       return;
     }
     if (mounted && !loadingDialog.cancelled) {
@@ -50,15 +50,6 @@ class _SignInState extends State<SignIn> {
       Navigator.pop(context, true);
     }
     loadingDialog.cancel();
-  }
-
-  void _showIfDialogNotCancelled(
-      Exception e, String message, LoadingDialog loadingDialog) {
-    logger.e(e);
-    if (mounted && !loadingDialog.cancelled) {
-      showToastMessage(message, context);
-      loadingDialog.cancel();
-    }
   }
 
   void _toSignUp() async {
