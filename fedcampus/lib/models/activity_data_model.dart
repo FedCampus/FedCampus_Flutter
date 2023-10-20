@@ -67,6 +67,18 @@ class ActivityDataModel extends ChangeNotifier {
     }
     bodyJson.add({"time": dataNumber});
     //send the first request
+    // TODO : add toy code for filtering the status
+    // Example 1: filter all the gender, all the students
+    // bodyJson.add({
+    //   "filter": {"gender": "all", "status": "student"}
+    // });
+    // Example 2: filter female students
+    bodyJson.add({
+      "filter": {"gender": "female", "status": "student"}
+    });
+    // bodyJson.add({"student": 2025});
+    // bodyJson.add({"faculty": false});
+    // bodyJson.add({"male": true});
     late http.Response response;
     try {
       response = await HTTPApi.post(
