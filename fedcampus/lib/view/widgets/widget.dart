@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+import '../../utility/log.dart';
+
 class FedCard extends StatelessWidget {
   const FedCard({
     super.key,
@@ -268,6 +270,7 @@ abstract class LoadingDialog {
   bool cancelled = false;
   void showLoading();
   void cancel();
+  void showIfDialogNotCancelled(Exception e, String message);
 }
 
 class FullScreenLoadingDialog extends LoadingDialog {
@@ -306,6 +309,11 @@ class FullScreenLoadingDialog extends LoadingDialog {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Navigator.of(context).pop(true);
     });
+  }
+
+  @override
+  void showIfDialogNotCancelled(Exception e, String message) {
+    // TODO: implement showIfDialogNotCancelled
   }
 }
 
@@ -368,6 +376,14 @@ class SmallLoadingDialog extends LoadingDialog {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.of(context).pop(true);
       });
+    }
+  }
+
+  void showIfDialogNotCancelled(Exception e, String message) {
+    logger.e(e);
+    if (context.mounted && !cancelled) {
+      showToastMessage(message, context);
+      cancel();
     }
   }
 }

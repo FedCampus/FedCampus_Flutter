@@ -1,9 +1,12 @@
-import 'package:fedcampus/main.dart';
+import 'dart:async';
+
+import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/utility/log.dart';
+import 'package:fedcampus/view/me/preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../utility/http_api.dart';
+import '../../utility/my_exceptions.dart';
+import '../widgets/widget.dart';
 
 class AccountSettings extends StatefulWidget {
   const AccountSettings({
@@ -15,159 +18,123 @@ class AccountSettings extends StatefulWidget {
 }
 
 class _AccountSettingsState extends State<AccountSettings> {
-  late SharedPreferences prefs;
+  bool _isFaculty = userApi.prefs.getBool("isFaculty") ?? false;
+  int _grade = userApi.prefs.getInt("grade") ?? 1;
+  int _gender = userApi.prefs.getInt("gender") ?? 1; // 1 male, 2 female
 
-  List<String> list = <String>['English', 'Simplified Chinese', 'Japanese'];
+  Map<String, bool> roles = {
+    "Faculty": true,
+    "Student": false,
+  };
+
+  Map<String, int> grades = {
+    "Freshman": 1,
+    "Sophomore": 2,
+    "Junior": 3,
+    "Senior": 4,
+  };
+
+  Map<String, int> genders = {
+    "Male": 1,
+    "Female": 2,
+  };
 
   @override
   void initState() {
     super.initState();
-    initSettings(context);
   }
 
-  toggleTheme(bool b, BuildContext context) async {
-    prefs.setBool('isDarkModeOn', b);
-    Provider.of<MyAppState>(context, listen: false).toggleTheme(b);
+  void setRole(String role) {
+    logger.d(role);
+    _isFaculty = roles[role]!;
   }
 
-  void initSettings(BuildContext context) async {
-    prefs = await SharedPreferences.getInstance();
-    if (!mounted) return;
-    MyAppState myAppState = Provider.of<MyAppState>(context, listen: false);
-    bool theme = prefs.getBool('isDarkModeOn') ?? false;
-    myAppState.isDarkModeOn = theme;
-    myAppState.toggleTheme(theme);
+  void setGrade(String grade) {
+    logger.d(grade);
+    _grade = grades[grade]!;
   }
 
-  void setLocale(String locale, BuildContext context) {
-    logger.d(locale);
-    switch (locale) {
-      case 'English':
-        Provider.of<MyAppState>(context, listen: false)
-            .setLocale(const Locale('en', 'US'));
+  void setGender(String gender) {
+    logger.d(gender);
+    _gender = genders[gender]!;
+  }
 
-      case 'Simplified Chinese':
-        Provider.of<MyAppState>(context, listen: false)
-            .setLocale(const Locale('zh', 'CN'));
-
-      case 'Japanese':
-        Provider.of<MyAppState>(context, listen: false)
-            .setLocale(const Locale('ja', 'JP'));
-
-      default:
-        Provider.of<MyAppState>(context, listen: false)
-            .setLocale(const Locale('en', 'US'));
+  void commitChanges() async {
+    LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
+    loadingDialog.showLoading();
+    try {
+      await HTTPApi.accountSettings(_isFaculty, _grade, _gender)
+          .timeout(const Duration(seconds: 5));
+    } on TimeoutException catch (e) {
+      loadingDialog.showIfDialogNotCancelled(
+          e, "Please check your internet connection");
+      return;
+    } on MyException catch (e) {
+      loadingDialog.showIfDialogNotCancelled(e, e.toString());
+      return;
+    } on Exception catch (e) {
+      loadingDialog.showIfDialogNotCancelled(e, "Log in error");
+      return;
     }
+    if (mounted && !loadingDialog.cancelled) {
+      userApi.prefs.setBool("isFaculty", _isFaculty);
+      userApi.prefs.setInt("grade", _grade);
+      userApi.prefs.setInt("gender", _gender);
+      showToastMessage('Account setting success', context);
+    }
+    loadingDialog.cancel();
   }
 
   @override
   Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
     return Scaffold(
-      appBar: AppBar(title: Text(AppLocalizations.of(context)!.settings)),
+      appBar: AppBar(
+        toolbarHeight: 50 * pixel,
+        backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
+        centerTitle: true,
+        title: Image.asset(
+          'assets/images/title.png',
+          height: 35 * pixel,
+        ),
+      ),
       body: ListView(
         children: [
-          SettingsSwitch(callback: toggleTheme),
-          const SettingsDivider(),
-          SettingsDropDownMenu(callback: setLocale, options: list),
-        ],
-      ),
-    );
-  }
-}
-
-class SettingsSwitch extends StatefulWidget {
-  const SettingsSwitch({super.key, required this.callback});
-
-  final void Function(bool, BuildContext) callback;
-
-  @override
-  State<SettingsSwitch> createState() => _SettingsSwitchState();
-}
-
-class _SettingsSwitchState extends State<SettingsSwitch> {
-  @override
-  Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-    double pixel = MediaQuery.of(context).size.width / 400;
-    return Container(
-      padding:
-          EdgeInsets.fromLTRB(30 * pixel, 10 * pixel, 30 * pixel, 10 * pixel),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(AppLocalizations.of(context)!.dark_mode,
-              style: TextStyle(
-                  fontSize: pixel * 18,
-                  color: Theme.of(context).colorScheme.onTertiaryContainer)),
-          Switch(
-              value: appState.isDarkModeOn,
-              onChanged: (b) => widget.callback(b, context)),
-        ],
-      ),
-    );
-  }
-}
-
-class SettingsDropDownMenu extends StatefulWidget {
-  const SettingsDropDownMenu(
-      {super.key, required this.callback, required this.options});
-
-  final void Function(String, BuildContext) callback;
-  final List<String> options;
-
-  @override
-  State<SettingsDropDownMenu> createState() => _SettingsDropDownMenuState();
-}
-
-class _SettingsDropDownMenuState extends State<SettingsDropDownMenu> {
-  @override
-  Widget build(BuildContext context) {
-    double pixel = MediaQuery.of(context).size.width / 400;
-    return Container(
-      padding:
-          EdgeInsets.fromLTRB(30 * pixel, 10 * pixel, 30 * pixel, 10 * pixel),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            AppLocalizations.of(context)!.language,
-            style: TextStyle(
-                fontSize: pixel * 18,
-                color: Theme.of(context).colorScheme.onTertiaryContainer),
+          WidgetListWithDivider(
+            color: Theme.of(context).colorScheme.primary,
+            children: [
+              SettingsDropDownMenu(
+                text: "Role",
+                callback: setRole,
+                options: roles.keys.toList(),
+                defaultValue: (roles.entries
+                    .firstWhere((entry) => entry.value == _isFaculty)
+                    .key),
+              ),
+              SettingsDropDownMenu(
+                text: "Grade",
+                callback: setGrade,
+                options: grades.keys.toList(),
+                defaultValue: (grades.entries
+                    .firstWhere((entry) => entry.value == _grade)
+                    .key),
+              ),
+              SettingsDropDownMenu(
+                text: "Gender",
+                callback: setGender,
+                options: genders.keys.toList(),
+                defaultValue: (genders.entries
+                    .firstWhere((entry) => entry.value == _gender)
+                    .key),
+              ),
+              SettingsButton(
+                text: "Commit changes",
+                callback: commitChanges,
+              ),
+            ],
           ),
-          DropdownButton(
-              value: 'English',
-              style: TextStyle(
-                  fontSize: pixel * 18,
-                  color: Theme.of(context).colorScheme.onTertiaryContainer),
-              items:
-                  widget.options.map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (s) => widget.callback(s ?? 'en', context))
         ],
       ),
-    );
-  }
-}
-
-class SettingsDivider extends StatelessWidget {
-  const SettingsDivider({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    double pixel = MediaQuery.of(context).size.width / 400;
-    return Divider(
-      height: 1 * pixel,
-      thickness: 1,
-      indent: 40,
-      endIndent: 40,
-      color: Theme.of(context).colorScheme.surfaceVariant,
     );
   }
 }

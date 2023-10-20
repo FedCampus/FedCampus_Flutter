@@ -4,6 +4,7 @@ import 'package:fedcampus/models/user_model.dart';
 import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/utility/http_api.dart';
 import 'package:fedcampus/view/me/about.dart';
+import 'package:fedcampus/view/me/account_settings.dart';
 import 'package:fedcampus/view/me/privacy_policy.dart';
 import 'package:fedcampus/view/trainingDetail.dart';
 import 'package:fedcampus/view/widgets/widget.dart';
@@ -35,11 +36,11 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
     try {
       await HTTPApi.logout().timeout(const Duration(seconds: 5));
     } on TimeoutException catch (e) {
-      _showIfDialogNotCancelled(
-          e, "Please check your internet connection", loadingDialog);
+      loadingDialog.showIfDialogNotCancelled(
+          e, "Please check your internet connection");
       return;
     } on Exception catch (e) {
-      _showIfDialogNotCancelled(e, e.getMessage, loadingDialog);
+      loadingDialog.showIfDialogNotCancelled(e, e.getMessage);
       return;
     }
     if (mounted && !loadingDialog.cancelled) {
@@ -47,15 +48,6 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
       showToastMessage('you successfully logged out', context);
     }
     loadingDialog.cancel();
-  }
-
-  void _showIfDialogNotCancelled(
-      Exception e, String message, LoadingDialog loadingDialog) {
-    logger.e(e);
-    if (mounted && !loadingDialog.cancelled) {
-      showToastMessage(message, context);
-      loadingDialog.cancel();
-    }
   }
 
   void _healthServiceAuthenticate() async {
@@ -109,19 +101,21 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
                 text: 'Sign in',
                 callback: () => _toSignInPage(),
               ),
-            if (context.watch<UserModel>().isLogin)
-              MeText(
-                text: 'Account Settings',
-                callback: () => {},
+            // if (context.watch<UserModel>().isLogin)
+            MeText(
+              text: 'Account Settings',
+              callback: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const AccountSettings()),
               ),
+            ),
             MeText(
               text: 'Preferences',
-              callback: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Preferences()),
-                );
-              },
+              callback: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const Preferences()),
+              ),
             ),
             if (userApi.healthDataHandler.canAuthenticate())
               MeText(
