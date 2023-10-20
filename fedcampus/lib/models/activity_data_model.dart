@@ -53,7 +53,6 @@ class ActivityDataModel extends ChangeNotifier {
         var dw = DataWrapper();
         final data = await dw.getDataList(dataList, dataNumber);
         bodyJson = jsonDecode(dataListJsonEncode(data));
-        // HTTPClient.post(HTTPClient.fedAnalysis, <String,String>{}, body)
       } on PlatformException catch (error) {
         if (error.message == "java.lang.SecurityException: 50005") {
           logger.e("not authenticated");
@@ -184,8 +183,6 @@ class ActivityDataModel extends ChangeNotifier {
 
       logger.i(
           "Data Status Code ${responseArr[0].statusCode} : ${jsonEncode(bodyJson)}");
-      logger.i(
-          "Data DP Status Code ${responseArr[1].statusCode} : ${jsonEncode(bodyJson)}");
 
       if (responseArr[0].statusCode == 200) {
         ifSent = true;
