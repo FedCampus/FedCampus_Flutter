@@ -166,8 +166,6 @@ class ActivityDataModel extends ChangeNotifier {
         var dw = DataWrapper();
         List<Data?> data = await dw.getDataList(dataMissing, dataNumber);
         bodyJson = jsonDecode(dataListJsonEncode(data));
-        // bodyJson = jsonDecode(jsonEncode(data));
-        // HTTPClient.post(HTTPClient.fedAnalysis, <String,String>{}, body)
       } on PlatformException catch (error) {
         if (error.message == "java.lang.SecurityException: 50005") {
           logger.d("not authenticated");
@@ -181,7 +179,7 @@ class ActivityDataModel extends ChangeNotifier {
       List<http.Response> responseArr = await Future.wait([
         HTTPApi.post(HTTPApi.data, <String, String>{}, jsonEncode(bodyJson)),
         // TODO: Data DP Algorithm!!!
-        HTTPApi.post(HTTPApi.dataDP, <String, String>{}, jsonEncode(bodyJson))
+        // HTTPApi.post(HTTPApi.dataDP, <String, String>{}, jsonEncode(bodyJson))
       ]);
 
       logger.i(
