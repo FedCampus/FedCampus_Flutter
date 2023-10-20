@@ -305,4 +305,21 @@ def getSimilarUser(querySet, index, length=1):
         result.append(f"{user.customer.nickname}, {user.email}")
 
     return result
+
+
+class AccountSettings(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request):
+        customer = request.user.customer
+        data = request.data
+        if data.get("faculty") == True:
+            customer.faculty = True
+        else:
+            customer.faculty = False
+            customer.student = int(data.get("student"))
+        customer.male = data.get("male")
+        customer.save()
+        return Response(None)
+
     pass

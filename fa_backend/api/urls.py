@@ -15,4 +15,5 @@ urlpatterns = [
     path("account", views.Account.as_view(), name="account"),
     path("fedanalysis", views.FedAnalysis.as_view(), name="fedanalysis"),
     path("log", views.saveLogFile.as_view(), name="saveLogFile"),
+    path("account", views.AccountSettings.as_view(), name="account"),
 ]

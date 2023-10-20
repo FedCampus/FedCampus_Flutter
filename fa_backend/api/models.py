@@ -75,6 +75,9 @@ class Customer(models.Model):
     avator = models.ImageField(null=True, blank=True)
     nickname = models.CharField(max_length=30)
     netid = models.CharField(max_length=20, null=True, blank=True)
+    faculty = models.BooleanField(null=True, blank=True)
+    student = models.SmallIntegerField(null=True, blank=True)
+    male = models.BooleanField(null=True, blank=True)
 
     def __str__(self):
         return self.nickname
