@@ -4,6 +4,7 @@ import time
 import os
 
 from .models import Record
+from .models import Customer
 from .models import SleepTime
 from .models import RecordDP
 from .models import saveRecord
@@ -12,6 +13,7 @@ from .models import Log
 from django.contrib.auth import logout
 from django.db.models import Q
 from django.db.models import Avg
+from django.contrib.auth.models import User
 
 # Create your views here.
 from .serializers import LoginSerializer
@@ -204,27 +206,50 @@ class saveLogFile(APIView):
     pass
 
 
+FA_MODEL = Record
+
+
 class FedAnalysis(APIView):
     # authentication_classes = [SessionAuthenticataion]
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
         startTime = 0
-        dataList = []
+        filtering = None
         for data in request.data:
             if data.get("time"):
                 startTime = data.get("time")
                 continue
-            dataList.append(data.get("name"))
-            saveRecord(RecordDP, request.user, data)
-        print(dataList)
-        return Response(self.calculateAverageAndRanking(request, startTime))
+            if data.get("filter"):
+                filtering = data.get("filter")
+                continue
+            (saveRecord(FA_MODEL, request.user, data)) if not data.get(
+                "name"
+            ) is None else None
+        return Response(self.calculateAverageAndRanking(request, startTime, filtering))
 
-    def calculateAverageAndRanking(self, request, dateTime):
+    def calculateAverageAndRanking(self, request, dateTime, filtering):
         resultJson = {}
+        # filter querySet accroding to the filtering
+        querySet = FA_MODEL.objects.all()
+        if not filtering == None:
+            if filtering.get("gender") == "male":
+                querySet = querySet.filter(user__customer__male=True)
+            elif filtering.get("gender") == "female":
+                querySet = querySet.filter(user__customer__male=False)
+            if filtering.get("status") == "all":
+                pass
+            elif filtering.get("status") == "student":
+                querySet = querySet.filter(user__customer__faculty=False)
+            elif filtering.get("status") == "faculty":
+                querySet = querySet.filter(user__customer__faculty=True)
+            else:
+                querySet = querySet.filter(
+                    user__customer__student=int(filtering.get("student"))
+                )
 
         for dataType in FA_DATA:
-            querySet = RecordDP.objects.filter(
+            querySet = querySet.filter(
                 Q(dataType=dataType) & Q(startTime=dateTime)
             ).order_by("-value")
             if not querySet.filter(user=request.user).exists():
@@ -238,7 +263,7 @@ class FedAnalysis(APIView):
 
     def checkAndSend(self, dateTime, request):
         dateTime = dateTime * 1000000
-        result = RecordDP.objects.filter(
+        result = FA_MODEL.objects.filter(
             Q(startTime=dateTime) & Q(user=request.user) & Q(dataType__in=FA_DATA)
         )
         avgJson = {}
@@ -248,7 +273,7 @@ class FedAnalysis(APIView):
             return Response(None, status=452)
         else:
             for dataType in FA_DATA:
-                querySet = RecordDP.objects.filter(
+                querySet = FA_MODEL.objects.filter(
                     Q(dataType=dataType) & Q(startTime=dateTime)
                 ).order_by("-value")
                 avg = querySet.aggregate(Avg("value")).get("value__avg")
@@ -269,26 +294,6 @@ class FedAnalysis(APIView):
         raise Exception(
             f"The real Percentage is {realPercentage}, and it is not in range 0-100"
         )
-        # exerciseType = request.data.get("type")
-        # dateTime = int(request.data.get("date")) * 1000000
-        # logger.info(f"get {exerciseType} and {dateTime}")
-
-        # ## TODO: check if the current user is in the list or not
-        # if not RecordDP.objects.filter(
-        #     Q(startTime=dateTime) & Q(user=request.user) & Q(dataType=exerciseType)
-        # ).exists():
-        #     ## let the user send the data to the backend server
-        #     return Response(None, status=452)
-
-        # querySet = RecordDP.objects.filter(
-        #     Q(startTime=dateTime) & Q(dataType=exerciseType)
-        # ).order_by("-value")
-        # avg = querySet.aggregate(Avg("value")).get("value__avg")
-        # query = querySet.get(user=request.user)
-        # index = querySet.filter(value__gt=query.value).count()  # ranking = index + 1
-        # similarUsers = getSimilarUser(querySet, index, 1)
-
-        # return Response({"avg": avg, "rank": index + 1, "similar_user": similarUsers})
 
 
 def getSimilarUser(querySet, index, length=1):

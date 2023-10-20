@@ -50,7 +50,7 @@ def saveRecord(Model, user, data):
         )[0]
         record.value = float(data.get("value"))
         record.save()
-        logger.info(f"rewrite record {data}")
+        logger.info(f"rewrite record {data} for {Model}")
     except:
         record = Model.objects.create(
             user=user,
