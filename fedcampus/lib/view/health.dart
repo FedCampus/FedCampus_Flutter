@@ -74,35 +74,36 @@ class _HealthState extends State<Health> {
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
     return RefreshIndicator(
-        onRefresh: () => refresh(forcedRefresh: true),
-        child: LayoutBuilder(builder: (context, constraints) {
-          // height of SingleChildScrollView is unconstrained, so the container uses the height of grandparents
-          return SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Container(
-                height: constraints.maxHeight,
-                padding: EdgeInsets.fromLTRB(
-                    22 * pixel, 19 * pixel, 22 * pixel, 10 * pixel),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                      flex: 1,
-                      child: LeftColumn(
-                        date: dateTime,
-                        onDateChange: updateDate,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 22 * pixel,
-                    ),
-                    const Expanded(flex: 1, child: RightColumn()),
-                  ],
+      onRefresh: () => refresh(forcedRefresh: true),
+      child: SizedBox(
+        height: double.infinity,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Container(
+            padding: EdgeInsets.fromLTRB(
+                22 * pixel, 19 * pixel, 22 * pixel, 10 * pixel),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Expanded(
+                  flex: 1,
+                  child: LeftColumn(
+                    date: dateTime,
+                    onDateChange: updateDate,
+                  ),
                 ),
-              ));
-        }));
+                SizedBox(
+                  width: 22 * pixel,
+                ),
+                const Expanded(flex: 1, child: RightColumn()),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -318,7 +319,7 @@ class Heart extends StatelessWidget {
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
     return FedCard(
-        widget: Row(
+        child: Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Column(
@@ -398,7 +399,7 @@ class Distance extends StatelessWidget {
       loading: Provider.of<HealthDataModel>(context).loading,
     );
     return FedCard(
-      widget: SizedBox(
+      child: SizedBox(
         width: double.infinity,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -470,7 +471,7 @@ class Stress extends StatelessWidget {
       loading: Provider.of<HealthDataModel>(context).loading,
     );
     return FedCard(
-      widget: Row(
+      child: Row(
         children: [
           Column(mainAxisAlignment: MainAxisAlignment.start, children: [
             SvgIcon(
@@ -522,7 +523,7 @@ class Step extends StatelessWidget {
       loading: Provider.of<HealthDataModel>(context).loading,
     );
     return FedCard(
-      widget: Row(
+      child: Row(
         children: [
           Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -581,7 +582,7 @@ class Calorie extends StatelessWidget {
       loading: Provider.of<HealthDataModel>(context).loading,
     );
     return FedCard(
-        widget: Row(
+        child: Row(
       children: [
         Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -632,7 +633,7 @@ class IntenseExercise extends StatelessWidget {
       loading: Provider.of<HealthDataModel>(context).loading,
     );
     return FedCard(
-        widget: Row(
+        child: Row(
       children: [
         Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -689,7 +690,7 @@ class Sleep extends StatelessWidget {
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
     return FedCard(
-      widget: Row(
+      child: Row(
         children: [
           Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -744,7 +745,7 @@ class ScreenTime extends StatelessWidget {
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
     return FedCard(
-      widget: Row(
+      child: Row(
         children: [
           Column(
             mainAxisAlignment: MainAxisAlignment.start,

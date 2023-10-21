@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fedcampus/models/activity_data_model.dart';
+import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/calendar.dart';
 import 'package:fedcampus/view/widgets/widget.dart';
@@ -111,9 +112,24 @@ class _ActivityState extends State<Activity> {
           padding: EdgeInsets.all(20 * pixel),
           itemBuilder: (BuildContext context, int index) {
             if (index == 0) {
-              return Date(
-                onDateChange: updateDate,
-                date: dateTime,
+              return Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 15,
+                    child: Date(
+                      onDateChange: updateDate,
+                      date: dateTime,
+                    ),
+                  ),
+                  const Expanded(
+                    flex: 1,
+                    child: SizedBox(),
+                  ),
+                  const Expanded(
+                    flex: 5,
+                    child: FilterCard(),
+                  ),
+                ],
               );
             }
             // https://book.flutterchina.club/chapter6/listview.html
@@ -180,7 +196,7 @@ class ActivityCard extends StatelessWidget {
     return FedCard(
         left: 18,
         right: 18,
-        widget: Row(
+        child: Row(
           children: <Widget>[
             // As stated in https://api.flutter.dev/flutter/widgets/Image/height.html,
             // it is recommended to specify the image size (in order to avoid
@@ -257,6 +273,197 @@ class ActivityCard extends StatelessWidget {
   }
 }
 
+class CheckBoxLabel extends StatefulWidget {
+  final bool selected;
+  final String text;
+  final void Function(bool) callback;
+
+  const CheckBoxLabel(
+      {super.key,
+      required this.selected,
+      required this.text,
+      required this.callback});
+
+  @override
+  State<StatefulWidget> createState() => _CheckBoxLabelState();
+}
+
+class _CheckBoxLabelState extends State<CheckBoxLabel> {
+  bool _selected = false;
+  @override
+  void initState() {
+    super.initState();
+    _selected = widget.selected;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Checkbox(
+            value: _selected,
+            onChanged: (b) {
+              setState(() {
+                _selected = b!;
+              });
+              widget.callback(b!);
+            }),
+        Text(widget.text)
+      ],
+    );
+  }
+}
+
+class FilterCard extends StatefulWidget {
+  const FilterCard({super.key});
+
+  @override
+  State<FilterCard> createState() => _FilterCardState();
+}
+
+class _FilterCardState extends State<FilterCard> {
+  int status = userApi.prefs.getInt("status") ?? 1;
+  int grade = userApi.prefs.getInt("grade") ?? 2025;
+  int gender = userApi.prefs.getInt("gender") ?? 1;
+  bool _selectedA = false;
+  bool _selectedB = false;
+  bool _selectedC = false;
+
+  void updateQueryParams() {
+    Map<String, dynamic> args = {
+      "status": _selectedA ? (status == 1 ? "students" : "faculty") : "all",
+      "student": _selectedB ? grade : 0,
+      "gender": _selectedC ? (gender == 1 ? "male" : "female") : "all",
+    };
+    Provider.of<ActivityDataModel>(context, listen: false)
+        .filterParams
+        .addAll(args);
+    logger.e(args);
+  }
+
+  Future<bool?> filterDialog() {
+    double pixel = MediaQuery.of(context).size.width / 400;
+    return showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Filter"),
+          contentPadding:
+              EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 0),
+          content: SizedBox(
+            height: 200 * pixel,
+            width: 300 * pixel,
+            child: Column(
+              children: [
+                CheckBoxLabel(
+                  selected: _selectedA,
+                  text: status == 1 ? "Students" : "Faculty",
+                  callback: (b) => {
+                    setState(() {
+                      _selectedA = b;
+                    })
+                  },
+                ),
+                CheckBoxLabel(
+                  selected: _selectedB,
+                  text: "Class of $grade",
+                  callback: (b) => {
+                    setState(() {
+                      _selectedB = b;
+                    })
+                  },
+                ),
+                CheckBoxLabel(
+                  selected: _selectedC,
+                  text: switch (gender) {
+                    1 => "Male",
+                    2 => "Female",
+                    _ => "Unknown"
+                  },
+                  callback: (b) => {
+                    setState(() {
+                      _selectedC = b;
+                    })
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Confirm"),
+              onPressed: () {
+                updateQueryParams();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ActivityTopCard(
+      callback: filterDialog,
+      child: Align(
+        child: SvgIcon(
+          imagePath: 'assets/svg/filter.svg',
+          colorFilter: ColorFilter.mode(
+              Theme.of(context).colorScheme.secondaryContainer,
+              BlendMode.srcIn),
+        ),
+      ),
+    );
+  }
+}
+
+class ActivityTopCard extends StatelessWidget {
+  const ActivityTopCard(
+      {super.key, required this.child, required this.callback});
+  final Widget child;
+  final void Function() callback;
+  @override
+  Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
+    return Container(
+      height: 80 * pixel,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceTint,
+        borderRadius: BorderRadius.circular(15 * pixel),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.shadow,
+            offset: Offset(0 * pixel, 4 * pixel),
+            blurRadius: 2 * pixel,
+          ),
+          BoxShadow(
+            color: Theme.of(context).colorScheme.outline,
+            offset: Offset(0 * pixel, -1 * pixel),
+            blurRadius: 1 * pixel,
+          ),
+          BoxShadow(
+            color: Theme.of(context).colorScheme.outline,
+            offset: Offset(0 * pixel, 4 * pixel),
+            blurRadius: 2 * pixel,
+          ),
+        ],
+      ),
+      child: TextButton(
+          onPressed: callback,
+          style: TextButton.styleFrom(
+            backgroundColor: Theme.of(context).colorScheme.surfaceTint,
+            padding: EdgeInsets.fromLTRB(
+                26 * pixel, 12 * pixel, 26 * pixel, 12 * pixel),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15 * pixel)),
+          ),
+          child: child),
+    );
+  }
+}
+
 class Date extends StatefulWidget {
   const Date({
     super.key,
@@ -312,122 +519,91 @@ class _DateState extends State<Date> {
       );
     }
 
-    return Container(
-      height: 80 * pixel,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceTint,
-        borderRadius: BorderRadius.circular(15 * pixel),
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(context).colorScheme.shadow,
-            offset: Offset(0 * pixel, 4 * pixel),
-            blurRadius: 2 * pixel,
+    return ActivityTopCard(
+      callback: calendarDialog,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          FedIcon(
+            imagePath: 'assets/images/activity_nav_icon.png',
+            height: 52 * pixel,
           ),
-          BoxShadow(
-            color: Theme.of(context).colorScheme.outline,
-            offset: Offset(0 * pixel, -1 * pixel),
-            blurRadius: 1 * pixel,
+          const Expanded(
+            flex: 2,
+            child: SizedBox(),
           ),
-          BoxShadow(
-            color: Theme.of(context).colorScheme.outline,
-            offset: Offset(0 * pixel, 4 * pixel),
-            blurRadius: 2 * pixel,
+          Expanded(
+            flex: 10,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const Expanded(
+                  flex: 1,
+                  child: SizedBox(),
+                ),
+                Row(
+                  children: <Widget>[
+                    const Expanded(
+                      flex: 1,
+                      child: SizedBox(),
+                    ),
+                    Text(
+                      DateFormat.MMMd('en_US').format(widget.date),
+                      style: TextStyle(
+                          fontSize: pixel * 22,
+                          shadows: [
+                            BoxShadow(
+                              color: Theme.of(context).colorScheme.shadow,
+                              offset: Offset(0 * pixel, 2 * pixel),
+                              blurRadius: 1 * pixel,
+                            ),
+                          ],
+                          color: Theme.of(context).colorScheme.secondary),
+                    ),
+                    const Expanded(
+                      flex: 1,
+                      child: SizedBox(),
+                    ),
+                    Text(
+                      DateFormat.E('en_US').format(widget.date),
+                      style: TextStyle(
+                          fontSize: pixel * 22,
+                          shadows: [
+                            BoxShadow(
+                              color: Theme.of(context).colorScheme.shadow,
+                              offset: Offset(0 * pixel, 2 * pixel),
+                              blurRadius: 1 * pixel,
+                            ),
+                          ],
+                          color: Theme.of(context).colorScheme.secondary),
+                    ),
+                    const Expanded(
+                      flex: 1,
+                      child: SizedBox(),
+                    ),
+                  ],
+                ),
+                const Expanded(
+                  flex: 3,
+                  child: SizedBox(),
+                ),
+                Text(
+                  '2023',
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.secondary),
+                ),
+                const Expanded(
+                  flex: 1,
+                  child: SizedBox(),
+                ),
+              ],
+            ),
+          ),
+          const Expanded(
+            flex: 2,
+            child: SizedBox(),
           ),
         ],
-      ),
-      child: TextButton(
-        onPressed: () => calendarDialog(),
-        style: TextButton.styleFrom(
-          backgroundColor: Theme.of(context).colorScheme.surfaceTint,
-          padding: EdgeInsets.fromLTRB(
-              40 * pixel, 12 * pixel, 40 * pixel, 12 * pixel),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15 * pixel)),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            FedIcon(
-              imagePath: 'assets/images/activity_nav_icon.png',
-              height: 52 * pixel,
-            ),
-            const Expanded(
-              flex: 2,
-              child: SizedBox(),
-            ),
-            Expanded(
-              flex: 10,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  const Expanded(
-                    flex: 1,
-                    child: SizedBox(),
-                  ),
-                  Row(
-                    children: <Widget>[
-                      const Expanded(
-                        flex: 1,
-                        child: SizedBox(),
-                      ),
-                      Text(
-                        DateFormat.MMMd('en_US').format(widget.date),
-                        style: TextStyle(
-                            fontSize: pixel * 22,
-                            shadows: [
-                              BoxShadow(
-                                color: Theme.of(context).colorScheme.shadow,
-                                offset: Offset(0 * pixel, 2 * pixel),
-                                blurRadius: 1 * pixel,
-                              ),
-                            ],
-                            color: Theme.of(context).colorScheme.secondary),
-                      ),
-                      const Expanded(
-                        flex: 1,
-                        child: SizedBox(),
-                      ),
-                      Text(
-                        DateFormat.E('en_US').format(widget.date),
-                        style: TextStyle(
-                            fontSize: pixel * 22,
-                            shadows: [
-                              BoxShadow(
-                                color: Theme.of(context).colorScheme.shadow,
-                                offset: Offset(0 * pixel, 2 * pixel),
-                                blurRadius: 1 * pixel,
-                              ),
-                            ],
-                            color: Theme.of(context).colorScheme.secondary),
-                      ),
-                      const Expanded(
-                        flex: 1,
-                        child: SizedBox(),
-                      ),
-                    ],
-                  ),
-                  const Expanded(
-                    flex: 3,
-                    child: SizedBox(),
-                  ),
-                  Text(
-                    '2023',
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.secondary),
-                  ),
-                  const Expanded(
-                    flex: 1,
-                    child: SizedBox(),
-                  ),
-                ],
-              ),
-            ),
-            const Expanded(
-              flex: 2,
-              child: SizedBox(),
-            ),
-          ],
-        ),
       ),
     );
   }

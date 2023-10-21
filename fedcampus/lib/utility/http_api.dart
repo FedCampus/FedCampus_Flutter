@@ -173,13 +173,9 @@ class HTTPApi {
     }
   }
 
-  static Future<void> accountSettings(
-      bool isFaculty, int grade, int gender) async {
-    bool isMale = switch (gender) {
-      1 => true,
-      2 => false,
-      _ => false,
-    };
+  static Future<void> accountSettings(int status, int grade, int gender) async {
+    bool isFaculty = status == 2;
+    bool isMale = gender == 1;
     try {
       http.Response response = await HTTPApi.post(
           HTTPApi.account,

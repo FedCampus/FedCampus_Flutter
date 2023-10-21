@@ -18,20 +18,20 @@ class AccountSettings extends StatefulWidget {
 }
 
 class _AccountSettingsState extends State<AccountSettings> {
-  bool _isFaculty = userApi.prefs.getBool("isFaculty") ?? false;
-  int _grade = userApi.prefs.getInt("grade") ?? 1;
+  int _status = userApi.prefs.getInt("status") ?? 1;
+  int _grade = userApi.prefs.getInt("grade") ?? 2025;
   int _gender = userApi.prefs.getInt("gender") ?? 1; // 1 male, 2 female
 
-  Map<String, bool> roles = {
-    "Faculty": true,
-    "Student": false,
+  Map<String, int> roles = {
+    "Student": 1,
+    "Faculty": 2,
   };
 
   Map<String, int> grades = {
-    "Freshman": 1,
-    "Sophomore": 2,
-    "Junior": 3,
-    "Senior": 4,
+    "Freshman": 2027,
+    "Sophomore": 2026,
+    "Junior": 2025,
+    "Senior": 2024,
   };
 
   Map<String, int> genders = {
@@ -46,7 +46,7 @@ class _AccountSettingsState extends State<AccountSettings> {
 
   void setRole(String role) {
     logger.d(role);
-    _isFaculty = roles[role]!;
+    _status = roles[role]!;
   }
 
   void setGrade(String grade) {
@@ -63,7 +63,7 @@ class _AccountSettingsState extends State<AccountSettings> {
     LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
     loadingDialog.showLoading();
     try {
-      await HTTPApi.accountSettings(_isFaculty, _grade, _gender)
+      await HTTPApi.accountSettings(_status, _grade, _gender)
           .timeout(const Duration(seconds: 5));
     } on TimeoutException catch (e) {
       loadingDialog.showIfDialogNotCancelled(
@@ -77,7 +77,7 @@ class _AccountSettingsState extends State<AccountSettings> {
       return;
     }
     if (mounted && !loadingDialog.cancelled) {
-      userApi.prefs.setBool("isFaculty", _isFaculty);
+      userApi.prefs.setInt("status", _status);
       userApi.prefs.setInt("grade", _grade);
       userApi.prefs.setInt("gender", _gender);
       showToastMessage('Account setting success', context);
@@ -108,7 +108,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                 callback: setRole,
                 options: roles.keys.toList(),
                 defaultValue: (roles.entries
-                    .firstWhere((entry) => entry.value == _isFaculty)
+                    .firstWhere((entry) => entry.value == _status)
                     .key),
               ),
               SettingsDropDownMenu(

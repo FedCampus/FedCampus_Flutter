@@ -30,6 +30,12 @@ class ActivityDataModel extends ChangeNotifier {
           DateTime.now().day)
       .toString();
 
+  Map<String, dynamic> filterParams = {
+    "status": "all",
+    "student": 0,
+    "gender": "all"
+  };
+
   final dataList = DataWrapper.dataNameList;
 
   bool get loading => _loading;
@@ -73,12 +79,14 @@ class ActivityDataModel extends ChangeNotifier {
     //   "filter": {"gender": "all", "status": "student"}
     // });
     // Example 2: filter female students
-    bodyJson.add({
-      "filter": {"gender": "female", "status": "student"}
-    });
+    // bodyJson.add({
+    //   "filter": {"gender": "female", "status": "student"}
+    // });
     // bodyJson.add({"student": 2025});
     // bodyJson.add({"faculty": false});
     // bodyJson.add({"male": true});
+
+    bodyJson.add({"filter": filterParams});
     late http.Response response;
     try {
       response = await HTTPApi.post(
