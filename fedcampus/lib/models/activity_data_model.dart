@@ -30,6 +30,12 @@ class ActivityDataModel extends ChangeNotifier {
           DateTime.now().day)
       .toString();
 
+  Map<String, dynamic> filterParams = {
+    "status": "all",
+    "student": 0,
+    "gender": "all"
+  };
+
   final dataList = DataWrapper.dataNameList;
 
   bool get loading => _loading;
@@ -73,12 +79,14 @@ class ActivityDataModel extends ChangeNotifier {
     //   "filter": {"gender": "all", "status": "student"}
     // });
     // Example 2: filter female students
-    bodyJson.add({
-      "filter": {"gender": "female", "status": "student"}
-    });
+    // bodyJson.add({
+    //   "filter": {"gender": "female", "status": "student"}
+    // });
     // bodyJson.add({"student": 2025});
     // bodyJson.add({"faculty": false});
     // bodyJson.add({"male": true});
+
+    bodyJson.add({"filter": filterParams});
     late http.Response response;
     try {
       response = await HTTPApi.post(
@@ -87,6 +95,8 @@ class ActivityDataModel extends ChangeNotifier {
     } on TimeoutException {
       rethrow;
     }
+
+    logger.d(response.body);
 
     return response;
   }
@@ -116,17 +126,6 @@ class ActivityDataModel extends ChangeNotifier {
     forcedRefresh = Platform.isIOS ? true : forcedRefresh;
     _loading = true;
     notifyListeners();
-    String? cachedData = userApi.prefs.getString("activity$date");
-    if (!forcedRefresh && (cachedData != null)) {
-      logger.d("cached activity data");
-      activityData = json.decode(cachedData);
-      if (DateTime.now().millisecondsSinceEpoch -
-              (activityData["query_time"] ?? 0.0) <
-          1800000) {
-        _notify();
-        return;
-      }
-    }
     _clearAll();
     // get data and send to the server
     final dataNumber = int.parse(_date);

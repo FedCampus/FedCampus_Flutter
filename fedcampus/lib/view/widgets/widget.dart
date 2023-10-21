@@ -7,13 +7,13 @@ import '../../utility/log.dart';
 class FedCard extends StatelessWidget {
   const FedCard({
     super.key,
-    required this.widget,
+    required this.child,
     this.left = 10,
     this.top = 17,
     this.right = 10,
     this.bottom = 14,
   });
-  final Widget widget;
+  final Widget child;
   final double left;
   final double top;
   final double right;
@@ -46,7 +46,7 @@ class FedCard extends StatelessWidget {
           ),
         ],
       ),
-      child: widget,
+      child: child,
     );
   }
 }
