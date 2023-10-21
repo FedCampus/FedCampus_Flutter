@@ -364,15 +364,16 @@ class _FilterCardState extends State<FilterCard> {
                     })
                   },
                 ),
-                CheckBoxLabel(
-                  selected: _selectedB,
-                  text: "Class of $grade",
-                  callback: (b) => {
-                    setState(() {
-                      _selectedB = b;
-                    })
-                  },
-                ),
+                if (status == 1)
+                  CheckBoxLabel(
+                    selected: _selectedB,
+                    text: "Class of $grade",
+                    callback: (b) => {
+                      setState(() {
+                        _selectedB = b;
+                      })
+                    },
+                  ),
                 CheckBoxLabel(
                   selected: _selectedC,
                   text: switch (gender) {
