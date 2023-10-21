@@ -124,6 +124,8 @@ class _PreferencesState extends State<Preferences> {
             children: [
               SettingsSwitch(
                 text: AppLocalizations.of(context)!.dark_mode,
+                value: Provider.of<MyAppState>(context, listen: false)
+                    .isDarkModeOn,
                 callback: toggleTheme,
               ),
               if (false) // TODO: disable language selection
@@ -209,19 +211,32 @@ class SettingsButton extends StatelessWidget {
   }
 }
 
-class SettingsSwitch extends StatelessWidget {
+class SettingsSwitch extends StatefulWidget {
   const SettingsSwitch({
     super.key,
     required this.text,
+    required this.value,
     required this.callback,
   });
 
   final String text;
+  final bool value;
   final void Function(bool, BuildContext) callback;
 
   @override
+  State<SettingsSwitch> createState() => _SettingsSwitchState();
+}
+
+class _SettingsSwitchState extends State<SettingsSwitch> {
+  bool _value = false;
+  @override
+  void initState() {
+    super.initState();
+    _value = widget.value;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
     double pixel = MediaQuery.of(context).size.width / 400;
     return Container(
       padding:
@@ -230,14 +245,19 @@ class SettingsSwitch extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            text,
+            widget.text,
             style: TextStyle(
                 fontSize: pixel * 18,
                 color: Theme.of(context).colorScheme.primary),
           ),
           Switch(
-            value: appState.isDarkModeOn,
-            onChanged: (b) => callback(b, context),
+            value: _value,
+            onChanged: (b) {
+              setState(() {
+                _value = b;
+              });
+              widget.callback(b, context);
+            },
           ),
         ],
       ),
