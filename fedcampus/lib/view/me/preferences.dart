@@ -271,7 +271,6 @@ class _SettingsDropDownMenuState extends State<SettingsDropDownMenu> {
   void initState() {
     super.initState();
     dropdownValue = widget.defaultValue;
-    logger.e(dropdownValue);
   }
 
   @override

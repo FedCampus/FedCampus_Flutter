@@ -96,6 +96,8 @@ class ActivityDataModel extends ChangeNotifier {
       rethrow;
     }
 
+    logger.d(response.body);
+
     return response;
   }
 
@@ -124,17 +126,6 @@ class ActivityDataModel extends ChangeNotifier {
     forcedRefresh = Platform.isIOS ? true : forcedRefresh;
     _loading = true;
     notifyListeners();
-    String? cachedData = userApi.prefs.getString("activity$date");
-    if (!forcedRefresh && (cachedData != null)) {
-      logger.d("cached activity data");
-      activityData = json.decode(cachedData);
-      if (DateTime.now().millisecondsSinceEpoch -
-              (activityData["query_time"] ?? 0.0) <
-          1800000) {
-        _notify();
-        return;
-      }
-    }
     _clearAll();
     // get data and send to the server
     final dataNumber = int.parse(_date);

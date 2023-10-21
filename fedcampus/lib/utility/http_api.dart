@@ -177,16 +177,18 @@ class HTTPApi {
     bool isFaculty = status == 2;
     bool isMale = gender == 1;
     try {
+      var params = <String, dynamic>{
+        "faculty": isFaculty,
+        "student": grade,
+        "male": isMale,
+      };
+      logger.d(params);
       http.Response response = await HTTPApi.post(
           HTTPApi.account,
           <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
           },
-          jsonEncode(<String, dynamic>{
-            "faculty": isFaculty,
-            "student": grade,
-            "male": isMale,
-          }));
+          jsonEncode(params));
       if (response.statusCode == 400) {
         logger.e('Bad Credentials, please try again');
         throw ClientException('Bad Credentials, please try again');
