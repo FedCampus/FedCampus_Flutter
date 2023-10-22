@@ -209,6 +209,18 @@ class saveLogFile(APIView):
 FA_MODEL = Record
 
 
+class getStatus(APIView):
+    permission_classes = permissions.IsAuthenticated
+
+    def get(self, request):
+        customer = request.user.customer
+
+        # return Response({"status": customer.})
+        pass
+
+    pass
+
+
 class FedAnalysis(APIView):
     # authentication_classes = [SessionAuthenticataion]
     permission_classes = (permissions.IsAuthenticated,)
@@ -231,30 +243,36 @@ class FedAnalysis(APIView):
     def calculateAverageAndRanking(self, request, dateTime, filtering):
         resultJson = {}
         # filter querySet accroding to the filtering
-        querySet = FA_MODEL.objects.all()
+        queryAll = FA_MODEL.objects.all()
         if not filtering == None:
             if filtering.get("gender") == "male":
-                querySet = querySet.filter(user__customer__male=True)
+                queryAll = queryAll.filter(user__customer__male=True)
             elif filtering.get("gender") == "female":
-                querySet = querySet.filter(user__customer__male=False)
+                queryAll = queryAll.filter(user__customer__male=False)
             if filtering.get("status") == "all":
                 pass
             elif filtering.get("status") == "student":
-                querySet = querySet.filter(user__customer__faculty=False)
+                queryAll = queryAll.filter(user__customer__faculty=False)
             elif filtering.get("status") == "faculty":
-                querySet = querySet.filter(user__customer__faculty=True)
+                queryAll = queryAll.filter(user__customer__faculty=True)
             else:
-                querySet = querySet.filter(
+                queryAll = queryAll.filter(
                     user__customer__student=int(filtering.get("student"))
                 )
 
         for dataType in FA_DATA:
-            querySet = querySet.filter(
+            querySet = queryAll.filter(
                 Q(dataType=dataType) & Q(startTime=dateTime)
             ).order_by("-value")
             if not querySet.filter(user=request.user).exists():
                 continue
-            query = querySet.get(user=request.user)
+            # return
+            try:
+                query = querySet.get(user=request.user)
+            except:
+                query = querySet.filter(user=request.user)
+                logger.info(f"Exception Getting Two queries at the same time {query}")
+                query = query[0]
             avg = querySet.aggregate(Avg("value")).get("value__avg")
             percentage = self.calculatePercentage(querySet, query)
             resultJson[dataType] = {"avg": avg, "ranking": percentage}
