@@ -34,9 +34,12 @@ class HealthDataModel extends ChangeNotifier {
 
   void getAllData({bool forcedRefresh = false}) {
     getBodyData(forcedRefresh: forcedRefresh);
-    getScreenData();
+    if (Platform.isAndroid) {
+      getScreenData();
+    }
   }
 
+  /// Only work on Android.
   Future<void> getScreenData({bool forcedRefresh = false}) async {
     Map<String, double> res = {};
     try {
