@@ -332,8 +332,11 @@ class _FilterCardState extends State<FilterCard> {
 
   void updateQueryParams() {
     Map<String, dynamic> args = {
-      "status": _selectedA ? (status == 1 ? "students" : "faculty") : "all",
-      "student": _selectedB ? grade : 0,
+      "status": _selectedB
+          ? grade
+          : _selectedA
+              ? (status == 1 ? "student" : "faculty")
+              : "all",
       "gender": _selectedC ? (gender == 1 ? "male" : "female") : "all",
     };
     Provider.of<ActivityDataModel>(context, listen: false)
