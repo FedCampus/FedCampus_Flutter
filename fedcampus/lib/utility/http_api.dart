@@ -25,6 +25,8 @@ class HTTPApi {
 
   static const account = "${_host}api/account";
 
+  static const status = "${_host}api/status";
+
   static var _checkToken = false;
 
   static var _token = "";
