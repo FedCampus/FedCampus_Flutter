@@ -8,9 +8,10 @@ import '../../utility/calendar.dart' as calendar;
 class HuaweiHealth extends FedHealthData {
   final host = DataApi();
   @override
-  bool canAuthenticate() {
-    return true;
-  }
+  bool get canAuth => true;
+
+  @override
+  bool get canCancelAuth => true;
 
   @override
   Future<void> authenticate() async {
