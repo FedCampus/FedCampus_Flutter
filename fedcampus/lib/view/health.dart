@@ -140,6 +140,10 @@ class LeftColumn extends StatelessWidget {
             height: 20 * pixel,
           ),
           const Stress(),
+          SizedBox(
+            height: 20 * pixel,
+          ),
+          const StepTime()
         ],
       ),
     );
@@ -565,6 +569,63 @@ class Step extends StatelessWidget {
       //     MaterialPageRoute(builder: (context) => const DetailsChart()),
       //   );
       // },
+    );
+  }
+}
+
+class StepTime extends StatelessWidget {
+  const StepTime({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
+    String displayText = formatNum(
+      Provider.of<HealthDataModel>(context).healthData['step_time'],
+      decimalPoints: 0,
+      loading: Provider.of<HealthDataModel>(context).loading,
+    );
+    return FedCard(
+      child: Row(
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SvgIcon(
+                imagePath: 'assets/svg/step_time.svg',
+                colorFilter: ColorFilter.mode(
+                    Theme.of(context).colorScheme.primaryContainer,
+                    BlendMode.srcIn),
+              ),
+              SizedBox(
+                height: 10 * pixel,
+              ),
+              Text(
+                'Step\nTime',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+              ),
+            ],
+          ),
+          const Spacer(),
+          Column(
+            children: [
+              Text(displayText,
+                  style: montserratAlternatesTextStyle(
+                      displayText.length < 6
+                          ? pixel * 30
+                          : pixel * (145 / displayText.length),
+                      Theme.of(context).colorScheme.primaryContainer)),
+              Text('min',
+                  style: montserratAlternatesTextStyle(pixel * 20,
+                      Theme.of(context).colorScheme.primaryContainer)),
+            ],
+          ),
+          const Spacer(),
+        ],
+      ),
     );
   }
 }

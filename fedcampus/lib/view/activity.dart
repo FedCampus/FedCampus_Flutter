@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fedcampus/models/activity_data_model.dart';
 import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/utility/log.dart';
@@ -23,9 +24,9 @@ class Activity extends StatefulWidget {
 class _ActivityState extends State<Activity> {
   final entries = [
     {
-      "entry_name": "step_time",
+      "entry_name": "step",
       "icon_path": "assets/svg/step.svg",
-      "unit": "min"
+      "unit": "steps"
     },
     {
       "entry_name": "distance",
@@ -48,10 +49,10 @@ class _ActivityState extends State<Activity> {
       "unit": "stress"
     },
     {
-      "entry_name": "step",
+      "entry_name": "step_time",
       "icon_path":
-          "assets/svg/step.svg", // TODO: distinguish step and step_time icon
-      "unit": "steps"
+          "assets/svg/step_time.svg",
+      "unit": "min"
     },
     {
       "entry_name": "sleep_efficiency",
@@ -161,8 +162,9 @@ class _ActivityState extends State<Activity> {
               return IntrinsicHeight(
                   child: ActivityCard(
                 rank: Provider.of<ActivityDataModel>(context)
-                    .activityData[entries[index - 1]['entry_name']]["rank"]
-                    .toString(),
+                        .activityData[entries[index - 1]['entry_name']]["rank"]
+                        .toStringAsFixed(0) +
+                    "%",
                 value: Provider.of<ActivityDataModel>(context)
                     .activityData[entries[index - 1]['entry_name']]["average"]
                     .toStringAsFixed(2),
@@ -331,8 +333,11 @@ class _FilterCardState extends State<FilterCard> {
 
   void updateQueryParams() {
     Map<String, dynamic> args = {
-      "status": _selectedA ? (status == 1 ? "students" : "faculty") : "all",
-      "student": _selectedB ? grade : 0,
+      "status": _selectedB
+          ? grade
+          : _selectedA
+              ? (status == 1 ? "student" : "faculty")
+              : "all",
       "gender": _selectedC ? (gender == 1 ? "male" : "female") : "all",
     };
     Provider.of<ActivityDataModel>(context, listen: false)
@@ -341,8 +346,15 @@ class _FilterCardState extends State<FilterCard> {
     logger.e(args);
   }
 
-  Future<bool?> filterDialog() {
+  Future<bool?> filterDialog() async {
     double pixel = MediaQuery.of(context).size.width / 400;
+    if (userApi.prefs.getInt("status") == null ||
+        userApi.prefs.getInt("grade") == null ||
+        userApi.prefs.getInt("gender") == null) {
+      bus.emit("toast_error",
+          "Please fill in account settings before using the filtering feature");
+      return true;
+    }
     return showDialog<bool>(
       context: context,
       builder: (context) {
@@ -406,15 +418,15 @@ class _FilterCardState extends State<FilterCard> {
 
   @override
   Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
     return ActivityTopCard(
       callback: filterDialog,
-      child: Align(
-        child: SvgIcon(
-          imagePath: 'assets/svg/filter.svg',
-          colorFilter: ColorFilter.mode(
-              Theme.of(context).colorScheme.secondaryContainer,
-              BlendMode.srcIn),
-        ),
+      child: SvgIcon(
+        imagePath: 'assets/svg/filter.svg',
+        height: 53 * pixel,
+        width: 53 * pixel,
+        colorFilter: ColorFilter.mode(
+            Theme.of(context).colorScheme.secondaryContainer, BlendMode.srcIn),
       ),
     );
   }
@@ -422,9 +434,10 @@ class _FilterCardState extends State<FilterCard> {
 
 class ActivityTopCard extends StatelessWidget {
   const ActivityTopCard(
-      {super.key, required this.child, required this.callback});
+      {super.key, required this.child, required this.callback, this.padding});
   final Widget child;
   final void Function() callback;
+  final EdgeInsetsGeometry? padding;
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
@@ -455,8 +468,7 @@ class ActivityTopCard extends StatelessWidget {
           onPressed: callback,
           style: TextButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.surfaceTint,
-            padding: EdgeInsets.fromLTRB(
-                26 * pixel, 12 * pixel, 26 * pixel, 12 * pixel),
+            padding: padding,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15 * pixel)),
           ),
@@ -522,6 +534,8 @@ class _DateState extends State<Date> {
 
     return ActivityTopCard(
       callback: calendarDialog,
+      padding:
+          EdgeInsets.fromLTRB(26 * pixel, 12 * pixel, 26 * pixel, 12 * pixel),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
@@ -530,7 +544,7 @@ class _DateState extends State<Date> {
             height: 52 * pixel,
           ),
           const Expanded(
-            flex: 2,
+            flex: 1,
             child: SizedBox(),
           ),
           Expanded(
@@ -538,64 +552,37 @@ class _DateState extends State<Date> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                const Expanded(
-                  flex: 1,
-                  child: SizedBox(),
+                Expanded(
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        flex: 2,
+                        child: AutoSizeText(
+                          "${DateFormat.MMMd('en_US').format(widget.date)}  ${DateFormat.E('en_US').format(widget.date)}",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: pixel * 22,
+                              shadows: [
+                                BoxShadow(
+                                  color: Theme.of(context).colorScheme.shadow,
+                                  offset: Offset(0 * pixel, 2 * pixel),
+                                  blurRadius: 1 * pixel,
+                                ),
+                              ],
+                              color: Theme.of(context).colorScheme.secondary),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                Row(
-                  children: <Widget>[
-                    const Expanded(
-                      flex: 1,
-                      child: SizedBox(),
-                    ),
-                    Text(
-                      DateFormat.MMMd('en_US').format(widget.date),
-                      style: TextStyle(
-                          fontSize: pixel * 22,
-                          shadows: [
-                            BoxShadow(
-                              color: Theme.of(context).colorScheme.shadow,
-                              offset: Offset(0 * pixel, 2 * pixel),
-                              blurRadius: 1 * pixel,
-                            ),
-                          ],
-                          color: Theme.of(context).colorScheme.secondary),
-                    ),
-                    const Expanded(
-                      flex: 1,
-                      child: SizedBox(),
-                    ),
-                    Text(
-                      DateFormat.E('en_US').format(widget.date),
-                      style: TextStyle(
-                          fontSize: pixel * 22,
-                          shadows: [
-                            BoxShadow(
-                              color: Theme.of(context).colorScheme.shadow,
-                              offset: Offset(0 * pixel, 2 * pixel),
-                              blurRadius: 1 * pixel,
-                            ),
-                          ],
-                          color: Theme.of(context).colorScheme.secondary),
-                    ),
-                    const Expanded(
-                      flex: 1,
-                      child: SizedBox(),
-                    ),
-                  ],
-                ),
-                const Expanded(
-                  flex: 3,
-                  child: SizedBox(),
-                ),
-                Text(
-                  '2023',
-                  style:
-                      TextStyle(color: Theme.of(context).colorScheme.secondary),
-                ),
-                const Expanded(
-                  flex: 1,
-                  child: SizedBox(),
+                Expanded(
+                  child: AutoSizeText(
+                    DateFormat.y('en_US').format(widget.date),
+                    style: TextStyle(
+                        fontSize: pixel * 18,
+                        color: Theme.of(context).colorScheme.secondary),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ],
             ),
