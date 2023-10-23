@@ -105,7 +105,7 @@ class ActivityDataModel extends ChangeNotifier {
     final jsonMap = jsonValue as Map<String, dynamic>;
     jsonMap.forEach((key, value) {
       activityData[key]['average'] = value['avg'];
-      activityData[key]['rank'] = ("${value['ranking']}%");
+      activityData[key]['rank'] = value['ranking'];
     });
     activityData["query_time"] =
         DateTime.now().millisecondsSinceEpoch.toDouble();
@@ -114,12 +114,13 @@ class ActivityDataModel extends ChangeNotifier {
   }
 
   void _clearAll() {
-    activityData.forEach((key, value) {
-      if (key != "query_time") {
-        activityData[key]['average'] = 0.0;
-        activityData[key]['rank'] = 0.0;
-      }
-    });
+    activityData = ActivityData.create();
+    // activityData.forEach((key, value) {
+    //   if (key != "query_time") {
+    //     activityData[key]['average'] = 0.0;
+    //     activityData[key]['rank'] = 0.0;
+    //   }
+    // });
   }
 
   Future<void> getActivityData({bool forcedRefresh = false}) async {

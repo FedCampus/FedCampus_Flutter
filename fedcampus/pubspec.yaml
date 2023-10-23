@@ -107,6 +107,7 @@ flutter:
     - assets/svg/calorie.svg
     - assets/svg/exercise.svg
     - assets/svg/sleep.svg
+    - assets/svg/step_time.svg
     - assets/svg/filter.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -24,9 +24,9 @@ class Activity extends StatefulWidget {
 class _ActivityState extends State<Activity> {
   final entries = [
     {
-      "entry_name": "step_time",
+      "entry_name": "step",
       "icon_path": "assets/svg/step.svg",
-      "unit": "min"
+      "unit": "steps"
     },
     {
       "entry_name": "distance",
@@ -49,10 +49,10 @@ class _ActivityState extends State<Activity> {
       "unit": "stress"
     },
     {
-      "entry_name": "step",
+      "entry_name": "step_time",
       "icon_path":
-          "assets/svg/step.svg", // TODO: distinguish step and step_time icon
-      "unit": "steps"
+          "assets/svg/step_time.svg",
+      "unit": "min"
     },
     {
       "entry_name": "sleep_efficiency",
@@ -162,8 +162,9 @@ class _ActivityState extends State<Activity> {
               return IntrinsicHeight(
                   child: ActivityCard(
                 rank: Provider.of<ActivityDataModel>(context)
-                    .activityData[entries[index - 1]['entry_name']]["rank"]
-                    .toString(),
+                        .activityData[entries[index - 1]['entry_name']]["rank"]
+                        .toStringAsFixed(0) +
+                    "%",
                 value: Provider.of<ActivityDataModel>(context)
                     .activityData[entries[index - 1]['entry_name']]["average"]
                     .toStringAsFixed(2),
@@ -345,8 +346,15 @@ class _FilterCardState extends State<FilterCard> {
     logger.e(args);
   }
 
-  Future<bool?> filterDialog() {
+  Future<bool?> filterDialog() async {
     double pixel = MediaQuery.of(context).size.width / 400;
+    if (userApi.prefs.getInt("status") == null ||
+        userApi.prefs.getInt("grade") == null ||
+        userApi.prefs.getInt("gender") == null) {
+      bus.emit("toast_error",
+          "Please fill in account settings before using the filtering feature");
+      return true;
+    }
     return showDialog<bool>(
       context: context,
       builder: (context) {
@@ -435,7 +443,6 @@ class ActivityTopCard extends StatelessWidget {
     double pixel = MediaQuery.of(context).size.width / 400;
     return Container(
       height: 80 * pixel,
-      alignment: Alignment.center,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceTint,
         borderRadius: BorderRadius.circular(15 * pixel),
