@@ -18,6 +18,7 @@ from django.contrib.auth.models import User
 # Create your views here.
 from .serializers import LoginSerializer
 from .serializers import RegisterSerializer
+from .serializers import CustomerSerializer
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -209,14 +210,13 @@ class saveLogFile(APIView):
 FA_MODEL = Record
 
 
-class getStatus(APIView):
+class Status(APIView):
     permission_classes = permissions.IsAuthenticated
 
     def get(self, request):
         customer = request.user.customer
-
-        # return Response({"status": customer.})
-        pass
+        cs = CustomerSerializer(customer)
+        return Response(cs.data)
 
     pass
 

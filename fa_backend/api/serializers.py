@@ -9,6 +9,12 @@ from rest_framework.authtoken.models import Token
 from .models import Customer
 
 
+class CustomerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Customer
+        fields = ["faculty", "student", "male"]
+
+
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField(label=_("Username"), write_only=True)
     password = serializers.CharField(
