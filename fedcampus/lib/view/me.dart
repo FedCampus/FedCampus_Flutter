@@ -117,12 +117,12 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
                 MaterialPageRoute(builder: (context) => const Preferences()),
               ),
             ),
-            if (userApi.healthDataHandler.canAuthenticate())
+            if (userApi.healthDataHandler.canAuth)
               MeText(
                 text: 'Authenticate',
                 callback: _healthServiceAuthenticate,
               ),
-            if (userApi.healthDataHandler.canAuthenticate())
+            if (userApi.healthDataHandler.canCancelAuth)
               MeText(
                 text: 'Cancel authentication',
                 callback: _healthServiceCancel,

@@ -41,20 +41,14 @@ class IOSHealth extends FedHealthData {
   }
 
   @override
-  bool canAuthenticate() {
-    return false;
-  }
+  bool get canAuth => true;
 
   @override
   Future<void> authenticate() async {
     bool requested =
         await _health.requestAuthorization(_dataEntry.values.toList());
+    logger.d("Authentication requested: $requested");
 
-    return;
-  }
-
-  @override
-  Future<void> cancelAuthentication() async {
     return;
   }
 

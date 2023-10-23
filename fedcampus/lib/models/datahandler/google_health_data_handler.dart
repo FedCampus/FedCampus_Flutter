@@ -49,11 +49,6 @@ class GoogleFit extends FedHealthData {
   }
 
   @override
-  bool canAuthenticate() {
-    return false;
-  }
-
-  @override
   Future<void> authenticate() async {
     // Beacuse this is labled as a dangerous protection level, the permission system will not grant it automaticlly and it requires the user's action. You can prompt the user for it using the permission_handler plugin. Follow the plugin setup instructions and add the following line before requsting the data:
     PermissionStatus permissionStatus =
