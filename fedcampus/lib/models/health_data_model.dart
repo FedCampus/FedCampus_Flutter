@@ -33,6 +33,7 @@ class HealthDataModel extends ChangeNotifier {
   }
 
   void getAllData({bool forcedRefresh = false}) {
+    healthData = HealthData.mapOf();
     getBodyData(forcedRefresh: forcedRefresh);
     if (Platform.isAndroid) {
       getScreenData();
@@ -57,7 +58,6 @@ class HealthDataModel extends ChangeNotifier {
     screenData.addAll(res);
     logger.i(screenData);
     healthData.addAll(screenData);
-    logger.e(healthData);
     notifyListeners();
   }
 
