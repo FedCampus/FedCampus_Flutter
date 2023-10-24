@@ -46,7 +46,9 @@ class _AccountSettingsState extends State<AccountSettings> {
 
   void setRole(String role) {
     logger.d(role);
-    _status = roles[role]!;
+    setState(() {
+      _status = roles[role]!;
+    });
   }
 
   void setGrade(String grade) {
@@ -104,6 +106,7 @@ class _AccountSettingsState extends State<AccountSettings> {
             color: Theme.of(context).colorScheme.primary,
             children: [
               SettingsDropDownMenu(
+                key: GlobalKey(),
                 text: "Role",
                 callback: setRole,
                 options: roles.keys.toList(),
@@ -111,15 +114,18 @@ class _AccountSettingsState extends State<AccountSettings> {
                     .firstWhere((entry) => entry.value == _status)
                     .key),
               ),
+              if (_status == 1)
+                SettingsDropDownMenu(
+                  key: GlobalKey(),
+                  text: "Grade",
+                  callback: setGrade,
+                  options: grades.keys.toList(),
+                  defaultValue: (grades.entries
+                      .firstWhere((entry) => entry.value == _grade)
+                      .key),
+                ),
               SettingsDropDownMenu(
-                text: "Grade",
-                callback: setGrade,
-                options: grades.keys.toList(),
-                defaultValue: (grades.entries
-                    .firstWhere((entry) => entry.value == _grade)
-                    .key),
-              ),
-              SettingsDropDownMenu(
+                key: GlobalKey(),
                 text: "Gender",
                 callback: setGender,
                 options: genders.keys.toList(),
@@ -128,6 +134,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                     .key),
               ),
               SettingsButton(
+                key: GlobalKey(),
                 text: "Commit changes",
                 callback: commitChanges,
               ),
