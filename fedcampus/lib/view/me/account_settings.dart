@@ -61,7 +61,7 @@ class _AccountSettingsState extends State<AccountSettings> {
     _gender = genders[gender]!;
   }
 
-  void commitChanges() async {
+  Future<void> commitChanges() async {
     LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
     loadingDialog.showLoading();
     try {
@@ -70,13 +70,13 @@ class _AccountSettingsState extends State<AccountSettings> {
     } on TimeoutException catch (e) {
       loadingDialog.showIfDialogNotCancelled(
           e, "Please check your internet connection");
-      return;
+      rethrow;
     } on MyException catch (e) {
       loadingDialog.showIfDialogNotCancelled(e, e.toString());
-      return;
+      rethrow;
     } on Exception catch (e) {
       loadingDialog.showIfDialogNotCancelled(e, "Log in error");
-      return;
+      rethrow;
     }
     if (mounted && !loadingDialog.cancelled) {
       userApi.prefs.setInt("status", _status);
@@ -108,7 +108,9 @@ class _AccountSettingsState extends State<AccountSettings> {
               SettingsDropDownMenu(
                 key: GlobalKey(),
                 text: "Role",
-                callback: setRole,
+                callback: (s) {
+                  return commitChanges().then((value) => setRole(s));
+                },
                 options: roles.keys.toList(),
                 defaultValue: (roles.entries
                     .firstWhere((entry) => entry.value == _status)
@@ -118,7 +120,9 @@ class _AccountSettingsState extends State<AccountSettings> {
                 SettingsDropDownMenu(
                   key: GlobalKey(),
                   text: "Grade",
-                  callback: setGrade,
+                  callback: (s) {
+                    return commitChanges().then((value) => setGrade(s));
+                  },
                   options: grades.keys.toList(),
                   defaultValue: (grades.entries
                       .firstWhere((entry) => entry.value == _grade)
@@ -127,16 +131,13 @@ class _AccountSettingsState extends State<AccountSettings> {
               SettingsDropDownMenu(
                 key: GlobalKey(),
                 text: "Gender",
-                callback: setGender,
+                callback: (s) {
+                  return commitChanges().then((value) => setGender(s));
+                },
                 options: genders.keys.toList(),
                 defaultValue: (genders.entries
                     .firstWhere((entry) => entry.value == _gender)
                     .key),
-              ),
-              SettingsButton(
-                key: GlobalKey(),
-                text: "Commit changes",
-                callback: commitChanges,
               ),
             ],
           ),
