@@ -379,6 +379,7 @@ class SmallLoadingDialog extends LoadingDialog {
     }
   }
 
+  @override
   void showIfDialogNotCancelled(Exception e, String message) {
     logger.e(e);
     if (context.mounted && !cancelled) {

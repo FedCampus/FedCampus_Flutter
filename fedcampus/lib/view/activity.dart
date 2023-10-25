@@ -23,11 +23,7 @@ class Activity extends StatefulWidget {
 
 class _ActivityState extends State<Activity> {
   final entries = [
-    {
-      "entry_name": "step",
-      "icon_path": "assets/svg/step.svg",
-      "unit": "steps"
-    },
+    {"entry_name": "step", "icon_path": "assets/svg/step.svg", "unit": "steps"},
     {
       "entry_name": "distance",
       "icon_path": "assets/svg/distance.svg",
@@ -50,8 +46,7 @@ class _ActivityState extends State<Activity> {
     },
     {
       "entry_name": "step_time",
-      "icon_path":
-          "assets/svg/step_time.svg",
+      "icon_path": "assets/svg/step_time.svg",
       "unit": "min"
     },
     {
@@ -126,9 +121,11 @@ class _ActivityState extends State<Activity> {
                     flex: 1,
                     child: SizedBox(),
                   ),
-                  const Expanded(
+                  Expanded(
                     flex: 5,
-                    child: FilterCard(),
+                    child: FilterCard(
+                      refreshCallBack: refresh,
+                    ),
                   ),
                 ],
               );
@@ -317,7 +314,9 @@ class _CheckBoxLabelState extends State<CheckBoxLabel> {
 }
 
 class FilterCard extends StatefulWidget {
-  const FilterCard({super.key});
+  const FilterCard({super.key, required this.refreshCallBack});
+
+  final Future<void> Function() refreshCallBack;
 
   @override
   State<FilterCard> createState() => _FilterCardState();
@@ -352,7 +351,7 @@ class _FilterCardState extends State<FilterCard> {
         userApi.prefs.getInt("grade") == null ||
         userApi.prefs.getInt("gender") == null) {
       bus.emit("toast_error",
-          "Please fill in account settings before using the filtering feature");
+          "You should fill in your information before applying filters.");
       return true;
     }
     return showDialog<bool>(
@@ -408,6 +407,7 @@ class _FilterCardState extends State<FilterCard> {
               onPressed: () {
                 updateQueryParams();
                 Navigator.of(context).pop();
+                widget.refreshCallBack();
               },
             ),
           ],
