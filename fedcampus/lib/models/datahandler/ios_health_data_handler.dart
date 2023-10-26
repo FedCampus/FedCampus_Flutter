@@ -61,12 +61,20 @@ class IOSHealth extends FedHealthData {
         .getHealthDataFromTypes(startTime, endTime, [_dataEntry[entry]!]);
     var huaweiHealth =
         res.where((element) => element.sourceId == "com.huawei.iossporthealth");
-    double sum = huaweiHealth.fold(
-        0, (value, element) => value + double.parse(element.value.toString()));
-    sum = (entry == "rest_heart_rate" || entry == "heart_rate")
-        ? sum / huaweiHealth.length
-        : sum;
-    sum = (sum.isNaN) ? 0 : sum;
+    double sum = 0;
+    if (huaweiHealth.isEmpty) {
+      print(huaweiHealth);
+      print(entry);
+      sum = -1;
+    } else {
+      sum = huaweiHealth.fold(0,
+          (value, element) => value + double.parse(element.value.toString()));
+      sum = (entry == "rest_heart_rate" || entry == "heart_rate")
+          ? sum / huaweiHealth.length
+          : sum;
+      sum = (sum.isNaN) ? 0 : sum;
+    }
+
     return Data(
         name: entry,
         value: sum,
