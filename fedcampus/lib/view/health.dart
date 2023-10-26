@@ -199,7 +199,6 @@ class RightColumn extends StatelessWidget {
           SizedBox(
             height: 21 * pixel,
           ),
-          const IntenseExercise(),
           SizedBox(
             height: 21 * pixel,
           ),
@@ -207,7 +206,6 @@ class RightColumn extends StatelessWidget {
           SizedBox(
             height: 21 * pixel,
           ),
-          const ScreenTime()
         ],
       );
     } else {
@@ -836,13 +834,16 @@ class Sleep extends StatelessWidget {
             children: [
               Text(
                   formatNum(
-                    Provider.of<HealthDataModel>(context)
-                        .healthData['sleep_efficiency'],
+                    Platform.isAndroid
+                        ? Provider.of<HealthDataModel>(context)
+                            .healthData['sleep_efficiency']
+                        : Provider.of<HealthDataModel>(context)
+                            .healthData['sleep_time'],
                     loading: Provider.of<HealthDataModel>(context).loading,
                   ),
                   style: montserratAlternatesTextStyle(pixel * 30,
                       Theme.of(context).colorScheme.primaryContainer)),
-              Text('effi',
+              Text(Platform.isAndroid ? 'effi' : "min",
                   style: montserratAlternatesTextStyle(pixel * 20,
                       Theme.of(context).colorScheme.primaryContainer)),
             ],
