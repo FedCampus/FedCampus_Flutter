@@ -30,7 +30,14 @@ class DataWrapper {
           "step_time",
           "sleep_efficiency"
         ]
-      : ["step", "distance", "rest_heart_rate", "heart_rate", "calorie"];
+      : [
+          "step",
+          "distance",
+          "rest_heart_rate",
+          "avg_heart_rate",
+          "calorie",
+          "sleep_time"
+        ];
 
   ///Get all the data given the list of tag on the specific datetime number.
   ///Throw an exception if data fetching get some error.

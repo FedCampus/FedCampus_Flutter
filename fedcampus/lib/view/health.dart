@@ -1,6 +1,7 @@
 //TODO:find better way do adapt different screen size
 
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:fedcampus/models/health_data_model.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
@@ -120,33 +121,61 @@ class LeftColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
-    return SizedBox(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Date(
-            date: date,
-            onDateChange: onDateChange,
-          ),
-          SizedBox(
-            height: 20 * pixel,
-          ),
-          const Heart(),
-          SizedBox(
-            height: 20 * pixel,
-          ),
-          const Distance(),
-          SizedBox(
-            height: 20 * pixel,
-          ),
-          const Stress(),
-          SizedBox(
-            height: 20 * pixel,
-          ),
-          const StepTime()
-        ],
-      ),
-    );
+    if (Platform.isIOS) {
+      return SizedBox(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Date(
+              date: date,
+              onDateChange: onDateChange,
+            ),
+            SizedBox(
+              height: 20 * pixel,
+            ),
+            const Heart(),
+            SizedBox(
+              height: 20 * pixel,
+            ),
+            const Distance(),
+            SizedBox(
+              height: 20 * pixel,
+            ),
+            SizedBox(
+              height: 20 * pixel,
+            ),
+          ],
+        ),
+      );
+    } else {
+      return SizedBox(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Date(
+              date: date,
+              onDateChange: onDateChange,
+            ),
+            SizedBox(
+              height: 20 * pixel,
+            ),
+            const Heart(),
+            SizedBox(
+              height: 20 * pixel,
+            ),
+            const Distance(),
+            SizedBox(
+              height: 20 * pixel,
+            ),
+            const Stress(),
+            SizedBox(
+              height: 20 * pixel,
+            ),
+            const StepTime()
+          ],
+        ),
+      );
+    }
   }
 }
 
@@ -158,28 +187,53 @@ class RightColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        const Step(),
-        SizedBox(
-          height: 21 * pixel,
-        ),
-        const Calorie(),
-        SizedBox(
-          height: 21 * pixel,
-        ),
-        const IntenseExercise(),
-        SizedBox(
-          height: 21 * pixel,
-        ),
-        const Sleep(),
-        SizedBox(
-          height: 21 * pixel,
-        ),
-        const ScreenTime()
-      ],
-    );
+    if (Platform.isIOS) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          const Step(),
+          SizedBox(
+            height: 21 * pixel,
+          ),
+          const Calorie(),
+          SizedBox(
+            height: 21 * pixel,
+          ),
+          const IntenseExercise(),
+          SizedBox(
+            height: 21 * pixel,
+          ),
+          const Sleep(),
+          SizedBox(
+            height: 21 * pixel,
+          ),
+          const ScreenTime()
+        ],
+      );
+    } else {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          const Step(),
+          SizedBox(
+            height: 21 * pixel,
+          ),
+          const Calorie(),
+          SizedBox(
+            height: 21 * pixel,
+          ),
+          const IntenseExercise(),
+          SizedBox(
+            height: 21 * pixel,
+          ),
+          const Sleep(),
+          SizedBox(
+            height: 21 * pixel,
+          ),
+          const ScreenTime()
+        ],
+      );
+    }
   }
 }
 
@@ -374,8 +428,11 @@ class Heart extends StatelessWidget {
             ),
             Text(
                 formatNum(
-                  Provider.of<HealthDataModel>(context)
-                      .healthData['exercise_heart_rate'],
+                  Platform.isAndroid
+                      ? Provider.of<HealthDataModel>(context)
+                          .healthData['exercise_heart_rate']
+                      : Provider.of<HealthDataModel>(context)
+                          .healthData['avg_heart_rate'],
                   decimalPoints: 1,
                   loading: Provider.of<HealthDataModel>(context).loading,
                 ),
