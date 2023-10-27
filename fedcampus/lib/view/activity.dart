@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fedcampus/models/activity_data_model.dart';
+import 'package:fedcampus/utility/filter_params.dart';
 import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/calendar.dart';
@@ -22,46 +24,75 @@ class Activity extends StatefulWidget {
 }
 
 class _ActivityState extends State<Activity> {
-  final entries = [
-    {"entry_name": "step", "icon_path": "assets/svg/step.svg", "unit": "steps"},
-    {
-      "entry_name": "distance",
-      "icon_path": "assets/svg/distance.svg",
-      "unit": "meters"
-    },
-    {
-      "entry_name": "calorie",
-      "icon_path": "assets/svg/calorie.svg",
-      "unit": "kcals"
-    },
-    {
-      "entry_name": "intensity",
-      "icon_path": "assets/svg/exercise.svg",
-      "unit": "min"
-    },
-    {
-      "entry_name": "stress",
-      "icon_path": "assets/svg/stress.svg",
-      "unit": "stress"
-    },
-    {
-      "entry_name": "step_time",
-      "icon_path": "assets/svg/step_time.svg",
-      "unit": "min"
-    },
-    {
-      "entry_name": "sleep_efficiency",
-      "icon_path": "assets/svg/sleep.svg",
-      "unit": "effi"
-    },
-  ];
+  final entries = Platform.isAndroid
+      ? [
+          {
+            "entry_name": "step",
+            "icon_path": "assets/svg/step.svg",
+            "unit": "steps"
+          },
+          {
+            "entry_name": "distance",
+            "icon_path": "assets/svg/distance.svg",
+            "unit": "meters"
+          },
+          {
+            "entry_name": "calorie",
+            "icon_path": "assets/svg/calorie.svg",
+            "unit": "kcals"
+          },
+          {
+            "entry_name": "intensity",
+            "icon_path": "assets/svg/exercise.svg",
+            "unit": "min"
+          },
+          {
+            "entry_name": "stress",
+            "icon_path": "assets/svg/stress.svg",
+            "unit": "stress"
+          },
+          {
+            "entry_name": "step_time",
+            "icon_path": "assets/svg/step_time.svg",
+            "unit": "min"
+          },
+          {
+            "entry_name": "sleep_efficiency",
+            "icon_path": "assets/svg/sleep.svg",
+            "unit": "effi"
+          },
+        ]
+      : [
+          {
+            "entry_name": "step",
+            "icon_path": "assets/svg/step.svg",
+            "unit": "steps"
+          },
+          {
+            "entry_name": "distance",
+            "icon_path": "assets/svg/distance.svg",
+            "unit": "meters"
+          },
+          {
+            "entry_name": "calorie",
+            "icon_path": "assets/svg/calorie.svg",
+            "unit": "kcals"
+          },
+          {
+            "entry_name": "sleep_time",
+            "icon_path": "assets/svg/sleep.svg",
+            "unit": "mins"
+          }
+        ];
 
-  final int maxCount = 8;
+  final int maxCount = Platform.isAndroid ? 8 : 6;
   DateTime dateTime = DateTime.now();
 
   @override
   void initState() {
     super.initState();
+    Provider.of<ActivityDataModel>(context, listen: false).filterParams =
+        FilterParams.create();
     dateTime = DateTime.parse(
         Provider.of<ActivityDataModel>(context, listen: false).date);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -104,7 +135,7 @@ class _ActivityState extends State<Activity> {
       onRefresh: () => refresh(forcedRefresh: true),
       child: ListView.separated(
           separatorBuilder: (context, index) => const SizedBox(height: 11),
-          itemCount: 8,
+          itemCount: 6,
           padding: EdgeInsets.all(20 * pixel),
           itemBuilder: (BuildContext context, int index) {
             if (index == 0) {
