@@ -135,7 +135,7 @@ class _ActivityState extends State<Activity> {
       onRefresh: () => refresh(forcedRefresh: true),
       child: ListView.separated(
           separatorBuilder: (context, index) => const SizedBox(height: 11),
-          itemCount: 6,
+          itemCount: Platform.isAndroid ? 8 : 6,
           padding: EdgeInsets.all(20 * pixel),
           itemBuilder: (BuildContext context, int index) {
             if (index == 0) {
