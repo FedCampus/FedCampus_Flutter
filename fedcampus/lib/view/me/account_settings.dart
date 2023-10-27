@@ -61,7 +61,14 @@ class _AccountSettingsState extends State<AccountSettings> {
     _gender = genders[gender]!;
   }
 
-  Future<void> commitChanges() async {
+  Future<void> commitChanges(String s, String type) async {
+    if (type == "role") {
+    } else if (type == "grade") {
+      setGrade(s);
+    } else if (type == "gender") {
+      setGender(s);
+    }
+
     LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
     loadingDialog.showLoading();
     try {
@@ -108,8 +115,8 @@ class _AccountSettingsState extends State<AccountSettings> {
               SettingsDropDownMenu(
                 key: GlobalKey(),
                 text: "Role",
-                callback: (s) {
-                  return commitChanges().then((value) => setRole(s));
+                callback: (s) async {
+                  return commitChanges(s, "role").then((value) => setRole(s));
                 },
                 options: roles.keys.toList(),
                 defaultValue: (roles.entries
@@ -120,8 +127,9 @@ class _AccountSettingsState extends State<AccountSettings> {
                 SettingsDropDownMenu(
                   key: GlobalKey(),
                   text: "Grade",
-                  callback: (s) {
-                    return commitChanges().then((value) => setGrade(s));
+                  callback: (s) async {
+                    return commitChanges(s, "grade")
+                        .then((value) => setGrade(s));
                   },
                   options: grades.keys.toList(),
                   defaultValue: (grades.entries
@@ -131,8 +139,9 @@ class _AccountSettingsState extends State<AccountSettings> {
               SettingsDropDownMenu(
                 key: GlobalKey(),
                 text: "Gender",
-                callback: (s) {
-                  return commitChanges().then((value) => setGender(s));
+                callback: (s) async {
+                  return commitChanges(s, "gender")
+                      .then((value) => setGender(s));
                 },
                 options: genders.keys.toList(),
                 defaultValue: (genders.entries
