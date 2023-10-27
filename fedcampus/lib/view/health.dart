@@ -8,7 +8,6 @@ import 'package:fedcampus/models/health_data_model.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/calendar.dart';
-import 'package:fedcampus/view/chart.dart';
 import 'package:fedcampus/view/widgets/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -834,6 +833,14 @@ class Sleep extends StatelessWidget {
     super.key,
   });
 
+  List<double> sleepMinuteToHour(double? sleepTime) {
+    if (sleepTime == null || sleepTime == -1) {
+      return [-1, -1];
+    } else {
+      return [((sleepTime) ~/ 60).toDouble(), ((sleepTime) % 60)];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
@@ -877,17 +884,22 @@ class Sleep extends StatelessWidget {
                           loading:
                               Provider.of<HealthDataModel>(context).loading,
                         )
-                      : formatNum(
-                          Provider.of<HealthDataModel>(context)
-                              .healthData['sleep_time'],
-                          loading:
-                              Provider.of<HealthDataModel>(context).loading,
-                          decimalPoints: 0),
+                      : "${formatNum(sleepMinuteToHour(Provider.of<HealthDataModel>(context).healthData['sleep_time'])[0], loading: Provider.of<HealthDataModel>(context).loading, decimalPoints: 0)} h",
                   maxLines: 1,
                   style: montserratAlternatesTextStyle(pixel * 30,
                       Theme.of(context).colorScheme.primaryContainer),
                 ),
-                Text(Platform.isAndroid ? 'effi' : "min",
+                Text(
+                    Platform.isAndroid
+                        ? 'effi'
+                        : "${formatNum(
+                            sleepMinuteToHour(
+                                Provider.of<HealthDataModel>(context)
+                                    .healthData['sleep_time'])[1],
+                            decimalPoints: 0,
+                            loading:
+                                Provider.of<HealthDataModel>(context).loading,
+                          )} min",
                     style: montserratAlternatesTextStyle(pixel * 20,
                         Theme.of(context).colorScheme.primaryContainer)),
               ],
