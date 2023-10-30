@@ -135,24 +135,25 @@ class SvgIcon extends StatelessWidget {
   const SvgIcon({
     super.key,
     required this.imagePath,
-    this.height = 50,
-    this.width = 50,
+    this.height,
+    this.width,
+    this.fit,
     this.colorFilter,
   });
 
   final String imagePath;
-  final double height;
-  final double width;
+  final double? height;
+  final double? width;
+  final BoxFit? fit;
   final ColorFilter? colorFilter;
   @override
   Widget build(BuildContext context) {
-    double pixel = MediaQuery.of(context).size.width / 400;
     return SvgPicture.asset(
       imagePath,
       colorFilter: colorFilter,
-      fit: BoxFit.contain,
-      width: width * pixel,
-      height: height * pixel,
+      fit: fit ?? BoxFit.contain,
+      width: width,
+      height: height,
     );
   }
 }
