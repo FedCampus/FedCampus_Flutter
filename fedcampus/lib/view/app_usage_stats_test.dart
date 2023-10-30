@@ -61,7 +61,7 @@ class _AppUsageStatsTestState extends State<AppUsageStatsTest> {
                       await host.getAuthenticate();
                     }
                   },
-                  child: Text("Open permission settings")),
+                  child: const Text("Open permission settings")),
               TextField(
                 controller: TextEditingController()..text = _startDate,
                 onChanged: (value) => {_startDate = value},
