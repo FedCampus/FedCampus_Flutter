@@ -132,7 +132,9 @@ class _PreferencesState extends State<Preferences> {
                 // ignore: dead_code
                 SettingsDropDownMenu(
                   text: AppLocalizations.of(context)!.language,
-                  callback: setLocale,
+                  callback: (s) async {
+                    setLocale(s);
+                  },
                   options: list,
                   defaultValue: switch (
                       Provider.of<MyAppState>(context, listen: false)
@@ -147,7 +149,9 @@ class _PreferencesState extends State<Preferences> {
               if (Platform.isAndroid)
                 SettingsDropDownMenu(
                   text: "Health Data Provider",
-                  callback: setDataProvider,
+                  callback: (s) async {
+                    setDataProvider(s);
+                  },
                   options: dataProviders,
                   defaultValue: switch (
                       userApi.prefs.getString("service_provider")) {
@@ -276,7 +280,7 @@ class SettingsDropDownMenu extends StatefulWidget {
 
   final String text;
   final List<String> options;
-  final void Function(String) callback;
+  final Future<void> Function(String) callback;
   final String defaultValue;
 
   @override
@@ -322,10 +326,13 @@ class _SettingsDropDownMenuState extends State<SettingsDropDownMenu> {
               );
             }).toList(),
             onChanged: (s) {
-              setState(() {
-                dropdownValue = s ?? widget.defaultValue;
+              widget.callback(s ?? widget.defaultValue).then((value) {
+                setState(() {
+                  dropdownValue = s ?? widget.defaultValue;
+                });
+              }).onError((error, stackTrace) {
+                logger.e(error.toString());
               });
-              widget.callback(s ?? widget.defaultValue);
             },
           )
         ],

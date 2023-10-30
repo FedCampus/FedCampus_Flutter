@@ -72,20 +72,6 @@ class ActivityDataModel extends ChangeNotifier {
       bodyJson = List.empty(growable: true);
     }
     bodyJson.add({"time": dataNumber});
-    //send the first request
-    // TODO : add toy code for filtering the status
-    // Example 1: filter all the gender, all the students
-    // bodyJson.add({
-    //   "filter": {"gender": "all", "status": "student"}
-    // });
-    // Example 2: filter female students
-    // bodyJson.add({
-    //   "filter": {"gender": "female", "status": "student"}
-    // });
-    // bodyJson.add({"student": 2025});
-    // bodyJson.add({"faculty": false});
-    // bodyJson.add({"male": true});
-
     bodyJson.add({"filter": filterParams});
     late http.Response response;
     try {
@@ -104,8 +90,10 @@ class ActivityDataModel extends ChangeNotifier {
   void _setAndNotify(dynamic jsonValue) {
     final jsonMap = jsonValue as Map<String, dynamic>;
     jsonMap.forEach((key, value) {
-      activityData[key]['average'] = value['avg'];
-      activityData[key]['rank'] = value['ranking'];
+      if (activityData[key] != null) {
+        activityData[key]['average'] = value['avg'];
+        activityData[key]['rank'] = value['ranking'];
+      }
     });
     activityData["query_time"] =
         DateTime.now().millisecondsSinceEpoch.toDouble();

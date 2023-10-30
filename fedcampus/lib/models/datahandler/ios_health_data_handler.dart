@@ -3,6 +3,7 @@
 import 'package:fedcampus/models/datahandler/health_handler.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/utility/log.dart';
+import 'package:fedcampus/view/health.dart';
 import 'package:health/health.dart';
 import '../../utility/calendar.dart' as calendar;
 
@@ -25,9 +26,9 @@ class IOSHealth extends FedHealthData {
     "calorie": HealthDataType.ACTIVE_ENERGY_BURNED,
     "rest_heart_rate": HealthDataType.RESTING_HEART_RATE,
     "height": HealthDataType.HEIGHT,
-    "sleep_time": HealthDataType.SLEEP_IN_BED,
+    "sleep_time": HealthDataType.SLEEP_ASLEEP,
     "weight": HealthDataType.WEIGHT,
-    "heart_rate": HealthDataType.HEART_RATE,
+    "avg_heart_rate": HealthDataType.HEART_RATE,
   };
 
   final HealthFactory _health =
@@ -57,16 +58,26 @@ class IOSHealth extends FedHealthData {
       {required String entry,
       required DateTime startTime,
       required DateTime endTime}) async {
+    if (entry == "sleep_time") {
+      endTime = endTime.add(const Duration(hours: 10));
+    }
     var res = await _health
         .getHealthDataFromTypes(startTime, endTime, [_dataEntry[entry]!]);
+
     var huaweiHealth =
         res.where((element) => element.sourceId == "com.huawei.iossporthealth");
-    double sum = huaweiHealth.fold(
-        0, (value, element) => value + double.parse(element.value.toString()));
-    sum = (entry == "rest_heart_rate" || entry == "heart_rate")
-        ? sum / huaweiHealth.length
-        : sum;
-    sum = (sum.isNaN) ? 0 : sum;
+    double sum = 0;
+    if (huaweiHealth.isEmpty) {
+      sum = -1;
+    } else {
+      sum = huaweiHealth.fold(0,
+          (value, element) => value + double.parse(element.value.toString()));
+      sum = (entry == "rest_heart_rate" || entry == "avg_heart_rate")
+          ? sum / huaweiHealth.length
+          : sum;
+      sum = (sum.isNaN) ? 0 : sum;
+    }
+
     return Data(
         name: entry,
         value: sum,

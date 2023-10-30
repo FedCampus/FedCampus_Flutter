@@ -38,6 +38,7 @@ FA_DATA = [
     "stress",
     "step",
     "sleep_efficiency",
+    "sleep_time",
 ]
 
 
@@ -241,6 +242,7 @@ class FedAnalysis(APIView):
         return Response(self.calculateAverageAndRanking(request, startTime, filtering))
 
     def calculateAverageAndRanking(self, request, dateTime, filtering):
+        print(filtering)
         resultJson = {}
         # filter querySet accroding to the filtering
         queryAll = FA_MODEL.objects.all()
@@ -257,8 +259,9 @@ class FedAnalysis(APIView):
                 queryAll = queryAll.filter(user__customer__faculty=True)
             else:
                 queryAll = queryAll.filter(
-                    user__customer__student=int(filtering.get("student"))
+                    user__customer__student=int(filtering.get("status"))
                 )
+                print(queryAll)
 
         for dataType in FA_DATA:
             querySet = queryAll.filter(
@@ -266,7 +269,6 @@ class FedAnalysis(APIView):
             ).order_by("-value")
             if not querySet.filter(user=request.user).exists():
                 continue
-            # return
             try:
                 query = querySet.get(user=request.user)
             except:
@@ -336,6 +338,8 @@ class AccountSettings(APIView):
     def post(self, request):
         customer = request.user.customer
         data = request.data
+        print(customer)
+        print(data)
         if data.get("faculty") == True:
             customer.faculty = True
         else:
@@ -343,6 +347,7 @@ class AccountSettings(APIView):
             customer.student = int(data.get("student"))
         customer.male = data.get("male")
         customer.save()
+        print(customer.student)
         return Response(None)
 
     pass

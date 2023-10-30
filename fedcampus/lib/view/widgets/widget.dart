@@ -8,10 +8,10 @@ class FedCard extends StatelessWidget {
   const FedCard({
     super.key,
     required this.child,
-    this.left = 10,
-    this.top = 17,
-    this.right = 10,
-    this.bottom = 14,
+    this.left = 9,
+    this.top = 15,
+    this.right = 9,
+    this.bottom = 13,
   });
   final Widget child;
   final double left;
@@ -379,6 +379,7 @@ class SmallLoadingDialog extends LoadingDialog {
     }
   }
 
+  @override
   void showIfDialogNotCancelled(Exception e, String message) {
     logger.e(e);
     if (context.mounted && !cancelled) {

@@ -1,12 +1,13 @@
 //TODO:find better way do adapt different screen size
 
 import 'dart:async';
+import 'dart:io' show Platform;
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fedcampus/models/health_data_model.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/calendar.dart';
-import 'package:fedcampus/view/chart.dart';
 import 'package:fedcampus/view/widgets/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -120,33 +121,61 @@ class LeftColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
-    return SizedBox(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Date(
-            date: date,
-            onDateChange: onDateChange,
-          ),
-          SizedBox(
-            height: 20 * pixel,
-          ),
-          const Heart(),
-          SizedBox(
-            height: 20 * pixel,
-          ),
-          const Distance(),
-          SizedBox(
-            height: 20 * pixel,
-          ),
-          const Stress(),
-          SizedBox(
-            height: 20 * pixel,
-          ),
-          const StepTime()
-        ],
-      ),
-    );
+    if (Platform.isIOS) {
+      return SizedBox(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Date(
+              date: date,
+              onDateChange: onDateChange,
+            ),
+            SizedBox(
+              height: 20 * pixel,
+            ),
+            const Heart(),
+            SizedBox(
+              height: 20 * pixel,
+            ),
+            const Distance(),
+            SizedBox(
+              height: 20 * pixel,
+            ),
+            SizedBox(
+              height: 20 * pixel,
+            ),
+          ],
+        ),
+      );
+    } else {
+      return SizedBox(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Date(
+              date: date,
+              onDateChange: onDateChange,
+            ),
+            SizedBox(
+              height: 20 * pixel,
+            ),
+            const Heart(),
+            SizedBox(
+              height: 20 * pixel,
+            ),
+            const Distance(),
+            SizedBox(
+              height: 20 * pixel,
+            ),
+            const Stress(),
+            SizedBox(
+              height: 20 * pixel,
+            ),
+            const StepTime()
+          ],
+        ),
+      );
+    }
   }
 }
 
@@ -158,28 +187,51 @@ class RightColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        const Step(),
-        SizedBox(
-          height: 21 * pixel,
-        ),
-        const Calorie(),
-        SizedBox(
-          height: 21 * pixel,
-        ),
-        const IntenseExercise(),
-        SizedBox(
-          height: 21 * pixel,
-        ),
-        const Sleep(),
-        SizedBox(
-          height: 21 * pixel,
-        ),
-        const ScreenTime()
-      ],
-    );
+    if (Platform.isIOS) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          const Step(),
+          SizedBox(
+            height: 21 * pixel,
+          ),
+          const Calorie(),
+          SizedBox(
+            height: 21 * pixel,
+          ),
+          SizedBox(
+            height: 21 * pixel,
+          ),
+          const Sleep(),
+          SizedBox(
+            height: 21 * pixel,
+          ),
+        ],
+      );
+    } else {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          const Step(),
+          SizedBox(
+            height: 21 * pixel,
+          ),
+          const Calorie(),
+          SizedBox(
+            height: 21 * pixel,
+          ),
+          const IntenseExercise(),
+          SizedBox(
+            height: 21 * pixel,
+          ),
+          const Sleep(),
+          SizedBox(
+            height: 21 * pixel,
+          ),
+          const ScreenTime()
+        ],
+      );
+    }
   }
 }
 
@@ -326,64 +378,75 @@ class Heart extends StatelessWidget {
         child: Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SvgIcon(
-              imagePath: 'assets/svg/heart_rate.svg',
-              width: 45,
-              height: 45,
-              colorFilter: ColorFilter.mode(
-                  Theme.of(context).colorScheme.primaryContainer,
-                  BlendMode.srcIn),
-            ),
-            SizedBox(
-              height: 10 * pixel,
-            ),
-            Text(
-              'Heart \nRate',
-              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
-            ),
-            SizedBox(
-              height: 10 * pixel,
-            ),
-            SvgIcon(
-              imagePath: 'assets/svg/heart_rate_2.svg',
-              width: 45,
-              height: 45,
-              colorFilter: ColorFilter.mode(
-                  Theme.of(context).colorScheme.primaryContainer,
-                  BlendMode.srcIn),
-            ),
-          ],
+        Expanded(
+          flex: 6,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SvgIcon(
+                imagePath: 'assets/svg/heart_rate.svg',
+                width: 45,
+                height: 45,
+                colorFilter: ColorFilter.mode(
+                    Theme.of(context).colorScheme.primaryContainer,
+                    BlendMode.srcIn),
+              ),
+              SizedBox(
+                height: 10 * pixel,
+              ),
+              Text(
+                'Heart \nRate',
+                style:
+                    TextStyle(color: Theme.of(context).colorScheme.secondary),
+              ),
+              SizedBox(
+                height: 10 * pixel,
+              ),
+              SvgIcon(
+                imagePath: 'assets/svg/heart_rate_2.svg',
+                width: 45,
+                height: 45,
+                colorFilter: ColorFilter.mode(
+                    Theme.of(context).colorScheme.primaryContainer,
+                    BlendMode.srcIn),
+              ),
+            ],
+          ),
         ),
         const Spacer(),
-        Column(
-          children: [
-            Text(
-                formatNum(
-                  Provider.of<HealthDataModel>(context)
-                      .healthData['rest_heart_rate'],
-                  decimalPoints: 1,
-                  loading: Provider.of<HealthDataModel>(context).loading,
-                ),
-                style: montserratAlternatesTextStyle(pixel * 30,
-                    Theme.of(context).colorScheme.primaryContainer)),
-            SizedBox(
-              height: 33 * pixel,
-            ),
-            Text(
-                formatNum(
-                  Provider.of<HealthDataModel>(context)
-                      .healthData['exercise_heart_rate'],
-                  decimalPoints: 1,
-                  loading: Provider.of<HealthDataModel>(context).loading,
-                ),
-                style: montserratAlternatesTextStyle(pixel * 30,
-                    Theme.of(context).colorScheme.primaryContainer)),
-          ],
+        Expanded(
+          flex: 6,
+          child: Column(
+            children: [
+              AutoSizeText(
+                  formatNum(
+                    Provider.of<HealthDataModel>(context)
+                        .healthData['rest_heart_rate'],
+                    decimalPoints: 1,
+                    loading: Provider.of<HealthDataModel>(context).loading,
+                  ),
+                  maxLines: 1,
+                  style: montserratAlternatesTextStyle(pixel * 30,
+                      Theme.of(context).colorScheme.primaryContainer)),
+              SizedBox(
+                height: 33 * pixel,
+              ),
+              AutoSizeText(
+                  formatNum(
+                    Platform.isAndroid
+                        ? Provider.of<HealthDataModel>(context)
+                            .healthData['exercise_heart_rate']
+                        : Provider.of<HealthDataModel>(context)
+                            .healthData['avg_heart_rate'],
+                    decimalPoints: 1,
+                    loading: Provider.of<HealthDataModel>(context).loading,
+                  ),
+                  maxLines: 1,
+                  style: montserratAlternatesTextStyle(pixel * 30,
+                      Theme.of(context).colorScheme.primaryContainer)),
+            ],
+          ),
         ),
-        const Spacer(),
       ],
     ));
   }
@@ -402,61 +465,49 @@ class Distance extends StatelessWidget {
       decimalPoints: 1,
       loading: Provider.of<HealthDataModel>(context).loading,
     );
+
     return FedCard(
-      child: SizedBox(
-        width: double.infinity,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SvgIcon(
-              imagePath: 'assets/svg/distance.svg',
-              colorFilter: ColorFilter.mode(
-                  Theme.of(context).colorScheme.primaryContainer,
-                  BlendMode.srcIn),
-            ),
-            SizedBox(
-              height: 10 * pixel,
-            ),
-            Text(
-              'Distance',
-              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
-            ),
-            SizedBox(
-              height: 9 * pixel,
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+      child: Row(
+        children: [
+          Expanded(
+            flex: 6,
+            child:
+                Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+              SvgIcon(
+                imagePath: 'assets/svg/distance.svg',
+                colorFilter: ColorFilter.mode(
+                    Theme.of(context).colorScheme.primaryContainer,
+                    BlendMode.srcIn),
+              ),
+              SizedBox(
+                height: 10 * pixel,
+              ),
+              Text(
+                'Distance',
+                style:
+                    TextStyle(color: Theme.of(context).colorScheme.secondary),
+              ),
+            ]),
+          ),
+          const Spacer(),
+          Expanded(
+            flex: 6,
+            child: Column(
               children: [
-                RichText(
-                  // https://stackoverflow.com/a/61748312
-                  text: TextSpan(children: [
-                    TextSpan(
-                        text: displayText,
-                        style: montserratAlternatesTextStyle(
-                            displayText.length < 6
-                                ? pixel * 30
-                                : pixel * (170 / displayText.length),
-                            Theme.of(context).colorScheme.primaryContainer)),
-                    WidgetSpan(
-                      child: Transform.translate(
-                        offset: const Offset(2, -2),
-                        child: Text('m',
-                            style: montserratAlternatesTextStyle(
-                                displayText.length < 6
-                                    ? pixel * 17
-                                    : pixel * (90 / displayText.length),
-                                Theme.of(context)
-                                    .colorScheme
-                                    .primaryContainer)),
-                      ),
-                    )
-                  ]),
-                )
+                AutoSizeText(displayText,
+                    maxLines: 1,
+                    style: montserratAlternatesTextStyle(
+                        displayText.length < 6
+                            ? pixel * 30
+                            : pixel * (155 / displayText.length),
+                        Theme.of(context).colorScheme.primaryContainer)),
+                Text('m',
+                    style: montserratAlternatesTextStyle(pixel * 17,
+                        Theme.of(context).colorScheme.primaryContainer))
               ],
-            )
-          ],
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -477,36 +528,44 @@ class Stress extends StatelessWidget {
     return FedCard(
       child: Row(
         children: [
-          Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-            SvgIcon(
-              imagePath: 'assets/svg/stress.svg',
-              colorFilter: ColorFilter.mode(
-                  Theme.of(context).colorScheme.primaryContainer,
-                  BlendMode.srcIn),
-            ),
-            SizedBox(
-              height: 10 * pixel,
-            ),
-            Text(
-              'Stress',
-              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
-            ),
-          ]),
-          const Spacer(),
-          Column(
-            children: [
-              Text(displayText,
-                  style: montserratAlternatesTextStyle(
-                      displayText.length < 6
-                          ? pixel * 30
-                          : pixel * (155 / displayText.length),
-                      Theme.of(context).colorScheme.primaryContainer)),
-              Text('stress',
-                  style: montserratAlternatesTextStyle(pixel * 15,
-                      Theme.of(context).colorScheme.primaryContainer))
-            ],
+          Expanded(
+            flex: 6,
+            child:
+                Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+              SvgIcon(
+                imagePath: 'assets/svg/stress.svg',
+                colorFilter: ColorFilter.mode(
+                    Theme.of(context).colorScheme.primaryContainer,
+                    BlendMode.srcIn),
+              ),
+              SizedBox(
+                height: 10 * pixel,
+              ),
+              Text(
+                'Stress',
+                style:
+                    TextStyle(color: Theme.of(context).colorScheme.secondary),
+              ),
+            ]),
           ),
           const Spacer(),
+          Expanded(
+            flex: 6,
+            child: Column(
+              children: [
+                AutoSizeText(displayText,
+                    maxLines: 1,
+                    style: montserratAlternatesTextStyle(
+                        displayText.length < 6
+                            ? pixel * 30
+                            : pixel * (155 / displayText.length),
+                        Theme.of(context).colorScheme.primaryContainer)),
+                Text('stress',
+                    style: montserratAlternatesTextStyle(pixel * 15,
+                        Theme.of(context).colorScheme.primaryContainer))
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -529,38 +588,44 @@ class Step extends StatelessWidget {
     return FedCard(
       child: Row(
         children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              SvgIcon(
-                imagePath: 'assets/svg/step.svg',
-                colorFilter: ColorFilter.mode(
-                    Theme.of(context).colorScheme.primaryContainer,
-                    BlendMode.srcIn),
-              ),
-              SizedBox(
-                height: 10 * pixel,
-              ),
-              Text(
-                'Step',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.secondary,
+          Expanded(
+            flex: 6,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SvgIcon(
+                  imagePath: 'assets/svg/step.svg',
+                  colorFilter: ColorFilter.mode(
+                      Theme.of(context).colorScheme.primaryContainer,
+                      BlendMode.srcIn),
                 ),
-              ),
-            ],
+                SizedBox(
+                  height: 10 * pixel,
+                ),
+                Text(
+                  'Step',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
+              ],
+            ),
           ),
           const Spacer(),
-          Column(
-            children: [
-              Text(displayText,
-                  style: montserratAlternatesTextStyle(
-                      displayText.length < 5
-                          ? pixel * 30
-                          : pixel * (135 / displayText.length),
-                      Theme.of(context).colorScheme.primaryContainer)),
-            ],
+          Expanded(
+            flex: 6,
+            child: Column(
+              children: [
+                AutoSizeText(displayText,
+                    maxLines: 1,
+                    style: montserratAlternatesTextStyle(
+                        displayText.length < 5
+                            ? pixel * 30
+                            : pixel * (135 / displayText.length),
+                        Theme.of(context).colorScheme.primaryContainer)),
+              ],
+            ),
           ),
-          const Spacer(),
         ],
       ),
       // callBack: () {
@@ -589,41 +654,49 @@ class StepTime extends StatelessWidget {
     return FedCard(
       child: Row(
         children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              SvgIcon(
-                imagePath: 'assets/svg/step_time.svg',
-                colorFilter: ColorFilter.mode(
-                    Theme.of(context).colorScheme.primaryContainer,
-                    BlendMode.srcIn),
-              ),
-              SizedBox(
-                height: 10 * pixel,
-              ),
-              Text(
-                'Step\nTime',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.secondary,
+          Expanded(
+            flex: 6,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SvgIcon(
+                  height: 58,
+                  width: 58,
+                  imagePath: 'assets/svg/step_time.svg',
+                  colorFilter: ColorFilter.mode(
+                      Theme.of(context).colorScheme.primaryContainer,
+                      BlendMode.srcIn),
                 ),
-              ),
-            ],
+                SizedBox(
+                  height: 10 * pixel,
+                ),
+                Text(
+                  'Step\nTime',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
+              ],
+            ),
           ),
           const Spacer(),
-          Column(
-            children: [
-              Text(displayText,
-                  style: montserratAlternatesTextStyle(
-                      displayText.length < 6
-                          ? pixel * 30
-                          : pixel * (145 / displayText.length),
-                      Theme.of(context).colorScheme.primaryContainer)),
-              Text('min',
-                  style: montserratAlternatesTextStyle(pixel * 20,
-                      Theme.of(context).colorScheme.primaryContainer)),
-            ],
+          Expanded(
+            flex: 6,
+            child: Column(
+              children: [
+                AutoSizeText(displayText,
+                    maxLines: 1,
+                    style: montserratAlternatesTextStyle(
+                        displayText.length < 6
+                            ? pixel * 30
+                            : pixel * (145 / displayText.length),
+                        Theme.of(context).colorScheme.primaryContainer)),
+                Text('min',
+                    style: montserratAlternatesTextStyle(pixel * 20,
+                        Theme.of(context).colorScheme.primaryContainer)),
+              ],
+            ),
           ),
-          const Spacer(),
         ],
       ),
     );
@@ -645,36 +718,43 @@ class Calorie extends StatelessWidget {
     return FedCard(
         child: Row(
       children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SvgIcon(
-              imagePath: 'assets/svg/calorie.svg',
-              colorFilter: ColorFilter.mode(
-                  Theme.of(context).colorScheme.primaryContainer,
-                  BlendMode.srcIn),
-            ),
-            SizedBox(
-              height: 10 * pixel,
-            ),
-            Text(
-              'Calorie',
-              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
-            ),
-          ],
+        Expanded(
+          flex: 6,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SvgIcon(
+                imagePath: 'assets/svg/calorie.svg',
+                colorFilter: ColorFilter.mode(
+                    Theme.of(context).colorScheme.primaryContainer,
+                    BlendMode.srcIn),
+              ),
+              SizedBox(
+                height: 10 * pixel,
+              ),
+              Text(
+                'Calorie',
+                style:
+                    TextStyle(color: Theme.of(context).colorScheme.secondary),
+              ),
+            ],
+          ),
         ),
         const Spacer(),
-        Column(
-          children: [
-            Text(displayText,
-                style: montserratAlternatesTextStyle(
-                    displayText.length < 6
-                        ? pixel * 30
-                        : pixel * (145 / displayText.length),
-                    Theme.of(context).colorScheme.primaryContainer)),
-          ],
+        Expanded(
+          flex: 6,
+          child: Column(
+            children: [
+              AutoSizeText(displayText,
+                  maxLines: 1,
+                  style: montserratAlternatesTextStyle(
+                      displayText.length < 6
+                          ? pixel * 30
+                          : pixel * (145 / displayText.length),
+                      Theme.of(context).colorScheme.primaryContainer)),
+            ],
+          ),
         ),
-        const Spacer(),
       ],
     ));
   }
@@ -696,47 +776,53 @@ class IntenseExercise extends StatelessWidget {
     return FedCard(
         child: Row(
       children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SvgIcon(
-              imagePath: 'assets/svg/exercise.svg',
-              colorFilter: ColorFilter.mode(
-                  Theme.of(context).colorScheme.primaryContainer,
-                  BlendMode.srcIn),
-            ),
-            SizedBox(
-              height: 10 * pixel,
-            ),
-            Container(
-              margin: EdgeInsets.fromLTRB(
-                  3 * pixel, 0 * pixel, 0 * pixel, 0 * pixel),
-              constraints: BoxConstraints(
-                maxWidth: 64 * pixel,
+        Expanded(
+          flex: 6,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SvgIcon(
+                imagePath: 'assets/svg/exercise.svg',
+                colorFilter: ColorFilter.mode(
+                    Theme.of(context).colorScheme.primaryContainer,
+                    BlendMode.srcIn),
               ),
-              child: Text(
-                'Intense \nExercise',
-                style:
-                    TextStyle(color: Theme.of(context).colorScheme.secondary),
+              SizedBox(
+                height: 10 * pixel,
               ),
-            ),
-          ],
+              Container(
+                margin: EdgeInsets.fromLTRB(
+                    3 * pixel, 0 * pixel, 0 * pixel, 0 * pixel),
+                constraints: BoxConstraints(
+                  maxWidth: 64 * pixel,
+                ),
+                child: Text(
+                  'Intense \nExercise',
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.secondary),
+                ),
+              ),
+            ],
+          ),
         ),
         const Spacer(),
-        Column(
-          children: [
-            Text(displayText,
-                style: montserratAlternatesTextStyle(
-                    displayText.length < 6
-                        ? pixel * 30
-                        : pixel * (145 / displayText.length),
-                    Theme.of(context).colorScheme.primaryContainer)),
-            Text('min',
-                style: montserratAlternatesTextStyle(pixel * 20,
-                    Theme.of(context).colorScheme.primaryContainer)),
-          ],
+        Expanded(
+          flex: 6,
+          child: Column(
+            children: [
+              AutoSizeText(displayText,
+                  maxLines: 1,
+                  style: montserratAlternatesTextStyle(
+                      displayText.length < 6
+                          ? pixel * 30
+                          : pixel * (145 / displayText.length),
+                      Theme.of(context).colorScheme.primaryContainer)),
+              Text('min',
+                  style: montserratAlternatesTextStyle(pixel * 20,
+                      Theme.of(context).colorScheme.primaryContainer)),
+            ],
+          ),
         ),
-        const Spacer(),
       ],
     ));
   }
@@ -747,50 +833,78 @@ class Sleep extends StatelessWidget {
     super.key,
   });
 
+  List<double> sleepMinuteToHour(double? sleepTime) {
+    if (sleepTime == null || sleepTime == -1) {
+      return [-1, -1];
+    } else {
+      return [((sleepTime) ~/ 60).toDouble(), ((sleepTime) % 60)];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
     return FedCard(
       child: Row(
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              SvgIcon(
-                imagePath: 'assets/svg/sleep.svg',
-                width: 58,
-                height: 58,
-                colorFilter: ColorFilter.mode(
-                    Theme.of(context).colorScheme.primaryContainer,
-                    BlendMode.srcIn),
-              ),
-              SizedBox(
-                height: 10 * pixel,
-              ),
-              Text(
-                'Sleep',
-                style:
-                    TextStyle(color: Theme.of(context).colorScheme.secondary),
-              ),
-            ],
+        children: <Widget>[
+          Expanded(
+            flex: 6,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SvgIcon(
+                  imagePath: 'assets/svg/sleep.svg',
+                  width: 58,
+                  height: 58,
+                  colorFilter: ColorFilter.mode(
+                      Theme.of(context).colorScheme.primaryContainer,
+                      BlendMode.srcIn),
+                ),
+                SizedBox(
+                  height: 10 * pixel,
+                ),
+                Text(
+                  'Sleep',
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.secondary),
+                ),
+              ],
+            ),
           ),
           const Spacer(),
-          Column(
-            children: [
-              Text(
-                  formatNum(
-                    Provider.of<HealthDataModel>(context)
-                        .healthData['sleep_efficiency'],
-                    loading: Provider.of<HealthDataModel>(context).loading,
-                  ),
+          Expanded(
+            flex: 6,
+            child: Column(
+              children: [
+                AutoSizeText(
+                  Platform.isAndroid
+                      ? formatNum(
+                          Provider.of<HealthDataModel>(context)
+                              .healthData['sleep_efficiency'],
+                          loading:
+                              Provider.of<HealthDataModel>(context).loading,
+                        )
+                      : "${formatNum(sleepMinuteToHour(Provider.of<HealthDataModel>(context).healthData['sleep_time'])[0], loading: Provider.of<HealthDataModel>(context).loading, decimalPoints: 0)} h",
+                  maxLines: 1,
                   style: montserratAlternatesTextStyle(pixel * 30,
-                      Theme.of(context).colorScheme.primaryContainer)),
-              Text('effi',
-                  style: montserratAlternatesTextStyle(pixel * 20,
-                      Theme.of(context).colorScheme.primaryContainer)),
-            ],
+                      Theme.of(context).colorScheme.primaryContainer),
+                ),
+                Text(
+                    Platform.isAndroid
+                        ? 'effi'
+                        : "${formatNum(
+                            sleepMinuteToHour(
+                                Provider.of<HealthDataModel>(context)
+                                    .healthData['sleep_time'])[1],
+                            decimalPoints: 0,
+                            loading:
+                                Provider.of<HealthDataModel>(context).loading,
+                          )} min",
+                    style: montserratAlternatesTextStyle(pixel * 20,
+                        Theme.of(context).colorScheme.primaryContainer)),
+              ],
+            ),
           ),
-          const Spacer(),
         ],
       ),
     );
@@ -808,44 +922,50 @@ class ScreenTime extends StatelessWidget {
     return FedCard(
       child: Row(
         children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              SvgIcon(
-                imagePath: 'assets/svg/sleep.svg',
-                width: 58,
-                height: 58,
-                colorFilter: ColorFilter.mode(
-                    Theme.of(context).colorScheme.primaryContainer,
-                    BlendMode.srcIn),
-              ),
-              SizedBox(
-                height: 10 * pixel,
-              ),
-              Text(
-                'Screen\nTime',
-                style:
-                    TextStyle(color: Theme.of(context).colorScheme.secondary),
-              ),
-            ],
+          Expanded(
+            flex: 6,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SvgIcon(
+                  imagePath: 'assets/svg/sleep.svg',
+                  width: 58,
+                  height: 58,
+                  colorFilter: ColorFilter.mode(
+                      Theme.of(context).colorScheme.primaryContainer,
+                      BlendMode.srcIn),
+                ),
+                SizedBox(
+                  height: 10 * pixel,
+                ),
+                Text(
+                  'Screen\nTime',
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.secondary),
+                ),
+              ],
+            ),
           ),
           const Spacer(),
-          Column(
-            children: [
-              Text(
-                  formatNum(
-                      Provider.of<HealthDataModel>(context)
-                          .healthData['total_time_foreground'],
-                      loading: Provider.of<HealthDataModel>(context).loading,
-                      decimalPoints: 0),
-                  style: montserratAlternatesTextStyle(pixel * 30,
-                      Theme.of(context).colorScheme.primaryContainer)),
-              Text('min',
-                  style: montserratAlternatesTextStyle(pixel * 20,
-                      Theme.of(context).colorScheme.primaryContainer)),
-            ],
+          Expanded(
+            flex: 6,
+            child: Column(
+              children: [
+                AutoSizeText(
+                    formatNum(
+                        Provider.of<HealthDataModel>(context)
+                            .healthData['total_time_foreground'],
+                        loading: Provider.of<HealthDataModel>(context).loading,
+                        decimalPoints: 0),
+                    maxLines: 1,
+                    style: montserratAlternatesTextStyle(pixel * 30,
+                        Theme.of(context).colorScheme.primaryContainer)),
+                Text('min',
+                    style: montserratAlternatesTextStyle(pixel * 20,
+                        Theme.of(context).colorScheme.primaryContainer)),
+              ],
+            ),
           ),
-          const Spacer(),
         ],
       ),
     );
