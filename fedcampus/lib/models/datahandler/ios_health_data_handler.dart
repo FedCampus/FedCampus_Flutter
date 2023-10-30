@@ -3,7 +3,7 @@
 import 'package:fedcampus/models/datahandler/health_handler.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/utility/log.dart';
-import 'package:fedcampus/view/health.dart';
+//import 'package:fedcampus/view/health.dart';
 import 'package:health/health.dart';
 import '../../utility/calendar.dart' as calendar;
 

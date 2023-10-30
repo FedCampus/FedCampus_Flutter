@@ -215,9 +215,11 @@ class _MyAppState extends State<MyApp> {
 }
 
 class MyAppState extends ChangeNotifier {
+  //for the test
   Locale locale = const Locale('en', 'US');
   bool isDarkModeOn = false;
 
+  //change the theme dark or light
   void toggleTheme(bool b) {
     isDarkModeOn = b;
     notifyListeners();
@@ -229,6 +231,7 @@ class MyAppState extends ChangeNotifier {
   }
 
   void resetPreferences() async {
+    //a package to store data
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.clear();
     notifyListeners();
