@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:fedcampus/models/user_model.dart';
 import 'package:fedcampus/utility/http_api.dart';
-// import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/utility/my_exceptions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

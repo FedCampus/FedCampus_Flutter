@@ -14,7 +14,6 @@ import 'package:http/http.dart' as http;
 import 'package:fedcampus/utility/http_api.dart';
 import 'package:fedcampus/pigeon/data_extensions.dart';
 import 'package:http/http.dart';
-// import 'package:path_provider/path_provider.dart';
 import 'package:sample_statistics/sample_statistics.dart';
 
 class DataWrapper {
@@ -179,8 +178,7 @@ class DataWrapper {
   }
 
   Future<void> sendLogFileToServer() async {
-    // ignore: avoid_print
-    print("Sending Log File to Server");
+    logger.i("Sending Log File to Server");
     // final directory = await getApplicationDocumentsDirectory();
     // final path = "${directory.path}/log";
     // File file = File(path);
