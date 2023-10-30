@@ -54,11 +54,13 @@ class _ActivityState extends State<Activity> {
           {
             "entry_name": "step_time",
             "icon_path": "assets/svg/step_time.svg",
+            "img_scale": 1.2,
             "unit": "min"
           },
           {
             "entry_name": "sleep_efficiency",
             "icon_path": "assets/svg/sleep.svg",
+            "img_scale": 1.2,
             "unit": "effi"
           },
         ]
@@ -81,11 +83,12 @@ class _ActivityState extends State<Activity> {
           {
             "entry_name": "sleep_time",
             "icon_path": "assets/svg/sleep.svg",
+            "img_scale": 1.2,
             "unit": "mins"
           }
         ];
 
-  final int maxCount = Platform.isAndroid ? 8 : 6;
+  final int maxCount = Platform.isAndroid ? 9 : 7;
   DateTime dateTime = DateTime.now();
 
   @override
@@ -135,10 +138,11 @@ class _ActivityState extends State<Activity> {
       onRefresh: () => refresh(forcedRefresh: true),
       child: ListView.separated(
           separatorBuilder: (context, index) => const SizedBox(height: 11),
-          itemCount: Platform.isAndroid ? 8 : 6,
+          itemCount: maxCount,
           padding: EdgeInsets.all(20 * pixel),
           itemBuilder: (BuildContext context, int index) {
             if (index == 0) {
+              // calendar and filter
               return Row(
                 children: <Widget>[
                   Expanded(
@@ -157,6 +161,27 @@ class _ActivityState extends State<Activity> {
                     child: FilterCard(
                       refreshCallBack: refresh,
                     ),
+                  ),
+                ],
+              );
+            }
+            if (index == 1) {
+              // table header
+              return Row(
+                children: <Widget>[
+                  const Spacer(flex: 1),
+                  Text(
+                    "Averege",
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.secondaryContainer,
+                    ),
+                  ),
+                  const Spacer(flex: 1),
+                  Text(
+                    "Percentile",
+                    style: TextStyle(
+                        color:
+                            Theme.of(context).colorScheme.secondaryContainer),
                   ),
                 ],
               );
@@ -182,9 +207,10 @@ class _ActivityState extends State<Activity> {
                   child: ActivityCard(
                 rank: '-',
                 value: '-',
-                unit: entries[index - 1]['unit'] ?? "unit",
-                iconPath:
-                    entries[index - 1]['icon_path'] ?? "assets/svg/sleep.svg",
+                unit: entries[index - 1]['unit']?.toString() ?? "unit",
+                iconPath: entries[index - 1]['icon_path']?.toString() ??
+                    "assets/svg/sleep.svg",
+                imgScale: entries[index - 1]["img_scale"] as double?,
               ));
             } else {
               return IntrinsicHeight(
@@ -196,9 +222,10 @@ class _ActivityState extends State<Activity> {
                 value: Provider.of<ActivityDataModel>(context)
                     .activityData[entries[index - 1]['entry_name']]["average"]
                     .toStringAsFixed(2),
-                unit: entries[index - 1]['unit'] ?? "unit",
-                iconPath:
-                    entries[index - 1]['icon_path'] ?? "assets/svg/sleep.svg",
+                unit: entries[index - 1]['unit']?.toString() ?? "unit",
+                iconPath: entries[index - 1]['icon_path']?.toString() ??
+                    "assets/svg/sleep.svg",
+                imgScale: entries[index - 1]["img_scale"] as double?,
               ));
             }
           }),
@@ -213,12 +240,14 @@ class ActivityCard extends StatelessWidget {
     required this.value,
     required this.unit,
     required this.iconPath,
+    this.imgScale,
   });
 
   final String rank;
   final String value;
   final String unit;
   final String iconPath;
+  final double? imgScale;
 
   @override
   Widget build(BuildContext context) {
@@ -231,14 +260,18 @@ class ActivityCard extends StatelessWidget {
             // As stated in https://api.flutter.dev/flutter/widgets/Image/height.html,
             // it is recommended to specify the image size (in order to avoid
             // widget size suddenly changes when the app just loads another page)
-            SvgIcon(
-              imagePath: iconPath,
-              colorFilter: ColorFilter.mode(
-                  Theme.of(context).colorScheme.secondaryContainer,
-                  BlendMode.srcIn),
+            Expanded(
+              flex: 4,
+              child: SvgIcon(
+                imagePath: iconPath,
+                height: pixel * 50 * (imgScale ?? 1),
+                colorFilter: ColorFilter.mode(
+                    Theme.of(context).colorScheme.secondaryContainer,
+                    BlendMode.srcIn),
+              ),
             ),
             const Expanded(
-              flex: 2,
+              flex: 1,
               child: SizedBox(),
             ),
             Expanded(
@@ -248,9 +281,10 @@ class ActivityCard extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
+                        flex: 5,
                         child: Text(
                           value,
-                          textAlign: TextAlign.start,
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                               fontFamily: 'Montserrat Alternates',
                               fontSize: value.length < 8
@@ -260,6 +294,9 @@ class ActivityCard extends StatelessWidget {
                               color: Theme.of(context).colorScheme.primary),
                         ),
                       ),
+                      const Spacer(
+                        flex: 3,
+                      )
                     ],
                   ),
                   Row(
@@ -389,7 +426,7 @@ class _FilterCardState extends State<FilterCard> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Filter"),
+          title: const Text("Select categories"),
           contentPadding:
               EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 0),
           content: SizedBox(

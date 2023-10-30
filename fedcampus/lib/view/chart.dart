@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/health_data_model.dart';
 import '../utility/calendar.dart';
-import '../utility/log.dart';
-import 'dart:math';
 
 class DetailsChart extends StatefulWidget {
   const DetailsChart({

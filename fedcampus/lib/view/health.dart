@@ -45,7 +45,7 @@ class _HealthState extends State<Health> {
 
   Future<void> refresh({bool forcedRefresh = false}) async {
     Provider.of<HealthDataModel>(context, listen: false)
-        .getAllData(forcedRefresh: forcedRefresh);
+        .requestAllData(forcedRefresh: forcedRefresh);
     LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
     loadingDialog.showLoading();
     bus.on("loading_done", (arg) {

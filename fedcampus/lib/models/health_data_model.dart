@@ -27,50 +27,18 @@ class HealthDataModel extends ChangeNotifier {
 
   set date(String date) {
     _date = date;
-    getAllData();
+    requestAllData();
     var dw = DataWrapper();
     dw.getDayDataAndSendAndTrain(int.parse(_date));
   }
 
-  void getAllData({bool forcedRefresh = false}) {
-    healthData = HealthData.mapOf();
-    getBodyData(forcedRefresh: forcedRefresh);
-    if (Platform.isAndroid) {
-      getScreenData();
-    }
-  }
-
-  /// Only work on Android.
-  Future<void> getScreenData({bool forcedRefresh = false}) async {
-    Map<String, double> res = {};
-    try {
-      res = await userApi.screenTimeDataHandler.getDataMap(
-          entry: [""],
-          startTime: calendar.intToDateTime(int.parse(date)),
-          endTime: calendar
-              .intToDateTime(int.parse(date))
-              .add(const Duration(days: 1)));
-    } catch (e) {
-      logger.e(e);
-      bus.emit("app_usage_stats_error",
-          "You have not granted the permission to access phone usage, go to preferences of this application to redirect to system settings page");
-    }
-    screenData.addAll(res);
-    logger.i(screenData);
-    healthData.addAll(screenData);
-    notifyListeners();
-  }
-
-  Future<void> getBodyData({bool forcedRefresh = false}) async {
+  Future<void> requestAllData({bool forcedRefresh = false}) async {
     _loading = true;
     notifyListeners();
-    int date = int.parse(_date);
+    healthData = HealthData.mapOf();
+
     try {
-      healthData.addAll(await userApi.healthDataHandler.getCachedValueMapDay(
-          calendar.intToDateTime(date), DataWrapper.dataNameList,
-          forcedRefresh: Platform.isIOS ? true : forcedRefresh));
-      logger.d(healthData);
-      _notify();
+      healthData.addAll(await _getBodyData(forcedRefresh: forcedRefresh));
     } on AuthenticationException catch (error) {
       logger.e(error);
       _notify();
@@ -82,6 +50,49 @@ class HealthDataModel extends ChangeNotifier {
       bus.emit("toast_error",
           "Internet connection error, cannot connet to health data handler server.");
     }
+
+    if (Platform.isAndroid) {
+      try {
+        healthData.addAll(await _getScreenData());
+      } catch (e) {
+        logger.e(e);
+        _notify();
+        bus.emit("app_usage_stats_error",
+            "You have not granted the permission to access phone usage, go to preferences of this application to redirect to system settings page");
+      }
+    }
+
+    _notify();
+  }
+
+  /// Only work on Android.
+  Future<Map<String, double>> _getScreenData() async {
+    // TODO: cache screen time in DB because the screen time data expires after several days
+    Map<String, double> res = {};
+
+    res = await userApi.screenTimeDataHandler.getDataMap(
+        entry: [""],
+        startTime: calendar.intToDateTime(int.parse(date)),
+        endTime: calendar
+            .intToDateTime(int.parse(date))
+            .add(const Duration(days: 1)));
+
+    screenData.addAll(res);
+    logger.i(screenData);
+    healthData.addAll(screenData);
+    return screenData;
+  }
+
+  Future<Map<String, double>> _getBodyData({bool forcedRefresh = false}) async {
+    int date = int.parse(_date);
+    Map<String, double> res = {};
+
+    res = await userApi.healthDataHandler.getCachedValueMapDay(
+        calendar.intToDateTime(date), DataWrapper.dataNameList,
+        forcedRefresh: Platform.isIOS ? true : forcedRefresh);
+    logger.d(res);
+
+    return res;
   }
 
   void _notify() {
