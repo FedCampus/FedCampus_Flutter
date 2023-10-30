@@ -32,7 +32,7 @@ class HealthDataModel extends ChangeNotifier {
     dw.getDayDataAndSendAndTrain(int.parse(_date));
   }
 
-  void requestAllData({bool forcedRefresh = false}) async {
+  Future<void> requestAllData({bool forcedRefresh = false}) async {
     _loading = true;
     notifyListeners();
     healthData = HealthData.mapOf();
