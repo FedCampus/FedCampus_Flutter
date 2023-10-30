@@ -181,7 +181,7 @@ class DataWrapper {
   Future<void> sendLogFileToServer() async {
     // ignore: avoid_print
     print("Sending Log File to Server");
-    final directory = await getApplicationDocumentsDirectory();
+    // final directory = await getApplicationDocumentsDirectory();
     // final path = "${directory.path}/log";
     // File file = File(path);
     //TODO: send log file to server
