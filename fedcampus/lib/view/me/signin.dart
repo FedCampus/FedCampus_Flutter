@@ -9,7 +9,6 @@ import 'package:provider/provider.dart';
 import 'package:fedcampus/view/me/signup.dart';
 import 'package:fedcampus/view/widgets/widget.dart';
 
-
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
 
