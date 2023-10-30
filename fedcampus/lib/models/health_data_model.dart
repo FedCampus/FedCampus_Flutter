@@ -56,6 +56,7 @@ class HealthDataModel extends ChangeNotifier {
         healthData.addAll(await _getScreenData());
       } catch (e) {
         logger.e(e);
+        _notify();
         bus.emit("app_usage_stats_error",
             "You have not granted the permission to access phone usage, go to preferences of this application to redirect to system settings page");
       }
