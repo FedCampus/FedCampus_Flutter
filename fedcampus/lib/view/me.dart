@@ -6,7 +6,7 @@ import 'package:fedcampus/utility/http_api.dart';
 import 'package:fedcampus/view/me/about.dart';
 import 'package:fedcampus/view/me/account_settings.dart';
 import 'package:fedcampus/view/me/privacy_policy.dart';
-import 'package:fedcampus/view/trainingDetail.dart';
+import 'package:fedcampus/view/training_detail.dart';
 import 'package:fedcampus/view/widgets/widget.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';

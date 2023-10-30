@@ -96,8 +96,7 @@ class _BottomNavigatorState extends State<BottomNavigator> {
               imagePath: 'assets/images/health_nav_icon.png',
               color: Colors.grey,
             ),
-            activeIcon:
-                NavIcon(imagePath: 'assets/images/health_nav_icon.png'),
+            activeIcon: NavIcon(imagePath: 'assets/images/health_nav_icon.png'),
           ),
           BottomNavigationBarItem(
             label: 'Activity',

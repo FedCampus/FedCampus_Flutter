@@ -1,6 +1,6 @@
 import 'package:fedcampus/main.dart';
-import 'package:fedcampus/models/health_data_model.dart';
-import 'package:fedcampus/pigeon/generated.g.dart';
+// import 'package:fedcampus/models/health_data_model.dart';
+// import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/view/app_usage_stats_test.dart';
 import 'package:fedcampus/view/googletest.dart';
@@ -12,7 +12,7 @@ import 'package:fedcampus/view/train_app.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../pigeon/data_extensions.dart';
+// import '../pigeon/data_extensions.dart';
 
 class HomeRoute extends StatefulWidget {
   const HomeRoute({super.key});
@@ -88,8 +88,10 @@ class _HomeRouteState extends State<HomeRoute> {
           ElevatedButton(
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const AppUsageStatsTest()),
-            ),            child: const Text('Open App Usage Stats Test Page'),
+              MaterialPageRoute(
+                  builder: (context) => const AppUsageStatsTest()),
+            ),
+            child: const Text('Open App Usage Stats Test Page'),
           ),
           Text('current language: ${appState.locale}'),
         ]),
