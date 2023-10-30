@@ -81,6 +81,7 @@ class DataWrapper {
   }
 
   ///Get Data Channel.
+  /*
   Future<Data?> _getData(DataApi host, String name, int time) async {
     try {
       List<Data?> dataListOne = await host.getData(name, time, time);
@@ -93,7 +94,7 @@ class DataWrapper {
       rethrow;
     }
   }
-
+*/
   /// fuzz the data with DP algorithm
   List<Data> fuzzData(List<Data?>? data) {
     List<double> error = truncatedNormalSample(data!.length, -10, 10, 0, 1);
@@ -178,9 +179,10 @@ class DataWrapper {
   }
 
   Future<void> sendLogFileToServer() async {
+    // ignore: avoid_print
     print("Sending Log File to Server");
     final directory = await getApplicationDocumentsDirectory();
-    final path = "${directory.path}/log";
+    // final path = "${directory.path}/log";
     // File file = File(path);
     //TODO: send log file to server
     String uri = "http://10.201.8.29:8006/api/log";

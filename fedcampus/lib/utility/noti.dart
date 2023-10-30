@@ -7,10 +7,10 @@ class Noti {
   static Future initialize(
       FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) async {
     var androidInitialize =
-        new AndroidInitializationSettings("health_kit_icon");
+        const AndroidInitializationSettings("health_kit_icon");
     // ios initialize
     var initializationSettings =
-        new InitializationSettings(android: androidInitialize);
+        InitializationSettings(android: androidInitialize);
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
