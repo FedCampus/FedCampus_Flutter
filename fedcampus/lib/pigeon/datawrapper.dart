@@ -78,7 +78,7 @@ class DataWrapper {
       rethrow;
     }
   }
-
+/*
   ///Get Data Channel.
   Future<Data?> _getData(DataApi host, String name, int time) async {
     try {
@@ -92,6 +92,7 @@ class DataWrapper {
       rethrow;
     }
   }
+ */
 
   /// fuzz the data with DP algorithm
   List<Data> fuzzData(List<Data?>? data) {

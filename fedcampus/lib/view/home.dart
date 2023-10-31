@@ -84,8 +84,10 @@ class _HomeRouteState extends State<HomeRoute> {
           ElevatedButton(
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const AppUsageStatsTest()),
-            ),            child: const Text('Open App Usage Stats Test Page'),
+              MaterialPageRoute(
+                  builder: (context) => const AppUsageStatsTest()),
+            ),
+            child: const Text('Open App Usage Stats Test Page'),
           ),
           Text('current language: ${appState.locale}'),
         ]),
