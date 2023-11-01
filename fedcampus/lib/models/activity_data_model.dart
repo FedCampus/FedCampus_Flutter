@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io' show Platform, SocketException;
+import 'dart:io' show SocketException;
 
 import 'package:fedcampus/models/activity_data.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
@@ -112,7 +112,7 @@ class ActivityDataModel extends ChangeNotifier {
   }
 
   Future<void> getActivityData({bool forcedRefresh = false}) async {
-    forcedRefresh = Platform.isIOS ? true : forcedRefresh;
+    forcedRefresh = userApi.isAndroid ? forcedRefresh : true;
     _loading = true;
     notifyListeners();
     _clearAll();

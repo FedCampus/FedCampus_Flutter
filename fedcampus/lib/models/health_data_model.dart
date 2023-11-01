@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io' show Platform;
 
 import 'package:fedcampus/models/health_data.dart';
 import 'package:fedcampus/models/screen_data.dart';
@@ -51,7 +50,7 @@ class HealthDataModel extends ChangeNotifier {
           "Internet connection error, cannot connet to health data handler server.");
     }
 
-    if (Platform.isAndroid) {
+    if (userApi.isAndroid) {
       try {
         healthData.addAll(await _getScreenData());
       } catch (e) {
@@ -89,7 +88,7 @@ class HealthDataModel extends ChangeNotifier {
 
     res = await userApi.healthDataHandler.getCachedValueMapDay(
         calendar.intToDateTime(date), DataWrapper.dataNameList,
-        forcedRefresh: Platform.isIOS ? true : forcedRefresh);
+        forcedRefresh: userApi.isAndroid ? forcedRefresh : true);
     logger.d(res);
 
     return res;

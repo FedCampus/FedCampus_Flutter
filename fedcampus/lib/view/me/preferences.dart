@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:fedcampus/main.dart';
 import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/utility/log.dart';
@@ -146,7 +144,7 @@ class _PreferencesState extends State<Preferences> {
                     _ => "English",
                   },
                 ),
-              if (Platform.isAndroid)
+              if (userApi.isAndroid)
                 SettingsDropDownMenu(
                   text: "Health Data Provider",
                   callback: (s) async {

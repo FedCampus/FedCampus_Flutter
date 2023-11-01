@@ -1,7 +1,6 @@
 //TODO:find better way do adapt different screen size
 
 import 'dart:async';
-import 'dart:io' show Platform;
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fedcampus/models/health_data_model.dart';
@@ -14,6 +13,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../utility/event_bus.dart';
+import '../utility/global.dart';
 
 class Health extends StatefulWidget {
   const Health({
@@ -121,7 +121,7 @@ class LeftColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
-    if (Platform.isIOS) {
+    if (!userApi.isAndroid) {
       return SizedBox(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -187,7 +187,7 @@ class RightColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
-    if (Platform.isIOS) {
+    if (!userApi.isAndroid) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -433,7 +433,7 @@ class Heart extends StatelessWidget {
               ),
               AutoSizeText(
                   formatNum(
-                    Platform.isAndroid
+                    userApi.isAndroid
                         ? Provider.of<HealthDataModel>(context)
                             .healthData['exercise_heart_rate']
                         : Provider.of<HealthDataModel>(context)
@@ -877,7 +877,7 @@ class Sleep extends StatelessWidget {
             child: Column(
               children: [
                 AutoSizeText(
-                  Platform.isAndroid
+                  userApi.isAndroid
                       ? formatNum(
                           Provider.of<HealthDataModel>(context)
                               .healthData['sleep_efficiency'],
@@ -890,7 +890,7 @@ class Sleep extends StatelessWidget {
                       Theme.of(context).colorScheme.primaryContainer),
                 ),
                 Text(
-                    Platform.isAndroid
+                    userApi.isAndroid
                         ? 'effi'
                         : "${formatNum(
                             sleepMinuteToHour(

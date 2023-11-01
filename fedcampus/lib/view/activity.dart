@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io' show Platform;
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fedcampus/models/activity_data_model.dart';
@@ -24,7 +23,7 @@ class Activity extends StatefulWidget {
 }
 
 class _ActivityState extends State<Activity> {
-  final entries = Platform.isAndroid
+  final entries = userApi.isAndroid
       ? [
           {
             "entry_name": "step",
@@ -88,12 +87,13 @@ class _ActivityState extends State<Activity> {
           }
         ];
 
-  final int maxCount = Platform.isAndroid ? 9 : 7;
+  late final int maxCount;
   DateTime dateTime = DateTime.now();
 
   @override
   void initState() {
     super.initState();
+    maxCount = entries.length + 3;
     Provider.of<ActivityDataModel>(context, listen: false).filterParams =
         FilterParams.create();
     dateTime = DateTime.parse(
@@ -141,6 +141,8 @@ class _ActivityState extends State<Activity> {
           itemCount: maxCount,
           padding: EdgeInsets.all(20 * pixel),
           itemBuilder: (BuildContext context, int index) {
+            logger.e(Provider.of<ActivityDataModel>(context, listen: false)
+                .activityData);
             if (index == 0) {
               // calendar and filter
               return Row(
@@ -198,35 +200,30 @@ class _ActivityState extends State<Activity> {
                 ),
               );
             }
-            // the use of IntrinsicHeight is explained here:
-            // because ActivityCard() is flexible vertically, when placed in ListView, the height becomes an issue
-            // IntrinsicHeight forces the column to be exactly as big as its contents
-            // https://api.flutter.dev/flutter/widgets/SingleChildScrollView-class.html
+            var currentEntry = entries[index - 2];
             if (Provider.of<ActivityDataModel>(context).loading) {
-              return IntrinsicHeight(
-                  child: ActivityCard(
+              return ActivityCard(
                 rank: '-',
                 value: '-',
-                unit: entries[index - 1]['unit']?.toString() ?? "unit",
-                iconPath: entries[index - 1]['icon_path']?.toString() ??
+                unit: currentEntry['unit']?.toString() ?? "unit",
+                iconPath: currentEntry['icon_path']?.toString() ??
                     "assets/svg/sleep.svg",
-                imgScale: entries[index - 1]["img_scale"] as double?,
-              ));
+                imgScale: currentEntry["img_scale"] as double?,
+              );
             } else {
-              return IntrinsicHeight(
-                  child: ActivityCard(
+              return ActivityCard(
                 rank: Provider.of<ActivityDataModel>(context)
-                        .activityData[entries[index - 1]['entry_name']]["rank"]
+                        .activityData[currentEntry['entry_name']]["rank"]
                         .toStringAsFixed(0) +
                     "%",
                 value: Provider.of<ActivityDataModel>(context)
-                    .activityData[entries[index - 1]['entry_name']]["average"]
+                    .activityData[currentEntry['entry_name']]["average"]
                     .toStringAsFixed(2),
-                unit: entries[index - 1]['unit']?.toString() ?? "unit",
-                iconPath: entries[index - 1]['icon_path']?.toString() ??
+                unit: currentEntry['unit']?.toString() ?? "unit",
+                iconPath: currentEntry['icon_path']?.toString() ??
                     "assets/svg/sleep.svg",
-                imgScale: entries[index - 1]["img_scale"] as double?,
-              ));
+                imgScale: currentEntry["img_scale"] as double?,
+              );
             }
           }),
     );
@@ -282,9 +279,10 @@ class ActivityCard extends StatelessWidget {
                     children: [
                       Expanded(
                         flex: 5,
-                        child: Text(
+                        child: AutoSizeText(
                           value,
                           textAlign: TextAlign.center,
+                          maxLines: 1,
                           style: TextStyle(
                               fontFamily: 'Montserrat Alternates',
                               fontSize: value.length < 8
@@ -302,9 +300,10 @@ class ActivityCard extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: Text(
+                        child: AutoSizeText(
                           unit,
                           textAlign: TextAlign.end,
+                          maxLines: 1,
                           style: TextStyle(
                               fontFamily: 'Montserrat Alternates',
                               fontSize: pixel * 20,
