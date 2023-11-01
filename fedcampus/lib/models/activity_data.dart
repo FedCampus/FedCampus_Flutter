@@ -1,9 +1,9 @@
 // feel free to migrate to json serializable classes such as json_model
-import 'dart:io' show Platform;
+import '../utility/global.dart';
 
 class ActivityData {
   static Map<String, dynamic> create() {
-    return Platform.isAndroid
+    return userApi.isAndroid
         ? {
             "step": {"average": 0, "rank": 0, "simliar_user": []},
             "calorie": {"average": 0, "rank": 0, "simliar_user": []},

@@ -1,9 +1,8 @@
-import "dart:io" show Platform;
-
 import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/view/activity.dart';
 import 'package:fedcampus/view/me.dart';
 import 'package:flutter/material.dart';
+import '../utility/global.dart';
 import 'health.dart';
 
 class BottomNavigator extends StatefulWidget {
@@ -24,7 +23,7 @@ class _BottomNavigatorState extends State<BottomNavigator> {
   @override
   void initState() {
     super.initState();
-    Platform.isAndroid ? spawnTraining() : Null;
+    userApi.isAndroid ? spawnTraining() : Null;
     sendFAData();
   }
 

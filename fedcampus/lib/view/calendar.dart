@@ -8,10 +8,12 @@ class CalendarDialog extends StatefulWidget {
   const CalendarDialog({
     super.key,
     required this.onDateChange,
+    required this.selectedDate,
     required this.primaryColor,
   });
 
   final void Function(DateTime selectedDate) onDateChange;
+  final DateTime selectedDate;
   final Color primaryColor;
 
   @override
@@ -24,7 +26,7 @@ class _CalendarDialogState extends State<CalendarDialog> {
   @override
   void initState() {
     super.initState();
-    _focusedDay = ValueNotifier(DateTime.now());
+    _focusedDay = ValueNotifier(widget.selectedDate);
   }
 
   @override

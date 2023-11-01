@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io' show Platform;
 import 'package:fedcampus/utility/fluttertoast.dart';
 import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
@@ -17,7 +16,7 @@ import 'package:http/http.dart';
 import 'package:sample_statistics/sample_statistics.dart';
 
 class DataWrapper {
-  static final dataNameList = Platform.isAndroid
+  static final dataNameList = userApi.isAndroid
       ? [
           "step",
           "calorie",

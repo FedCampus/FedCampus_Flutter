@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:fedcampus/main.dart';
 import 'package:fedcampus/models/datahandler/health_factory.dart';
 import 'package:fedcampus/utility/global.dart';
@@ -30,7 +28,7 @@ class _SplashState extends State<Splash> {
 
   void createHealthDataHandler() {
     userApi.prefs.setString("service_provider", serviceProvider);
-    userApi.healthDataHandler = Platform.isAndroid
+    userApi.healthDataHandler = userApi.isAndroid
         ? HealthDataHandlerFactory().creatHealthDataHandler(serviceProvider)
         : HealthDataHandlerFactory().creatHealthDataHandler("ios");
   }
@@ -194,7 +192,7 @@ class _SplashState extends State<Splash> {
             WidgetListWithDivider(
                 color: Theme.of(context).colorScheme.onTertiaryContainer,
                 children: [
-                  if (Platform.isAndroid)
+                  if (userApi.isAndroid)
                     MeText(
                       text: 'Data Provider',
                       callback: _pickServiceProvider,
