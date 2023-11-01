@@ -572,28 +572,36 @@ class _DateState extends State<Date> {
       return showDialog<bool>(
         context: context,
         builder: (context) {
-          return AlertDialog(
-            title: const Text("Select a day"),
-            contentPadding:
-                EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 0),
-            content: SizedBox(
-              height: 271 * pixel,
-              width: 300 * pixel,
-              child: CalendarDialog(
-                onDateChange: _changeWidgetDate,
-                primaryColor:
-                    Theme.of(context).colorScheme.onSecondaryContainer,
+          return WillPopScope(
+            // restore date if confirm is not clicked
+            onWillPop: () async {
+              _date = widget.date;
+              return true;
+            },
+            child: AlertDialog(
+              title: const Text("Select a day"),
+              contentPadding:
+                  EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 0),
+              content: SizedBox(
+                height: 271 * pixel,
+                width: 300 * pixel,
+                child: CalendarDialog(
+                  onDateChange: _changeWidgetDate,
+                  selectedDate: widget.date,
+                  primaryColor:
+                      Theme.of(context).colorScheme.onSecondaryContainer,
+                ),
               ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text("Confirm"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    widget.onDateChange(_date);
+                  },
+                ),
+              ],
             ),
-            actions: <Widget>[
-              TextButton(
-                child: const Text("Confirm"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  widget.onDateChange(_date);
-                },
-              ),
-            ],
           );
         },
       );
