@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Force-Directed Network Graph</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+  </head>
+  <body>
+    <h1>Centralized server and users at edges</h1>
+
+    <svg id="network-graph" width="800" height="600"></svg>
+    <script>
+      const customers = JSON.parse("{{ customers|escapejs }}");
+      console.log(customers);
+      const svg = d3.select("#network-graph");
+      const width = +svg.attr("width");
+      const height = +svg.attr("height");
+      const centralizedNodeColor = "red";
+      const facultyColor = "orange";
+      const studentColors = {
+        server: "red",
+        faculty: "orange",
+        2024: "Aqua",
+        2025: "Aquamarine",
+        2026: "blue",
+        2027: "DarkBlue",
+      };
+
+      const abc = [1, 2, 3, 4];
+
+      const nodes = Array.from(customers, (e, i) => ({
+        id: i + 1,
+        label: `Node${i}`,
+        faculty: e.faculty,
+        student: e.student,
+      }));
+      nodes.push({
+        id: 0,
+        label: "Centralized Node",
+      });
+      console.log(nodes);
+
+      const links = Array.from({ length: customers.length }, (_, i) => ({
+        source: 0,
+        target: i + 1,
+      }));
+
+      const simulation = d3
+        .forceSimulation(nodes)
+        .force(
+          "link",
+          d3.forceLink(links).id((d) => d.id)
+        )
+        .force("charge", d3.forceManyBody().strength(-100))
+        .force("center", d3.forceCenter(width / 2, height / 2))
+        .force("collision", d3.forceCollide().radius(10))
+        .on("tick", updateGraph);
+
+      svg
+        .selectAll("circle")
+        .data(Object.entries(studentColors), (d) => {
+          return d[1];
+        })
+        .enter()
+        .append("circle")
+        .attr("cx", 150)
+        .attr("cy", (d, i) => {
+          return 130 + 20 * i;
+        })
+        .attr("r", 5)
+        .style("fill", (d, i) => d[1]);
+
+      svg
+        .selectAll("text")
+        .data(Object.entries(studentColors))
+        .enter()
+        .append("text")
+        .attr("x", 160)
+        .attr("y", (d, i) => {
+          return 130 + 20 * i;
+        })
+        .text((d, i) => d[0])
+        .style("font-size", "12px")
+        .attr("alignment-baseline", "middle");
+
+      const link = svg
+        .selectAll("line")
+        .data(links)
+        .enter()
+        .append("line")
+        .attr("stroke", "black")
+        .attr("stroke-width", 1);
+
+      const node = svg
+        .selectAll("circle")
+        .data(nodes, (d) => {
+          return d[0];
+        })
+        .enter()
+        .append("circle")
+        .attr("r", (d) => {
+          return 5;
+        })
+        .attr("fill", (d) =>
+          d.id === 0
+            ? centralizedNodeColor
+            : d.faculty === true
+            ? studentColors.faculty
+            : studentColors[d.student]
+        )
+        .call(drag(simulation));
+
+      node.append("title").text((d) => d.label);
+
+      function updateGraph() {
+        link
+          .attr("x1", (d) => d.source.x)
+          .attr("y1", (d) => d.source.y)
+          .attr("x2", (d) => d.target.x)
+          .attr("y2", (d) => d.target.y);
+
+        node.attr("cx", (d) => d.x).attr("cy", (d) => d.y);
+      }
+
+      function drag(simulation) {
+        function dragStarted(event, d) {
+          if (!event.active) simulation.alphaTarget(0.3).restart();
+          d.fx = d.x;
+          d.fy = d.y;
+        }
+
+        function dragged(event, d) {
+          d.fx = event.x;
+          d.fy = event.y;
+        }
+
+        function dragEnded(event, d) {
+          if (!event.active) simulation.alphaTarget(0);
+          d.fx = null;
+          d.fy = null;
+        }
+
+        return d3
+          .drag()
+          .on("start", dragStarted)
+          .on("drag", dragged)
+          .on("end", dragEnded);
+      }
+    </script>
+  </body>
+</html>
