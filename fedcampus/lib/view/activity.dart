@@ -142,8 +142,6 @@ class _ActivityState extends State<Activity> {
           itemCount: maxCount,
           padding: EdgeInsets.all(20 * pixel),
           itemBuilder: (BuildContext context, int index) {
-            logger.e(Provider.of<ActivityDataModel>(context, listen: false)
-                .activityData);
             if (index == 0) {
               // calendar and filter
               return Row(
@@ -204,8 +202,9 @@ class _ActivityState extends State<Activity> {
             var currentEntry = entries[index - 2];
             if (Provider.of<ActivityDataModel>(context).loading) {
               return ActivityCard(
-                rank: '-',
-                value: '-',
+                rank: "",
+                value: "",
+                loading: true,
                 unit: currentEntry['unit']?.toString() ?? "unit",
                 iconPath: currentEntry['icon_path']?.toString() ??
                     "assets/svg/sleep.svg",
@@ -237,6 +236,7 @@ class ActivityCard extends StatelessWidget {
     required this.value,
     required this.unit,
     required this.iconPath,
+    this.loading,
     this.imgScale,
   });
 
@@ -245,6 +245,7 @@ class ActivityCard extends StatelessWidget {
   final String unit;
   final String iconPath;
   final double? imgScale;
+  final bool? loading;
 
   @override
   Widget build(BuildContext context) {
@@ -274,7 +275,7 @@ class ActivityCard extends StatelessWidget {
                   Expanded(
                     flex: 5,
                     child: AutoSizeText(
-                      value,
+                      loading ?? false ? "-" : value,
                       textAlign: TextAlign.center,
                       maxLines: 1,
                       style: TextStyle(
@@ -313,44 +314,60 @@ class ActivityCard extends StatelessWidget {
         ),
         Expanded(
           flex: 7,
-          child: RichText(
-            textAlign: TextAlign.end,
-            text: TextSpan(children: [
-              WidgetSpan(
-                child: Transform.translate(
-                  offset: const Offset(1, -4),
-                  child: Text(
-                    'top',
-                    textScaleFactor: 0.6,
-                    style: TextStyle(
+          child: loading ?? false
+              ? Text(
+                  "    -",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontFamily: 'Montserrat Alternates',
                       fontSize: pixel * 30,
-                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                      fontWeight: FontWeight.bold,
+                      color:
+                          Theme.of(context).colorScheme.onSecondaryContainer),
+                )
+              : RichText(
+                  textAlign: TextAlign.end,
+                  text: TextSpan(children: [
+                    WidgetSpan(
+                      child: Transform.translate(
+                        offset: const Offset(1, -4),
+                        child: Text(
+                          'top',
+                          textScaleFactor: 0.6,
+                          style: TextStyle(
+                            fontSize: pixel * 30,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSecondaryContainer,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
-              TextSpan(
-                text: rank,
-                style: TextStyle(
-                  fontSize: pixel * 30,
-                  color: Theme.of(context).colorScheme.onSecondaryContainer,
-                ),
-              ),
-              WidgetSpan(
-                child: Transform.translate(
-                  offset: const Offset(-1, 0),
-                  child: Text(
-                    '%',
-                    textScaleFactor: 0.7,
-                    style: TextStyle(
-                      fontSize: pixel * 30,
-                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                    TextSpan(
+                      text: rank,
+                      style: TextStyle(
+                        fontSize: pixel * 30,
+                        color:
+                            Theme.of(context).colorScheme.onSecondaryContainer,
+                      ),
                     ),
-                  ),
+                    WidgetSpan(
+                      child: Transform.translate(
+                        offset: const Offset(-1, 0),
+                        child: Text(
+                          '%',
+                          textScaleFactor: 0.7,
+                          style: TextStyle(
+                            fontSize: pixel * 30,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSecondaryContainer,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ]),
                 ),
-              ),
-            ]),
-          ),
         ),
       ],
     ));
