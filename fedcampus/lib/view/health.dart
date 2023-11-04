@@ -301,7 +301,7 @@ class _DateState extends State<Date> {
     double pixel = MediaQuery.of(context).size.width / 400;
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.onBackground,
+        color: Theme.of(context).colorScheme.onPrimaryContainer,
         borderRadius: BorderRadius.circular(10 * pixel),
         boxShadow: [
           BoxShadow(
@@ -324,7 +324,7 @@ class _DateState extends State<Date> {
       child: TextButton(
         onPressed: () => calendarDialog(),
         style: TextButton.styleFrom(
-          backgroundColor: Theme.of(context).colorScheme.onBackground,
+          backgroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
           padding: EdgeInsets.fromLTRB(
               14 * pixel, 18 * pixel, 14 * pixel, 17 * pixel),
           shape: RoundedRectangleBorder(

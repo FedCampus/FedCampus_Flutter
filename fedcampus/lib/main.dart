@@ -158,7 +158,7 @@ class _MyAppState extends State<MyApp> {
           inversePrimary: const Color.fromARGB(255, 255, 255, 255),
           primary: Colors.black,
           primaryContainer: const Color.fromARGB(255, 229, 85, 85),
-          onPrimaryContainer: const Color.fromARGB(255, 229, 85, 85),
+          onPrimaryContainer: const Color.fromARGB(255, 254, 232, 232),
           secondary: const Color.fromARGB(102, 0, 0, 0),
           surfaceTint: const Color.fromARGB(255, 249, 255, 231),
           secondaryContainer: const Color.fromARGB(255, 206, 229, 109),
