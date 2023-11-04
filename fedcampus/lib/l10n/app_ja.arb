@@ -2,5 +2,8 @@
   "settings": "設定",
   "language": "言語",
   "dark_mode": "ダークモード",
-  "reset_preferences": "設定をリセット"
+  "reset_preferences": "設定をリセット",
+  "navigator_health": "健康状態",
+  "navigator_stats": "統計",
+  "navigator_account": "アカウント"
 }
