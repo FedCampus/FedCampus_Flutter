@@ -34,7 +34,8 @@ class DataWrapper {
           "rest_heart_rate",
           "avg_heart_rate",
           "calorie",
-          "sleep_time"
+          "sleep_time",
+          "sleep_duration"
         ];
 
   ///Get all the data given the list of tag on the specific datetime number.

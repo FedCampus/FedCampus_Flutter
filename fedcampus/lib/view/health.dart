@@ -141,6 +141,7 @@ class LeftColumn extends StatelessWidget {
             SizedBox(
               height: 20 * pixel,
             ),
+            const SleepDuration(),
             SizedBox(
               height: 20 * pixel,
             ),
@@ -908,6 +909,69 @@ class Sleep extends StatelessWidget {
                             loading:
                                 Provider.of<HealthDataModel>(context).loading,
                           )} min",
+                    style: montserratAlternatesTextStyle(pixel * 20,
+                        Theme.of(context).colorScheme.primaryContainer)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class SleepDuration extends StatelessWidget {
+  const SleepDuration({
+    super.key,
+  });
+
+  String _sleepDurationDoubleToString(double? sleepDuration) {
+    var _s = formatNum(sleepDuration, decimalPoints: 0);
+    if (_s == "-" || _s == "0") {
+      return _s;
+    }
+    return "${_s.substring(0, 2)}:${_s.substring(2, 4)}\n${_s.substring(4, 6)}:${_s.substring(6, 8)}";
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
+    return FedCard(
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            flex: 6,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SvgIcon(
+                  imagePath: 'assets/svg/sleep.svg',
+                  width: 58,
+                  height: 58,
+                  colorFilter: ColorFilter.mode(
+                      Theme.of(context).colorScheme.primaryContainer,
+                      BlendMode.srcIn),
+                ),
+                SizedBox(
+                  height: 10 * pixel,
+                ),
+                Text(
+                  'Duration',
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.secondary),
+                ),
+              ],
+            ),
+          ),
+          const Spacer(),
+          Expanded(
+            flex: 6,
+            child: Column(
+              children: [
+                Text(
+                    _sleepDurationDoubleToString(
+                        Provider.of<HealthDataModel>(context)
+                            .healthData['sleep_duration']),
                     style: montserratAlternatesTextStyle(pixel * 20,
                         Theme.of(context).colorScheme.primaryContainer)),
               ],

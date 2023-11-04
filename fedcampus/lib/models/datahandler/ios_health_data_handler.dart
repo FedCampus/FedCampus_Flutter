@@ -24,6 +24,7 @@ class IOSHealth extends FedHealthData {
     "rest_heart_rate": HealthDataType.RESTING_HEART_RATE,
     "height": HealthDataType.HEIGHT,
     "sleep_time": HealthDataType.SLEEP_ASLEEP,
+    "sleep_duration": HealthDataType.SLEEP_ASLEEP,
     "weight": HealthDataType.WEIGHT,
     "avg_heart_rate": HealthDataType.HEART_RATE,
   };
@@ -50,29 +51,42 @@ class IOSHealth extends FedHealthData {
     return;
   }
 
+  double _sleepDurationToDouble(DateTime start, DateTime end) {
+    var time =
+        (start.hour * 1e2 + start.minute) * 1e4 + end.hour * 1e2 + end.minute;
+    return time;
+  }
+
   @override
   Future<Data> getDataInterval(
       {required String entry,
       required DateTime startTime,
       required DateTime endTime}) async {
-    if (entry == "sleep_time") {
+    if (entry == "sleep_time" || entry == "sleep_duration") {
       endTime = endTime.add(const Duration(hours: 10));
     }
     var res = await _health
         .getHealthDataFromTypes(startTime, endTime, [_dataEntry[entry]!]);
-
     var huaweiHealth =
         res.where((element) => element.sourceId == "com.huawei.iossporthealth");
     double sum = 0;
-    if (huaweiHealth.isEmpty) {
-      sum = -1;
+    if (entry == "sleep_duration" && huaweiHealth.isNotEmpty) {
+      var sortList = huaweiHealth.toList();
+      sortList.sort((a, b) => double.parse(a.value.toString())
+          .compareTo(double.parse(b.value.toString())));
+      sum =
+          _sleepDurationToDouble(sortList.last.dateFrom, sortList.last.dateTo);
     } else {
-      sum = huaweiHealth.fold(0,
-          (value, element) => value + double.parse(element.value.toString()));
-      sum = (entry == "rest_heart_rate" || entry == "avg_heart_rate")
-          ? sum / huaweiHealth.length
-          : sum;
-      sum = (sum.isNaN) ? 0 : sum;
+      if (huaweiHealth.isEmpty) {
+        sum = -1;
+      } else {
+        sum = huaweiHealth.fold(0,
+            (value, element) => value + double.parse(element.value.toString()));
+        sum = (entry == "rest_heart_rate" || entry == "avg_heart_rate")
+            ? sum / huaweiHealth.length
+            : sum;
+        sum = (sum.isNaN) ? 0 : sum;
+      }
     }
 
     return Data(
@@ -121,4 +135,6 @@ class IOSHealth extends FedHealthData {
     }
     return res;
   }
+
+  /// Get the start time and end time
 }
