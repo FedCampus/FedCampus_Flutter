@@ -26,5 +26,13 @@
   "navigator_account": "Account",
   "@navigator_account": {
     "description": ""
+  },
+  "stats_tbl_header_avg": "Participant Average",
+  "@stats_tbl_header_avg": {
+    "description": ""
+  },
+  "stats_tbl_header_percentile": "Your Percentile",
+  "@stats_tbl_header_percentile": {
+    "description": ""
   }
 }
