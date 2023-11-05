@@ -1,6 +1,7 @@
 //TODO:find better way do adapt different screen size
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fedcampus/models/health_data_model.dart';
@@ -382,82 +383,39 @@ class Heart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double pixel = MediaQuery.of(context).size.width / 400;
-    return FedCard(
-        child: Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Expanded(
-          flex: 6,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              SvgIcon(
-                imagePath: 'assets/svg/heart_rate.svg',
-                width: 45,
-                height: 45,
-                colorFilter: ColorFilter.mode(
-                    Theme.of(context).colorScheme.primaryContainer,
-                    BlendMode.srcIn),
-              ),
-              SizedBox(
-                height: 10 * pixel,
-              ),
-              Text(
-                'Heart \nRate',
-                style:
-                    TextStyle(color: Theme.of(context).colorScheme.secondary),
-              ),
-              SizedBox(
-                height: 10 * pixel,
-              ),
-              SvgIcon(
-                imagePath: 'assets/svg/heart_rate_2.svg',
-                width: 45,
-                height: 45,
-                colorFilter: ColorFilter.mode(
-                    Theme.of(context).colorScheme.primaryContainer,
-                    BlendMode.srcIn),
-              ),
-            ],
-          ),
+    return HealthCardItems(
+      icons: [
+        SvgIcon(
+          imagePath: 'assets/svg/heart_rate.svg',
+          width: 45,
+          height: 45,
+          colorFilter: ColorFilter.mode(
+              Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
         ),
-        const Spacer(),
-        Expanded(
-          flex: 6,
-          child: Column(
-            children: [
-              AutoSizeText(
-                  formatNum(
-                    Provider.of<HealthDataModel>(context)
-                        .healthData['rest_heart_rate'],
-                    decimalPoints: 1,
-                    loading: Provider.of<HealthDataModel>(context).loading,
-                  ),
-                  maxLines: 1,
-                  style: montserratAlternatesTextStyle(pixel * 30,
-                      Theme.of(context).colorScheme.primaryContainer)),
-              SizedBox(
-                height: 33 * pixel,
-              ),
-              AutoSizeText(
-                  formatNum(
-                    userApi.isAndroid
-                        ? Provider.of<HealthDataModel>(context)
-                            .healthData['exercise_heart_rate']
-                        : Provider.of<HealthDataModel>(context)
-                            .healthData['avg_heart_rate'],
-                    decimalPoints: 1,
-                    loading: Provider.of<HealthDataModel>(context).loading,
-                  ),
-                  maxLines: 1,
-                  style: montserratAlternatesTextStyle(pixel * 30,
-                      Theme.of(context).colorScheme.primaryContainer)),
-            ],
-          ),
+        SvgIcon(
+          imagePath: 'assets/svg/heart_rate_2.svg',
+          width: 45,
+          height: 45,
+          colorFilter: ColorFilter.mode(
+              Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
+        )
+      ],
+      labels: const ["Rest\nHeart Rate", "Exercise\nHeart rate"], // TODO: iOS version wording
+      units: const ["bpm", "bpm"],
+      value: [
+        formatNum(
+          Provider.of<HealthDataModel>(context).healthData['rest_heart_rate'],
+          decimalPoints: 1,
+          loading: Provider.of<HealthDataModel>(context).loading,
+        ),
+        formatNum(
+          Provider.of<HealthDataModel>(context)
+              .healthData['exercise_heart_rate'],
+          decimalPoints: 1,
+          loading: Provider.of<HealthDataModel>(context).loading,
         ),
       ],
-    ));
+    );
   }
 }
 
@@ -513,6 +471,76 @@ class HealthCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class HealthCardItems extends StatelessWidget {
+  const HealthCardItems({
+    super.key,
+    required this.icons,
+    required this.labels,
+    required this.units,
+    required this.value,
+  });
+
+  final List<SvgIcon> icons;
+  final List<String> labels;
+  final List<String> units;
+  final List<String> value;
+
+  @override
+  Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
+    List<Widget> rows = [
+      for (var i = 0; i < min(icons.length, labels.length); i++) ...[
+        Row(
+          children: [
+            Expanded(
+              flex: 7,
+              child: Column(
+                children: [
+                  icons[i],
+                  SizedBox(
+                    height: 10 * pixel,
+                  ),
+                  AutoSizeText(
+                    labels[i],
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.secondary),
+                  ),
+                ],
+              ),
+            ),
+            const Spacer(),
+            Expanded(
+              flex: 6,
+              child: Column(
+                children: [
+                  Text(
+                    value[i],
+                    style: montserratAlternatesTextStyle(pixel * 30,
+                        Theme.of(context).colorScheme.primaryContainer),
+                  ),
+                  Text(units[i],
+                      style: montserratAlternatesTextStyle(pixel * 17,
+                          Theme.of(context).colorScheme.primaryContainer)),
+                ],
+              ),
+            ),
+          ],
+        ),
+        SizedBox(
+          height: 11 * pixel,
+        ),
+      ]
+    ]..removeLast();
+
+    return FedCard(
+      child: Column(
+        children: rows,
       ),
     );
   }
