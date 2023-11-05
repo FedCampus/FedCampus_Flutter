@@ -29,62 +29,73 @@ class _ActivityState extends State<Activity> {
           {
             "entry_name": "step",
             "icon_path": "assets/svg/step.svg",
-            "unit": "steps"
+            "unit": "steps",
+            "decimal_points": 0,
           },
           {
             "entry_name": "distance",
             "icon_path": "assets/svg/distance.svg",
-            "unit": "meters"
+            "unit": "meters",
+            "decimal_points": 0,
           },
           {
             "entry_name": "calorie",
             "icon_path": "assets/svg/calorie.svg",
-            "unit": "kcals"
+            "unit": "kcals",
+            "decimal_points": 2,
           },
           {
             "entry_name": "intensity",
             "icon_path": "assets/svg/exercise.svg",
-            "unit": "min"
+            "unit": "min",
+            "decimal_points": 1,
           },
           {
             "entry_name": "stress",
             "icon_path": "assets/svg/stress.svg",
-            "unit": "stress"
+            "unit": "stress",
+            "decimal_points": 1,
           },
           {
             "entry_name": "step_time",
             "icon_path": "assets/svg/step_time.svg",
             "img_scale": 1.2,
-            "unit": "min"
+            "unit": "min",
+            "decimal_points": 1,
           },
           {
             "entry_name": "sleep_efficiency",
             "icon_path": "assets/svg/sleep.svg",
             "img_scale": 1.2,
-            "unit": "effi"
+            "unit": "effi",
+            "decimal_points": 2,
           },
         ]
       : [
           {
             "entry_name": "step",
             "icon_path": "assets/svg/step.svg",
-            "unit": "steps"
+            "unit": "steps",
+            "decimal_points": 0,
           },
           {
             "entry_name": "distance",
             "icon_path": "assets/svg/distance.svg",
-            "unit": "meters"
+            "unit": "meters",
+            "decimal_points": 0,
           },
           {
             "entry_name": "calorie",
             "icon_path": "assets/svg/calorie.svg",
-            "unit": "kcals"
+            "unit": "kcals",
+            "decimal_points": 2,
           },
           {
             "entry_name": "sleep_time",
             "icon_path": "assets/svg/sleep.svg",
             "img_scale": 1.2,
-            "unit": "mins"
+            "unit": "mins",
+            "decimal_points": 1,
           }
         ];
 
@@ -217,7 +228,7 @@ class _ActivityState extends State<Activity> {
                     .toStringAsFixed(0),
                 value: Provider.of<ActivityDataModel>(context)
                     .activityData[currentEntry['entry_name']]["average"]
-                    .toStringAsFixed(2),
+                    .toStringAsFixed(currentEntry['decimal_points']),
                 unit: currentEntry['unit']?.toString() ?? "unit",
                 iconPath: currentEntry['icon_path']?.toString() ??
                     "assets/svg/sleep.svg",
