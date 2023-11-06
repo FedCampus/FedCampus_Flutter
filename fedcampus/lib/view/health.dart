@@ -383,59 +383,144 @@ class Heart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return HealthCardItems(
-      icons: [
-        SvgIcon(
-          imagePath: 'assets/svg/heart_rate.svg',
-          width: 45,
-          height: 45,
-          colorFilter: ColorFilter.mode(
-              Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
-        ),
-        SvgIcon(
-          imagePath: 'assets/svg/heart_rate_2.svg',
-          width: 45,
-          height: 45,
-          colorFilter: ColorFilter.mode(
-              Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
-        )
-      ],
-      labels: const [
-        "Rest\nHeart Rate",
-        "Exercise\nHeart rate"
-      ], // TODO: iOS version wording
-      units: const ["bpm", "bpm"],
-      value: [
-        formatNum(
-          Provider.of<HealthDataModel>(context).healthData['rest_heart_rate'],
-          decimalPoints: 1,
-          loading: Provider.of<HealthDataModel>(context).loading,
-        ),
-        formatNum(
-          Provider.of<HealthDataModel>(context)
-              .healthData['exercise_heart_rate'],
-          decimalPoints: 1,
-          loading: Provider.of<HealthDataModel>(context).loading,
-        ),
-      ],
+    double pixel = MediaQuery.of(context).size.width / 400;
+    return FedCard(
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                flex: 7,
+                child: Column(
+                  children: [
+                    AutoSizeText(
+                      "Heart Rate",
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary),
+                    ),
+                    SizedBox(
+                      height: 10 * pixel,
+                    ),
+                    SvgIcon(
+                      imagePath: 'assets/svg/heart_rate.svg',
+                      width: 45,
+                      height: 45,
+                      colorFilter: ColorFilter.mode(
+                          Theme.of(context).colorScheme.primaryContainer,
+                          BlendMode.srcIn),
+                    ),
+                    SizedBox(
+                      height: 10 * pixel,
+                    ),
+                    AutoSizeText(
+                      "Rest",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary),
+                    ),
+                  ],
+                ),
+              ),
+              const Spacer(),
+              Expanded(
+                flex: 6,
+                child: Column(
+                  children: [
+                    Text(
+                      formatNum(
+                        Provider.of<HealthDataModel>(context)
+                            .healthData['rest_heart_rate'],
+                        decimalPoints: 1,
+                        loading: Provider.of<HealthDataModel>(context).loading,
+                      ),
+                      style: montserratAlternatesTextStyle(pixel * 30,
+                          Theme.of(context).colorScheme.primaryContainer),
+                    ),
+                    Text("bpm",
+                        style: montserratAlternatesTextStyle(pixel * 17,
+                            Theme.of(context).colorScheme.primaryContainer)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 11 * pixel,
+          ),
+          Row(
+            children: [
+              Expanded(
+                flex: 7,
+                child: Column(
+                  children: [
+                    SvgIcon(
+                      imagePath: 'assets/svg/heart_rate_2.svg',
+                      width: 45,
+                      height: 45,
+                      colorFilter: ColorFilter.mode(
+                          Theme.of(context).colorScheme.primaryContainer,
+                          BlendMode.srcIn),
+                    ),
+                    SizedBox(
+                      height: 10 * pixel,
+                    ),
+                    AutoSizeText(
+                      userApi.isAndroid ? "Exercise" : "Average",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary),
+                    ),
+                  ],
+                ),
+              ),
+              const Spacer(),
+              Expanded(
+                flex: 6,
+                child: Column(
+                  children: [
+                    Text(
+                      formatNum(
+                        Provider.of<HealthDataModel>(context).healthData[
+                            userApi.isAndroid
+                                ? 'rest_heart_rate'
+                                : "avg_heart_rate"],
+                        decimalPoints: 1,
+                        loading: Provider.of<HealthDataModel>(context).loading,
+                      ),
+                      style: montserratAlternatesTextStyle(pixel * 30,
+                          Theme.of(context).colorScheme.primaryContainer),
+                    ),
+                    Text("bpm",
+                        style: montserratAlternatesTextStyle(pixel * 17,
+                            Theme.of(context).colorScheme.primaryContainer)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
 
 class HealthCard extends StatelessWidget {
-  const HealthCard(
-      {super.key,
-      required this.icon,
-      required this.label,
-      required this.unit,
-      required this.value,
-      this.sleepDuration = false});
+  const HealthCard({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.unit,
+    required this.value,
+    this.valueMaxLines = 1,
+  });
 
   final SvgIcon icon;
   final String label;
   final String unit;
   final String value;
-  final bool sleepDuration;
+  final int valueMaxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -446,31 +531,39 @@ class HealthCard extends StatelessWidget {
         children: [
           Expanded(
             flex: 6,
-            child:
-                Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-              icon,
-              SizedBox(
-                height: 10 * pixel,
-              ),
-              Text(
-                label,
-                style:
-                    TextStyle(color: Theme.of(context).colorScheme.secondary),
-              ),
-            ]),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                icon,
+                SizedBox(
+                  height: 10 * pixel,
+                ),
+                AutoSizeText(
+                  label,
+                  maxLines: 1,
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.secondary),
+                ),
+              ],
+            ),
           ),
           const Spacer(),
           Expanded(
             flex: 6,
             child: Column(
               children: [
-                AutoSizeText(value,
-                    maxLines: sleepDuration ? 2 : 1,
-                    style: montserratAlternatesTextStyle(pixel * 30,
-                        Theme.of(context).colorScheme.primaryContainer)),
-                Text(unit,
-                    style: montserratAlternatesTextStyle(pixel * 17,
-                        Theme.of(context).colorScheme.primaryContainer))
+                AutoSizeText(
+                  value,
+                  maxLines: valueMaxLines,
+                  style: montserratAlternatesTextStyle(pixel * 30,
+                      Theme.of(context).colorScheme.primaryContainer),
+                ),
+                AutoSizeText(
+                  unit,
+                  maxLines: 1,
+                  style: montserratAlternatesTextStyle(pixel * 17,
+                      Theme.of(context).colorScheme.primaryContainer),
+                )
               ],
             ),
           ),
@@ -780,7 +873,7 @@ class SleepDuration extends StatelessWidget {
       unit: "",
       value: _sleepDurationDoubleToString(
           Provider.of<HealthDataModel>(context).healthData['sleep_duration']),
-      sleepDuration: true,
+      valueMaxLines: 2,
     );
   }
 }
@@ -794,9 +887,7 @@ class ScreenTime extends StatelessWidget {
   Widget build(BuildContext context) {
     return HealthCard(
       icon: SvgIcon(
-        imagePath: 'assets/svg/sleep.svg',
-        width: 58,
-        height: 58,
+        imagePath: 'assets/svg/phone_usage.svg',
         colorFilter: ColorFilter.mode(
             Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
       ),
