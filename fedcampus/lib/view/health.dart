@@ -416,6 +416,7 @@ class Heart extends StatelessWidget {
                     ),
                     AutoSizeText(
                       "Rest",
+                      maxLines: 1,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           color: Theme.of(context).colorScheme.secondary),
@@ -428,19 +429,23 @@ class Heart extends StatelessWidget {
                 flex: 6,
                 child: Column(
                   children: [
-                    Text(
+                    AutoSizeText(
                       formatNum(
                         Provider.of<HealthDataModel>(context)
                             .healthData['rest_heart_rate'],
                         decimalPoints: 1,
                         loading: Provider.of<HealthDataModel>(context).loading,
                       ),
+                      maxLines: 1,
                       style: montserratAlternatesTextStyle(pixel * 30,
                           Theme.of(context).colorScheme.primaryContainer),
                     ),
-                    Text("bpm",
-                        style: montserratAlternatesTextStyle(pixel * 17,
-                            Theme.of(context).colorScheme.primaryContainer)),
+                    AutoSizeText(
+                      "bpm",
+                      maxLines: 1,
+                      style: montserratAlternatesTextStyle(pixel * 17,
+                          Theme.of(context).colorScheme.primaryContainer),
+                    ),
                   ],
                 ),
               ),
@@ -468,6 +473,7 @@ class Heart extends StatelessWidget {
                     ),
                     AutoSizeText(
                       userApi.isAndroid ? "Exercise" : "Average",
+                      maxLines: 1,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           color: Theme.of(context).colorScheme.secondary),
@@ -480,21 +486,25 @@ class Heart extends StatelessWidget {
                 flex: 6,
                 child: Column(
                   children: [
-                    Text(
+                    AutoSizeText(
                       formatNum(
                         Provider.of<HealthDataModel>(context).healthData[
                             userApi.isAndroid
-                                ? 'rest_heart_rate'
+                                ? 'exercise_heart_rate'
                                 : "avg_heart_rate"],
                         decimalPoints: 1,
                         loading: Provider.of<HealthDataModel>(context).loading,
                       ),
+                      maxLines: 1,
                       style: montserratAlternatesTextStyle(pixel * 30,
                           Theme.of(context).colorScheme.primaryContainer),
                     ),
-                    Text("bpm",
-                        style: montserratAlternatesTextStyle(pixel * 17,
-                            Theme.of(context).colorScheme.primaryContainer)),
+                    AutoSizeText(
+                      "bpm",
+                      maxLines: 1,
+                      style: montserratAlternatesTextStyle(pixel * 17,
+                          Theme.of(context).colorScheme.primaryContainer),
+                    ),
                   ],
                 ),
               ),
@@ -513,6 +523,7 @@ class HealthCard extends StatelessWidget {
     required this.label,
     required this.unit,
     required this.value,
+    this.labelMaxLines = 1,
     this.valueMaxLines = 1,
   });
 
@@ -520,6 +531,7 @@ class HealthCard extends StatelessWidget {
   final String label;
   final String unit;
   final String value;
+  final int labelMaxLines;
   final int valueMaxLines;
 
   @override
@@ -540,7 +552,7 @@ class HealthCard extends StatelessWidget {
                 ),
                 AutoSizeText(
                   label,
-                  maxLines: 1,
+                  maxLines: labelMaxLines,
                   style:
                       TextStyle(color: Theme.of(context).colorScheme.secondary),
                 ),
@@ -616,14 +628,18 @@ class HealthCardItems extends StatelessWidget {
               flex: 6,
               child: Column(
                 children: [
-                  Text(
+                  AutoSizeText(
                     value[i],
+                    maxLines: 1,
                     style: montserratAlternatesTextStyle(pixel * 30,
                         Theme.of(context).colorScheme.primaryContainer),
                   ),
-                  Text(units[i],
-                      style: montserratAlternatesTextStyle(pixel * 17,
-                          Theme.of(context).colorScheme.primaryContainer)),
+                  AutoSizeText(
+                    units[i],
+                    maxLines: 1,
+                    style: montserratAlternatesTextStyle(pixel * 17,
+                        Theme.of(context).colorScheme.primaryContainer),
+                  ),
                 ],
               ),
             ),
@@ -731,6 +747,7 @@ class StepTime extends StatelessWidget {
             Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
       ),
       label: "Step\nTime",
+      labelMaxLines: 2,
       unit: "min",
       value: formatNum(
         Provider.of<HealthDataModel>(context).healthData['step_time'],
@@ -779,6 +796,7 @@ class IntenseExercise extends StatelessWidget {
             Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
       ),
       label: "Intense \nExercise",
+      labelMaxLines: 2,
       unit: "min",
       value: formatNum(
         Provider.of<HealthDataModel>(context).healthData['calorie'],
@@ -892,6 +910,7 @@ class ScreenTime extends StatelessWidget {
             Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
       ),
       label: "Screen\nTime",
+      labelMaxLines: 2,
       unit: "min",
       value: formatNum(
         Provider.of<HealthDataModel>(context)

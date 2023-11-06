@@ -73,6 +73,7 @@ class ActivityDataModel extends ChangeNotifier {
     }
     bodyJson.add({"time": dataNumber});
     bodyJson.add({"filter": filterParams});
+    logger.i("FA body sent to server: $bodyJson");
     late http.Response response;
     try {
       response = await HTTPApi.post(
