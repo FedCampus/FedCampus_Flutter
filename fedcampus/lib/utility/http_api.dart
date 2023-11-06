@@ -50,7 +50,8 @@ class HTTPApi {
       });
 
       return await http.post(Uri.parse(url), headers: headers, body: body);
-    } catch (e) {
+    } catch (e, stackTrace) {
+      logger.e("$e $stackTrace");
       rethrow;
     }
   }

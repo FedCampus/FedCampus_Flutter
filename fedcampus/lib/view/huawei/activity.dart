@@ -83,8 +83,13 @@ class _ActivityPageState extends State<ActivityPage> {
 
     bodyJson.add({"time": dataNumber});
 
-    http.Response response = await HTTPApi.post(
-        HTTPApi.fedAnalysis, <String, String>{}, jsonEncode(bodyJson));
+    late http.Response response;
+    try {
+      response = await HTTPApi.post(
+          HTTPApi.fedAnalysis, <String, String>{}, jsonEncode(bodyJson));
+    } catch (e) {
+      return;
+    }
 
     if (response.statusCode == 200) {
       // show the data

@@ -400,7 +400,10 @@ class Heart extends StatelessWidget {
               Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
         )
       ],
-      labels: const ["Rest\nHeart Rate", "Exercise\nHeart rate"], // TODO: iOS version wording
+      labels: const [
+        "Rest\nHeart Rate",
+        "Exercise\nHeart rate"
+      ], // TODO: iOS version wording
       units: const ["bpm", "bpm"],
       value: [
         formatNum(
@@ -420,18 +423,19 @@ class Heart extends StatelessWidget {
 }
 
 class HealthCard extends StatelessWidget {
-  const HealthCard({
-    super.key,
-    required this.icon,
-    required this.label,
-    required this.unit,
-    required this.value,
-  });
+  const HealthCard(
+      {super.key,
+      required this.icon,
+      required this.label,
+      required this.unit,
+      required this.value,
+      this.sleepDuration = false});
 
   final SvgIcon icon;
   final String label;
   final String unit;
   final String value;
+  final bool sleepDuration;
 
   @override
   Widget build(BuildContext context) {
@@ -461,7 +465,7 @@ class HealthCard extends StatelessWidget {
             child: Column(
               children: [
                 AutoSizeText(value,
-                    maxLines: 1,
+                    maxLines: sleepDuration ? 2 : 1,
                     style: montserratAlternatesTextStyle(pixel * 30,
                         Theme.of(context).colorScheme.primaryContainer)),
                 Text(unit,
@@ -754,11 +758,12 @@ class SleepDuration extends StatelessWidget {
   });
 
   String _sleepDurationDoubleToString(double? sleepDuration) {
-    var _s = formatNum(sleepDuration, decimalPoints: 0);
-    if (_s == "-" || _s == "0") {
-      return _s;
+    var s = formatNum(sleepDuration, decimalPoints: 0);
+    if (s == "-" || s == "0") {
+      return s;
     }
-    return "${_s.substring(0, 2)}:${_s.substring(2, 4)}\n${_s.substring(4, 6)}:${_s.substring(6, 8)}";
+    s = s.padLeft(8, "0");
+    return "${s.substring(0, 2)}:${s.substring(2, 4)}\n${s.substring(4, 6)}:${s.substring(6, 8)}";
   }
 
   @override
@@ -775,6 +780,7 @@ class SleepDuration extends StatelessWidget {
       unit: "",
       value: _sleepDurationDoubleToString(
           Provider.of<HealthDataModel>(context).healthData['sleep_duration']),
+      sleepDuration: true,
     );
   }
 }
