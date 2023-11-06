@@ -416,6 +416,7 @@ class Heart extends StatelessWidget {
                     ),
                     AutoSizeText(
                       "Rest",
+                      maxLines: 1,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           color: Theme.of(context).colorScheme.secondary),
@@ -428,19 +429,23 @@ class Heart extends StatelessWidget {
                 flex: 6,
                 child: Column(
                   children: [
-                    Text(
+                    AutoSizeText(
                       formatNum(
                         Provider.of<HealthDataModel>(context)
                             .healthData['rest_heart_rate'],
                         decimalPoints: 1,
                         loading: Provider.of<HealthDataModel>(context).loading,
                       ),
+                      maxLines: 1,
                       style: montserratAlternatesTextStyle(pixel * 30,
                           Theme.of(context).colorScheme.primaryContainer),
                     ),
-                    Text("bpm",
-                        style: montserratAlternatesTextStyle(pixel * 17,
-                            Theme.of(context).colorScheme.primaryContainer)),
+                    AutoSizeText(
+                      "bpm",
+                      maxLines: 1,
+                      style: montserratAlternatesTextStyle(pixel * 17,
+                          Theme.of(context).colorScheme.primaryContainer),
+                    ),
                   ],
                 ),
               ),
@@ -468,6 +473,7 @@ class Heart extends StatelessWidget {
                     ),
                     AutoSizeText(
                       userApi.isAndroid ? "Exercise" : "Average",
+                      maxLines: 1,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           color: Theme.of(context).colorScheme.secondary),
@@ -480,7 +486,7 @@ class Heart extends StatelessWidget {
                 flex: 6,
                 child: Column(
                   children: [
-                    Text(
+                    AutoSizeText(
                       formatNum(
                         Provider.of<HealthDataModel>(context).healthData[
                             userApi.isAndroid
@@ -489,12 +495,16 @@ class Heart extends StatelessWidget {
                         decimalPoints: 1,
                         loading: Provider.of<HealthDataModel>(context).loading,
                       ),
+                      maxLines: 1,
                       style: montserratAlternatesTextStyle(pixel * 30,
                           Theme.of(context).colorScheme.primaryContainer),
                     ),
-                    Text("bpm",
-                        style: montserratAlternatesTextStyle(pixel * 17,
-                            Theme.of(context).colorScheme.primaryContainer)),
+                    AutoSizeText(
+                      "bpm",
+                      maxLines: 1,
+                      style: montserratAlternatesTextStyle(pixel * 17,
+                          Theme.of(context).colorScheme.primaryContainer),
+                    ),
                   ],
                 ),
               ),
@@ -616,14 +626,18 @@ class HealthCardItems extends StatelessWidget {
               flex: 6,
               child: Column(
                 children: [
-                  Text(
+                  AutoSizeText(
                     value[i],
+                    maxLines: 1,
                     style: montserratAlternatesTextStyle(pixel * 30,
                         Theme.of(context).colorScheme.primaryContainer),
                   ),
-                  Text(units[i],
-                      style: montserratAlternatesTextStyle(pixel * 17,
-                          Theme.of(context).colorScheme.primaryContainer)),
+                  AutoSizeText(
+                    units[i],
+                    maxLines: 1,
+                    style: montserratAlternatesTextStyle(pixel * 17,
+                        Theme.of(context).colorScheme.primaryContainer),
+                  ),
                 ],
               ),
             ),
