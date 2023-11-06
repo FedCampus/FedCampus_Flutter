@@ -48,7 +48,8 @@ class _StatsSlidingPagesState extends State<StatsSlidingPages> {
         Expanded(
             flex: 3,
             child: Image.asset("assets/images/guide/stats_filter.jpg")),
-        const Expanded(flex: 1,
+        const Expanded(
+          flex: 1,
           child: AutoSizeText(
               "Click the filter button to select a specific group of participants"),
         ),
@@ -103,6 +104,7 @@ class _SlidingPagesState extends State<SlidingPages> {
             height: 240.0,
             child: PageView.builder(
               controller: PageController(
+                // https://stackoverflow.com/a/70098325
                 viewportFraction:
                     1.0 + (screenPad * 2) / (constraints.maxWidth),
               ),
@@ -161,6 +163,7 @@ class Indicator extends StatelessWidget {
     return list;
   }
 
+  // https://stackoverflow.com/a/63185381
   Widget _indicator(bool isActive) {
     return SizedBox(
       height: 10,
