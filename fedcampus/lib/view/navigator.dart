@@ -1,9 +1,11 @@
 import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/view/activity.dart';
 import 'package:fedcampus/view/me.dart';
+import 'package:fedcampus/view/widgets/sliding_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../utility/global.dart';
+import '../utility/log.dart';
 import 'health.dart';
 
 class BottomNavigator extends StatefulWidget {
@@ -65,6 +67,41 @@ class _BottomNavigatorState extends State<BottomNavigator> {
     }
   }
 
+  Widget _getSlidingPage(int idx) {
+    logger.e(idx);
+    return switch (idx) {
+      0 => const HealthSlidingPages(),
+      1 => const StatsSlidingPages(),
+      _ => const HealthSlidingPages()
+    };
+  }
+
+  void helpDialog() {
+    double pixel = MediaQuery.of(context).size.width / 400;
+    showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Guide"),
+          contentPadding:
+              EdgeInsets.fromLTRB(10 * pixel, 0 * pixel, 10 * pixel, 0),
+          content: SizedBox(
+            height: 290 * pixel,
+            child: _getSlidingPage(_selectedIndex),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
@@ -86,8 +123,8 @@ class _BottomNavigatorState extends State<BottomNavigator> {
           if (_selectedIndex == 0 || _selectedIndex == 1)
             IconButton(
               icon: const Icon(Icons.question_mark_rounded),
-              tooltip: 'Show Snackbar',
-              onPressed: () {},
+              tooltip: 'Help',
+              onPressed: helpDialog,
             ),
         ],
       ),

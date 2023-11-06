@@ -180,7 +180,7 @@ class _MyAppState extends State<MyApp> {
           onBackground: Color.fromARGB(255, 53, 53, 57),
           primary: Color.fromARGB(255, 249, 255, 231),
           primaryContainer: Color.fromARGB(255, 242, 116, 116),
-          onPrimaryContainer: Color.fromARGB(255, 242, 116, 116),
+          onPrimaryContainer: Color.fromARGB(255, 53, 53, 60),
           surfaceTint: Color.fromARGB(255, 63, 63, 67),
           secondary: Color.fromARGB(255, 243, 219, 135),
           secondaryContainer: Color.fromARGB(255, 206, 229, 109),

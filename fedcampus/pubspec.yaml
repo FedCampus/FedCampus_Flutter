@@ -112,6 +112,11 @@ flutter:
     - assets/svg/step_time.svg
     - assets/svg/filter.svg
     - assets/svg/phone_usage.svg
+    - assets/images/guide/health_refresh.jpg
+    - assets/images/guide/health_step_card.jpg
+    - assets/images/guide/stats_filter.jpg
+    - assets/images/guide/stats_fa_card.jpg
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

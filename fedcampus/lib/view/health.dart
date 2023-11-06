@@ -490,7 +490,7 @@ class Heart extends StatelessWidget {
                       formatNum(
                         Provider.of<HealthDataModel>(context).healthData[
                             userApi.isAndroid
-                                ? 'rest_heart_rate'
+                                ? 'exercise_heart_rate'
                                 : "avg_heart_rate"],
                         decimalPoints: 1,
                         loading: Provider.of<HealthDataModel>(context).loading,
@@ -523,6 +523,7 @@ class HealthCard extends StatelessWidget {
     required this.label,
     required this.unit,
     required this.value,
+    this.labelMaxLines = 1,
     this.valueMaxLines = 1,
   });
 
@@ -530,6 +531,7 @@ class HealthCard extends StatelessWidget {
   final String label;
   final String unit;
   final String value;
+  final int labelMaxLines;
   final int valueMaxLines;
 
   @override
@@ -550,7 +552,7 @@ class HealthCard extends StatelessWidget {
                 ),
                 AutoSizeText(
                   label,
-                  maxLines: 1,
+                  maxLines: labelMaxLines,
                   style:
                       TextStyle(color: Theme.of(context).colorScheme.secondary),
                 ),
@@ -745,6 +747,7 @@ class StepTime extends StatelessWidget {
             Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
       ),
       label: "Step\nTime",
+      labelMaxLines: 2,
       unit: "min",
       value: formatNum(
         Provider.of<HealthDataModel>(context).healthData['step_time'],
@@ -793,6 +796,7 @@ class IntenseExercise extends StatelessWidget {
             Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
       ),
       label: "Intense \nExercise",
+      labelMaxLines: 2,
       unit: "min",
       value: formatNum(
         Provider.of<HealthDataModel>(context).healthData['calorie'],
@@ -906,6 +910,7 @@ class ScreenTime extends StatelessWidget {
             Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
       ),
       label: "Screen\nTime",
+      labelMaxLines: 2,
       unit: "min",
       value: formatNum(
         Provider.of<HealthDataModel>(context)
