@@ -89,14 +89,15 @@ class _BottomNavigatorState extends State<BottomNavigator> {
         unselectedLabelStyle: textStyle,
         selectedLabelStyle: textStyle,
         // https://stackoverflow.com/a/57126622
-        items:  [
+        items: [
           BottomNavigationBarItem(
             label: AppLocalizations.of(context)!.navigator_health,
             icon: const NavIcon(
               imagePath: 'assets/images/health_nav_icon.png',
               color: Colors.grey,
             ),
-            activeIcon: const NavIcon(imagePath: 'assets/images/health_nav_icon.png'),
+            activeIcon:
+                const NavIcon(imagePath: 'assets/images/health_nav_icon.png'),
           ),
           BottomNavigationBarItem(
             label: AppLocalizations.of(context)!.navigator_stats,
@@ -113,7 +114,8 @@ class _BottomNavigatorState extends State<BottomNavigator> {
               imagePath: 'assets/images/me_nav_icon.png',
               color: Colors.grey,
             ),
-            activeIcon: const NavIcon(imagePath: 'assets/images/me_nav_icon.png'),
+            activeIcon:
+                const NavIcon(imagePath: 'assets/images/me_nav_icon.png'),
           ),
         ],
         currentIndex: _selectedIndex,
