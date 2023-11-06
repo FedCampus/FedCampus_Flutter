@@ -14,5 +14,25 @@
   "reset_preferences": "Reset preferences",
   "@reset_preferences": {
     "description": "Reset preferences setting entry text"
+  },
+  "navigator_health": "My Health",
+  "@navigator_health": {
+    "description": ""
+  },
+  "navigator_stats": "Statistics",
+  "@navigator_stats": {
+    "description": ""
+  },
+  "navigator_account": "Account",
+  "@navigator_account": {
+    "description": ""
+  },
+  "stats_tbl_header_avg": "Participant Average",
+  "@stats_tbl_header_avg": {
+    "description": ""
+  },
+  "stats_tbl_header_percentile": "Your Percentile",
+  "@stats_tbl_header_percentile": {
+    "description": ""
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fedcampus/models/activity_data_model.dart';
 import 'package:fedcampus/utility/filter_params.dart';
@@ -28,62 +29,73 @@ class _ActivityState extends State<Activity> {
           {
             "entry_name": "step",
             "icon_path": "assets/svg/step.svg",
-            "unit": "steps"
+            "unit": "steps",
+            "decimal_points": 0,
           },
           {
             "entry_name": "distance",
             "icon_path": "assets/svg/distance.svg",
-            "unit": "meters"
+            "unit": "meters",
+            "decimal_points": 0,
           },
           {
             "entry_name": "calorie",
             "icon_path": "assets/svg/calorie.svg",
-            "unit": "kcals"
+            "unit": "kcals",
+            "decimal_points": 2,
           },
           {
             "entry_name": "intensity",
             "icon_path": "assets/svg/exercise.svg",
-            "unit": "min"
+            "unit": "min",
+            "decimal_points": 1,
           },
           {
             "entry_name": "stress",
             "icon_path": "assets/svg/stress.svg",
-            "unit": "stress"
+            "unit": "stress",
+            "decimal_points": 1,
           },
           {
             "entry_name": "step_time",
             "icon_path": "assets/svg/step_time.svg",
             "img_scale": 1.2,
-            "unit": "min"
+            "unit": "min",
+            "decimal_points": 1,
           },
           {
             "entry_name": "sleep_efficiency",
             "icon_path": "assets/svg/sleep.svg",
             "img_scale": 1.2,
-            "unit": "effi"
+            "unit": "effi",
+            "decimal_points": 2,
           },
         ]
       : [
           {
             "entry_name": "step",
             "icon_path": "assets/svg/step.svg",
-            "unit": "steps"
+            "unit": "steps",
+            "decimal_points": 0,
           },
           {
             "entry_name": "distance",
             "icon_path": "assets/svg/distance.svg",
-            "unit": "meters"
+            "unit": "meters",
+            "decimal_points": 0,
           },
           {
             "entry_name": "calorie",
             "icon_path": "assets/svg/calorie.svg",
-            "unit": "kcals"
+            "unit": "kcals",
+            "decimal_points": 2,
           },
           {
             "entry_name": "sleep_time",
             "icon_path": "assets/svg/sleep.svg",
             "img_scale": 1.2,
-            "unit": "mins"
+            "unit": "mins",
+            "decimal_points": 1,
           }
         ];
 
@@ -141,8 +153,6 @@ class _ActivityState extends State<Activity> {
           itemCount: maxCount,
           padding: EdgeInsets.all(20 * pixel),
           itemBuilder: (BuildContext context, int index) {
-            logger.e(Provider.of<ActivityDataModel>(context, listen: false)
-                .activityData);
             if (index == 0) {
               // calendar and filter
               return Row(
@@ -173,17 +183,17 @@ class _ActivityState extends State<Activity> {
                 children: <Widget>[
                   const Spacer(flex: 1),
                   Text(
-                    "Averege",
+                    AppLocalizations.of(context)!.stats_tbl_header_avg,
                     style: TextStyle(
-                      color: Theme.of(context).colorScheme.secondaryContainer,
-                    ),
+                        color: Theme.of(context).colorScheme.secondaryContainer,
+                        fontSize: pixel * 15),
                   ),
                   const Spacer(flex: 1),
                   Text(
-                    "Percentile",
+                    AppLocalizations.of(context)!.stats_tbl_header_percentile,
                     style: TextStyle(
-                        color:
-                            Theme.of(context).colorScheme.secondaryContainer),
+                        color: Theme.of(context).colorScheme.secondaryContainer,
+                        fontSize: pixel * 15),
                   ),
                 ],
               );
@@ -203,8 +213,9 @@ class _ActivityState extends State<Activity> {
             var currentEntry = entries[index - 2];
             if (Provider.of<ActivityDataModel>(context).loading) {
               return ActivityCard(
-                rank: '-',
-                value: '-',
+                rank: "",
+                value: "",
+                loading: true,
                 unit: currentEntry['unit']?.toString() ?? "unit",
                 iconPath: currentEntry['icon_path']?.toString() ??
                     "assets/svg/sleep.svg",
@@ -213,12 +224,11 @@ class _ActivityState extends State<Activity> {
             } else {
               return ActivityCard(
                 rank: Provider.of<ActivityDataModel>(context)
-                        .activityData[currentEntry['entry_name']]["rank"]
-                        .toStringAsFixed(0) +
-                    "%",
+                    .activityData[currentEntry['entry_name']]["rank"]
+                    .toStringAsFixed(0),
                 value: Provider.of<ActivityDataModel>(context)
                     .activityData[currentEntry['entry_name']]["average"]
-                    .toStringAsFixed(2),
+                    .toStringAsFixed(currentEntry['decimal_points']),
                 unit: currentEntry['unit']?.toString() ?? "unit",
                 iconPath: currentEntry['icon_path']?.toString() ??
                     "assets/svg/sleep.svg",
@@ -237,6 +247,7 @@ class ActivityCard extends StatelessWidget {
     required this.value,
     required this.unit,
     required this.iconPath,
+    this.loading,
     this.imgScale,
   });
 
@@ -245,97 +256,132 @@ class ActivityCard extends StatelessWidget {
   final String unit;
   final String iconPath;
   final double? imgScale;
+  final bool? loading;
 
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
     return FedCard(
-        left: 18,
-        right: 18,
         child: Row(
-          children: <Widget>[
-            // As stated in https://api.flutter.dev/flutter/widgets/Image/height.html,
-            // it is recommended to specify the image size (in order to avoid
-            // widget size suddenly changes when the app just loads another page)
-            Expanded(
-              flex: 4,
-              child: SvgIcon(
-                imagePath: iconPath,
-                height: pixel * 50 * (imgScale ?? 1),
-                colorFilter: ColorFilter.mode(
-                    Theme.of(context).colorScheme.secondaryContainer,
-                    BlendMode.srcIn),
-              ),
-            ),
-            const Expanded(
-              flex: 1,
-              child: SizedBox(),
-            ),
-            Expanded(
-              flex: 9,
-              child: Column(
-                children: <Widget>[
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 5,
-                        child: AutoSizeText(
-                          value,
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
-                          style: TextStyle(
-                              fontFamily: 'Montserrat Alternates',
-                              fontSize: value.length < 8
-                                  ? pixel * 30
-                                  : pixel * (200 / value.length),
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.primary),
-                        ),
-                      ),
-                      const Spacer(
-                        flex: 3,
-                      )
-                    ],
+      children: <Widget>[
+        // As stated in https://api.flutter.dev/flutter/widgets/Image/height.html,
+        // it is recommended to specify the image size (in order to avoid
+        // widget size suddenly changes when the app just loads another page)
+        Expanded(
+          flex: 4,
+          child: SvgIcon(
+            imagePath: iconPath,
+            height: pixel * 50 * (imgScale ?? 1),
+            colorFilter: ColorFilter.mode(
+                Theme.of(context).colorScheme.secondaryContainer,
+                BlendMode.srcIn),
+          ),
+        ),
+        Expanded(
+          flex: 9,
+          child: Column(
+            children: <Widget>[
+              Row(
+                children: [
+                  Expanded(
+                    flex: 5,
+                    child: AutoSizeText(
+                      loading ?? false ? "-" : value,
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      style: TextStyle(
+                          fontFamily: 'Montserrat Alternates',
+                          fontSize: value.length < 8
+                              ? pixel * 30
+                              : pixel * (200 / value.length),
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.primary),
+                    ),
                   ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: AutoSizeText(
-                          unit,
-                          textAlign: TextAlign.end,
-                          maxLines: 1,
-                          style: TextStyle(
-                              fontFamily: 'Montserrat Alternates',
-                              fontSize: pixel * 20,
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .secondaryContainer),
-                        ),
-                      ),
-                    ],
+                  const Spacer(
+                    flex: 3,
+                  )
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: AutoSizeText(
+                      unit,
+                      textAlign: TextAlign.end,
+                      maxLines: 1,
+                      style: TextStyle(
+                          fontFamily: 'Montserrat Alternates',
+                          fontSize: pixel * 20,
+                          fontWeight: FontWeight.bold,
+                          color:
+                              Theme.of(context).colorScheme.secondaryContainer),
+                    ),
                   ),
                 ],
               ),
-            ),
-            const Expanded(
-              flex: 1,
-              child: SizedBox(),
-            ),
-            Expanded(
-              flex: 5,
-              child: Text(
-                rank,
-                textAlign: TextAlign.end,
-                style: TextStyle(
-                    fontFamily: 'Montserrat Alternates',
-                    fontSize: pixel * 30,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.onSecondaryContainer),
-              ),
-            ),
-          ],
-        ));
+            ],
+          ),
+        ),
+        Expanded(
+          flex: 7,
+          child: loading ?? false
+              ? Text(
+                  "    -",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontFamily: 'Montserrat Alternates',
+                      fontSize: pixel * 30,
+                      fontWeight: FontWeight.bold,
+                      color:
+                          Theme.of(context).colorScheme.onSecondaryContainer),
+                )
+              : RichText(
+                  textAlign: TextAlign.end,
+                  text: TextSpan(children: [
+                    WidgetSpan(
+                      child: Transform.translate(
+                        offset: const Offset(1, -4),
+                        child: Text(
+                          'top',
+                          textScaleFactor: 0.6,
+                          style: TextStyle(
+                            fontSize: pixel * 30,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSecondaryContainer,
+                          ),
+                        ),
+                      ),
+                    ),
+                    TextSpan(
+                      text: rank,
+                      style: TextStyle(
+                        fontSize: pixel * 30,
+                        color:
+                            Theme.of(context).colorScheme.onSecondaryContainer,
+                      ),
+                    ),
+                    WidgetSpan(
+                      child: Transform.translate(
+                        offset: const Offset(-1, 0),
+                        child: Text(
+                          '%',
+                          textScaleFactor: 0.7,
+                          style: TextStyle(
+                            fontSize: pixel * 30,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSecondaryContainer,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ]),
+                ),
+        ),
+      ],
+    ));
   }
 }
 

@@ -136,6 +136,8 @@ class ActivityDataModel extends ChangeNotifier {
       return;
     }
 
+    logger.d(response.body);
+
     if (response.statusCode == 200) {
       // if the date is now, then return
       if (_date == _now) {
@@ -203,6 +205,7 @@ class ActivityDataModel extends ChangeNotifier {
 
   void _notify() {
     _loading = false;
+    logger.d(activityData);
     bus.emit("activity_loading_done");
     notifyListeners();
   }

@@ -2,6 +2,7 @@ import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/view/activity.dart';
 import 'package:fedcampus/view/me.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../utility/global.dart';
 import 'health.dart';
 
@@ -88,31 +89,31 @@ class _BottomNavigatorState extends State<BottomNavigator> {
         unselectedLabelStyle: textStyle,
         selectedLabelStyle: textStyle,
         // https://stackoverflow.com/a/57126622
-        items: const [
+        items:  [
           BottomNavigationBarItem(
-            label: 'Health',
-            icon: NavIcon(
+            label: AppLocalizations.of(context)!.navigator_health,
+            icon: const NavIcon(
               imagePath: 'assets/images/health_nav_icon.png',
               color: Colors.grey,
             ),
-            activeIcon: NavIcon(imagePath: 'assets/images/health_nav_icon.png'),
+            activeIcon: const NavIcon(imagePath: 'assets/images/health_nav_icon.png'),
           ),
           BottomNavigationBarItem(
-            label: 'Activity',
-            icon: NavIcon(
+            label: AppLocalizations.of(context)!.navigator_stats,
+            icon: const NavIcon(
               imagePath: 'assets/images/activity_nav_icon.png',
               color: Colors.grey,
             ),
             activeIcon:
-                NavIcon(imagePath: 'assets/images/activity_nav_icon.png'),
+                const NavIcon(imagePath: 'assets/images/activity_nav_icon.png'),
           ),
           BottomNavigationBarItem(
-            label: 'Me',
-            icon: NavIcon(
+            label: AppLocalizations.of(context)!.navigator_account,
+            icon: const NavIcon(
               imagePath: 'assets/images/me_nav_icon.png',
               color: Colors.grey,
             ),
-            activeIcon: NavIcon(imagePath: 'assets/images/me_nav_icon.png'),
+            activeIcon: const NavIcon(imagePath: 'assets/images/me_nav_icon.png'),
           ),
         ],
         currentIndex: _selectedIndex,
