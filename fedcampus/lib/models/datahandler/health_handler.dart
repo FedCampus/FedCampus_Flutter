@@ -99,9 +99,9 @@ class FedHealthData {
       for (var i in nameList) {
         List<Map<String, Object?>> re =
             await healthDatabase.getData(calendar.dateTimeToInt(dateTime), i);
-        if (re.isEmpty) {
+        if (re.isEmpty || (re[0]["value"] == -1) || (_isDirtyData(re))) {
           dirtyDataList.add(i);
-        } else if ((dateTime.day != DateTime.now().day) || _isDirtyData(re)) {
+        } else if ((dateTime.day != DateTime.now().day)) {
           healthData.add(Data(
             name: i,
             value: re[0]["value"] as double,
@@ -140,7 +140,7 @@ class FedHealthData {
 
   bool _isDirtyData(List<Map<String, Object?>> re) {
     return (((DateTime.now().millisecondsSinceEpoch -
-            (re[0]["time_modified"] as int)) <
+            (re[0]["time_modified"] as int)) >
         1800000));
   }
 
