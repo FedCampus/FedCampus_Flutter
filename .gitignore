@@ -5,7 +5,6 @@
 **.ico
 **.idea/
 **.jar
-**.jpg
 **.lock
 **.settings/
 **.sqlite3*
@@ -67,7 +66,6 @@ fa_backend/config/email.json
 **.jpe
 **.jpeg
 **.jpf
-**.jpg
 **.jpm
 **.jpx
 **.jxr
