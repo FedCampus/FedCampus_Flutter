@@ -185,14 +185,16 @@ class _ActivityState extends State<Activity> {
                   Text(
                     AppLocalizations.of(context)!.stats_tbl_header_avg,
                     style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSecondaryContainer,
+                        color:
+                            Theme.of(context).colorScheme.onSecondaryContainer,
                         fontSize: pixel * 15),
                   ),
                   const Spacer(flex: 1),
                   Text(
                     AppLocalizations.of(context)!.stats_tbl_header_percentile,
                     style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSecondaryContainer,
+                        color:
+                            Theme.of(context).colorScheme.onSecondaryContainer,
                         fontSize: pixel * 15),
                   ),
                 ],
