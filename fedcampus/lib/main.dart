@@ -110,8 +110,8 @@ class _MyAppState extends State<MyApp> {
       showToastMessage(arg, context);
     });
     bus.on("app_usage_stats_error", (arg) {
-      // userApi.screenTimeDataHandler.authenticate();
-      // showToastMessage("You have not granted usage access permission", context);
+      userApi.screenTimeDataHandler.authenticate();
+      showToastMessage("You have not granted usage access permission", context);
     });
   }
 

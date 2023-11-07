@@ -88,6 +88,7 @@ class FedHealthData {
   Future<List<Data>> getCachedDataListDay(List<String> nameList, int time,
       {bool forcedRefresh = false}) async {
     DateTime dateTime = calendar.intToDateTime(time);
+    logger.e(time);
     // according to https://github.com/tekartik/sqflite/blob/master/sqflite/doc/usage_recommendations.md#single-database-connection,
     // it is safe to call [openDatabase] every time you need, since the option [singleInstance] ensures single database connection
     HealthDatabase healthDatabase = await HealthDatabase.create();
@@ -99,9 +100,11 @@ class FedHealthData {
       for (var i in nameList) {
         List<Map<String, Object?>> re =
             await healthDatabase.getData(calendar.dateTimeToInt(dateTime), i);
-        if (re.isEmpty || (re[0]["value"] == -1) || (_isDirtyData(re))) {
+        if (re.isEmpty ||
+            (re[0]["value"] == -1) ||
+            (_isDirtyData(dateTime, re[0]))) {
           dirtyDataList.add(i);
-        } else if ((dateTime.day != DateTime.now().day)) {
+        } else {
           healthData.add(Data(
             name: i,
             value: re[0]["value"] as double,
@@ -109,8 +112,6 @@ class FedHealthData {
             endTime: calendar.dateTimeToInt(
                 calendar.intToDateTime(time).add(const Duration(days: 1))),
           ));
-        } else {
-          dirtyDataList.add(i);
         }
       }
     }
@@ -138,10 +139,13 @@ class FedHealthData {
     return healthData;
   }
 
-  bool _isDirtyData(List<Map<String, Object?>> re) {
-    return (((DateTime.now().millisecondsSinceEpoch -
-            (re[0]["time_modified"] as int)) >
-        1800000));
+  /// Whether [Data] in database is considered dirty
+  /// Data is dirty only if the query date is the current day and if the data has been present in the database for at least 30 minutes.
+  bool _isDirtyData(DateTime queryDay, Map<String, Object?> queryData) {
+    return (queryDay.day == DateTime.now().day) &&
+        ((DateTime.now().millisecondsSinceEpoch -
+                (queryData["time_modified"] as int)) >
+            1800000);
   }
 
   /// ~~when some entries went wrong, this method return other fine entries~~

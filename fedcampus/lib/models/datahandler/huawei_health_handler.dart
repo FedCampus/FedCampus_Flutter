@@ -44,7 +44,12 @@ class HuaweiHealth extends FedHealthData {
             endTime: calendar.dateTimeToInt(endTime),
             success: false);
       } else {
-        return dataListOne[0]!;
+        return Data(
+            name: entry,
+            value: dataListOne[0]!.value,
+            startTime: calendar.dateTimeToInt(startTime),
+            endTime: calendar.dateTimeToInt(endTime),
+            success: true);
       }
     } on PlatformException catch (error) {
       logger.e(error);
