@@ -65,6 +65,7 @@ class IOSHealth extends FedHealthData {
     if (entry == "sleep_time" || entry == "sleep_duration") {
       endTime = endTime.add(const Duration(hours: 10));
     }
+    await authenticate();
     var res = await _health
         .getHealthDataFromTypes(startTime, endTime, [_dataEntry[entry]!]);
     var huaweiHealth =
@@ -103,6 +104,7 @@ class IOSHealth extends FedHealthData {
     DateTime now = DateTime.now();
     DateTime start =
         DateTime(now.year, now.month, now.day).add(const Duration(days: -10));
+    await authenticate();
     var huaweiRes = (await _health.getHealthDataFromTypes(start, now, _types))
         .where((element) => element.sourceId == "com.huawei.iossporthealth");
     for (DateTime i = DateTime(start.year, start.month, start.day);
