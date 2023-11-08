@@ -119,14 +119,6 @@ class _BottomNavigatorState extends State<BottomNavigator> {
           'assets/images/title.png',
           height: 35 * pixel,
         ),
-        actions: [
-          if (_selectedIndex == 0 || _selectedIndex == 1)
-            IconButton(
-              icon: const Icon(Icons.question_mark_rounded),
-              tooltip: 'Help',
-              onPressed: helpDialog,
-            ),
-        ],
       ),
       body: _widgetOptions.elementAt(_selectedIndex),
       // https://stackoverflow.com/a/55174433
