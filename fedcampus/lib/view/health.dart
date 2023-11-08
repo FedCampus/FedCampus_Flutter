@@ -208,6 +208,10 @@ class RightColumn extends StatelessWidget {
           SizedBox(
             height: 21 * pixel,
           ),
+          const CarbonEmission(),
+          SizedBox(
+            height: 21 * pixel,
+          ),
         ],
       );
     } else {
@@ -915,6 +919,33 @@ class ScreenTime extends StatelessWidget {
       value: formatNum(
         Provider.of<HealthDataModel>(context)
             .healthData['total_time_foreground'],
+        decimalPoints: 0,
+        loading: Provider.of<HealthDataModel>(context).loading,
+      ),
+    );
+  }
+}
+
+
+class CarbonEmission extends StatelessWidget {
+  const CarbonEmission({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return HealthCard(
+      icon: SvgIcon(
+        imagePath: 'assets/svg/phone_usage.svg',
+        colorFilter: ColorFilter.mode(
+            Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
+      ),
+      label: "Emission\nReductions",
+      labelMaxLines: 2,
+      unit: "g",
+      value: formatNum(
+        Provider.of<HealthDataModel>(context)
+            .healthData['carbon_emission'],
         decimalPoints: 0,
         loading: Provider.of<HealthDataModel>(context).loading,
       ),

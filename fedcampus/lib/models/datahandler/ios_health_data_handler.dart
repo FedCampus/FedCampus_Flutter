@@ -27,6 +27,7 @@ class IOSHealth extends FedHealthData {
     "sleep_duration": HealthDataType.SLEEP_ASLEEP,
     "weight": HealthDataType.WEIGHT,
     "avg_heart_rate": HealthDataType.HEART_RATE,
+    "carbon_emission": HealthDataType.DISTANCE_WALKING_RUNNING
   };
 
   final HealthFactory _health =
@@ -84,6 +85,9 @@ class IOSHealth extends FedHealthData {
             (value, element) => value + double.parse(element.value.toString()));
         sum = (entry == "rest_heart_rate" || entry == "avg_heart_rate")
             ? sum / huaweiHealth.length
+            : sum;
+        sum = (entry == "carbon_emission")
+            ? sum /1000 * 42
             : sum;
         sum = (sum.isNaN) ? 0 : sum;
       }
