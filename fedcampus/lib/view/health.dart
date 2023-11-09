@@ -936,7 +936,9 @@ class CarbonEmission extends StatelessWidget {
   Widget build(BuildContext context) {
     return HealthCard(
       icon: SvgIcon(
-        imagePath: 'assets/svg/phone_usage.svg',
+        imagePath: 'assets/svg/carbon_emission.svg',
+        width: 58,
+        height: 58,
         colorFilter: ColorFilter.mode(
             Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
       ),
