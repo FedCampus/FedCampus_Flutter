@@ -68,23 +68,28 @@ class IOSHealth extends FedHealthData {
     await authenticate();
     var res = await _health
         .getHealthDataFromTypes(startTime, endTime, [_dataEntry[entry]!]);
-    var huaweiHealth =
-        res.where((element) => element.sourceId == "com.huawei.iossporthealth");
+    var health = res
+            .any((element) => element.sourceId == "com.huawei.iossporthealth")
+        ? res
+            .where((element) => element.sourceId == "com.huawei.iossporthealth")
+        : res.where(
+            (element) => element.sourceId.startsWith("com.apple.health"));
+
     double sum = 0;
-    if (entry == "sleep_duration" && huaweiHealth.isNotEmpty) {
-      var sortList = huaweiHealth.toList();
+    if (entry == "sleep_duration" && health.isNotEmpty) {
+      var sortList = health.toList();
       sortList.sort((a, b) => double.parse(a.value.toString())
           .compareTo(double.parse(b.value.toString())));
       sum =
           _sleepDurationToDouble(sortList.last.dateFrom, sortList.last.dateTo);
     } else {
-      if (huaweiHealth.isEmpty) {
+      if (health.isEmpty) {
         sum = -1;
       } else {
-        sum = huaweiHealth.fold(0,
+        sum = health.fold(0,
             (value, element) => value + double.parse(element.value.toString()));
         sum = (entry == "rest_heart_rate" || entry == "avg_heart_rate")
-            ? sum / huaweiHealth.length
+            ? sum / health.length
             : sum;
         sum = (sum.isNaN) ? 0 : sum;
       }
