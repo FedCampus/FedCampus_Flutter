@@ -234,7 +234,14 @@ class RightColumn extends StatelessWidget {
           SizedBox(
             height: 21 * pixel,
           ),
-          const ScreenTime()
+          const ScreenTime(),
+          SizedBox(
+            height: 21 * pixel,
+          ),
+          const CarbonEmission(),
+          SizedBox(
+            height: 21 * pixel,
+          ),
         ],
       );
     }
@@ -945,13 +952,15 @@ class CarbonEmission extends StatelessWidget {
       label: "Emission\nReductions",
       labelMaxLines: 2,
       unit: "g",
-      value: formatNum(
-        Provider.of<HealthDataModel>(context)
-            .healthData['carbon_emission'],
+      // to choose the data resource based on platform
+      value: formatNum( !userApi.isAndroid ?
+          Provider.of<HealthDataModel>(context).healthData['carbon_emission']:
+          (Provider.of<HealthDataModel>(context).healthData['distance']! / 1000 * 42),
         decimalPoints: 0,
         loading: Provider.of<HealthDataModel>(context).loading,
       ),
     );
+
   }
 }
 
