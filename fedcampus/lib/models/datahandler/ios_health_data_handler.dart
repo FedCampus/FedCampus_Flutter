@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:fedcampus/models/datahandler/health_handler.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/utility/log.dart';
@@ -69,12 +71,23 @@ class IOSHealth extends FedHealthData {
     var res = await _health
         .getHealthDataFromTypes(startTime, endTime, [_dataEntry[entry]!]);
     var health = res
-            .any((element) => element.sourceId == "com.huawei.iossporthealth")
-        ? res
-            .where((element) => element.sourceId == "com.huawei.iossporthealth")
-        : res.where(
-            (element) => element.sourceId.startsWith("com.apple.health"));
+        .map((e) => e.sourceName)
+        .toSet()
+        .map((e) =>
+            _getSum(entry, res.where((element) => element.sourceName == e)))
+        .toList();
+    double sum = health.isEmpty
+        ? 0.0
+        : health.reduce((curr, next) => curr > next ? curr : next);
 
+    return Data(
+        name: entry,
+        value: sum,
+        startTime: calendar.dateTimeToInt(startTime),
+        endTime: calendar.dateTimeToInt(endTime));
+  }
+
+  double _getSum(String entry, Iterable<HealthDataPoint> health) {
     double sum = 0;
     if (entry == "sleep_duration" && health.isNotEmpty) {
       var sortList = health.toList();
@@ -94,12 +107,7 @@ class IOSHealth extends FedHealthData {
         sum = (sum.isNaN) ? 0 : sum;
       }
     }
-
-    return Data(
-        name: entry,
-        value: sum,
-        startTime: calendar.dateTimeToInt(startTime),
-        endTime: calendar.dateTimeToInt(endTime));
+    return sum;
   }
 
   /// get the IOS Day Data from the previous 10 days
