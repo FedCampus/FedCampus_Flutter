@@ -13,14 +13,15 @@ class _HealthSlidingPagesState extends State<HealthSlidingPages> {
     Column(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        Image.asset("assets/images/guide/health_step_card.jpg"),
+        Expanded(
+            child: Image.asset("assets/images/guide/health_step_card.jpg")),
         const AutoSizeText("Each card displays your health data"),
       ],
     ),
     Column(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        Image.asset("assets/images/guide/health_refresh.jpg"),
+        Expanded(child: Image.asset("assets/images/guide/health_refresh.jpg")),
         const AutoSizeText("Pull down to refresh")
       ],
     )
@@ -45,20 +46,15 @@ class _StatsSlidingPagesState extends State<StatsSlidingPages> {
     Column(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        Expanded(
-            flex: 3,
-            child: Image.asset("assets/images/guide/stats_filter.jpg")),
-        const Expanded(
-          flex: 1,
-          child: AutoSizeText(
-              "Click the filter button to select a specific group of participants"),
-        ),
+        Expanded(child: Image.asset("assets/images/guide/stats_filter.jpg")),
+        const AutoSizeText(
+            "Click the filter button to select a specific group of participants"),
       ],
     ),
     Column(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        Image.asset("assets/images/guide/stats_fa_card.jpg"),
+        Expanded(child: Image.asset("assets/images/guide/stats_fa_card.jpg")),
         const AutoSizeText("Group average and your percentile")
       ],
     )
@@ -101,7 +97,8 @@ class _SlidingPagesState extends State<SlidingPages> {
       children: <Widget>[
         LayoutBuilder(builder: (context, constraints) {
           return SizedBox(
-            height: 240.0,
+            // [PageView] needs to have finite height
+            height: 240.0 * pixel,
             child: PageView.builder(
               controller: PageController(
                 // https://stackoverflow.com/a/70098325
