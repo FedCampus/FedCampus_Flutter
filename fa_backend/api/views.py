@@ -208,7 +208,7 @@ class saveLogFile(APIView):
     pass
 
 
-FA_MODEL = Record
+FA_MODEL = RecordDP
 
 
 class Status(APIView):
@@ -236,13 +236,12 @@ class FedAnalysis(APIView):
             if data.get("filter"):
                 filtering = data.get("filter")
                 continue
-            (saveRecord(FA_MODEL, request.user, data)) if not data.get(
-                "name"
-            ) is None else None
+            if not data.get("name") is None:
+                saveRecord(FA_MODEL, request.user, data)
         return Response(self.calculateAverageAndRanking(request, startTime, filtering))
 
     def calculateAverageAndRanking(self, request, dateTime, filtering):
-        print(filtering)
+        logger.info(filtering)
         resultJson = {}
         # filter querySet accroding to the filtering
         queryAll = FA_MODEL.objects.all()
@@ -261,7 +260,7 @@ class FedAnalysis(APIView):
                 queryAll = queryAll.filter(
                     user__customer__student=int(filtering.get("status"))
                 )
-                print(queryAll)
+                logger.info(queryAll)
 
         for dataType in FA_DATA:
             querySet = queryAll.filter(
@@ -275,7 +274,7 @@ class FedAnalysis(APIView):
                 query = querySet.filter(user=request.user)
                 logger.info(f"Exception Getting Two queries at the same time {query}")
                 query = query[0]
-            avg = querySet.aggregate(Avg("value")).get("value__avg")
+            avg = abs(querySet.aggregate(Avg("value")).get("value__avg"))
             percentage = self.calculatePercentage(querySet, query)
             resultJson[dataType] = {"avg": avg, "ranking": percentage}
 

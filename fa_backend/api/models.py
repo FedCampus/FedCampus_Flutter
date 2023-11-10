@@ -42,6 +42,10 @@ class RecordDP(models.Model):
 def saveRecord(Model, user, data):
     ## judge if it is sleep efficiency?
 
+    if float(data.get("value")) < 0:
+        logger.info(f"getting value -1 from {data}")
+        return
+
     try:
         record = Model.objects.filter(
             Q(user=user)
