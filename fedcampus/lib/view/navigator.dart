@@ -86,7 +86,11 @@ class _BottomNavigatorState extends State<BottomNavigator> {
           contentPadding:
               EdgeInsets.fromLTRB(10 * pixel, 0 * pixel, 10 * pixel, 0),
           content: SizedBox(
-            height: 290 * pixel,
+            height: 280 * pixel,
+            // [AlertDialog] calls `IntrinsicWidth` therefore [ListView], [GridView],
+            // and [PageView] have to be wrapped in `SizedBox` to ensure it has width
+            // https://github.com/flutter/flutter/issues/19613
+            width: 350 * pixel,
             child: _getSlidingPage(_selectedIndex),
           ),
           actions: <Widget>[
@@ -119,6 +123,14 @@ class _BottomNavigatorState extends State<BottomNavigator> {
           'assets/images/title.png',
           height: 35 * pixel,
         ),
+        actions: [
+          if (_selectedIndex == 0 || _selectedIndex == 1)
+            IconButton(
+              icon: const Icon(Icons.question_mark_rounded),
+              tooltip: 'Help',
+              onPressed: helpDialog,
+            ),
+        ],
       ),
       body: _widgetOptions.elementAt(_selectedIndex),
       // https://stackoverflow.com/a/55174433

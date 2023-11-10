@@ -122,7 +122,8 @@ class HTTPApi {
       }
     } catch (e) {
       logger.e(e);
-      throw ('Login Error, Please Check your Internet Connection', e);
+      throw InternetConnectionException(
+          'Login Error, Please Check your Internet Connection');
     }
   }
 
