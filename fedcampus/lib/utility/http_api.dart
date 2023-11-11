@@ -98,7 +98,7 @@ class HTTPApi {
       throw ClientException("The two passwords are different!");
     }
 
-    http.Response response;
+    final http.Response response;
     // send the request and wait for response
     try {
       response = await HTTPApi.post(

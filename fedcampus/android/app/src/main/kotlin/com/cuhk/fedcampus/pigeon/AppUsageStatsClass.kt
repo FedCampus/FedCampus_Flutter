@@ -101,7 +101,8 @@ class AppUsageStatsClass(activity: Activity) : AppUsageStats {
     var totalTimeInForeground = 0
 
     if (usageEvents.isEmpty()) {
-      throw Exception("No PACKAGE_USAGE_STATS granted")
+      Log.e("App", "No time foreground")
+      return 0.toDouble()
     }
 
     for (e in usageEvents) {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fedcampus/models/user_model.dart';
 import 'package:fedcampus/utility/http_api.dart';
 import 'package:fedcampus/utility/log.dart';
@@ -22,9 +24,15 @@ class _SignUpState extends State<SignUp> {
   signUp() async {
     late Map<String, dynamic> user;
     try {
-      user = await HTTPApi.signUp(_email, _netid, _password, _passwordConfirm);
-    } on Exception catch (e) {
+      user = await HTTPApi.signUp(_email, _netid, _password, _passwordConfirm)
+          .timeout(const Duration(seconds: 5));
+    } on TimeoutException catch (e) {
       logger.e(e);
+      if (mounted) {
+        showToastMessage("Please check your internet connection", context);
+      }
+      return;
+    } on Exception catch (e) {
       if (mounted) showToastMessage(e.getMessage, context);
       return;
     }
