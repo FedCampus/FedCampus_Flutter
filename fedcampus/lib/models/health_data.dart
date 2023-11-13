@@ -12,7 +12,9 @@ class HealthData {
       double sleepEfficiency = 0,
       double queryTime = 0,
       double totalTimeForeground = 0,
-      double sleepDuration = 0}) {
+      double sleepDuration = 0,
+      double carbonEmission = 0
+      }) {
     return {
       "step": step,
       "calorie": calorie,
@@ -25,7 +27,8 @@ class HealthData {
       "sleep_efficiency": sleepEfficiency,
       "query_time": queryTime,
       "total_time_foreground": totalTimeForeground,
-      "sleep_duration": sleepDuration
+      "sleep_duration": sleepDuration,
+      "carbon_emission": carbonEmission
     };
   }
 }

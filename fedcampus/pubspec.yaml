@@ -110,6 +110,7 @@ flutter:
     - assets/svg/exercise.svg
     - assets/svg/sleep.svg
     - assets/svg/step_time.svg
+    - assets/svg/carbon_emission.svg
     - assets/svg/filter.svg
     - assets/svg/phone_usage.svg
     - assets/images/guide/health_refresh.jpg
