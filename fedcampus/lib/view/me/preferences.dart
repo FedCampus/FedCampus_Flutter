@@ -126,7 +126,7 @@ class _PreferencesState extends State<Preferences> {
                     .isDarkModeOn,
                 callback: toggleTheme,
               ),
-              if (true) // TODO: disable language selection
+              if (false) // TODO: disable language selection
                 // ignore: dead_code
                 SettingsDropDownMenu(
                   text: AppLocalizations.of(context)!.language,

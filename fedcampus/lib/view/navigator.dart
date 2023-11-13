@@ -86,7 +86,11 @@ class _BottomNavigatorState extends State<BottomNavigator> {
           contentPadding:
               EdgeInsets.fromLTRB(10 * pixel, 0 * pixel, 10 * pixel, 0),
           content: SizedBox(
-            height: 290 * pixel,
+            height: 280 * pixel,
+            // [AlertDialog] calls `IntrinsicWidth` therefore [ListView], [GridView],
+            // and [PageView] have to be wrapped in `SizedBox` to ensure it has width
+            // https://github.com/flutter/flutter/issues/19613
+            width: 350 * pixel,
             child: _getSlidingPage(_selectedIndex),
           ),
           actions: <Widget>[

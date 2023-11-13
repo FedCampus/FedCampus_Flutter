@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:fedcampus/models/datahandler/health_handler.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/utility/log.dart';
@@ -66,25 +68,42 @@ class IOSHealth extends FedHealthData {
     if (entry == "sleep_time" || entry == "sleep_duration") {
       endTime = endTime.add(const Duration(hours: 10));
     }
+    await authenticate();
     var res = await _health
         .getHealthDataFromTypes(startTime, endTime, [_dataEntry[entry]!]);
-    var huaweiHealth =
-        res.where((element) => element.sourceId == "com.huawei.iossporthealth");
+    var health = res
+        .map((e) => e.sourceName)
+        .toSet()
+        .map((e) =>
+            _getSum(entry, res.where((element) => element.sourceName == e)))
+        .toList();
+    double sum = health.isEmpty
+        ? 0.0
+        : health.reduce((curr, next) => curr > next ? curr : next);
+
+    return Data(
+        name: entry,
+        value: sum,
+        startTime: calendar.dateTimeToInt(startTime),
+        endTime: calendar.dateTimeToInt(endTime));
+  }
+
+  double _getSum(String entry, Iterable<HealthDataPoint> health) {
     double sum = 0;
-    if (entry == "sleep_duration" && huaweiHealth.isNotEmpty) {
-      var sortList = huaweiHealth.toList();
+    if (entry == "sleep_duration" && health.isNotEmpty) {
+      var sortList = health.toList();
       sortList.sort((a, b) => double.parse(a.value.toString())
           .compareTo(double.parse(b.value.toString())));
       sum =
           _sleepDurationToDouble(sortList.last.dateFrom, sortList.last.dateTo);
     } else {
-      if (huaweiHealth.isEmpty) {
+      if (health.isEmpty) {
         sum = -1;
       } else {
-        sum = huaweiHealth.fold(0,
+        sum = health.fold(0,
             (value, element) => value + double.parse(element.value.toString()));
         sum = (entry == "rest_heart_rate" || entry == "avg_heart_rate")
-            ? sum / huaweiHealth.length
+            ? sum / health.length
             : sum;
         sum = (entry == "carbon_emission")
             ? sum /1000 * 42
@@ -92,12 +111,7 @@ class IOSHealth extends FedHealthData {
         sum = (sum.isNaN) ? 0 : sum;
       }
     }
-
-    return Data(
-        name: entry,
-        value: sum,
-        startTime: calendar.dateTimeToInt(startTime),
-        endTime: calendar.dateTimeToInt(endTime));
+    return sum;
   }
 
   /// get the IOS Day Data from the previous 10 days
@@ -107,6 +121,7 @@ class IOSHealth extends FedHealthData {
     DateTime now = DateTime.now();
     DateTime start =
         DateTime(now.year, now.month, now.day).add(const Duration(days: -10));
+    await authenticate();
     var huaweiRes = (await _health.getHealthDataFromTypes(start, now, _types))
         .where((element) => element.sourceId == "com.huawei.iossporthealth");
     for (DateTime i = DateTime(start.year, start.month, start.day);

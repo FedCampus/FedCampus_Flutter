@@ -98,9 +98,10 @@ class HTTPApi {
       throw ClientException("The two passwords are different!");
     }
 
+    final http.Response response;
     // send the request and wait for response
     try {
-      http.Response response = await HTTPApi.post(
+      response = await HTTPApi.post(
           HTTPApi.register,
           <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
@@ -110,19 +111,20 @@ class HTTPApi {
             "password": password,
             "netid": netid
           }));
-      final responseJson = jsonDecode(response.body);
-      if (response.statusCode == 200) {
-        final token = responseJson['auth_token'];
-        HTTPApi.setToken(token);
-        final user = User.mapOf(userName: netid, email: email, loggedIn: true);
-        return user;
-      } else {
-        logger.e(Exception(responseJson['error'][0]));
-        throw Exception(responseJson['error'][0]);
-      }
     } catch (e) {
       logger.e(e);
-      throw ('Login Error, Please Check your Internet Connection', e);
+      throw ('Please Check your Internet Connection', e);
+    }
+
+    final responseJson = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      final token = responseJson['auth_token'];
+      HTTPApi.setToken(token);
+      final user = User.mapOf(userName: netid, email: email, loggedIn: true);
+      return user;
+    } else {
+      logger.e(Exception(responseJson['error'][0]));
+      throw Exception(responseJson['error'][0]);
     }
   }
 
