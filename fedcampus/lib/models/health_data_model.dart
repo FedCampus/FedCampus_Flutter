@@ -49,7 +49,7 @@ class HealthDataModel extends ChangeNotifier {
       logger.e(error);
       _notify();
       bus.emit("toast_error",
-          "Internet connection error, cannot connet to health data handler server.");
+          "Internet connection error, cannot connect to health data handler server.");
     }
 
     if (userApi.isAndroid) {

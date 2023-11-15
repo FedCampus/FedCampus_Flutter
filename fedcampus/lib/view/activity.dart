@@ -118,7 +118,7 @@ class _ActivityState extends State<Activity> {
   Future<void> refresh({bool forcedRefresh = false}) async {
     Provider.of<ActivityDataModel>(context, listen: false).ifSent = false;
     Provider.of<ActivityDataModel>(context, listen: false)
-        .getActivityData(forcedRefresh: forcedRefresh);
+        .requestActivityData(forcedRefresh: forcedRefresh);
     LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
     loadingDialog.showLoading();
     bus.on("activity_loading_done", (arg) {
