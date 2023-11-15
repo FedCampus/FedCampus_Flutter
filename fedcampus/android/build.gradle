@@ -1,8 +1,8 @@
 buildscript {
     ext.kotlin_version = '1.9.0'
     repositories {
-         // google()
-         // mavenCentral()
+         google()
+         mavenCentral()
         maven { url 'https://maven.aliyun.com/repository/google' }
          maven { url 'https://maven.aliyun.com/repository/jcenter' }
          maven { url 'https://maven.aliyun.com/nexus/content/groups/public' }
