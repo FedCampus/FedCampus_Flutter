@@ -42,33 +42,33 @@ class _ActivityState extends State<Activity> {
             "entry_name": "calorie",
             "icon_path": "assets/svg/calorie.svg",
             "unit": "kcals",
-            "decimal_points": 2,
+            "decimal_points": 0,
           },
           {
             "entry_name": "intensity",
             "icon_path": "assets/svg/exercise.svg",
             "unit": "min",
-            "decimal_points": 1,
+            "decimal_points": 0,
           },
           {
             "entry_name": "stress",
             "icon_path": "assets/svg/stress.svg",
             "unit": "stress",
-            "decimal_points": 1,
+            "decimal_points": 0,
           },
           {
             "entry_name": "step_time",
             "icon_path": "assets/svg/step_time.svg",
             "img_scale": 1.2,
             "unit": "min",
-            "decimal_points": 1,
+            "decimal_points": 0,
           },
           {
             "entry_name": "sleep_efficiency",
             "icon_path": "assets/svg/sleep.svg",
             "img_scale": 1.2,
             "unit": "effi",
-            "decimal_points": 2,
+            "decimal_points": 0,
           },
         ]
       : [
@@ -88,14 +88,14 @@ class _ActivityState extends State<Activity> {
             "entry_name": "calorie",
             "icon_path": "assets/svg/calorie.svg",
             "unit": "kcals",
-            "decimal_points": 2,
+            "decimal_points": 0,
           },
           {
             "entry_name": "sleep_time",
             "icon_path": "assets/svg/sleep.svg",
             "img_scale": 1.2,
             "unit": "mins",
-            "decimal_points": 1,
+            "decimal_points": 0,
           }
         ];
 
