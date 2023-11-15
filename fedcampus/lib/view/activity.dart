@@ -215,9 +215,8 @@ class _ActivityState extends State<Activity> {
             var currentEntry = entries[index - 2];
             // do not show value for FA if average is 0
             if (Provider.of<ActivityDataModel>(context).loading ||
-                Provider.of<ActivityDataModel>(context)
-                        .activityData[currentEntry['entry_name']]["average"] ==
-                    0) {
+                !Provider.of<ActivityDataModel>(context)
+                    .activityData[currentEntry['entry_name']]["valid_data"]) {
               return ActivityCard(
                 rank: "",
                 value: "",

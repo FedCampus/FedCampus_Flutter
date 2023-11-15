@@ -5,19 +5,74 @@ class ActivityData {
   static Map<String, dynamic> create() {
     return userApi.isAndroid
         ? {
-            "step": {"average": 0, "rank": 0, "simliar_user": []},
-            "calorie": {"average": 0, "rank": 0, "simliar_user": []},
-            "distance": {"average": 0, "rank": 0, "simliar_user": []},
-            "stress": {"average": 0, "rank": 0, "simliar_user": []},
-            "intensity": {"average": 0, "rank": 0, "simliar_user": []},
-            "step_time": {"average": 0, "rank": 0, "simliar_user": []},
-            "sleep_efficiency": {"average": 0, "rank": 0, "simliar_user": []},
+            "step": {
+              "average": 0,
+              "rank": 0,
+              "simliar_user": [],
+              "valid_data": false
+            },
+            "calorie": {
+              "average": 0,
+              "rank": 0,
+              "simliar_user": [],
+              "valid_data": false
+            },
+            "distance": {
+              "average": 0,
+              "rank": 0,
+              "simliar_user": [],
+              "valid_data": false
+            },
+            "stress": {
+              "average": 0,
+              "rank": 0,
+              "simliar_user": [],
+              "valid_data": false
+            },
+            "intensity": {
+              "average": 0,
+              "rank": 0,
+              "simliar_user": [],
+              "valid_data": false
+            },
+            "step_time": {
+              "average": 0,
+              "rank": 0,
+              "simliar_user": [],
+              "valid_data": false
+            },
+            "sleep_efficiency": {
+              "average": 0,
+              "rank": 0,
+              "simliar_user": [],
+              "valid_data": false
+            },
           }
         : {
-            "step": {"average": 0, "rank": 0, "simliar_user": []},
-            "distance": {"average": 0, "rank": 0, "simliar_user": []},
-            "calorie": {"average": 0, "rank": 0, "simliar_user": []},
-            "sleep_time": {"average": 0, "rank": 0, "simliar_user": []},
+            "step": {
+              "average": 0,
+              "rank": 0,
+              "simliar_user": [],
+              "valid_data": false
+            },
+            "distance": {
+              "average": 0,
+              "rank": 0,
+              "simliar_user": [],
+              "valid_data": false
+            },
+            "calorie": {
+              "average": 0,
+              "rank": 0,
+              "simliar_user": [],
+              "valid_data": false
+            },
+            "sleep_time": {
+              "average": 0,
+              "rank": 0,
+              "simliar_user": [],
+              "valid_data": false
+            },
           };
   }
 }

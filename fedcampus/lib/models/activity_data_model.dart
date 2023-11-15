@@ -90,27 +90,20 @@ class ActivityDataModel extends ChangeNotifier {
   }
 
   void _setAndNotify(dynamic jsonValue) {
+    activityData = ActivityData.create();
     final jsonMap = jsonValue as Map<String, dynamic>;
     jsonMap.forEach((key, value) {
       if (activityData[key] != null) {
         activityData[key]['average'] = value['avg'];
         activityData[key]['rank'] = value['ranking'];
+        activityData[key]['valid_data'] = true;
       }
     });
-    activityData["query_time"] =
-        DateTime.now().millisecondsSinceEpoch.toDouble();
-    userApi.prefs.setString("activity$date", json.encode(activityData));
     _notify();
   }
 
   void _clearAll() {
     activityData = ActivityData.create();
-    // activityData.forEach((key, value) {
-    //   if (key != "query_time") {
-    //     activityData[key]['average'] = 0.0;
-    //     activityData[key]['rank'] = 0.0;
-    //   }
-    // });
   }
 
   Future<void> requestActivityData({bool forcedRefresh = false}) async {
@@ -146,7 +139,7 @@ class ActivityDataModel extends ChangeNotifier {
           e, "Internet connection error, cannot connect to DKU server.");
       return;
     }
-    
+
     _setAndNotify(jsonDecode(response.body));
   }
 
