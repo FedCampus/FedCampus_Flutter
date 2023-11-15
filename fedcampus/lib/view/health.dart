@@ -38,12 +38,6 @@ class _HealthState extends State<Health> {
     });
   }
 
-  void _sendLastDayData() async {
-    var dw = DataWrapper();
-    dw.getDayDataAndSendAndTrain(
-        int.parse(Provider.of<HealthDataModel>(context, listen: false).date));
-  }
-
   Future<void> refresh({bool forcedRefresh = false}) async {
     Provider.of<HealthDataModel>(context, listen: false)
         .requestAllData(forcedRefresh: forcedRefresh);
@@ -52,7 +46,6 @@ class _HealthState extends State<Health> {
     bus.on("loading_done", (arg) {
       if (!loadingDialog.cancelled) loadingDialog.cancel();
     });
-    _sendLastDayData();
   }
 
   updateDate(DateTime selectedDate) {
@@ -810,7 +803,7 @@ class IntenseExercise extends StatelessWidget {
       labelMaxLines: 2,
       unit: "min",
       value: formatNum(
-        Provider.of<HealthDataModel>(context).healthData['calorie'],
+        Provider.of<HealthDataModel>(context).healthData['intensity'],
         decimalPoints: 1,
         loading: Provider.of<HealthDataModel>(context).loading,
       ),
@@ -933,7 +926,6 @@ class ScreenTime extends StatelessWidget {
   }
 }
 
-
 class CarbonEmission extends StatelessWidget {
   const CarbonEmission({
     super.key,
@@ -953,14 +945,17 @@ class CarbonEmission extends StatelessWidget {
       labelMaxLines: 2,
       unit: "g",
       // to choose the data resource based on platform
-      value: formatNum( !userApi.isAndroid ?
-          Provider.of<HealthDataModel>(context).healthData['carbon_emission']:
-          (Provider.of<HealthDataModel>(context).healthData['distance']! / 1000 * 42),
+      value: formatNum(
+        !userApi.isAndroid
+            ? Provider.of<HealthDataModel>(context)
+                .healthData['carbon_emission']
+            : (Provider.of<HealthDataModel>(context).healthData['distance']! /
+                1000 *
+                42),
         decimalPoints: 0,
         loading: Provider.of<HealthDataModel>(context).loading,
       ),
     );
-
   }
 }
 

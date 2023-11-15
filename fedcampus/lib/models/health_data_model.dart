@@ -28,8 +28,6 @@ class HealthDataModel extends ChangeNotifier {
   set date(String date) {
     _date = date;
     requestAllData();
-    var dw = DataWrapper();
-    dw.getDayDataAndSendAndTrain(int.parse(_date));
   }
 
   Future<void> requestAllData({bool forcedRefresh = false}) async {
