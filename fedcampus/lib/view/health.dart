@@ -397,7 +397,7 @@ class Heart extends StatelessWidget {
       unit: "bpm",
       value: formatNum(
         Provider.of<HealthDataModel>(context).healthData['rest_heart_rate'],
-        decimalPoints: 1,
+        decimalPoints: 0,
         loading: Provider.of<HealthDataModel>(context).loading,
       ),
     );
@@ -567,7 +567,7 @@ class Distance extends StatelessWidget {
       unit: "m",
       value: formatNum(
         Provider.of<HealthDataModel>(context).healthData['distance'],
-        decimalPoints: 1,
+        decimalPoints: 0,
         loading: Provider.of<HealthDataModel>(context).loading,
       ),
     );
@@ -591,7 +591,7 @@ class Stress extends StatelessWidget {
       unit: "stress",
       value: formatNum(
         Provider.of<HealthDataModel>(context).healthData['stress'],
-        decimalPoints: 2,
+        decimalPoints: 0,
         loading: Provider.of<HealthDataModel>(context).loading,
       ),
     );
@@ -666,7 +666,7 @@ class Calorie extends StatelessWidget {
       unit: "kcal",
       value: formatNum(
         Provider.of<HealthDataModel>(context).healthData['calorie'],
-        decimalPoints: 2,
+        decimalPoints: 1,
         loading: Provider.of<HealthDataModel>(context).loading,
       ),
     );
@@ -691,7 +691,7 @@ class IntenseExercise extends StatelessWidget {
       unit: "min",
       value: formatNum(
         Provider.of<HealthDataModel>(context).healthData['intensity'],
-        decimalPoints: 1,
+        decimalPoints: 0,
         loading: Provider.of<HealthDataModel>(context).loading,
       ),
     );
@@ -728,7 +728,7 @@ class Sleep extends StatelessWidget {
             value: formatNum(
               Provider.of<HealthDataModel>(context)
                   .healthData['sleep_efficiency'],
-              decimalPoints: 2,
+              decimalPoints: 0,
               loading: Provider.of<HealthDataModel>(context).loading,
             ),
           )
