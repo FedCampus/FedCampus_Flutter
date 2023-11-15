@@ -208,6 +208,10 @@ class RightColumn extends StatelessWidget {
           SizedBox(
             height: 21 * pixel,
           ),
+          const CarbonEmission(),
+          SizedBox(
+            height: 21 * pixel,
+          ),
         ],
       );
     } else {
@@ -230,7 +234,14 @@ class RightColumn extends StatelessWidget {
           SizedBox(
             height: 21 * pixel,
           ),
-          const ScreenTime()
+          const ScreenTime(),
+          SizedBox(
+            height: 21 * pixel,
+          ),
+          const CarbonEmission(),
+          SizedBox(
+            height: 21 * pixel,
+          ),
         ],
       );
     }
@@ -919,6 +930,37 @@ class ScreenTime extends StatelessWidget {
         loading: Provider.of<HealthDataModel>(context).loading,
       ),
     );
+  }
+}
+
+
+class CarbonEmission extends StatelessWidget {
+  const CarbonEmission({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return HealthCard(
+      icon: SvgIcon(
+        imagePath: 'assets/svg/carbon_emission.svg',
+        width: 58,
+        height: 58,
+        colorFilter: ColorFilter.mode(
+            Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
+      ),
+      label: "Emission\nReductions",
+      labelMaxLines: 2,
+      unit: "g",
+      // to choose the data resource based on platform
+      value: formatNum( !userApi.isAndroid ?
+          Provider.of<HealthDataModel>(context).healthData['carbon_emission']:
+          (Provider.of<HealthDataModel>(context).healthData['distance']! / 1000 * 42),
+        decimalPoints: 0,
+        loading: Provider.of<HealthDataModel>(context).loading,
+      ),
+    );
+
   }
 }
 
