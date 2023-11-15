@@ -5,7 +5,6 @@ import 'dart:math';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fedcampus/models/health_data_model.dart';
-import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/calendar.dart';
 import 'package:fedcampus/view/widgets/widget.dart';
@@ -387,134 +386,19 @@ class Heart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double pixel = MediaQuery.of(context).size.width / 400;
-    return FedCard(
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                flex: 7,
-                child: Column(
-                  children: [
-                    AutoSizeText(
-                      "Heart Rate",
-                      maxLines: 1,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary),
-                    ),
-                    SizedBox(
-                      height: 10 * pixel,
-                    ),
-                    SvgIcon(
-                      imagePath: 'assets/svg/heart_rate.svg',
-                      width: 45,
-                      height: 45,
-                      colorFilter: ColorFilter.mode(
-                          Theme.of(context).colorScheme.primaryContainer,
-                          BlendMode.srcIn),
-                    ),
-                    SizedBox(
-                      height: 10 * pixel,
-                    ),
-                    AutoSizeText(
-                      "Rest",
-                      maxLines: 1,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary),
-                    ),
-                  ],
-                ),
-              ),
-              const Spacer(),
-              Expanded(
-                flex: 6,
-                child: Column(
-                  children: [
-                    AutoSizeText(
-                      formatNum(
-                        Provider.of<HealthDataModel>(context)
-                            .healthData['rest_heart_rate'],
-                        decimalPoints: 1,
-                        loading: Provider.of<HealthDataModel>(context).loading,
-                      ),
-                      maxLines: 1,
-                      style: montserratAlternatesTextStyle(pixel * 30,
-                          Theme.of(context).colorScheme.primaryContainer),
-                    ),
-                    AutoSizeText(
-                      "bpm",
-                      maxLines: 1,
-                      style: montserratAlternatesTextStyle(pixel * 17,
-                          Theme.of(context).colorScheme.primaryContainer),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 11 * pixel,
-          ),
-          Row(
-            children: [
-              Expanded(
-                flex: 7,
-                child: Column(
-                  children: [
-                    SvgIcon(
-                      imagePath: 'assets/svg/heart_rate_2.svg',
-                      width: 45,
-                      height: 45,
-                      colorFilter: ColorFilter.mode(
-                          Theme.of(context).colorScheme.primaryContainer,
-                          BlendMode.srcIn),
-                    ),
-                    SizedBox(
-                      height: 10 * pixel,
-                    ),
-                    AutoSizeText(
-                      userApi.isAndroid ? "Exercise" : "Average",
-                      maxLines: 1,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary),
-                    ),
-                  ],
-                ),
-              ),
-              const Spacer(),
-              Expanded(
-                flex: 6,
-                child: Column(
-                  children: [
-                    AutoSizeText(
-                      formatNum(
-                        Provider.of<HealthDataModel>(context).healthData[
-                            userApi.isAndroid
-                                ? 'exercise_heart_rate'
-                                : "avg_heart_rate"],
-                        decimalPoints: 1,
-                        loading: Provider.of<HealthDataModel>(context).loading,
-                      ),
-                      maxLines: 1,
-                      style: montserratAlternatesTextStyle(pixel * 30,
-                          Theme.of(context).colorScheme.primaryContainer),
-                    ),
-                    AutoSizeText(
-                      "bpm",
-                      maxLines: 1,
-                      style: montserratAlternatesTextStyle(pixel * 17,
-                          Theme.of(context).colorScheme.primaryContainer),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
+    return HealthCard(
+      icon: SvgIcon(
+        imagePath: 'assets/svg/heart_rate.svg',
+        colorFilter: ColorFilter.mode(
+            Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
+      ),
+      label: "Rest\nHeart Rate",
+      labelMaxLines: 2,
+      unit: "bpm",
+      value: formatNum(
+        Provider.of<HealthDataModel>(context).healthData['rest_heart_rate'],
+        decimalPoints: 1,
+        loading: Provider.of<HealthDataModel>(context).loading,
       ),
     );
   }
@@ -556,6 +440,7 @@ class HealthCard extends StatelessWidget {
                 ),
                 AutoSizeText(
                   label,
+                  textAlign: TextAlign.center,
                   maxLines: labelMaxLines,
                   style:
                       TextStyle(color: Theme.of(context).colorScheme.secondary),
@@ -570,12 +455,14 @@ class HealthCard extends StatelessWidget {
               children: [
                 AutoSizeText(
                   value,
+                  textAlign: TextAlign.center,
                   maxLines: valueMaxLines,
                   style: montserratAlternatesTextStyle(pixel * 30,
                       Theme.of(context).colorScheme.primaryContainer),
                 ),
                 AutoSizeText(
                   unit,
+                  textAlign: TextAlign.center,
                   maxLines: 1,
                   style: montserratAlternatesTextStyle(pixel * 17,
                       Theme.of(context).colorScheme.primaryContainer),
