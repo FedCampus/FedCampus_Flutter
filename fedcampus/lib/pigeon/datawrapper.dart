@@ -46,7 +46,8 @@ class DataWrapper {
   Future<List<Data>> getDataList(List<String> nameList, int time) async {
     List<Data> result =
         (await userApi.healthDataHandler.getCachedDataListDay(nameList, time));
-    result.removeWhere((element) => element.success == false);
+    result.removeWhere(
+        (element) => element.success == false || element.value <= 0);
     return result;
   }
 
