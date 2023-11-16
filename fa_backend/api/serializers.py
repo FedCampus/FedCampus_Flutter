@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
@@ -7,6 +9,9 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 
 from .models import Customer
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class CustomerSerializer(serializers.ModelSerializer):

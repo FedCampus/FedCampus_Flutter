@@ -6,6 +6,8 @@ import os
 import datetime
 import utility.timer as tim
 import pytz
+import argparse
+
 from django.db.models import Q
 
 ## Environment Setup
@@ -21,7 +23,7 @@ email = json.load(open("config/email.json", "r"))
 ## Email Settings
 
 ## TODO: Whitelist users
-whitelist = ["js1139@duke.edu", "as1233@duke.edu"]
+whitelist = ["js1139@duke.edu"]
 
 
 def getTimeCST(record):
@@ -74,13 +76,32 @@ def sendReminderEmail(*timeTuple):
     )
 
 
+def test():
+    send_mass_mail(
+        [
+            (
+                settings.SUBJECT,
+                settings.MESSAGE,
+                settings.EMAIL_HOST_USER,
+                ["bt132@duke.edu"],
+            )
+        ]
+    )
+    pass
+
+
 if __name__ == "__main__":
-    alarm = tim.Alarm()
-    taskList = [
-        (sendReminderEmail, (11, 30, 0), (11, 30, 0)),
-        (sendReminderEmail, (17, 30, 0), (17, 30, 0)),
-        (sendReminderEmail, (22, 30, 0), (22, 30, 0)),
-    ]
-    alarm.prepare(taskList)
-    alarm.run()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--test", action="store_true")
+    args = parser.parse_args()
+    if args.test:
+        test()
+    else:
+        alarm = tim.Alarm()
+        taskList = [
+            (sendReminderEmail, (17, 30, 0), (17, 30, 0)),
+            (sendReminderEmail, (22, 30, 0), (22, 30, 0)),
+        ]
+        alarm.prepare(taskList)
+        alarm.run()
     pass

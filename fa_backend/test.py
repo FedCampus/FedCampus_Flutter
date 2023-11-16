@@ -1,15 +1,16 @@
-def test(a, b, c):
-    print("Hello World!")
-    print(a + b + c)
+import os
+import django
 
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "fedapp.settings")
+django.setup()
 
-j = (
-    test,
-    (
-        1,
-        2,
-        3,
-    ),
-)
+## test the
+from api.models import *
+from django.contrib.auth.models import User
 
-j[0](*j[1])
+u = User.objects.all()[0]
+print(u)
+c = Customer.objects.get(user=u)
+print(c)
+
+print(Record.objects.filter(user=u).filter(startTime=20231115))

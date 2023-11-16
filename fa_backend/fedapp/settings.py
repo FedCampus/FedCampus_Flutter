@@ -37,6 +37,31 @@ REST_FRAMEWORK = {
     ),
 }
 
+# Logging Settings
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": "log.log",
+        },
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["file", "console"],
+            "level": "INFO",
+            "propagate": True,
+        },
+    },
+}
+
 # Email Settings
 email = json.load(open("config/email.json", "r"))
 MESSAGE = "Please start the app for at least 5 minutes for training!"
