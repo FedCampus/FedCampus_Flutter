@@ -39,6 +39,12 @@ class _ActivityState extends State<Activity> {
             "decimal_points": 0,
           },
           {
+            "entry_name": "carbon_emission",
+            "icon_path": "assets/svg/carbon_emission.svg",
+            "unit": "g",
+            "decimal_points": 0,
+          },
+          {
             "entry_name": "calorie",
             "icon_path": "assets/svg/calorie.svg",
             "unit": "kcals",
@@ -82,6 +88,12 @@ class _ActivityState extends State<Activity> {
             "entry_name": "distance",
             "icon_path": "assets/svg/distance.svg",
             "unit": "meters",
+            "decimal_points": 0,
+          },
+          {
+            "entry_name": "carbon_emission",
+            "icon_path": "assets/svg/carbon_emission.svg",
+            "unit": "g",
             "decimal_points": 0,
           },
           {

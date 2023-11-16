@@ -95,6 +95,9 @@ class ActivityDataModel extends ChangeNotifier {
         activityData[key]['average'] = value['avg'];
         activityData[key]['rank'] = value['ranking'];
       }
+      //calculate the average value of carbon emission
+      activityData['carbon_emission']['average'] =  activityData['distance']['average'] / 1000 * 42;
+      activityData['carbon_emission']['rank'] =  activityData['distance']['rank'];
     });
     activityData["query_time"] =
         DateTime.now().millisecondsSinceEpoch.toDouble();

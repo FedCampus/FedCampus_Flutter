@@ -8,6 +8,7 @@ class ActivityData {
             "step": {"average": 0, "rank": 0, "simliar_user": []},
             "calorie": {"average": 0, "rank": 0, "simliar_user": []},
             "distance": {"average": 0, "rank": 0, "simliar_user": []},
+            "carbon_emission": {"average": 0, "rank": 0, "simliar_user": []},
             "stress": {"average": 0, "rank": 0, "simliar_user": []},
             "intensity": {"average": 0, "rank": 0, "simliar_user": []},
             "step_time": {"average": 0, "rank": 0, "simliar_user": []},
@@ -16,6 +17,7 @@ class ActivityData {
         : {
             "step": {"average": 0, "rank": 0, "simliar_user": []},
             "distance": {"average": 0, "rank": 0, "simliar_user": []},
+            "carbon_emission": {"average": 0, "rank": 0, "simliar_user": []},
             "calorie": {"average": 0, "rank": 0, "simliar_user": []},
             "sleep_time": {"average": 0, "rank": 0, "simliar_user": []},
           };
