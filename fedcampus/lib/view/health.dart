@@ -27,6 +27,95 @@ class Health extends StatefulWidget {
 class _HealthState extends State<Health> {
   DateTime dateTime = DateTime.now();
 
+  final entriesMap = {
+    "heart": const Heart(),
+    "distance": const Distance(),
+    "stress": const Stress(),
+    "step_time": const StepTime(),
+    "step": const Step(),
+    "calorie": const Calorie(),
+    "intense_exercise": const IntenseExercise(),
+    "sleep_efficiency": const Sleep(),
+    "screen_time": const ScreenTime(),
+    "carbon_emission": const CarbonEmission(),
+    "sleep_duration": const SleepDuration(),
+    "sleep": const Sleep(),
+  };
+
+  final entries = userApi.isAndroid
+      ? [
+          {
+            "entry_name": "heart",
+            "height": 1.1,
+          },
+          {
+            "entry_name": "distance",
+            "height": 1.0,
+          },
+          {
+            "entry_name": "stress",
+            "height": 1.0,
+          },
+          {
+            "entry_name": "step_time",
+            "height": 1.25,
+          },
+          {
+            "entry_name": "step",
+            "height": 1.0,
+          },
+          {
+            "entry_name": "calorie",
+            "height": 1.0,
+          },
+          {
+            "entry_name": "intense_exercise",
+            "height": 1.2,
+          },
+          {
+            "entry_name": "sleep_efficiency",
+            "height": 1.1,
+          },
+          {
+            "entry_name": "screen_time",
+            "height": 1.2,
+          },
+          {
+            "entry_name": "carbon_emission",
+            "height": 1.1,
+          },
+        ]
+      : [
+          {
+            "entry_name": "heart",
+            "height": 1.1,
+          },
+          {
+            "entry_name": "distance",
+            "height": 1.0,
+          },
+          {
+            "entry_name": "sleep_duration",
+            "height": 1.0,
+          },
+          {
+            "entry_name": "step",
+            "height": 1.0,
+          },
+          {
+            "entry_name": "calorie",
+            "height": 1.0,
+          },
+          {
+            "entry_name": "sleep",
+            "height": 1.1,
+          },
+          {
+            "entry_name": "carbon_emission",
+            "height": 1.1,
+          },
+        ];
+
   @override
   void initState() {
     super.initState();
@@ -35,6 +124,67 @@ class _HealthState extends State<Health> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       refresh();
     });
+  }
+
+  (List<Widget>, List<Widget>) _splitEntriesRecursiveThreshold(
+      [threshhold = 1]) {
+    List<Widget> left;
+    List<Widget> right;
+    (left, right) = _splitEntriesThreshold(threshhold);
+    if (left.isEmpty) {
+      return _splitEntriesRecursiveThreshold(2 * threshhold);
+    }
+    return (left, right);
+  }
+
+  (List<Widget>, List<Widget>) _splitEntriesThreshold([threshhold = 1]) {
+    final totalWeight = entries
+        .map<double>((entry) => entry['height'] as double)
+        .reduce((a, b) => a + b);
+    double targetWeight = totalWeight / 2;
+    List<dynamic> group1 = [];
+    List<dynamic> group2 = [];
+
+    bool partition(int index, double currentSum, List<dynamic> group) {
+      if ((currentSum - targetWeight).abs() < threshhold) {
+        return true;
+      }
+      if (currentSum > targetWeight + threshhold || index >= entries.length) {
+        return false;
+      }
+
+      // Include the current weight in the group
+      group.add(entries[index]);
+
+      // Recursively check if a solution is found
+      if (partition(index + 1,
+          currentSum + (entries[index]["height"] as double), group)) {
+        return true;
+      }
+
+      // Exclude the current weight from the group
+      group.removeLast();
+
+      // Recursively check if a solution is found
+      if (partition(index + 1, currentSum, group)) {
+        return true;
+      }
+
+      return false;
+    }
+
+    // Start the partitioning process
+    partition(0, 0, group1);
+
+    // Assign the remaining weights to group2
+    group2 = entries.where((weight) => !group1.contains(weight)).toList();
+
+    List<Widget> left =
+        group1.map<Widget>((e) => entriesMap[e["entry_name"]]!).toList();
+    List<Widget> right =
+        group2.map<Widget>((e) => entriesMap[e["entry_name"]]!).toList();
+
+    return (left, right);
   }
 
   Future<void> refresh({bool forcedRefresh = false}) async {
@@ -67,6 +217,9 @@ class _HealthState extends State<Health> {
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
+    List<Widget> left;
+    List<Widget> right;
+    (left, right) = _splitEntriesRecursiveThreshold(0.05);
     return RefreshIndicator(
       onRefresh: () => refresh(forcedRefresh: true),
       child: SizedBox(
@@ -90,14 +243,21 @@ class _HealthState extends State<Health> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    const Expanded(
+                    Expanded(
                       flex: 1,
-                      child: LeftColumn(),
+                      child: HealthCardColumn(
+                        children: left,
+                      ),
                     ),
                     SizedBox(
                       width: 22 * pixel,
                     ),
-                    const Expanded(flex: 1, child: RightColumn()),
+                    Expanded(
+                      flex: 1,
+                      child: HealthCardColumn(
+                        children: right,
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -109,117 +269,32 @@ class _HealthState extends State<Health> {
   }
 }
 
-class LeftColumn extends StatelessWidget {
-  const LeftColumn({
+class HealthCardColumn extends StatelessWidget {
+  const HealthCardColumn({
     super.key,
+    required this.children,
   });
+
+  final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
-    if (!userApi.isAndroid) {
-      return SizedBox(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            const Heart(),
-            SizedBox(
-              height: 20 * pixel,
-            ),
-            const Distance(),
-            SizedBox(
-              height: 20 * pixel,
-            ),
-            const SleepDuration(),
-            SizedBox(
-              height: 21 * pixel,
-            ),
-            const Sleep(),
-            SizedBox(
-              height: 20 * pixel,
-            ),
-          ],
-        ),
-      );
-    } else {
-      return SizedBox(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            const Heart(),
-            SizedBox(
-              height: 20 * pixel,
-            ),
-            const Distance(),
-            SizedBox(
-              height: 20 * pixel,
-            ),
-            const Stress(),
-            SizedBox(
-              height: 20 * pixel,
-            ),
-            const StepTime(),
-            SizedBox(
-              height: 20 * pixel,
-            ),
-            const CarbonEmission(),
-          ],
-        ),
-      );
-    }
-  }
-}
 
-class RightColumn extends StatelessWidget {
-  const RightColumn({
-    super.key,
-  });
+    Widget elementToInsert = SizedBox(
+      height: 20 * pixel,
+    );
+    List<Widget> childrenWithMeDividerInserted = [];
+    childrenWithMeDividerInserted = children
+        .sublist(0, children.length - 1)
+        .expand((Widget item) => [item, elementToInsert])
+        .toList()
+      ..add(children.last);
 
-  @override
-  Widget build(BuildContext context) {
-    double pixel = MediaQuery.of(context).size.width / 400;
-    if (!userApi.isAndroid) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          const Step(),
-          SizedBox(
-            height: 21 * pixel,
-          ),
-          const Calorie(),
-          SizedBox(
-            height: 21 * pixel,
-          ),
-          const CarbonEmission(),
-        ],
-      );
-    } else {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          const Step(),
-          SizedBox(
-            height: 21 * pixel,
-          ),
-          const Calorie(),
-          SizedBox(
-            height: 21 * pixel,
-          ),
-          const IntenseExercise(),
-          SizedBox(
-            height: 21 * pixel,
-          ),
-          const Sleep(),
-          SizedBox(
-            height: 21 * pixel,
-          ),
-          const ScreenTime(),
-          SizedBox(
-            height: 21 * pixel,
-          ),
-        ],
-      );
-    }
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: childrenWithMeDividerInserted,
+    );
   }
 }
 
