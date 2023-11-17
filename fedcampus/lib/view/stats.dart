@@ -691,6 +691,7 @@ class _DateState extends State<Date> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Expanded(
+                  flex: 3,
                   child: Row(
                     children: <Widget>[
                       Expanded(
@@ -714,6 +715,7 @@ class _DateState extends State<Date> {
                   ),
                 ),
                 Expanded(
+                  flex: 2,
                   child: AutoSizeText(
                     DateFormat.y('en_US').format(widget.date),
                     style: TextStyle(

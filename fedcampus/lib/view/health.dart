@@ -287,6 +287,7 @@ class _DateState extends State<Date> {
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
     return Container(
+      height: 80 * pixel,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.onPrimaryContainer,
         borderRadius: BorderRadius.circular(10 * pixel),
@@ -313,50 +314,70 @@ class _DateState extends State<Date> {
         style: TextButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
           padding: EdgeInsets.fromLTRB(
-              14 * pixel, 10 * pixel, 14 * pixel, 10 * pixel),
+              14 * pixel, 12 * pixel, 14 * pixel, 12 * pixel),
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10 * pixel)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const FedIcon(
-                width: 60,
-                height: 60,
-                imagePath: 'assets/images/health_nav_icon.png'),
-            SizedBox(
-              width: 25 * pixel,
+          children: <Widget>[
+            const Expanded(
+              flex: 1,
+              child: SizedBox(),
             ),
-            SizedBox(
+            FedIcon(
+              imagePath: 'assets/images/health_nav_icon.png',
+              height: 52 * pixel,
+            ),
+            const Expanded(
+              flex: 1,
+              child: SizedBox(),
+            ),
+            Expanded(
+              flex: 10,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    margin: EdgeInsets.fromLTRB(
-                        0 * pixel, 0 * pixel, 0 * pixel, 5 * pixel),
-                    child: Text(
-                      "${DateFormat.MMMd('en_US').format(widget.date)}    ${DateFormat.E('en_US').format(widget.date)}",
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.primaryContainer,
-                          fontSize: pixel * 22,
-                          shadows: [
-                            BoxShadow(
-                              color: Theme.of(context).colorScheme.shadow,
-                              offset: Offset(0 * pixel, 2 * pixel),
-                              blurRadius: 1 * pixel,
-                            ),
-                          ]),
+                children: <Widget>[
+                  Expanded(
+                    flex: 3,
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          flex: 2,
+                          child: AutoSizeText(
+                            "${DateFormat.MMMd('en_US').format(widget.date)}  ${DateFormat.E('en_US').format(widget.date)}",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: pixel * 22,
+                                shadows: [
+                                  BoxShadow(
+                                    color: Theme.of(context).colorScheme.shadow,
+                                    offset: Offset(0 * pixel, 2 * pixel),
+                                    blurRadius: 1 * pixel,
+                                  ),
+                                ],
+                                color: Theme.of(context).colorScheme.secondary),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Text(
-                    DateFormat.y('en_US').format(widget.date),
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.primaryContainer,
-                      fontSize: pixel * 17,
+                  Expanded(
+                    flex: 2,
+                    child: AutoSizeText(
+                      DateFormat.y('en_US').format(widget.date),
+                      style: TextStyle(
+                          fontSize: pixel * 18,
+                          color: Theme.of(context).colorScheme.secondary),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ],
               ),
+            ),
+            const Expanded(
+              flex: 2,
+              child: SizedBox(),
             ),
           ],
         ),
