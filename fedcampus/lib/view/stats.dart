@@ -235,12 +235,16 @@ class _ActivityState extends State<Activity> {
                 .toStringAsFixed(currentEntry['decimal_points']);
 
             return ActivityCard(
-              rank: rank == "0" ? " " : rank,
-              value: average == "0" ? "-" : average,
+              rank: rank,
+              value: average,
               unit: currentEntry['unit']?.toString() ?? "unit",
               iconPath: currentEntry['icon_path']?.toString() ??
                   "assets/svg/sleep.svg",
               imgScale: currentEntry["img_scale"] as double?,
+              isValidValue: average != "0" &&
+                  !Provider.of<ActivityDataModel>(context).loading,
+              isValidRank: rank != "0" &&
+                  !Provider.of<ActivityDataModel>(context).loading,
             );
           }),
     );
@@ -254,8 +258,9 @@ class ActivityCard extends StatelessWidget {
     required this.value,
     required this.unit,
     required this.iconPath,
-    this.loading,
     this.imgScale,
+    this.isValidValue,
+    this.isValidRank,
   });
 
   final String rank;
@@ -263,7 +268,8 @@ class ActivityCard extends StatelessWidget {
   final String unit;
   final String iconPath;
   final double? imgScale;
-  final bool? loading;
+  final bool? isValidValue;
+  final bool? isValidRank;
 
   @override
   Widget build(BuildContext context) {
@@ -293,7 +299,7 @@ class ActivityCard extends StatelessWidget {
                   Expanded(
                     flex: 5,
                     child: AutoSizeText(
-                      loading ?? false ? "-" : value,
+                      isValidValue ?? false ? value : "-",
                       textAlign: TextAlign.center,
                       maxLines: 1,
                       style: TextStyle(
@@ -332,18 +338,8 @@ class ActivityCard extends StatelessWidget {
         ),
         Expanded(
           flex: 7,
-          child: loading ?? false
-              ? Text(
-                  "    -",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontFamily: 'Montserrat Alternates',
-                      fontSize: pixel * 30,
-                      fontWeight: FontWeight.bold,
-                      color:
-                          Theme.of(context).colorScheme.onSecondaryContainer),
-                )
-              : RichText(
+          child: isValidRank ?? false
+              ? RichText(
                   textAlign: TextAlign.end,
                   text: TextSpan(children: [
                     WidgetSpan(
@@ -385,6 +381,16 @@ class ActivityCard extends StatelessWidget {
                       ),
                     ),
                   ]),
+                )
+              : Text(
+                  "    -",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontFamily: 'Montserrat Alternates',
+                      fontSize: pixel * 30,
+                      fontWeight: FontWeight.bold,
+                      color:
+                          Theme.of(context).colorScheme.onSecondaryContainer),
                 ),
         ),
       ],
@@ -681,6 +687,7 @@ class _DateState extends State<Date> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Expanded(
+                  flex: 3,
                   child: Row(
                     children: <Widget>[
                       Expanded(
@@ -704,6 +711,7 @@ class _DateState extends State<Date> {
                   ),
                 ),
                 Expanded(
+                  flex: 2,
                   child: AutoSizeText(
                     DateFormat.y('en_US').format(widget.date),
                     style: TextStyle(
