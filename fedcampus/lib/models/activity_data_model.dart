@@ -3,11 +3,13 @@ import 'dart:convert';
 import 'dart:io' show SocketException;
 
 import 'package:fedcampus/models/activity_data.dart';
+import 'package:fedcampus/models/health_data_model.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/utility/http_api.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/utility/global.dart';
+import 'package:fedcampus/utility/my_exceptions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -88,16 +90,26 @@ class ActivityDataModel extends ChangeNotifier {
     return response;
   }
 
-  void _setAndNotify(dynamic jsonValue) {
+  void _setAndNotify(dynamic jsonValue, String category) {
+    /// Update the value based on the catetory
+    /// category can be either "average" or "rank"
     final jsonMap = jsonValue as Map<String, dynamic>;
     jsonMap.forEach((key, value) {
       if (activityData[key] != null) {
-        activityData[key]['average'] = value['avg'];
-        activityData[key]['rank'] = value['ranking'];
+        if (category == "average") {
+          activityData[key]['average'] = value;
+        } else {
+          activityData[key]['rank'] = value;
+        }
       }
       //calculate the average value of carbon emission
-      activityData['carbon_emission']['average'] =  activityData['distance']['average'] / 1000 * 42;
-      activityData['carbon_emission']['rank'] =  activityData['distance']['rank'];
+      if (category == "avg") {
+        activityData['carbon_emission']['average'] =
+            activityData['distance']['average'] / 1000 * 42;
+      } else {
+        activityData['carbon_emission']['rank'] =
+            activityData['distance']['rank'];
+      }
     });
     activityData["query_time"] =
         DateTime.now().millisecondsSinceEpoch.toDouble();
@@ -107,12 +119,6 @@ class ActivityDataModel extends ChangeNotifier {
 
   void _clearAll() {
     activityData = ActivityData.create();
-    // activityData.forEach((key, value) {
-    //   if (key != "query_time") {
-    //     activityData[key]['average'] = 0.0;
-    //     activityData[key]['rank'] = 0.0;
-    //   }
-    // });
   }
 
   Future<void> getActivityData({bool forcedRefresh = false}) async {
@@ -123,87 +129,36 @@ class ActivityDataModel extends ChangeNotifier {
     // get data and send to the server
     final dataNumber = int.parse(_date);
 
-    late dynamic bodyJson;
-
-    late http.Response response;
-
+    // send data to the server
     try {
-      response = await _sendFirstRequest();
+      var dw = DataWrapper();
+      await dw.getDayDataAndSendAndTrain(dataNumber);
+      logger.i("sending data for FA done");
+
+      // send avg request
+      var res = await HTTPApi.post(HTTPApi.average, <String, String>{},
+          jsonEncode({"time": dataNumber, "filter": filterParams}));
+      logger.i("avg response ${res.body}");
+      _setAndNotify(jsonDecode(res.body), "average");
+      // send rank request
+
+      res = await HTTPApi.post(HTTPApi.rank, <String, String>{},
+          jsonEncode({"time": dataNumber, "filter": filterParams}));
+      logger.i("rank response ${res.body}");
+      _setAndNotify(jsonDecode(res.body), "rank");
     } on PlatformException {
       _notify();
-      return;
     } on TimeoutException {
       _notify();
-      return;
     } on SocketException {
-      dataWrapperToast("Please Connect To Internet");
-      return;
-    }
-
-    logger.d(response.body);
-
-    if (response.statusCode == 200) {
-      // if the date is now, then return
-      if (_date == _now) {
-        _setAndNotify(jsonDecode(response.body));
-        return;
-      }
-
-      // check if there is data missing
-      final responseJson = jsonDecode(response.body);
-      List<String> dataMissing = List.empty(growable: true);
-      for (final element in dataList) {
-        if (responseJson[element] == null) {
-          dataMissing.add(element);
-        }
-      }
-      if (dataList.isEmpty) {
-        _setAndNotify(jsonDecode(response.body));
-        return;
-      }
-
-      // if there is data missing, send the second request
-      if (ifSent) {
-        _setAndNotify(jsonDecode(response.body));
-        return;
-      }
-      try {
-        var dw = DataWrapper();
-        List<Data?> data = await dw.getDataList(dataMissing, dataNumber);
-        bodyJson = jsonDecode(dataListJsonEncode(data));
-      } on PlatformException catch (error) {
-        if (error.message == "java.lang.SecurityException: 50005") {
-          logger.d("not authenticated");
-        } else if (error.message == "java.lang.SecurityException: 50030") {
-          logger.d("Internet connection Issue");
-        }
-        _notify();
-        return;
-      }
-
-      List<http.Response> responseArr = await Future.wait([
-        HTTPApi.post(HTTPApi.data, <String, String>{}, jsonEncode(bodyJson)),
-        // TODO: Data DP Algorithm!!!
-        // HTTPApi.post(HTTPApi.dataDP, <String, String>{}, jsonEncode(bodyJson))
-      ]);
-
-      logger.i(
-          "Data Status Code ${responseArr[0].statusCode} : ${jsonEncode(bodyJson)}");
-
-      if (responseArr[0].statusCode == 200) {
-        ifSent = true;
-        getActivityData();
-      } else {
-        logger.d("error");
-        _notify();
-      }
-    } else {
-      logger.e(response.statusCode);
-      if (response.statusCode == 401) {
-        // not authenticated, pop an authenticate reminder signing
-        dataWrapperToast("Please Login for federated analysis.");
-      }
       _notify();
+      dataWrapperToast("Please connet to internet");
+    } on InternetConnectionException {
+      _notify();
+      dataWrapperToast("Please connet to internet");
+    } on AuthenticationException {
+      _notify();
+      dataWrapperToast("Please authenticate");
     }
   }
 
