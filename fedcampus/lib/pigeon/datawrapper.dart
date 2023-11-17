@@ -44,7 +44,6 @@ class DataWrapper {
   ///50005 if the user is not authenticated, 50030 if the internet connection is down.
   ///If there is no data for that specifc date, the only data will be {step_time: value: 0}
   Future<List<Data>> getDataList(List<String> nameList, int time) async {
-
     var result =
         await userApi.healthDataHandler.getCachedDataListDay(nameList, time);
 
@@ -225,15 +224,6 @@ class DataWrapper {
   /// TODO: change the function
   Future<void> getDayDataAndSendAndTrain(int date) async {
     // get the data from the last day
-    final now = DateTime.now();
-    final dateNumber = now.year * 10000 + now.month * 100 + now.day;
-    final yeasterday = now.add(const Duration(days: -1));
-    final yeasterdayDate =
-        yeasterday.year * 10000 + yeasterday.month * 100 + yeasterday.day;
-    if (dateNumber == date) {
-      //get the last day
-      date = yeasterdayDate;
-    }
     late final List<Data?>? data;
     try {
       data = await getDataList(dataNameList, date);
