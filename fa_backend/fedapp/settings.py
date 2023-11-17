@@ -59,6 +59,11 @@ LOGGING = {
             "level": "INFO",
             "propagate": True,
         },
+        "api.views": {
+            "handlers": ["file", "console"],
+            "level": "INFO",
+            "propagate": True,
+        },
     },
 }
 
