@@ -64,7 +64,9 @@ class IOSHealth extends FedHealthData {
       required DateTime startTime,
       required DateTime endTime}) async {
     if (entry == "sleep_time" || entry == "sleep_duration") {
-      endTime = endTime.add(const Duration(hours: 10));
+      /// startTime of sleep has to be in the range of startTime and endTime
+      startTime = startTime.add(const Duration(hours: 8));
+      endTime = endTime.add(const Duration(hours: 8));
     }
     await authenticate();
     var res = await _health
@@ -92,8 +94,21 @@ class IOSHealth extends FedHealthData {
       var sortList = health.toList();
       sortList.sort((a, b) => double.parse(a.value.toString())
           .compareTo(double.parse(b.value.toString())));
-      sum =
-          _sleepDurationToDouble(sortList.last.dateFrom, sortList.last.dateTo);
+      DateTime start = sortList[0].dateFrom;
+      DateTime end = sortList[0].dateTo;
+      if (sortList.length > 1) {
+        for (var i = 1; i < sortList.length; i++) {
+          if (0 < start.difference(sortList[i].dateTo).inMinutes &&
+              start.difference(sortList[i].dateTo).inMinutes < 30) {
+            start = sortList[i].dateFrom;
+          } else if (0 < sortList[i].dateFrom.difference(end).inMinutes &&
+              sortList[i].dateFrom.difference(end).inMinutes < 30) {
+            end = sortList[i].dateTo;
+          }
+        }
+      }
+
+      sum = _sleepDurationToDouble(start, end);
     } else {
       if (health.isEmpty) {
         sum = -1;
