@@ -39,8 +39,7 @@ class HealthDataModel extends ChangeNotifier {
     }
 
     try {
-      _healthData.addAll(
-          await getBodyData(int.parse(_date), forcedRefresh: forcedRefresh));
+      _healthData.addAll(await _getBodyData(forcedRefresh: forcedRefresh));
     } on AuthenticationException catch (error) {
       logger.e(error);
       _notify();
@@ -84,12 +83,11 @@ class HealthDataModel extends ChangeNotifier {
     return _screenData;
   }
 
-  static Future<Map<String, double>> getBodyData(int date,
-      {bool forcedRefresh = false}) async {
+  Future<Map<String, double>> _getBodyData({bool forcedRefresh = false}) async {
     Map<String, double> res = {};
 
     res = await userApi.healthDataHandler.getCachedValueMapDay(
-        calendar.intToDateTime(date), DataWrapper.dataNameList,
+        calendar.intToDateTime(int.parse(_date)), DataWrapper.dataNameList,
         forcedRefresh: userApi.isAndroid ? forcedRefresh : true);
     logger.d(res);
 

@@ -110,15 +110,11 @@ class FedHealthData {
       }
     }
 
-    late List<Data> dirtyHealthData;
-    try {
-      dirtyHealthData = await userApi.healthDataHandler.getDataListInterval(
-          entry: dirtyDataList,
-          startTime: DateTime(dateTime.year, dateTime.month, dateTime.day),
-          endTime: DateTime(dateTime.year, dateTime.month, dateTime.day + 1));
-    } on Exception {
-      rethrow;
-    }
+    List<Data> dirtyHealthData = await userApi.healthDataHandler
+        .getDataListInterval(
+            entry: dirtyDataList,
+            startTime: DateTime(dateTime.year, dateTime.month, dateTime.day),
+            endTime: DateTime(dateTime.year, dateTime.month, dateTime.day + 1));
 
     // write newly queried data into DB
     for (final e in dirtyHealthData) {
