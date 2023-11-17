@@ -28,11 +28,6 @@ class ActivityDataModel extends ChangeNotifier {
           DateTime.now().day)
       .toString();
 
-  final String _now = (DateTime.now().year * 10000 +
-          DateTime.now().month * 100 +
-          DateTime.now().day)
-      .toString();
-
   Map<String, dynamic> filterParams = {
     "status": "all",
     "student": 0,
@@ -51,47 +46,6 @@ class ActivityDataModel extends ChangeNotifier {
 
   String get date => _date;
 
-  Future<http.Response> _sendFirstRequest() async {
-    final dataNumber = int.parse(_date);
-
-    late dynamic bodyJson;
-
-    // get body json
-    if (_date == _now) {
-      try {
-        var dw = DataWrapper();
-        final data = await dw.getDataList(dataList, dataNumber);
-        bodyJson = jsonDecode(dataListJsonEncode(data));
-      } on PlatformException catch (error) {
-        if (error.message == "java.lang.SecurityException: 50005") {
-          logger.e("not authenticated");
-        } else if (error.message == "java.lang.SecurityException: 50030") {
-          logger.e("Internet connection Issue");
-          FedToast.internetIssue();
-        }
-        rethrow;
-      }
-    } else {
-      bodyJson = List.empty(growable: true);
-    }
-    bodyJson.add({"time": dataNumber});
-    bodyJson.add({"filter": filterParams});
-    logger.i("FA body sent to server: $bodyJson");
-    late http.Response response;
-    try {
-      response = await HTTPApi.post(
-              HTTPApi.fedAnalysis, <String, String>{}, jsonEncode(bodyJson))
-          .timeout(const Duration(seconds: 5));
-    } on TimeoutException {
-      rethrow;
-    }
-
-    logger.d(response.body);
-
-    return response;
-  }
-
-
   void _setAndNotify(dynamic jsonValue, String category) {
     /// Update the value based on the catetory
     /// category can be either "average" or "rank"
@@ -103,10 +57,9 @@ class ActivityDataModel extends ChangeNotifier {
         } else {
           activityData[key]['rank'] = value;
         }
-
       }
       //calculate the average value of carbon emission
-      if (category == "avg") {
+      if (category == "average") {
         activityData['carbon_emission']['average'] =
             activityData['distance']['average'] / 1000 * 42;
       } else {
@@ -119,7 +72,6 @@ class ActivityDataModel extends ChangeNotifier {
 
   void _clearAll() {
     activityData = ActivityData.create();
-
   }
 
   Future<void> getActivityData({bool forcedRefresh = false}) async {
