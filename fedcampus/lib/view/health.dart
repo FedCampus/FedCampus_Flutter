@@ -77,21 +77,29 @@ class _HealthState extends State<Health> {
           child: Container(
             padding: EdgeInsets.fromLTRB(
                 22 * pixel, 19 * pixel, 22 * pixel, 10 * pixel),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Expanded(
-                  flex: 1,
-                  child: LeftColumn(
-                    date: dateTime,
-                    onDateChange: updateDate,
-                  ),
+            child: Column(
+              children: [
+                Date(
+                  date: dateTime,
+                  onDateChange: updateDate,
                 ),
                 SizedBox(
-                  width: 22 * pixel,
+                  height: 20 * pixel,
                 ),
-                const Expanded(flex: 1, child: RightColumn()),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const Expanded(
+                      flex: 1,
+                      child: LeftColumn(),
+                    ),
+                    SizedBox(
+                      width: 22 * pixel,
+                    ),
+                    const Expanded(flex: 1, child: RightColumn()),
+                  ],
+                ),
               ],
             ),
           ),
@@ -104,12 +112,7 @@ class _HealthState extends State<Health> {
 class LeftColumn extends StatelessWidget {
   const LeftColumn({
     super.key,
-    required this.date,
-    required this.onDateChange,
   });
-
-  final DateTime date;
-  final void Function(DateTime selectedDate) onDateChange;
 
   @override
   Widget build(BuildContext context) {
@@ -119,13 +122,6 @@ class LeftColumn extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Date(
-              date: date,
-              onDateChange: onDateChange,
-            ),
-            SizedBox(
-              height: 20 * pixel,
-            ),
             const Heart(),
             SizedBox(
               height: 20 * pixel,
@@ -135,6 +131,10 @@ class LeftColumn extends StatelessWidget {
               height: 20 * pixel,
             ),
             const SleepDuration(),
+            SizedBox(
+              height: 21 * pixel,
+            ),
+            const Sleep(),
             SizedBox(
               height: 20 * pixel,
             ),
@@ -146,13 +146,6 @@ class LeftColumn extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Date(
-              date: date,
-              onDateChange: onDateChange,
-            ),
-            SizedBox(
-              height: 20 * pixel,
-            ),
             const Heart(),
             SizedBox(
               height: 20 * pixel,
@@ -165,7 +158,11 @@ class LeftColumn extends StatelessWidget {
             SizedBox(
               height: 20 * pixel,
             ),
-            const StepTime()
+            const StepTime(),
+            SizedBox(
+              height: 20 * pixel,
+            ),
+            const CarbonEmission(),
           ],
         ),
       );
@@ -193,17 +190,7 @@ class RightColumn extends StatelessWidget {
           SizedBox(
             height: 21 * pixel,
           ),
-          SizedBox(
-            height: 21 * pixel,
-          ),
-          const Sleep(),
-          SizedBox(
-            height: 21 * pixel,
-          ),
           const CarbonEmission(),
-          SizedBox(
-            height: 21 * pixel,
-          ),
         ],
       );
     } else {
@@ -227,10 +214,6 @@ class RightColumn extends StatelessWidget {
             height: 21 * pixel,
           ),
           const ScreenTime(),
-          SizedBox(
-            height: 21 * pixel,
-          ),
-          const CarbonEmission(),
           SizedBox(
             height: 21 * pixel,
           ),
@@ -330,16 +313,19 @@ class _DateState extends State<Date> {
         style: TextButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
           padding: EdgeInsets.fromLTRB(
-              14 * pixel, 18 * pixel, 14 * pixel, 17 * pixel),
+              14 * pixel, 10 * pixel, 14 * pixel, 10 * pixel),
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10 * pixel)),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const FedIcon(imagePath: 'assets/images/health_nav_icon.png'),
+            const FedIcon(
+                width: 60,
+                height: 60,
+                imagePath: 'assets/images/health_nav_icon.png'),
             SizedBox(
-              width: 10 * pixel,
+              width: 25 * pixel,
             ),
             SizedBox(
               child: Column(
@@ -349,7 +335,7 @@ class _DateState extends State<Date> {
                     margin: EdgeInsets.fromLTRB(
                         0 * pixel, 0 * pixel, 0 * pixel, 5 * pixel),
                     child: Text(
-                      DateFormat.MMMd('en_US').format(widget.date),
+                      "${DateFormat.MMMd('en_US').format(widget.date)}    ${DateFormat.E('en_US').format(widget.date)}",
                       style: TextStyle(
                           color: Theme.of(context).colorScheme.primaryContainer,
                           fontSize: pixel * 22,

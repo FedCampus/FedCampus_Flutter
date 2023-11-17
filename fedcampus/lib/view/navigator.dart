@@ -1,5 +1,5 @@
 import 'package:fedcampus/pigeon/datawrapper.dart';
-import 'package:fedcampus/view/activity.dart';
+import 'package:fedcampus/view/stats.dart';
 import 'package:fedcampus/view/me.dart';
 import 'package:fedcampus/view/widgets/sliding_page.dart';
 import 'package:flutter/material.dart';
