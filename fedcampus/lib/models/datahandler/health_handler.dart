@@ -51,15 +51,9 @@ class FedHealthData {
   }) async {
     List<Data> dataList = [];
     for (String element in entry) {
-      Data data;
-      try {
-        data = await getDataInterval(
-            entry: element, startTime: startTime, endTime: endTime);
-        dataList.add(data);
-      } catch (e) {
-        logger.e(e);
-        rethrow;
-      }
+      Data data = await getDataInterval(
+          entry: element, startTime: startTime, endTime: endTime);
+      dataList.add(data);
     }
     return dataList;
   }
@@ -116,11 +110,15 @@ class FedHealthData {
       }
     }
 
-    List<Data> dirtyHealthData = await userApi.healthDataHandler
-        .getDataListInterval(
-            entry: dirtyDataList,
-            startTime: DateTime(dateTime.year, dateTime.month, dateTime.day),
-            endTime: DateTime(dateTime.year, dateTime.month, dateTime.day + 1));
+    late List<Data> dirtyHealthData;
+    try {
+      dirtyHealthData = await userApi.healthDataHandler.getDataListInterval(
+          entry: dirtyDataList,
+          startTime: DateTime(dateTime.year, dateTime.month, dateTime.day),
+          endTime: DateTime(dateTime.year, dateTime.month, dateTime.day + 1));
+    } on Exception {
+      rethrow;
+    }
 
     // write newly queried data into DB
     for (final e in dirtyHealthData) {
