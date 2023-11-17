@@ -24,6 +24,12 @@ class _HealthSlidingPagesState extends State<HealthSlidingPages> {
         Expanded(child: Image.asset("assets/images/guide/health_refresh.jpg")),
         const AutoSizeText("Pull down to refresh")
       ],
+    ),
+    const Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        AutoSizeText("Configure what cards to show in Account -> Preferences")
+      ],
     )
   ];
   @override

@@ -15,6 +15,80 @@ import 'package:provider/provider.dart';
 import '../utility/event_bus.dart';
 import '../utility/global.dart';
 
+final healthEntries = userApi.isAndroid
+    ? [
+        {
+          "entry_name": "heart",
+          "height": 1.1,
+        },
+        {
+          "entry_name": "distance",
+          "height": 1.0,
+        },
+        {
+          "entry_name": "stress",
+          "height": 1.0,
+        },
+        {
+          "entry_name": "step_time",
+          "height": 1.25,
+        },
+        {
+          "entry_name": "step",
+          "height": 1.0,
+        },
+        {
+          "entry_name": "calorie",
+          "height": 1.0,
+        },
+        {
+          "entry_name": "intense_exercise",
+          "height": 1.2,
+        },
+        {
+          "entry_name": "sleep_efficiency",
+          "height": 1.1,
+        },
+        {
+          "entry_name": "screen_time",
+          "height": 1.2,
+        },
+        {
+          "entry_name": "carbon_emission",
+          "height": 1.1,
+        },
+      ]
+    : [
+        {
+          "entry_name": "heart",
+          "height": 1.1,
+        },
+        {
+          "entry_name": "distance",
+          "height": 1.0,
+        },
+        {
+          "entry_name": "sleep_duration",
+          "height": 1.0,
+        },
+        {
+          "entry_name": "step",
+          "height": 1.0,
+        },
+        {
+          "entry_name": "calorie",
+          "height": 1.0,
+        },
+        {
+          "entry_name": "sleep",
+          "height": 1.1,
+        },
+        {
+          "entry_name": "carbon_emission",
+          "height": 1.1,
+        },
+      ];
+
 class Health extends StatefulWidget {
   const Health({
     super.key,
@@ -27,6 +101,21 @@ class Health extends StatefulWidget {
 class _HealthState extends State<Health> {
   DateTime dateTime = DateTime.now();
 
+  final entriesMap = {
+    "heart": const Heart(),
+    "distance": const Distance(),
+    "stress": const Stress(),
+    "step_time": const StepTime(),
+    "step": const Step(),
+    "calorie": const Calorie(),
+    "intense_exercise": const IntenseExercise(),
+    "sleep_efficiency": const Sleep(),
+    "screen_time": const ScreenTime(),
+    "carbon_emission": const CarbonEmission(),
+    "sleep_duration": const SleepDuration(),
+    "sleep": const Sleep(),
+  };
+
   @override
   void initState() {
     super.initState();
@@ -35,6 +124,71 @@ class _HealthState extends State<Health> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       refresh();
     });
+  }
+
+  (List<Widget>, List<Widget>) _splitEntriesRecursiveThreshold(
+      [threshhold = 1]) {
+    List<Widget> left;
+    List<Widget> right;
+    (left, right) = _splitEntriesThreshold(threshhold);
+    if (left.isEmpty) {
+      return _splitEntriesRecursiveThreshold(2 * threshhold);
+    }
+    return (left, right);
+  }
+
+  (List<Widget>, List<Widget>) _splitEntriesThreshold([threshhold = 1]) {
+    final validEntries = healthEntries
+        .where((e) => userApi.prefs.getBool(e["entry_name"] as String) ?? true)
+        .toList();
+    final totalWeight = validEntries
+        .map<double>((entry) => entry['height'] as double)
+        .reduce((a, b) => a + b);
+    double targetWeight = totalWeight / 2;
+    List<dynamic> group1 = [];
+    List<dynamic> group2 = [];
+
+    bool partition(int index, double currentSum, List<dynamic> group) {
+      if ((currentSum - targetWeight).abs() < threshhold) {
+        return true;
+      }
+      if (currentSum > targetWeight + threshhold ||
+          index >= validEntries.length) {
+        return false;
+      }
+
+      // Include the current weight in the group
+      group.add(validEntries[index]);
+
+      // Recursively check if a solution is found
+      if (partition(index + 1,
+          currentSum + (validEntries[index]["height"] as double), group)) {
+        return true;
+      }
+
+      // Exclude the current weight from the group
+      group.removeLast();
+
+      // Recursively check if a solution is found
+      if (partition(index + 1, currentSum, group)) {
+        return true;
+      }
+
+      return false;
+    }
+
+    // Start the partitioning process
+    partition(0, 0, group1);
+
+    // Assign the remaining weights to group2
+    group2 = validEntries.where((weight) => !group1.contains(weight)).toList();
+
+    List<Widget> left =
+        group1.map<Widget>((e) => entriesMap[e["entry_name"]]!).toList();
+    List<Widget> right =
+        group2.map<Widget>((e) => entriesMap[e["entry_name"]]!).toList();
+
+    return (left, right);
   }
 
   Future<void> refresh({bool forcedRefresh = false}) async {
@@ -67,6 +221,9 @@ class _HealthState extends State<Health> {
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
+    List<Widget> left;
+    List<Widget> right;
+    (left, right) = _splitEntriesRecursiveThreshold(0.05);
     return RefreshIndicator(
       onRefresh: () => refresh(forcedRefresh: true),
       child: SizedBox(
@@ -90,14 +247,21 @@ class _HealthState extends State<Health> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    const Expanded(
+                    Expanded(
                       flex: 1,
-                      child: LeftColumn(),
+                      child: HealthCardColumn(
+                        children: left,
+                      ),
                     ),
                     SizedBox(
                       width: 22 * pixel,
                     ),
-                    const Expanded(flex: 1, child: RightColumn()),
+                    Expanded(
+                      flex: 1,
+                      child: HealthCardColumn(
+                        children: right,
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -109,117 +273,32 @@ class _HealthState extends State<Health> {
   }
 }
 
-class LeftColumn extends StatelessWidget {
-  const LeftColumn({
+class HealthCardColumn extends StatelessWidget {
+  const HealthCardColumn({
     super.key,
+    required this.children,
   });
+
+  final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
-    if (!userApi.isAndroid) {
-      return SizedBox(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            const Heart(),
-            SizedBox(
-              height: 20 * pixel,
-            ),
-            const Distance(),
-            SizedBox(
-              height: 20 * pixel,
-            ),
-            const SleepDuration(),
-            SizedBox(
-              height: 21 * pixel,
-            ),
-            const Sleep(),
-            SizedBox(
-              height: 20 * pixel,
-            ),
-          ],
-        ),
-      );
-    } else {
-      return SizedBox(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            const Heart(),
-            SizedBox(
-              height: 20 * pixel,
-            ),
-            const Distance(),
-            SizedBox(
-              height: 20 * pixel,
-            ),
-            const Stress(),
-            SizedBox(
-              height: 20 * pixel,
-            ),
-            const StepTime(),
-            SizedBox(
-              height: 20 * pixel,
-            ),
-            const CarbonEmission(),
-          ],
-        ),
-      );
-    }
-  }
-}
 
-class RightColumn extends StatelessWidget {
-  const RightColumn({
-    super.key,
-  });
+    Widget elementToInsert = SizedBox(
+      height: 20 * pixel,
+    );
+    List<Widget> childrenWithMeDividerInserted = [];
+    childrenWithMeDividerInserted = children
+        .sublist(0, children.length - 1)
+        .expand((Widget item) => [item, elementToInsert])
+        .toList()
+      ..add(children.last);
 
-  @override
-  Widget build(BuildContext context) {
-    double pixel = MediaQuery.of(context).size.width / 400;
-    if (!userApi.isAndroid) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          const Step(),
-          SizedBox(
-            height: 21 * pixel,
-          ),
-          const Calorie(),
-          SizedBox(
-            height: 21 * pixel,
-          ),
-          const CarbonEmission(),
-        ],
-      );
-    } else {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          const Step(),
-          SizedBox(
-            height: 21 * pixel,
-          ),
-          const Calorie(),
-          SizedBox(
-            height: 21 * pixel,
-          ),
-          const IntenseExercise(),
-          SizedBox(
-            height: 21 * pixel,
-          ),
-          const Sleep(),
-          SizedBox(
-            height: 21 * pixel,
-          ),
-          const ScreenTime(),
-          SizedBox(
-            height: 21 * pixel,
-          ),
-        ],
-      );
-    }
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: childrenWithMeDividerInserted,
+    );
   }
 }
 
@@ -287,6 +366,7 @@ class _DateState extends State<Date> {
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
     return Container(
+      height: 80 * pixel,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.onPrimaryContainer,
         borderRadius: BorderRadius.circular(10 * pixel),
@@ -313,50 +393,70 @@ class _DateState extends State<Date> {
         style: TextButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
           padding: EdgeInsets.fromLTRB(
-              14 * pixel, 10 * pixel, 14 * pixel, 10 * pixel),
+              14 * pixel, 12 * pixel, 14 * pixel, 12 * pixel),
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10 * pixel)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const FedIcon(
-                width: 60,
-                height: 60,
-                imagePath: 'assets/images/health_nav_icon.png'),
-            SizedBox(
-              width: 25 * pixel,
+          children: <Widget>[
+            const Expanded(
+              flex: 1,
+              child: SizedBox(),
             ),
-            SizedBox(
+            FedIcon(
+              imagePath: 'assets/images/health_nav_icon.png',
+              height: 52 * pixel,
+            ),
+            const Expanded(
+              flex: 1,
+              child: SizedBox(),
+            ),
+            Expanded(
+              flex: 10,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    margin: EdgeInsets.fromLTRB(
-                        0 * pixel, 0 * pixel, 0 * pixel, 5 * pixel),
-                    child: Text(
-                      "${DateFormat.MMMd('en_US').format(widget.date)}    ${DateFormat.E('en_US').format(widget.date)}",
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.primaryContainer,
-                          fontSize: pixel * 22,
-                          shadows: [
-                            BoxShadow(
-                              color: Theme.of(context).colorScheme.shadow,
-                              offset: Offset(0 * pixel, 2 * pixel),
-                              blurRadius: 1 * pixel,
-                            ),
-                          ]),
+                children: <Widget>[
+                  Expanded(
+                    flex: 3,
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          flex: 2,
+                          child: AutoSizeText(
+                            "${DateFormat.MMMd('en_US').format(widget.date)}  ${DateFormat.E('en_US').format(widget.date)}",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: pixel * 22,
+                                shadows: [
+                                  BoxShadow(
+                                    color: Theme.of(context).colorScheme.shadow,
+                                    offset: Offset(0 * pixel, 2 * pixel),
+                                    blurRadius: 1 * pixel,
+                                  ),
+                                ],
+                                color: Theme.of(context).colorScheme.secondary),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Text(
-                    DateFormat.y('en_US').format(widget.date),
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.primaryContainer,
-                      fontSize: pixel * 17,
+                  Expanded(
+                    flex: 2,
+                    child: AutoSizeText(
+                      DateFormat.y('en_US').format(widget.date),
+                      style: TextStyle(
+                          fontSize: pixel * 18,
+                          color: Theme.of(context).colorScheme.secondary),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ],
               ),
+            ),
+            const Expanded(
+              flex: 2,
+              child: SizedBox(),
             ),
           ],
         ),

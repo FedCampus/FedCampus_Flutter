@@ -1,6 +1,7 @@
 import 'package:fedcampus/main.dart';
 import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/utility/log.dart';
+import 'package:fedcampus/view/me/health_card_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -27,7 +28,7 @@ class _PreferencesState extends State<Preferences> {
     super.initState();
   }
 
-  toggleTheme(bool b, BuildContext context) async {
+  toggleTheme(bool b) async {
     userApi.prefs.setBool('isDarkModeOn', b);
     Provider.of<MyAppState>(context, listen: false).toggleTheme(b);
   }
@@ -163,6 +164,14 @@ class _PreferencesState extends State<Preferences> {
                 callback: () => userApi.screenTimeDataHandler.authenticate(),
               ),
               SettingsButton(
+                text: AppLocalizations.of(context)!.health_page_shown,
+                callback: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const HealthCardSettings()),
+                ),
+              ),
+              SettingsButton(
                   text: AppLocalizations.of(context)!.reset_preferences,
                   callback: resetPreferencesConfirmDialog),
             ],
@@ -223,7 +232,7 @@ class SettingsSwitch extends StatefulWidget {
 
   final String text;
   final bool value;
-  final void Function(bool, BuildContext) callback;
+  final void Function(bool) callback;
 
   @override
   State<SettingsSwitch> createState() => _SettingsSwitchState();
@@ -258,7 +267,7 @@ class _SettingsSwitchState extends State<SettingsSwitch> {
               setState(() {
                 _value = b;
               });
-              widget.callback(b, context);
+              widget.callback(b);
             },
           ),
         ],
