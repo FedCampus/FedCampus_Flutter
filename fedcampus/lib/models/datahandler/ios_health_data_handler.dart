@@ -74,8 +74,8 @@ class IOSHealth extends FedHealthData {
     var health = res
         .map((e) => e.sourceName)
         .toSet()
-        .map((e) =>
-            _getSum(entry, res.where((element) => element.sourceName == e)))
+        .map((e) => _getSum(
+            entry, res.where((element) => element.sourceName == e), startTime))
         .toList();
     double sum = health.isEmpty
         ? 0.0
@@ -88,27 +88,26 @@ class IOSHealth extends FedHealthData {
         endTime: calendar.dateTimeToInt(endTime));
   }
 
-  double _getSum(String entry, Iterable<HealthDataPoint> health) {
+  double _getSum(
+      String entry, Iterable<HealthDataPoint> health, DateTime startTime) {
+    /// Note that startTime is only used for the sleep duration
+    /// startTIme is the current day 8:00 am
+    // Here we change it to 20:00
+    startTime = startTime.add(const Duration(hours: 12));
     double sum = 0;
     if (entry == "sleep_duration" && health.isNotEmpty) {
-      var sortList = health.toList();
-      sortList.sort((a, b) => double.parse(a.value.toString())
-          .compareTo(double.parse(b.value.toString())));
-      DateTime start = sortList[0].dateFrom;
-      DateTime end = sortList[0].dateTo;
-      if (sortList.length > 1) {
-        for (var i = 1; i < sortList.length; i++) {
-          if (0 < start.difference(sortList[i].dateTo).inMinutes &&
-              start.difference(sortList[i].dateTo).inMinutes < 30) {
-            start = sortList[i].dateFrom;
-          } else if (0 < sortList[i].dateFrom.difference(end).inMinutes &&
-              sortList[i].dateFrom.difference(end).inMinutes < 30) {
-            end = sortList[i].dateTo;
-          }
-        }
+      final list = health
+          .toList()
+          .where((element) => element.dateFrom.compareTo(startTime) > 0);
+      if (list.isEmpty) {
+        return 0;
       }
+      final start = list.reduce((value, element) =>
+          value.dateFrom.compareTo(element.dateFrom) < 0 ? value : element);
+      final end = list.reduce((value, element) =>
+          value.dateTo.compareTo(element.dateTo) > 0 ? value : element);
 
-      sum = _sleepDurationToDouble(start, end);
+      sum = _sleepDurationToDouble(start.dateFrom, end.dateTo);
     } else {
       if (health.isEmpty) {
         sum = -1;
