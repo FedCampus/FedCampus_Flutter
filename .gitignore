@@ -13,6 +13,8 @@
 **desktop.ini
 **.venv/
 
+log.log
+
 logs/
 fa_backend/media/android/
 

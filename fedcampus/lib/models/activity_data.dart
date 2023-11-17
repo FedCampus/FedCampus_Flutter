@@ -47,6 +47,12 @@ class ActivityData {
               "simliar_user": [],
               "valid_data": false
             },
+            "carbon_emission": {
+              "average": 0,
+              "rank": 0,
+              "simliar_user": [],
+              "valid_data": false
+            },
           }
         : {
             "step": {
@@ -68,6 +74,12 @@ class ActivityData {
               "valid_data": false
             },
             "sleep_time": {
+              "average": 0,
+              "rank": 0,
+              "simliar_user": [],
+              "valid_data": false
+            },
+            "carbon_emission": {
               "average": 0,
               "rank": 0,
               "simliar_user": [],
