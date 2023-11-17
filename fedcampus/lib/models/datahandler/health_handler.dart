@@ -51,14 +51,9 @@ class FedHealthData {
   }) async {
     List<Data> dataList = [];
     for (String element in entry) {
-      Data data;
-      try {
-        data = await getDataInterval(
-            entry: element, startTime: startTime, endTime: endTime);
-        dataList.add(data);
-      } on Exception {
-        rethrow;
-      }
+      Data data = await getDataInterval(
+          entry: element, startTime: startTime, endTime: endTime);
+      dataList.add(data);
     }
     return dataList;
   }

@@ -44,13 +44,8 @@ class DataWrapper {
   ///50005 if the user is not authenticated, 50030 if the internet connection is down.
   ///If there is no data for that specifc date, the only data will be {step_time: value: 0}
   Future<List<Data>> getDataList(List<String> nameList, int time) async {
-    late List<Data> result;
-    try {
-      result = (await userApi.healthDataHandler
-          .getCachedDataListDay(nameList, time));
-    } on Exception {
-      rethrow;
-    }
+    var result =
+        await userApi.healthDataHandler.getCachedDataListDay(nameList, time);
 
     result.removeWhere((element) => element.success == false);
     return result;
