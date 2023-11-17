@@ -15,6 +15,80 @@ import 'package:provider/provider.dart';
 import '../utility/event_bus.dart';
 import '../utility/global.dart';
 
+final healthEntries = userApi.isAndroid
+    ? [
+        {
+          "entry_name": "heart",
+          "height": 1.1,
+        },
+        {
+          "entry_name": "distance",
+          "height": 1.0,
+        },
+        {
+          "entry_name": "stress",
+          "height": 1.0,
+        },
+        {
+          "entry_name": "step_time",
+          "height": 1.25,
+        },
+        {
+          "entry_name": "step",
+          "height": 1.0,
+        },
+        {
+          "entry_name": "calorie",
+          "height": 1.0,
+        },
+        {
+          "entry_name": "intense_exercise",
+          "height": 1.2,
+        },
+        {
+          "entry_name": "sleep_efficiency",
+          "height": 1.1,
+        },
+        {
+          "entry_name": "screen_time",
+          "height": 1.2,
+        },
+        {
+          "entry_name": "carbon_emission",
+          "height": 1.1,
+        },
+      ]
+    : [
+        {
+          "entry_name": "heart",
+          "height": 1.1,
+        },
+        {
+          "entry_name": "distance",
+          "height": 1.0,
+        },
+        {
+          "entry_name": "sleep_duration",
+          "height": 1.0,
+        },
+        {
+          "entry_name": "step",
+          "height": 1.0,
+        },
+        {
+          "entry_name": "calorie",
+          "height": 1.0,
+        },
+        {
+          "entry_name": "sleep",
+          "height": 1.1,
+        },
+        {
+          "entry_name": "carbon_emission",
+          "height": 1.1,
+        },
+      ];
+
 class Health extends StatefulWidget {
   const Health({
     super.key,
@@ -42,80 +116,6 @@ class _HealthState extends State<Health> {
     "sleep": const Sleep(),
   };
 
-  final entries = userApi.isAndroid
-      ? [
-          {
-            "entry_name": "heart",
-            "height": 1.1,
-          },
-          {
-            "entry_name": "distance",
-            "height": 1.0,
-          },
-          {
-            "entry_name": "stress",
-            "height": 1.0,
-          },
-          {
-            "entry_name": "step_time",
-            "height": 1.25,
-          },
-          {
-            "entry_name": "step",
-            "height": 1.0,
-          },
-          {
-            "entry_name": "calorie",
-            "height": 1.0,
-          },
-          {
-            "entry_name": "intense_exercise",
-            "height": 1.2,
-          },
-          {
-            "entry_name": "sleep_efficiency",
-            "height": 1.1,
-          },
-          {
-            "entry_name": "screen_time",
-            "height": 1.2,
-          },
-          {
-            "entry_name": "carbon_emission",
-            "height": 1.1,
-          },
-        ]
-      : [
-          {
-            "entry_name": "heart",
-            "height": 1.1,
-          },
-          {
-            "entry_name": "distance",
-            "height": 1.0,
-          },
-          {
-            "entry_name": "sleep_duration",
-            "height": 1.0,
-          },
-          {
-            "entry_name": "step",
-            "height": 1.0,
-          },
-          {
-            "entry_name": "calorie",
-            "height": 1.0,
-          },
-          {
-            "entry_name": "sleep",
-            "height": 1.1,
-          },
-          {
-            "entry_name": "carbon_emission",
-            "height": 1.1,
-          },
-        ];
-
   @override
   void initState() {
     super.initState();
@@ -138,7 +138,10 @@ class _HealthState extends State<Health> {
   }
 
   (List<Widget>, List<Widget>) _splitEntriesThreshold([threshhold = 1]) {
-    final totalWeight = entries
+    final validEntries = healthEntries
+        .where((e) => userApi.prefs.getBool(e["entry_name"] as String) ?? true)
+        .toList();
+    final totalWeight = validEntries
         .map<double>((entry) => entry['height'] as double)
         .reduce((a, b) => a + b);
     double targetWeight = totalWeight / 2;
@@ -149,16 +152,17 @@ class _HealthState extends State<Health> {
       if ((currentSum - targetWeight).abs() < threshhold) {
         return true;
       }
-      if (currentSum > targetWeight + threshhold || index >= entries.length) {
+      if (currentSum > targetWeight + threshhold ||
+          index >= validEntries.length) {
         return false;
       }
 
       // Include the current weight in the group
-      group.add(entries[index]);
+      group.add(validEntries[index]);
 
       // Recursively check if a solution is found
       if (partition(index + 1,
-          currentSum + (entries[index]["height"] as double), group)) {
+          currentSum + (validEntries[index]["height"] as double), group)) {
         return true;
       }
 
@@ -177,7 +181,7 @@ class _HealthState extends State<Health> {
     partition(0, 0, group1);
 
     // Assign the remaining weights to group2
-    group2 = entries.where((weight) => !group1.contains(weight)).toList();
+    group2 = validEntries.where((weight) => !group1.contains(weight)).toList();
 
     List<Widget> left =
         group1.map<Widget>((e) => entriesMap[e["entry_name"]]!).toList();

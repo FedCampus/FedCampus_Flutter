@@ -15,6 +15,10 @@
   "@reset_preferences": {
     "description": "Reset preferences setting entry text"
   },
+  "health_page_shown": "Configure what is shown in Health page",
+  "@health_page_shown": {
+    "description": ""
+  },
   "navigator_health": "My Health",
   "@navigator_health": {
     "description": ""
