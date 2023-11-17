@@ -17,4 +17,6 @@ urlpatterns = [
     path("log", views.saveLogFile.as_view(), name="saveLogFile"),
     path("account", views.AccountSettings.as_view(), name="account"),
     path("status", views.Status.as_view(), name="status"),
+    path("avg", views.Average.as_view(), name="average"),
+    path("rank", views.Rank.as_view(), name="rank"),
 ]

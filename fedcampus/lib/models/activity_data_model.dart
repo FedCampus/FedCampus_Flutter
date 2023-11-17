@@ -17,6 +17,7 @@ import 'package:http/http.dart' as http;
 
 import '../utility/event_bus.dart';
 import '../utility/fluttertoast.dart';
+import '../utility/my_exceptions.dart';
 
 class ActivityDataModel extends ChangeNotifier {
   Map<String, dynamic> activityData = ActivityData.create();
@@ -90,6 +91,7 @@ class ActivityDataModel extends ChangeNotifier {
     return response;
   }
 
+
   void _setAndNotify(dynamic jsonValue, String category) {
     /// Update the value based on the catetory
     /// category can be either "average" or "rank"
@@ -101,6 +103,7 @@ class ActivityDataModel extends ChangeNotifier {
         } else {
           activityData[key]['rank'] = value;
         }
+
       }
       //calculate the average value of carbon emission
       if (category == "avg") {
@@ -111,14 +114,12 @@ class ActivityDataModel extends ChangeNotifier {
             activityData['distance']['rank'];
       }
     });
-    activityData["query_time"] =
-        DateTime.now().millisecondsSinceEpoch.toDouble();
-    userApi.prefs.setString("activity$date", json.encode(activityData));
     _notify();
   }
 
   void _clearAll() {
     activityData = ActivityData.create();
+
   }
 
   Future<void> getActivityData({bool forcedRefresh = false}) async {

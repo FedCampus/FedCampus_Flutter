@@ -5,7 +5,6 @@ import 'dart:math';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fedcampus/models/health_data_model.dart';
-import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/calendar.dart';
 import 'package:fedcampus/view/widgets/widget.dart';
@@ -38,12 +37,6 @@ class _HealthState extends State<Health> {
     });
   }
 
-  void _sendLastDayData() async {
-    var dw = DataWrapper();
-    dw.getDayDataAndSendAndTrain(
-        int.parse(Provider.of<HealthDataModel>(context, listen: false).date));
-  }
-
   Future<void> refresh({bool forcedRefresh = false}) async {
     Provider.of<HealthDataModel>(context, listen: false)
         .requestAllData(forcedRefresh: forcedRefresh);
@@ -52,7 +45,6 @@ class _HealthState extends State<Health> {
     bus.on("loading_done", (arg) {
       if (!loadingDialog.cancelled) loadingDialog.cancel();
     });
-    _sendLastDayData();
   }
 
   updateDate(DateTime selectedDate) {
@@ -85,21 +77,29 @@ class _HealthState extends State<Health> {
           child: Container(
             padding: EdgeInsets.fromLTRB(
                 22 * pixel, 19 * pixel, 22 * pixel, 10 * pixel),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Expanded(
-                  flex: 1,
-                  child: LeftColumn(
-                    date: dateTime,
-                    onDateChange: updateDate,
-                  ),
+            child: Column(
+              children: [
+                Date(
+                  date: dateTime,
+                  onDateChange: updateDate,
                 ),
                 SizedBox(
-                  width: 22 * pixel,
+                  height: 20 * pixel,
                 ),
-                const Expanded(flex: 1, child: RightColumn()),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const Expanded(
+                      flex: 1,
+                      child: LeftColumn(),
+                    ),
+                    SizedBox(
+                      width: 22 * pixel,
+                    ),
+                    const Expanded(flex: 1, child: RightColumn()),
+                  ],
+                ),
               ],
             ),
           ),
@@ -112,12 +112,7 @@ class _HealthState extends State<Health> {
 class LeftColumn extends StatelessWidget {
   const LeftColumn({
     super.key,
-    required this.date,
-    required this.onDateChange,
   });
-
-  final DateTime date;
-  final void Function(DateTime selectedDate) onDateChange;
 
   @override
   Widget build(BuildContext context) {
@@ -127,13 +122,6 @@ class LeftColumn extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Date(
-              date: date,
-              onDateChange: onDateChange,
-            ),
-            SizedBox(
-              height: 20 * pixel,
-            ),
             const Heart(),
             SizedBox(
               height: 20 * pixel,
@@ -143,6 +131,10 @@ class LeftColumn extends StatelessWidget {
               height: 20 * pixel,
             ),
             const SleepDuration(),
+            SizedBox(
+              height: 21 * pixel,
+            ),
+            const Sleep(),
             SizedBox(
               height: 20 * pixel,
             ),
@@ -154,13 +146,6 @@ class LeftColumn extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Date(
-              date: date,
-              onDateChange: onDateChange,
-            ),
-            SizedBox(
-              height: 20 * pixel,
-            ),
             const Heart(),
             SizedBox(
               height: 20 * pixel,
@@ -173,7 +158,11 @@ class LeftColumn extends StatelessWidget {
             SizedBox(
               height: 20 * pixel,
             ),
-            const StepTime()
+            const StepTime(),
+            SizedBox(
+              height: 20 * pixel,
+            ),
+            const CarbonEmission(),
           ],
         ),
       );
@@ -201,17 +190,7 @@ class RightColumn extends StatelessWidget {
           SizedBox(
             height: 21 * pixel,
           ),
-          SizedBox(
-            height: 21 * pixel,
-          ),
-          const Sleep(),
-          SizedBox(
-            height: 21 * pixel,
-          ),
           const CarbonEmission(),
-          SizedBox(
-            height: 21 * pixel,
-          ),
         ],
       );
     } else {
@@ -235,10 +214,6 @@ class RightColumn extends StatelessWidget {
             height: 21 * pixel,
           ),
           const ScreenTime(),
-          SizedBox(
-            height: 21 * pixel,
-          ),
-          const CarbonEmission(),
           SizedBox(
             height: 21 * pixel,
           ),
@@ -338,16 +313,19 @@ class _DateState extends State<Date> {
         style: TextButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
           padding: EdgeInsets.fromLTRB(
-              14 * pixel, 18 * pixel, 14 * pixel, 17 * pixel),
+              14 * pixel, 10 * pixel, 14 * pixel, 10 * pixel),
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10 * pixel)),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const FedIcon(imagePath: 'assets/images/health_nav_icon.png'),
+            const FedIcon(
+                width: 60,
+                height: 60,
+                imagePath: 'assets/images/health_nav_icon.png'),
             SizedBox(
-              width: 10 * pixel,
+              width: 25 * pixel,
             ),
             SizedBox(
               child: Column(
@@ -357,7 +335,7 @@ class _DateState extends State<Date> {
                     margin: EdgeInsets.fromLTRB(
                         0 * pixel, 0 * pixel, 0 * pixel, 5 * pixel),
                     child: Text(
-                      DateFormat.MMMd('en_US').format(widget.date),
+                      "${DateFormat.MMMd('en_US').format(widget.date)}    ${DateFormat.E('en_US').format(widget.date)}",
                       style: TextStyle(
                           color: Theme.of(context).colorScheme.primaryContainer,
                           fontSize: pixel * 22,
@@ -394,134 +372,19 @@ class Heart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double pixel = MediaQuery.of(context).size.width / 400;
-    return FedCard(
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                flex: 7,
-                child: Column(
-                  children: [
-                    AutoSizeText(
-                      "Heart Rate",
-                      maxLines: 1,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary),
-                    ),
-                    SizedBox(
-                      height: 10 * pixel,
-                    ),
-                    SvgIcon(
-                      imagePath: 'assets/svg/heart_rate.svg',
-                      width: 45,
-                      height: 45,
-                      colorFilter: ColorFilter.mode(
-                          Theme.of(context).colorScheme.primaryContainer,
-                          BlendMode.srcIn),
-                    ),
-                    SizedBox(
-                      height: 10 * pixel,
-                    ),
-                    AutoSizeText(
-                      "Rest",
-                      maxLines: 1,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary),
-                    ),
-                  ],
-                ),
-              ),
-              const Spacer(),
-              Expanded(
-                flex: 6,
-                child: Column(
-                  children: [
-                    AutoSizeText(
-                      formatNum(
-                        Provider.of<HealthDataModel>(context)
-                            .healthData['rest_heart_rate'],
-                        decimalPoints: 1,
-                        loading: Provider.of<HealthDataModel>(context).loading,
-                      ),
-                      maxLines: 1,
-                      style: montserratAlternatesTextStyle(pixel * 30,
-                          Theme.of(context).colorScheme.primaryContainer),
-                    ),
-                    AutoSizeText(
-                      "bpm",
-                      maxLines: 1,
-                      style: montserratAlternatesTextStyle(pixel * 17,
-                          Theme.of(context).colorScheme.primaryContainer),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 11 * pixel,
-          ),
-          Row(
-            children: [
-              Expanded(
-                flex: 7,
-                child: Column(
-                  children: [
-                    SvgIcon(
-                      imagePath: 'assets/svg/heart_rate_2.svg',
-                      width: 45,
-                      height: 45,
-                      colorFilter: ColorFilter.mode(
-                          Theme.of(context).colorScheme.primaryContainer,
-                          BlendMode.srcIn),
-                    ),
-                    SizedBox(
-                      height: 10 * pixel,
-                    ),
-                    AutoSizeText(
-                      userApi.isAndroid ? "Exercise" : "Average",
-                      maxLines: 1,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary),
-                    ),
-                  ],
-                ),
-              ),
-              const Spacer(),
-              Expanded(
-                flex: 6,
-                child: Column(
-                  children: [
-                    AutoSizeText(
-                      formatNum(
-                        Provider.of<HealthDataModel>(context).healthData[
-                            userApi.isAndroid
-                                ? 'exercise_heart_rate'
-                                : "avg_heart_rate"],
-                        decimalPoints: 1,
-                        loading: Provider.of<HealthDataModel>(context).loading,
-                      ),
-                      maxLines: 1,
-                      style: montserratAlternatesTextStyle(pixel * 30,
-                          Theme.of(context).colorScheme.primaryContainer),
-                    ),
-                    AutoSizeText(
-                      "bpm",
-                      maxLines: 1,
-                      style: montserratAlternatesTextStyle(pixel * 17,
-                          Theme.of(context).colorScheme.primaryContainer),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
+    return HealthCard(
+      icon: SvgIcon(
+        imagePath: 'assets/svg/heart_rate.svg',
+        colorFilter: ColorFilter.mode(
+            Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
+      ),
+      label: "Rest\nHeart Rate",
+      labelMaxLines: 2,
+      unit: "bpm",
+      value: formatNum(
+        Provider.of<HealthDataModel>(context).healthData['rest_heart_rate'],
+        decimalPoints: 0,
+        loading: Provider.of<HealthDataModel>(context).loading,
       ),
     );
   }
@@ -563,6 +426,7 @@ class HealthCard extends StatelessWidget {
                 ),
                 AutoSizeText(
                   label,
+                  textAlign: TextAlign.center,
                   maxLines: labelMaxLines,
                   style:
                       TextStyle(color: Theme.of(context).colorScheme.secondary),
@@ -577,12 +441,14 @@ class HealthCard extends StatelessWidget {
               children: [
                 AutoSizeText(
                   value,
+                  textAlign: TextAlign.center,
                   maxLines: valueMaxLines,
                   style: montserratAlternatesTextStyle(pixel * 30,
                       Theme.of(context).colorScheme.primaryContainer),
                 ),
                 AutoSizeText(
                   unit,
+                  textAlign: TextAlign.center,
                   maxLines: 1,
                   style: montserratAlternatesTextStyle(pixel * 17,
                       Theme.of(context).colorScheme.primaryContainer),
@@ -687,7 +553,7 @@ class Distance extends StatelessWidget {
       unit: "m",
       value: formatNum(
         Provider.of<HealthDataModel>(context).healthData['distance'],
-        decimalPoints: 1,
+        decimalPoints: 0,
         loading: Provider.of<HealthDataModel>(context).loading,
       ),
     );
@@ -711,7 +577,7 @@ class Stress extends StatelessWidget {
       unit: "stress",
       value: formatNum(
         Provider.of<HealthDataModel>(context).healthData['stress'],
-        decimalPoints: 2,
+        decimalPoints: 0,
         loading: Provider.of<HealthDataModel>(context).loading,
       ),
     );
@@ -786,7 +652,7 @@ class Calorie extends StatelessWidget {
       unit: "kcal",
       value: formatNum(
         Provider.of<HealthDataModel>(context).healthData['calorie'],
-        decimalPoints: 2,
+        decimalPoints: 1,
         loading: Provider.of<HealthDataModel>(context).loading,
       ),
     );
@@ -810,8 +676,8 @@ class IntenseExercise extends StatelessWidget {
       labelMaxLines: 2,
       unit: "min",
       value: formatNum(
-        Provider.of<HealthDataModel>(context).healthData['calorie'],
-        decimalPoints: 1,
+        Provider.of<HealthDataModel>(context).healthData['intensity'],
+        decimalPoints: 0,
         loading: Provider.of<HealthDataModel>(context).loading,
       ),
     );
@@ -848,7 +714,7 @@ class Sleep extends StatelessWidget {
             value: formatNum(
               Provider.of<HealthDataModel>(context)
                   .healthData['sleep_efficiency'],
-              decimalPoints: 2,
+              decimalPoints: 0,
               loading: Provider.of<HealthDataModel>(context).loading,
             ),
           )
@@ -933,7 +799,6 @@ class ScreenTime extends StatelessWidget {
   }
 }
 
-
 class CarbonEmission extends StatelessWidget {
   const CarbonEmission({
     super.key,
@@ -953,14 +818,17 @@ class CarbonEmission extends StatelessWidget {
       labelMaxLines: 2,
       unit: "g",
       // to choose the data resource based on platform
-      value: formatNum( !userApi.isAndroid ?
-          Provider.of<HealthDataModel>(context).healthData['carbon_emission']:
-          (Provider.of<HealthDataModel>(context).healthData['distance']! / 1000 * 42),
+      value: formatNum(
+        !userApi.isAndroid
+            ? Provider.of<HealthDataModel>(context)
+                .healthData['carbon_emission']
+            : (Provider.of<HealthDataModel>(context).healthData['distance']! /
+                1000 *
+                42),
         decimalPoints: 0,
         loading: Provider.of<HealthDataModel>(context).loading,
       ),
     );
-
   }
 }
 
