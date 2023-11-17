@@ -101,6 +101,7 @@ class ActivityDataModel extends ChangeNotifier {
       //calculate the average value of carbon emission
       activityData['carbon_emission']['average'] =  activityData['distance']['average'] / 1000 * 42;
       activityData['carbon_emission']['rank'] =  activityData['distance']['rank'];
+      activityData['carbon_emission']['valid'] = true;
     });
     _notify();
   }
