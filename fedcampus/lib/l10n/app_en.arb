@@ -19,7 +19,7 @@
   "@navigator_health": {
     "description": ""
   },
-  "navigator_stats": "Statistics",
+  "navigator_stats": "DKU Statistics",
   "@navigator_stats": {
     "description": ""
   },

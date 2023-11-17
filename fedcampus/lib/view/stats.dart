@@ -48,33 +48,33 @@ class _ActivityState extends State<Activity> {
             "entry_name": "calorie",
             "icon_path": "assets/svg/calorie.svg",
             "unit": "kcals",
-            "decimal_points": 2,
+            "decimal_points": 0,
           },
           {
             "entry_name": "intensity",
             "icon_path": "assets/svg/exercise.svg",
             "unit": "min",
-            "decimal_points": 1,
+            "decimal_points": 0,
           },
           {
             "entry_name": "stress",
             "icon_path": "assets/svg/stress.svg",
             "unit": "stress",
-            "decimal_points": 1,
+            "decimal_points": 0,
           },
           {
             "entry_name": "step_time",
             "icon_path": "assets/svg/step_time.svg",
             "img_scale": 1.2,
             "unit": "min",
-            "decimal_points": 1,
+            "decimal_points": 0,
           },
           {
             "entry_name": "sleep_efficiency",
             "icon_path": "assets/svg/sleep.svg",
             "img_scale": 1.2,
             "unit": "effi",
-            "decimal_points": 2,
+            "decimal_points": 0,
           },
         ]
       : [
@@ -100,14 +100,14 @@ class _ActivityState extends State<Activity> {
             "entry_name": "calorie",
             "icon_path": "assets/svg/calorie.svg",
             "unit": "kcals",
-            "decimal_points": 2,
+            "decimal_points": 0,
           },
           {
             "entry_name": "sleep_time",
             "icon_path": "assets/svg/sleep.svg",
             "img_scale": 1.2,
             "unit": "mins",
-            "decimal_points": 1,
+            "decimal_points": 0,
           }
         ];
 
@@ -130,7 +130,7 @@ class _ActivityState extends State<Activity> {
   Future<void> refresh({bool forcedRefresh = false}) async {
     Provider.of<ActivityDataModel>(context, listen: false).ifSent = false;
     Provider.of<ActivityDataModel>(context, listen: false)
-        .getActivityData(forcedRefresh: forcedRefresh);
+        .requestActivityData(forcedRefresh: forcedRefresh);
     LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
     loadingDialog.showLoading();
     bus.on("activity_loading_done", (arg) {
@@ -225,7 +225,10 @@ class _ActivityState extends State<Activity> {
               );
             }
             var currentEntry = entries[index - 2];
-            if (Provider.of<ActivityDataModel>(context).loading) {
+            // do not show value for FA if average is 0
+            if (Provider.of<ActivityDataModel>(context).loading ||
+                !Provider.of<ActivityDataModel>(context)
+                    .activityData[currentEntry['entry_name']]["valid_data"]) {
               return ActivityCard(
                 rank: "",
                 value: "",

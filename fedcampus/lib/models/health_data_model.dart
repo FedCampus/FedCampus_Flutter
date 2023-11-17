@@ -28,8 +28,6 @@ class HealthDataModel extends ChangeNotifier {
   set date(String date) {
     _date = date;
     requestAllData();
-    var dw = DataWrapper();
-    dw.getDayDataAndSendAndTrain(int.parse(_date));
   }
 
   Future<void> requestAllData({bool forcedRefresh = false}) async {
@@ -51,7 +49,7 @@ class HealthDataModel extends ChangeNotifier {
       logger.e(error);
       _notify();
       bus.emit("toast_error",
-          "Internet connection error, cannot connet to health data handler server.");
+          "Internet connection error, cannot connect to health data handler server.");
     }
 
     if (userApi.isAndroid) {

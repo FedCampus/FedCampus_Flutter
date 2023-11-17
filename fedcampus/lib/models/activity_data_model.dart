@@ -15,6 +15,7 @@ import 'package:http/http.dart' as http;
 
 import '../utility/event_bus.dart';
 import '../utility/fluttertoast.dart';
+import '../utility/my_exceptions.dart';
 
 class ActivityDataModel extends ChangeNotifier {
   Map<String, dynamic> activityData = ActivityData.create();
@@ -89,30 +90,85 @@ class ActivityDataModel extends ChangeNotifier {
   }
 
   void _setAndNotify(dynamic jsonValue) {
+    activityData = ActivityData.create();
     final jsonMap = jsonValue as Map<String, dynamic>;
     jsonMap.forEach((key, value) {
       if (activityData[key] != null) {
         activityData[key]['average'] = value['avg'];
         activityData[key]['rank'] = value['ranking'];
+        activityData[key]['valid_data'] = true;
       }
       //calculate the average value of carbon emission
       activityData['carbon_emission']['average'] =  activityData['distance']['average'] / 1000 * 42;
       activityData['carbon_emission']['rank'] =  activityData['distance']['rank'];
     });
-    activityData["query_time"] =
-        DateTime.now().millisecondsSinceEpoch.toDouble();
-    userApi.prefs.setString("activity$date", json.encode(activityData));
     _notify();
   }
 
   void _clearAll() {
     activityData = ActivityData.create();
-    // activityData.forEach((key, value) {
-    //   if (key != "query_time") {
-    //     activityData[key]['average'] = 0.0;
-    //     activityData[key]['rank'] = 0.0;
-    //   }
-    // });
+  }
+
+  Future<void> requestActivityData({bool forcedRefresh = false}) async {
+    final dataNumber = int.parse(_date);
+    final List<dynamic> requestBody = [];
+    final List<dynamic> dataListJson;
+
+    requestBody.add({"time": dataNumber});
+    requestBody.add({"filter": filterParams});
+
+    // get health data list as json
+    try {
+      dataListJson = await _getDataListJson(dataNumber);
+    } on AuthenticationException catch (error) {
+      _logErrorAndNotify(error, "Not authenticated.");
+      await userApi.healthDataHandler.authenticate();
+      return;
+    } on InternetConnectionException catch (error) {
+      _logErrorAndNotify(error,
+          "Internet connection error, cannot connect to health data handler server.");
+      return;
+    }
+    requestBody.addAll(dataListJson);
+    logger.i("FA body sent to server: $requestBody");
+
+    // send health data and get FA data from server
+    final http.Response response;
+    try {
+      response =
+          await _sendRequest(requestBody).timeout(const Duration(seconds: 5));
+    } on Exception catch (e) {
+      _logErrorAndNotify(
+          e, "Internet connection error, cannot connect to DKU server.");
+      return;
+    }
+
+    _setAndNotify(jsonDecode(response.body));
+  }
+
+  void _logErrorAndNotify(error, message) {
+    logger.e(error);
+    _notify();
+    bus.emit(message);
+  }
+
+  Future<List<dynamic>> _getDataListJson(dataNumber) async {
+    final List<dynamic> dataListJson;
+
+    var dw = DataWrapper();
+    dataListJson = jsonDecode(
+        dataListJsonEncode(await dw.getDataList(dataList, dataNumber)));
+
+    return dataListJson;
+  }
+
+  Future<http.Response> _sendRequest(List<dynamic> requestBody) async {
+    final http.Response response;
+
+    response = await HTTPApi.post(
+        HTTPApi.fedAnalysis, <String, String>{}, jsonEncode(requestBody));
+
+    return response;
   }
 
   Future<void> getActivityData({bool forcedRefresh = false}) async {
