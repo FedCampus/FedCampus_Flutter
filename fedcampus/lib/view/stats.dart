@@ -130,7 +130,7 @@ class _ActivityState extends State<Activity> {
   Future<void> refresh({bool forcedRefresh = false}) async {
     Provider.of<ActivityDataModel>(context, listen: false).ifSent = false;
     Provider.of<ActivityDataModel>(context, listen: false)
-        .requestActivityData(forcedRefresh: forcedRefresh);
+        .getActivityData(forcedRefresh: forcedRefresh);
     LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
     loadingDialog.showLoading();
     bus.on("activity_loading_done", (arg) {
@@ -226,32 +226,22 @@ class _ActivityState extends State<Activity> {
             }
             var currentEntry = entries[index - 2];
             // do not show value for FA if average is 0
-            if (Provider.of<ActivityDataModel>(context).loading ||
-                !Provider.of<ActivityDataModel>(context)
-                    .activityData[currentEntry['entry_name']]["valid_data"]) {
-              return ActivityCard(
-                rank: "",
-                value: "",
-                loading: true,
-                unit: currentEntry['unit']?.toString() ?? "unit",
-                iconPath: currentEntry['icon_path']?.toString() ??
-                    "assets/svg/sleep.svg",
-                imgScale: currentEntry["img_scale"] as double?,
-              );
-            } else {
-              return ActivityCard(
-                rank: Provider.of<ActivityDataModel>(context)
-                    .activityData[currentEntry['entry_name']]["rank"]
-                    .toStringAsFixed(0),
-                value: Provider.of<ActivityDataModel>(context)
-                    .activityData[currentEntry['entry_name']]["average"]
-                    .toStringAsFixed(currentEntry['decimal_points']),
-                unit: currentEntry['unit']?.toString() ?? "unit",
-                iconPath: currentEntry['icon_path']?.toString() ??
-                    "assets/svg/sleep.svg",
-                imgScale: currentEntry["img_scale"] as double?,
-              );
-            }
+
+            final rank = Provider.of<ActivityDataModel>(context)
+                .activityData[currentEntry['entry_name']]["rank"]
+                .toStringAsFixed(0);
+            final average = Provider.of<ActivityDataModel>(context)
+                .activityData[currentEntry['entry_name']]["average"]
+                .toStringAsFixed(currentEntry['decimal_points']);
+
+            return ActivityCard(
+              rank: rank == "0" ? " " : rank,
+              value: average == "0" ? "-" : average,
+              unit: currentEntry['unit']?.toString() ?? "unit",
+              iconPath: currentEntry['icon_path']?.toString() ??
+                  "assets/svg/sleep.svg",
+              imgScale: currentEntry["img_scale"] as double?,
+            );
           }),
     );
   }

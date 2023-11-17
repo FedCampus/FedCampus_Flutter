@@ -44,10 +44,12 @@ class DataWrapper {
   ///50005 if the user is not authenticated, 50030 if the internet connection is down.
   ///If there is no data for that specifc date, the only data will be {step_time: value: 0}
   Future<List<Data>> getDataList(List<String> nameList, int time) async {
-    List<Data> result =
-        (await userApi.healthDataHandler.getCachedDataListDay(nameList, time));
-    result.removeWhere(
-        (element) => element.success == false || element.value <= 0);
+
+    var result =
+        await userApi.healthDataHandler.getCachedDataListDay(nameList, time);
+
+    result.removeWhere((element) => element.success == false);
+
     return result;
   }
 
@@ -97,7 +99,7 @@ class DataWrapper {
  */
 
   /// fuzz the data with DP algorithm
-  List<Data> fuzzData(List<Data?>? data) {
+  static List<Data> fuzzData(List<Data?>? data) {
     List<double> error = truncatedNormalSample(data!.length, -10, 10, 0, 1);
     List<Data> res = List.empty(growable: true);
     for (var i = 0; i < data.length; i++) {
@@ -221,7 +223,7 @@ class DataWrapper {
   }
 
   /// TODO: change the function
-  void getDayDataAndSendAndTrain(int date) async {
+  Future<void> getDayDataAndSendAndTrain(int date) async {
     // get the data from the last day
     final now = DateTime.now();
     final dateNumber = now.year * 10000 + now.month * 100 + now.day;
@@ -243,7 +245,7 @@ class DataWrapper {
         logger.d("internet issue");
         FedToast.internetIssue();
       }
-      return;
+      rethrow;
     }
     final dataFuzz = fuzzData(data);
 

@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:fedcampus/models/datahandler/health_handler.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/utility/log.dart';
@@ -105,9 +103,7 @@ class IOSHealth extends FedHealthData {
         sum = (entry == "rest_heart_rate" || entry == "avg_heart_rate")
             ? sum / health.length
             : sum;
-        sum = (entry == "carbon_emission")
-            ? sum /1000 * 42
-            : sum;
+        sum = (entry == "carbon_emission") ? sum / 1000 * 42 : sum;
         sum = (sum.isNaN) ? 0 : sum;
       }
     }

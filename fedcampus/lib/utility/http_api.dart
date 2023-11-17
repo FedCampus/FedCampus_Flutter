@@ -27,6 +27,10 @@ class HTTPApi {
 
   static const status = "${_host}api/status";
 
+  static const average = "${_host}api/avg";
+
+  static const rank = "${_host}api/rank";
+
   static var _checkToken = false;
 
   static var _token = "";
@@ -130,14 +134,6 @@ class HTTPApi {
 
   static Future<Map<String, dynamic>> signIn(
       String localUserName, String password) async {
-    // >>>>> for test only
-    // User user = User(
-    //   userName: 'nickname',
-    //   email: 'email',
-    // );
-    // user.loggedIn = true;
-    // return user;
-    // <<<<< comment this
     if (localUserName.isEmpty) {
       throw ClientException('Username should not be empty');
     }

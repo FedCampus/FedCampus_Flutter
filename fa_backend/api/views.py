@@ -222,6 +222,103 @@ class Status(APIView):
     pass
 
 
+def getFilter(startTime, filtering=None):
+    """
+    Get the filtering querySet with respect to the filtering dictionary and the current day
+    """
+    queryAll = FA_MODEL.objects.filter(startTime=startTime)
+    if not filtering == None:
+        if filtering.get("gender") == "male":
+            queryAll = queryAll.filter(user__customer__male=True)
+        elif filtering.get("gender") == "female":
+            queryAll = queryAll.filter(user__customer__male=False)
+        if filtering.get("status") == "all":
+            pass
+        elif filtering.get("status") == "student":
+            queryAll = queryAll.filter(user__customer__faculty=False)
+        elif filtering.get("status") == "faculty":
+            queryAll = queryAll.filter(user__customer__faculty=True)
+        else:
+            queryAll = queryAll.filter(
+                user__customer__student=int(filtering.get("status"))
+            )
+    return queryAll
+
+
+class Average(APIView):
+    """
+    Get average with respect to the date and filtering
+    """
+
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request):
+        logger.info(f"request data {request.data}")
+        querySet = getFilter(request.data.get("time"), request.data.get("filter"))
+        resArray = []
+        for f in FA_DATA:
+            res = (
+                querySet.filter(Q(dataType=f))
+                .order_by("-value")
+                .aggregate(Avg("value"))
+                .get("value__avg")
+            )
+            if res == None:
+                continue
+            resArray.append((f, res))
+        logger.info(f"[getAverage], res {resArray}")
+        return Response(dict(resArray))
+
+
+class Rank(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request):
+        querySet = getFilter(request.data.get("time"), request.data.get("filter"))
+        return Response(
+            dict(
+                [
+                    (f, self.getRankSingleField(querySet, f, request.user))
+                    for f in FA_DATA
+                ]
+            )
+        )
+
+    def getRankSingleField(self, queryAll, field, user):
+        """
+        querySet: the querySet with the specific date after the filtering |
+        field: fa data field to get rank |
+        user: the user
+        """
+        querySet = queryAll.filter(dataType=field)
+        if not querySet.filter(user=user).exists():
+            return 0
+        else:
+            try:
+                query = querySet.get(user=user)
+            except:
+                query = querySet.filter(user=user)
+                logger.info(f"Exception Getting Two queries at the same time, {query}")
+                query = query[0]
+            return self.calculatePercentage(querySet, query)
+
+    def calculatePercentage(self, querySet, query):
+        ranking = (
+            querySet.filter(value__gt=query.value).count() + 1
+        )  # ranking = index + 1
+        totalLength = querySet.count()
+        realPercentage = ranking / totalLength * 100
+        for i in range(1, 21):
+            i = i * 5
+            if i >= realPercentage:
+                return i
+        raise Exception(
+            f"The real Percentage is {realPercentage}, and it is not in range 0-100"
+        )
+
+    pass
+
+
 class FedAnalysis(APIView):
     # authentication_classes = [SessionAuthenticataion]
     permission_classes = (permissions.IsAuthenticated,)
