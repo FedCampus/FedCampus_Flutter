@@ -286,9 +286,9 @@ class FullScreenLoadingDialog extends LoadingDialog {
       barrierColor: Colors.black.withOpacity(0.5),
       pageBuilder: (context, __, ___) {
         double pixel = MediaQuery.of(context).size.width / 400;
-        return WillPopScope(
+        return PopScope(
           // https://stackoverflow.com/a/59755386
-          onWillPop: () async => false,
+          canPop: false,
           child: Material(
             color: Colors.transparent,
             child: Center(
@@ -340,10 +340,9 @@ class SmallLoadingDialog extends LoadingDialog {
       showDialog<bool>(
           context: context,
           builder: (context) {
-            return WillPopScope(
-              onWillPop: () async {
+            return PopScope(
+              onPopInvoked: (bool didPop) {
                 cancelled = true;
-                return true;
               },
               child: AlertDialog(
                 title: const Text("Loading"),

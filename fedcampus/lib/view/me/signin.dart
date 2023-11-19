@@ -75,87 +75,81 @@ class _SignInState extends State<SignIn> {
           title: const Text('Sign in'),
         ),
         resizeToAvoidBottomInset: false,
-        body: WillPopScope(
-          onWillPop: () async {
-            Navigator.pop(context);
-            return false;
-          },
-          child: Center(
-              child: Column(
-            children: <Widget>[
-              const Expanded(flex: 1, child: SizedBox()),
-              ClipOval(
-                child: Stack(
-                  alignment: AlignmentDirectional.center,
-                  children: [
-                    Container(
-                      width: 100 * pixel,
-                      height: 100 * pixel,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.tertiaryContainer,
-                      ),
+        body: Center(
+            child: Column(
+          children: <Widget>[
+            const Expanded(flex: 1, child: SizedBox()),
+            ClipOval(
+              child: Stack(
+                alignment: AlignmentDirectional.center,
+                children: [
+                  Container(
+                    width: 100 * pixel,
+                    height: 100 * pixel,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.tertiaryContainer,
                     ),
-                    Image.asset(
-                      'assets/images/me_nav_icon.png',
-                      width: 85 * pixel,
-                      height: 85 * pixel,
-                    ),
-                  ],
-                ),
-              ),
-              const Expanded(child: SizedBox()),
-              Text(
-                'Sign in',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onTertiaryContainer,
-                  fontSize: pixel * 27,
-                ),
-              ),
-              const Expanded(child: SizedBox()),
-              SignInUpTextField(
-                ifObscure: false,
-                field: _username,
-                label: 'Email',
-                onChanged: (value) => {_username = value},
-              ),
-              const Expanded(flex: 2, child: SizedBox()),
-              SignInUpTextField(
-                ifObscure: true,
-                field: _password,
-                label: 'Password',
-                onChanged: (value) => {_password = value},
-              ),
-              const Expanded(flex: 1, child: SizedBox()),
-              ElevatedButton(
-                onPressed: _signIn,
-                child: const Text('Login'),
-              ),
-              const Expanded(child: SizedBox()),
-              TextButton(
-                onPressed: () => _toSignUp(),
-                child: Text(
-                  'No account? Sign up',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onTertiaryContainer,
-                    fontSize: pixel * 18,
                   ),
-                ),
+                  Image.asset(
+                    'assets/images/me_nav_icon.png',
+                    width: 85 * pixel,
+                    height: 85 * pixel,
+                  ),
+                ],
               ),
-              Spacer(
-                flex: (6 / aspectRatio).round(),
+            ),
+            const Expanded(child: SizedBox()),
+            Text(
+              'Sign in',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onTertiaryContainer,
+                fontSize: pixel * 27,
               ),
-              Text(
-                'Welcome to DKU FedCampus',
+            ),
+            const Expanded(child: SizedBox()),
+            SignInUpTextField(
+              ifObscure: false,
+              field: _username,
+              label: 'Email',
+              onChanged: (value) => {_username = value},
+            ),
+            const Expanded(flex: 2, child: SizedBox()),
+            SignInUpTextField(
+              ifObscure: true,
+              field: _password,
+              label: 'Password',
+              onChanged: (value) => {_password = value},
+            ),
+            const Expanded(flex: 1, child: SizedBox()),
+            ElevatedButton(
+              onPressed: _signIn,
+              child: const Text('Login'),
+            ),
+            const Expanded(child: SizedBox()),
+            TextButton(
+              onPressed: () => _toSignUp(),
+              child: Text(
+                'No account? Sign up',
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onTertiaryContainer,
                   fontSize: pixel * 18,
                 ),
               ),
-              const Spacer(
-                flex: 1,
+            ),
+            Spacer(
+              flex: (6 / aspectRatio).round(),
+            ),
+            Text(
+              'Welcome to DKU FedCampus',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onTertiaryContainer,
+                fontSize: pixel * 18,
               ),
-            ],
-          )),
-        ));
+            ),
+            const Spacer(
+              flex: 1,
+            ),
+          ],
+        )));
   }
 }
