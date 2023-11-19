@@ -347,7 +347,7 @@ class ActivityCard extends StatelessWidget {
                         offset: const Offset(1, -4),
                         child: Text(
                           'top',
-                          textScaleFactor: 0.6,
+                          textScaler: const TextScaler.linear(0.6),
                           style: TextStyle(
                             fontSize: pixel * 30,
                             color: Theme.of(context)
@@ -370,7 +370,7 @@ class ActivityCard extends StatelessWidget {
                         offset: const Offset(-1, 0),
                         child: Text(
                           '%',
-                          textScaleFactor: 0.7,
+                          textScaler: const TextScaler.linear(0.7),
                           style: TextStyle(
                             fontSize: pixel * 30,
                             color: Theme.of(context)
