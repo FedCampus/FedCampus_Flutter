@@ -2,7 +2,6 @@ import 'package:fedcampus/main.dart';
 import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/view/app_usage_stats_test.dart';
 import 'package:fedcampus/view/googletest.dart';
-import 'package:fedcampus/view/huawei/huaweihomepage.dart';
 import 'package:fedcampus/view/ios/ios_data.dart';
 import 'package:fedcampus/view/navigator.dart';
 import 'package:fedcampus/view/splash.dart';
@@ -58,13 +57,6 @@ class _HomeRouteState extends State<HomeRoute> {
                     return const Splash();
                 }
               }),
-            ),
-          ),
-          ElevatedButton(
-            child: const Text('Open Huawei Test Page'),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const HuaweiHome()),
             ),
           ),
           ElevatedButton(

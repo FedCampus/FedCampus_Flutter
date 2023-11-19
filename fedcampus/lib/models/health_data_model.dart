@@ -76,15 +76,7 @@ class HealthDataModel extends ChangeNotifier {
 
     // send it to the server
     try {
-      final dataJson = dataListJsonEncode(dataList);
-      final dataFuzzJson = dataListJsonEncode(DataWrapper.fuzzData(dataList));
-      List<http.Response> responseArr = await Future.wait([
-        HTTPApi.post(HTTPApi.data, <String, String>{}, dataJson),
-        HTTPApi.post(HTTPApi.dataDP, <String, String>{}, dataFuzzJson)
-      ]).timeout(const Duration(seconds: 5));
-      logger.i("Data Status Code ${responseArr[0].statusCode} : $dataJson");
-      logger.i(
-          "Data DP Status Code ${responseArr[1].statusCode} : $dataFuzzJson");
+      await send2Server(dataList);
     } on ClientException {
       remindDkuNetwork();
       return;
@@ -99,6 +91,18 @@ class HealthDataModel extends ChangeNotifier {
       logger.e("$err\n$stackTrace");
       dataWrapperToast("Unknown issue: $err. Please try again later.");
     }
+  }
+
+  Future<void> send2Server(List<Data> dataList) async {
+    final dataJson = dataListJsonEncode(dataList);
+    final dataFuzzJson = dataListJsonEncode(DataWrapper.fuzzData(dataList));
+    List<http.Response> responseArr = await Future.wait([
+      HTTPApi.post(HTTPApi.data, <String, String>{}, dataJson),
+      HTTPApi.post(HTTPApi.dataDP, <String, String>{}, dataFuzzJson)
+    ]).timeout(const Duration(seconds: 5));
+    logger.i("Data Status Code ${responseArr[0].statusCode} : $dataJson");
+    logger.i(
+        "Data DP Status Code ${responseArr[1].statusCode} : $dataFuzzJson");
   }
 
   /// Only work on Android.
