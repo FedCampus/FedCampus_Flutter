@@ -328,11 +328,10 @@ class _DateState extends State<Date> {
     return showDialog<bool>(
       context: context,
       builder: (context) {
-        return WillPopScope(
+        return PopScope(
           // restore date if confirm is not clicked
-          onWillPop: () async {
+          onPopInvoked: (bool didPop) {
             _date = widget.date;
-            return true;
           },
           child: AlertDialog(
             title: const Text("Select a day"),
