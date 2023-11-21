@@ -317,6 +317,8 @@ class Date extends StatefulWidget {
 }
 
 class _DateState extends State<Date> {
+  /// [_date] is synchronized with selected date inside [CalendarDialog]
+  /// [widget.onDateChange] is called only when confirm is clicked
   DateTime _date = DateTime.now();
 
   void _changeWidgetDate(DateTime dateTime) {
@@ -328,34 +330,28 @@ class _DateState extends State<Date> {
     return showDialog<bool>(
       context: context,
       builder: (context) {
-        return PopScope(
-          // restore date if confirm is not clicked
-          onPopInvoked: (bool didPop) {
-            _date = widget.date;
-          },
-          child: AlertDialog(
-            title: const Text("Select a day"),
-            contentPadding:
-                EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 0),
-            content: SizedBox(
-              height: 271 * pixel,
-              width: 300 * pixel,
-              child: CalendarDialog(
-                onDateChange: _changeWidgetDate,
-                selectedDate: widget.date,
-                primaryColor: Theme.of(context).colorScheme.primaryContainer,
-              ),
+        return AlertDialog(
+          title: const Text("Select a day"),
+          contentPadding:
+              EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 0),
+          content: SizedBox(
+            height: 271 * pixel,
+            width: 300 * pixel,
+            child: CalendarDialog(
+              onDateChange: _changeWidgetDate,
+              selectedDate: widget.date,
+              primaryColor: Theme.of(context).colorScheme.primaryContainer,
             ),
-            actions: <Widget>[
-              TextButton(
-                child: const Text("Confirm"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  widget.onDateChange(_date);
-                },
-              ),
-            ],
           ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Confirm"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                widget.onDateChange(_date);
+              },
+            ),
+          ],
         );
       },
     );
