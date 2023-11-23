@@ -130,7 +130,7 @@ class _ActivityState extends State<Activity> {
   Future<void> refresh({bool forcedRefresh = false}) async {
     Provider.of<ActivityDataModel>(context, listen: false).ifSent = false;
     Provider.of<ActivityDataModel>(context, listen: false)
-        .requestActivityData(forcedRefresh: forcedRefresh);
+        .getActivityData(forcedRefresh: forcedRefresh);
     LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
     loadingDialog.showLoading();
     bus.on("activity_loading_done", (arg) {
@@ -226,32 +226,26 @@ class _ActivityState extends State<Activity> {
             }
             var currentEntry = entries[index - 2];
             // do not show value for FA if average is 0
-            if (Provider.of<ActivityDataModel>(context).loading ||
-                !Provider.of<ActivityDataModel>(context)
-                    .activityData[currentEntry['entry_name']]["valid_data"]) {
-              return ActivityCard(
-                rank: "",
-                value: "",
-                loading: true,
-                unit: currentEntry['unit']?.toString() ?? "unit",
-                iconPath: currentEntry['icon_path']?.toString() ??
-                    "assets/svg/sleep.svg",
-                imgScale: currentEntry["img_scale"] as double?,
-              );
-            } else {
-              return ActivityCard(
-                rank: Provider.of<ActivityDataModel>(context)
-                    .activityData[currentEntry['entry_name']]["rank"]
-                    .toStringAsFixed(0),
-                value: Provider.of<ActivityDataModel>(context)
-                    .activityData[currentEntry['entry_name']]["average"]
-                    .toStringAsFixed(currentEntry['decimal_points']),
-                unit: currentEntry['unit']?.toString() ?? "unit",
-                iconPath: currentEntry['icon_path']?.toString() ??
-                    "assets/svg/sleep.svg",
-                imgScale: currentEntry["img_scale"] as double?,
-              );
-            }
+
+            final rank = Provider.of<ActivityDataModel>(context)
+                .activityData[currentEntry['entry_name']]["rank"]
+                .toStringAsFixed(0);
+            final average = Provider.of<ActivityDataModel>(context)
+                .activityData[currentEntry['entry_name']]["average"]
+                .toStringAsFixed(currentEntry['decimal_points']);
+
+            return ActivityCard(
+              rank: rank,
+              value: average,
+              unit: currentEntry['unit']?.toString() ?? "unit",
+              iconPath: currentEntry['icon_path']?.toString() ??
+                  "assets/svg/sleep.svg",
+              imgScale: currentEntry["img_scale"] as double?,
+              isValidValue: average != "0" &&
+                  !Provider.of<ActivityDataModel>(context).loading,
+              isValidRank: rank != "0" &&
+                  !Provider.of<ActivityDataModel>(context).loading,
+            );
           }),
     );
   }
@@ -264,8 +258,9 @@ class ActivityCard extends StatelessWidget {
     required this.value,
     required this.unit,
     required this.iconPath,
-    this.loading,
     this.imgScale,
+    this.isValidValue,
+    this.isValidRank,
   });
 
   final String rank;
@@ -273,7 +268,8 @@ class ActivityCard extends StatelessWidget {
   final String unit;
   final String iconPath;
   final double? imgScale;
-  final bool? loading;
+  final bool? isValidValue;
+  final bool? isValidRank;
 
   @override
   Widget build(BuildContext context) {
@@ -303,7 +299,7 @@ class ActivityCard extends StatelessWidget {
                   Expanded(
                     flex: 5,
                     child: AutoSizeText(
-                      loading ?? false ? "-" : value,
+                      isValidValue ?? false ? value : "-",
                       textAlign: TextAlign.center,
                       maxLines: 1,
                       style: TextStyle(
@@ -342,18 +338,8 @@ class ActivityCard extends StatelessWidget {
         ),
         Expanded(
           flex: 7,
-          child: loading ?? false
-              ? Text(
-                  "    -",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontFamily: 'Montserrat Alternates',
-                      fontSize: pixel * 30,
-                      fontWeight: FontWeight.bold,
-                      color:
-                          Theme.of(context).colorScheme.onSecondaryContainer),
-                )
-              : RichText(
+          child: isValidRank ?? false
+              ? RichText(
                   textAlign: TextAlign.end,
                   text: TextSpan(children: [
                     WidgetSpan(
@@ -361,7 +347,7 @@ class ActivityCard extends StatelessWidget {
                         offset: const Offset(1, -4),
                         child: Text(
                           'top',
-                          textScaleFactor: 0.6,
+                          textScaler: const TextScaler.linear(0.6),
                           style: TextStyle(
                             fontSize: pixel * 30,
                             color: Theme.of(context)
@@ -384,7 +370,7 @@ class ActivityCard extends StatelessWidget {
                         offset: const Offset(-1, 0),
                         child: Text(
                           '%',
-                          textScaleFactor: 0.7,
+                          textScaler: const TextScaler.linear(0.7),
                           style: TextStyle(
                             fontSize: pixel * 30,
                             color: Theme.of(context)
@@ -395,6 +381,16 @@ class ActivityCard extends StatelessWidget {
                       ),
                     ),
                   ]),
+                )
+              : Text(
+                  "    -",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontFamily: 'Montserrat Alternates',
+                      fontSize: pixel * 30,
+                      fontWeight: FontWeight.bold,
+                      color:
+                          Theme.of(context).colorScheme.onSecondaryContainer),
                 ),
         ),
       ],
@@ -622,6 +618,8 @@ class Date extends StatefulWidget {
 }
 
 class _DateState extends State<Date> {
+  /// [_date] is synchronized with selected date inside [CalendarDialog]
+  /// [widget.onDateChange] is called only when confirm is clicked
   DateTime _date = DateTime.now();
 
   void _changeWidgetDate(DateTime dateTime) {
@@ -635,36 +633,29 @@ class _DateState extends State<Date> {
       return showDialog<bool>(
         context: context,
         builder: (context) {
-          return WillPopScope(
-            // restore date if confirm is not clicked
-            onWillPop: () async {
-              _date = widget.date;
-              return true;
-            },
-            child: AlertDialog(
-              title: const Text("Select a day"),
-              contentPadding:
-                  EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 0),
-              content: SizedBox(
-                height: 271 * pixel,
-                width: 300 * pixel,
-                child: CalendarDialog(
-                  onDateChange: _changeWidgetDate,
-                  selectedDate: widget.date,
-                  primaryColor:
-                      Theme.of(context).colorScheme.onSecondaryContainer,
-                ),
+          return AlertDialog(
+            title: const Text("Select a day"),
+            contentPadding:
+                EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 0),
+            content: SizedBox(
+              height: 271 * pixel,
+              width: 300 * pixel,
+              child: CalendarDialog(
+                onDateChange: _changeWidgetDate,
+                selectedDate: widget.date,
+                primaryColor:
+                    Theme.of(context).colorScheme.onSecondaryContainer,
               ),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text("Confirm"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    widget.onDateChange(_date);
-                  },
-                ),
-              ],
             ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text("Confirm"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  widget.onDateChange(_date);
+                },
+              ),
+            ],
           );
         },
       );
@@ -691,6 +682,7 @@ class _DateState extends State<Date> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Expanded(
+                  flex: 3,
                   child: Row(
                     children: <Widget>[
                       Expanded(
@@ -714,6 +706,7 @@ class _DateState extends State<Date> {
                   ),
                 ),
                 Expanded(
+                  flex: 2,
                   child: AutoSizeText(
                     DateFormat.y('en_US').format(widget.date),
                     style: TextStyle(

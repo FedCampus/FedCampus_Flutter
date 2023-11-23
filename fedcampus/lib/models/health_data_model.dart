@@ -1,13 +1,16 @@
 import 'dart:async';
-
+import 'dart:io';
+import 'package:http/http.dart' as http;
 import 'package:fedcampus/models/health_data.dart';
 import 'package:fedcampus/models/screen_data.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
+import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/utility/global.dart';
 import 'package:flutter/material.dart';
 import '../../utility/calendar.dart' as calendar;
 import '../utility/event_bus.dart';
+import '../utility/http_api.dart';
 import '../utility/my_exceptions.dart';
 
 class HealthDataModel extends ChangeNotifier {
@@ -38,8 +41,13 @@ class HealthDataModel extends ChangeNotifier {
       _healthData[k] = 0;
     }
 
+    late List<Data> dataList;
     try {
-      _healthData.addAll(await _getBodyData(forcedRefresh: forcedRefresh));
+      DataWrapper dw = DataWrapper();
+      dataList =
+          await dw.getDataList(DataWrapper.dataNameList, int.parse(_date));
+      logger.i("data  ${dataListJsonEncode(dataList)}");
+      _healthData.addAll(dataToMap(dataList));
     } on AuthenticationException catch (error) {
       logger.e(error);
       _notify();
@@ -54,7 +62,9 @@ class HealthDataModel extends ChangeNotifier {
 
     if (userApi.isAndroid) {
       try {
-        _healthData.addAll(await _getScreenData());
+        var data = await _getScreenData();
+        dataList.add(data);
+        _healthData.addAll(dataToMap([data]));
       } catch (e) {
         logger.e(e);
         _notify();
@@ -62,12 +72,41 @@ class HealthDataModel extends ChangeNotifier {
             "You have not granted the permission to access phone usage, go to preferences of this application to redirect to system settings page");
       }
     }
-
     _notify();
+
+    // send it to the server
+    try {
+      await send2Server(dataList);
+    } on ClientException {
+      remindDkuNetwork();
+      return;
+    } on TimeoutException {
+      logger.d("internet issue");
+      remindDkuNetwork();
+      return;
+    } on SocketException {
+      dataWrapperToast("Please connect to Network");
+      return;
+    } catch (err, stackTrace) {
+      logger.e("$err\n$stackTrace");
+      dataWrapperToast("Unknown issue: $err. Please try again later.");
+    }
+  }
+
+  Future<void> send2Server(List<Data> dataList) async {
+    final dataJson = dataListJsonEncode(dataList);
+    final dataFuzzJson = dataListJsonEncode(DataWrapper.fuzzData(dataList));
+    List<http.Response> responseArr = await Future.wait([
+      HTTPApi.post(HTTPApi.data, <String, String>{}, dataJson),
+      HTTPApi.post(HTTPApi.dataDP, <String, String>{}, dataFuzzJson)
+    ]).timeout(const Duration(seconds: 5));
+    logger.i("Data Status Code ${responseArr[0].statusCode} : $dataJson");
+    logger.i(
+        "Data DP Status Code ${responseArr[1].statusCode} : $dataFuzzJson");
   }
 
   /// Only work on Android.
-  Future<Map<String, double>> _getScreenData() async {
+  Future<Data> _getScreenData() async {
     // TODO: cache screen time in DB because the screen time data expires after several days
     Map<String, double> res = {};
 
@@ -78,21 +117,14 @@ class HealthDataModel extends ChangeNotifier {
             .intToDateTime(int.parse(date))
             .add(const Duration(days: 1)));
 
+    final data = Data(
+        name: "screen_time",
+        value: res['total_time_foreground']!,
+        startTime: int.parse(date),
+        endTime: int.parse(date));
     _screenData.addAll(res);
     logger.i(_screenData);
-    return _screenData;
-  }
-
-  Future<Map<String, double>> _getBodyData({bool forcedRefresh = false}) async {
-    int date = int.parse(_date);
-    Map<String, double> res = {};
-
-    res = await userApi.healthDataHandler.getCachedValueMapDay(
-        calendar.intToDateTime(date), DataWrapper.dataNameList,
-        forcedRefresh: userApi.isAndroid ? forcedRefresh : true);
-    logger.d(res);
-
-    return res;
+    return data;
   }
 
   void _notify() {

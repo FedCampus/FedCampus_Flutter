@@ -131,7 +131,7 @@ class _MyAppState extends State<MyApp> {
           // https://stackoverflow.com/a/69336477
           // override textScaleFactor to 1
           // this is a good feature (also error-prone), sadly it is not implemented now
-          data: mediaQueryData.copyWith(textScaleFactor: 1),
+          data: mediaQueryData.copyWith(textScaler: TextScaler.noScaling),
           child: widget!,
         );
       },
