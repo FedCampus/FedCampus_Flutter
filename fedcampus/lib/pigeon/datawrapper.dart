@@ -243,10 +243,9 @@ class DataWrapper {
     final dataFuzzJson = dataListJsonEncode(dataFuzz);
 
     try {
-      List<http.Response> responseArr = await Future.wait([
-        HTTPApi.post(HTTPApi.data, <String, String>{}, dataJson),
-        HTTPApi.post(HTTPApi.dataDP, <String, String>{}, dataFuzzJson)
-      ]).timeout(const Duration(seconds: 5));
+      List<http.Response> responseArr = await Future.wait(
+              [HTTPApi.sendData(dataJson), HTTPApi.sendData(dataFuzzJson)])
+          .timeout(const Duration(seconds: 5));
       // TODO: Time out for 5 seconds.
 
       logger.i("Data Status Code ${responseArr[0].statusCode} : $dataJson");

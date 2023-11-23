@@ -6,6 +6,7 @@ import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/utility/my_exceptions.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fedcampus/utility/global.dart';
 
 class HTTPApi {
   // TODO: make the _host in the production mode
@@ -43,6 +44,11 @@ class HTTPApi {
   static void _setTokenPreference(String token) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString("auth_token", token);
+  }
+
+  static Future<http.Response> sendData(String dataJson) {
+    return HTTPApi.post(HTTPApi.data, <String, String>{},
+        jsonEncode({"data": dataJson, "version": userApi.version}));
   }
 
   static Future<http.Response> post(
