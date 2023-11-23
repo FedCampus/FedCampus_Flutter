@@ -3,9 +3,7 @@ import 'dart:convert';
 import 'dart:io' show SocketException;
 
 import 'package:fedcampus/models/activity_data.dart';
-import 'package:fedcampus/models/health_data_model.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
-import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/utility/http_api.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/utility/global.dart';
@@ -13,11 +11,8 @@ import 'package:fedcampus/utility/my_exceptions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 
 import '../utility/event_bus.dart';
-import '../utility/fluttertoast.dart';
-import '../utility/my_exceptions.dart';
 
 class ActivityDataModel extends ChangeNotifier {
   Map<String, dynamic> activityData = ActivityData.create();

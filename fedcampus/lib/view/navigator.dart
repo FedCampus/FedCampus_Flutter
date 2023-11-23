@@ -25,6 +25,7 @@ class _BottomNavigatorState extends State<BottomNavigator> {
   @override
   void initState() {
     super.initState();
+    sendFAData();
   }
 
   Color getAppBarColor(int index, BuildContext context) {
@@ -51,6 +52,20 @@ class _BottomNavigatorState extends State<BottomNavigator> {
     final now = DateTime.now();
     final dateNumber = now.year * 10000 + now.month * 100 + now.day;
     dw.getDataAndTrain(dateNumber);
+  }
+
+  void sendFAData() async {
+    var dw = DataWrapper();
+    final now = DateTime.now().add(const Duration(days: -1));
+    final dateNumber = now.year * 10000 + now.month * 100 + now.day;
+    while (true) {
+      try {
+        await dw.getDayDataAndSendAndTrain(dateNumber);
+      } on Exception catch (e) {
+        logger.w(e);
+      }
+      await Future.delayed(const Duration(hours: 3));
+    }
   }
 
   Widget _getSlidingPage(int idx) {
