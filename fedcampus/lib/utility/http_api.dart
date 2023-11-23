@@ -16,7 +16,7 @@ class HTTPApi {
 
   static const logoutURL = "${_host}auth/token/logout/";
 
-  static const data = "${_host}api/data_dp";
+  static const data = "${_host}api/data";
 
   static const dataDP = "${_host}api/data_dp";
 
@@ -46,9 +46,12 @@ class HTTPApi {
     prefs.setString("auth_token", token);
   }
 
-  static Future<http.Response> sendData(String dataJson) {
-    return HTTPApi.post(HTTPApi.data, <String, String>{},
-        jsonEncode({"data": dataJson, "version": userApi.version}));
+  static Future<http.Response> sendData(String dataJson, {dp = false}) {
+    return dp
+        ? HTTPApi.post(HTTPApi.dataDP, <String, String>{},
+            jsonEncode({"data": dataJson, "version": userApi.version}))
+        : HTTPApi.post(HTTPApi.data, <String, String>{},
+            jsonEncode({"data": dataJson, "version": userApi.version}));
   }
 
   static Future<http.Response> post(

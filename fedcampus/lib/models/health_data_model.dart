@@ -78,9 +78,10 @@ class HealthDataModel extends ChangeNotifier {
     try {
       final dataJson = dataListJsonEncode(dataList);
       final dataFuzzJson = dataListJsonEncode(DataWrapper.fuzzData(dataList));
-      List<http.Response> responseArr = await Future.wait(
-              [HTTPApi.sendData(dataJson), HTTPApi.sendData(dataFuzzJson)])
-          .timeout(const Duration(seconds: 5));
+      List<http.Response> responseArr = await Future.wait([
+        HTTPApi.sendData(dataJson),
+        HTTPApi.sendData(dataFuzzJson, dp: true)
+      ]).timeout(const Duration(seconds: 5));
       logger.i("Data Status Code ${responseArr[0].statusCode} : $dataJson");
       logger.i(
           "Data DP Status Code ${responseArr[1].statusCode} : $dataFuzzJson");
