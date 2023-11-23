@@ -253,8 +253,6 @@ class DataWrapper {
       if (responseArr[0].statusCode == 401) {
         // user login
         dataWrapperToast("Please Login for federated analysis.");
-      } else if (responseArr[0].statusCode == 200) {
-        dataWrapperToast("success");
       }
     } on ClientException {
       remindDkuNetwork();
