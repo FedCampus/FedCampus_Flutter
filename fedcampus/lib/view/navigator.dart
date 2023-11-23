@@ -56,9 +56,11 @@ class _BottomNavigatorState extends State<BottomNavigator> {
 
   void sendFAData() async {
     var dw = DataWrapper();
-    final now = DateTime.now().add(const Duration(days: -1));
-    final dateNumber = now.year * 10000 + now.month * 100 + now.day;
+    var now = DateTime.now().add(const Duration(days: -1));
+    var dateNumber = now.year * 10000 + now.month * 100 + now.day;
     while (true) {
+      now = DateTime.now().add(const Duration(days: -1));
+      dateNumber = now.year * 10000 + now.month * 100 + now.day;
       try {
         await dw.getDayDataAndSendAndTrain(dateNumber);
       } on Exception catch (e) {
