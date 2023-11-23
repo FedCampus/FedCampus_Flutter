@@ -1,6 +1,5 @@
 # Send notification to users that have not signed to the app
 
-import json
 import django
 import os
 import datetime
@@ -17,8 +16,6 @@ django.setup()
 from django.core.mail import send_mass_mail
 from django.conf import settings
 from django.contrib.auth.models import User
-
-email = json.load(open("config/email.json", "r"))
 
 ## Email Settings
 
@@ -72,7 +69,8 @@ def sendReminderEmail(*timeTuple):
         (
             (settings.SUBJECT, settings.MESSAGE, settings.EMAIL_HOST_USER, [u])
             for u in user
-        )
+        ),
+        fail_silently=True,
     )
 
 
@@ -85,7 +83,7 @@ def test():
                 settings.EMAIL_HOST_USER,
                 ["bt132@duke.edu"],
             )
-        ]
+        ],
     )
     pass
 

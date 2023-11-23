@@ -1,19 +1,16 @@
-import logging
 import json
-import time
+import logging
 import os
 
 from .models import Record
-from .models import Customer
-from .models import SleepTime
 from .models import RecordDP
+from .models import Customer
 from .models import saveRecord
 from .models import Log
 
 from django.contrib.auth import logout
 from django.db.models import Q
 from django.db.models import Avg
-from django.contrib.auth.models import User
 
 # Create your views here.
 from .serializers import LoginSerializer
@@ -76,15 +73,18 @@ class Register(APIView):
         )
 
 
-class TestView(APIView):
-    authentication_classes = [SessionAuthentication]
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def get(self, request):
-        print(request.user)
-        print(request.META)
-
-        return Response({"aa": 11})
+def updateUserVersion(version, request):
+    if version == None:
+        pass
+    else:
+        c = Customer.objects.get(user=request.user)
+        logger.info(f"getting version from {version} and {c.version} ")
+        if c.version == version:
+            return
+        else:
+            c.version = version
+            c.save()
+        pass
 
 
 # Exercise Data without DP
@@ -92,10 +92,12 @@ class Data(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
+        updateUserVersion(request.data.get("version"), request)
         logger.info(f"received data: from user {request.user} " + str(request.data))
-
-        [saveRecord(Record, request.user, data) for data in request.data]
-
+        [
+            saveRecord(Record, request.user, data)
+            for data in json.loads(request.data.get("data"))
+        ]
         return Response(None)
 
 
@@ -104,50 +106,13 @@ class DataDP(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
+        updateUserVersion(request.data.get("version"), request)
         logger.info("received data dp: " + str(request.data))
-
-        [saveRecord(RecordDP, request.user, data) for data in request.data]
-
+        [
+            saveRecord(RecordDP, request.user, data)
+            for data in json.loads(request.data.get("data"))
+        ]
         return Response(None)
-
-
-# Health Data
-class HealthData(APIView):
-    authentication_classes = [SessionAuthentication]
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def post(self, request):
-        # logger.info("received data: "+ str(request.data))
-
-        try:
-            sleepData = request.data.get("sleep")
-            sleepData = json.loads(sleepData)
-
-            for key, value in sleepData.items():
-                logger.info(f"RECEIVED Sleep Data: {value}")
-
-                SleepTime.saveRecord(
-                    user=request.user,
-                    startTime=int(
-                        time.strftime(
-                            "%Y%m%d%H%M%S", time.localtime(value.get("start") + 28800)
-                        )
-                    ),
-                    endTime=int(
-                        time.strftime(
-                            "%Y%m%d%H%M%S", time.localtime(value.get("end") + 28800)
-                        )
-                    ),
-                    data=value,
-                )
-
-        except:
-            logger.warn("sleep data not found")
-            pass
-
-        return Response(None)
-
-    pass
 
 
 class Logout(APIView):
@@ -225,8 +190,9 @@ class Status(APIView):
 def getFilter(startTime, filtering=None):
     """
     Get the filtering querySet with respect to the filtering dictionary and the current day
+    Filter value > 0
     """
-    queryAll = FA_MODEL.objects.filter(startTime=startTime)
+    queryAll = FA_MODEL.objects.filter(startTime=startTime).filter(value__gte=0)
     if not filtering == None:
         if filtering.get("gender") == "male":
             queryAll = queryAll.filter(user__customer__male=True)
@@ -275,6 +241,7 @@ class Rank(APIView):
 
     def post(self, request):
         querySet = getFilter(request.data.get("time"), request.data.get("filter"))
+
         return Response(
             dict(
                 [
@@ -319,99 +286,6 @@ class Rank(APIView):
     pass
 
 
-class FedAnalysis(APIView):
-    # authentication_classes = [SessionAuthenticataion]
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def post(self, request):
-        startTime = 0
-        filtering = None
-        for data in request.data:
-            if data.get("time"):
-                startTime = data.get("time")
-                continue
-            if data.get("filter"):
-                filtering = data.get("filter")
-                continue
-            if not data.get("name") is None:
-                saveRecord(FA_MODEL, request.user, data)
-        return Response(self.calculateAverageAndRanking(request, startTime, filtering))
-
-    def calculateAverageAndRanking(self, request, dateTime, filtering):
-        logger.info(filtering)
-        resultJson = {}
-        # filter querySet accroding to the filtering
-        queryAll = FA_MODEL.objects.all()
-        if not filtering == None:
-            if filtering.get("gender") == "male":
-                queryAll = queryAll.filter(user__customer__male=True)
-            elif filtering.get("gender") == "female":
-                queryAll = queryAll.filter(user__customer__male=False)
-            if filtering.get("status") == "all":
-                pass
-            elif filtering.get("status") == "student":
-                queryAll = queryAll.filter(user__customer__faculty=False)
-            elif filtering.get("status") == "faculty":
-                queryAll = queryAll.filter(user__customer__faculty=True)
-            else:
-                queryAll = queryAll.filter(
-                    user__customer__student=int(filtering.get("status"))
-                )
-                logger.info(queryAll)
-
-        for dataType in FA_DATA:
-            querySet = queryAll.filter(
-                Q(dataType=dataType) & Q(startTime=dateTime)
-            ).order_by("-value")
-            if not querySet.filter(user=request.user).exists():
-                continue
-            try:
-                query = querySet.get(user=request.user)
-            except:
-                query = querySet.filter(user=request.user)
-                logger.info(f"Exception Getting Two queries at the same time {query}")
-                query = query[0]
-            avg = abs(querySet.aggregate(Avg("value")).get("value__avg"))
-            percentage = self.calculatePercentage(querySet, query)
-            resultJson[dataType] = {"avg": avg, "ranking": percentage}
-
-        return resultJson
-
-    def checkAndSend(self, dateTime, request):
-        dateTime = dateTime * 1000000
-        result = FA_MODEL.objects.filter(
-            Q(startTime=dateTime) & Q(user=request.user) & Q(dataType__in=FA_DATA)
-        )
-        avgJson = {}
-
-        # TODO : change this to ==
-        if result.count() < len(FA_DATA):
-            return Response(None, status=452)
-        else:
-            for dataType in FA_DATA:
-                querySet = FA_MODEL.objects.filter(
-                    Q(dataType=dataType) & Q(startTime=dateTime)
-                ).order_by("-value")
-                avg = querySet.aggregate(Avg("value")).get("value__avg")
-                percentage = self.calculatePercentage(querySet, request)
-                avgJson[dataType] = {"avg": avg, "ranking": percentage}
-            return Response(avgJson)
-
-    def calculatePercentage(self, querySet, query):
-        ranking = (
-            querySet.filter(value__gt=query.value).count() + 1
-        )  # ranking = index + 1
-        totalLength = querySet.count()
-        realPercentage = ranking / totalLength * 100
-        for i in range(1, 21):
-            i = i * 5
-            if i >= realPercentage:
-                return i
-        raise Exception(
-            f"The real Percentage is {realPercentage}, and it is not in range 0-100"
-        )
-
-
 def getSimilarUser(querySet, index, length=1):
     ## get the similar user that is similar to the current user
     result = []
@@ -434,8 +308,6 @@ class AccountSettings(APIView):
     def post(self, request):
         customer = request.user.customer
         data = request.data
-        print(customer)
-        print(data)
         if data.get("faculty") == True:
             customer.faculty = True
         else:
@@ -443,7 +315,6 @@ class AccountSettings(APIView):
             customer.student = int(data.get("student"))
         customer.male = data.get("male")
         customer.save()
-        print(customer.student)
         return Response(None)
 
     pass

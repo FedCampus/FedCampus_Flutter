@@ -68,15 +68,14 @@ LOGGING = {
 }
 
 # Email Settings
-email = json.load(open("config/email.json", "r"))
-MESSAGE = "Please start the app for at least 5 minutes for training!"
+MESSAGE = "Please go to the 'My Health' page, choose the calendar of today, and waiting for the loading to be finished"
 SUBJECT = "FedCampus"
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = email.get("email_host")
+EMAIL_HOST = "smtp.duke.edu"
 EMAIL_USE_TLS = False
 EMAIL_PORT = 25
-EMAIL_HOST_USER = email.get("email_username")
-EMAIL_HOST_PASSWORD = email.get("email_password")
+EMAIL_HOST_USER = "edge-intelligence-lab@dukekunshan.edu.cn"
+AUTH_USER = "bz106@duke.edu"
 
 # Application definition
 
