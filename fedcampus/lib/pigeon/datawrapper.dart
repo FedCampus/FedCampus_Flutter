@@ -246,7 +246,6 @@ class DataWrapper {
       List<http.Response> responseArr = await Future.wait(
               [HTTPApi.sendData(dataJson), HTTPApi.sendData(dataFuzzJson)])
           .timeout(const Duration(seconds: 5));
-      // TODO: Time out for 5 seconds.
 
       logger.i("Data Status Code ${responseArr[0].statusCode} : $dataJson");
       logger.i(
@@ -254,6 +253,8 @@ class DataWrapper {
       if (responseArr[0].statusCode == 401) {
         // user login
         dataWrapperToast("Please Login for federated analysis.");
+      } else if (responseArr[0].statusCode == 200) {
+        dataWrapperToast("success");
       }
     } on ClientException {
       remindDkuNetwork();
@@ -276,7 +277,7 @@ void dataWrapperToast(String msg) => Fluttertoast.showToast(
     toastLength: Toast.LENGTH_SHORT,
     gravity: ToastGravity.CENTER,
     timeInSecForIosWeb: 1,
-    backgroundColor: Colors.red,
+    backgroundColor: msg == "success" ? Colors.green : Colors.red,
     textColor: Colors.white,
     fontSize: 16.0);
 

@@ -85,6 +85,11 @@ class HealthDataModel extends ChangeNotifier {
       logger.i("Data Status Code ${responseArr[0].statusCode} : $dataJson");
       logger.i(
           "Data DP Status Code ${responseArr[1].statusCode} : $dataFuzzJson");
+      if (responseArr[0].statusCode == 401) {
+        dataWrapperToast("Data sent failed, Please Log in!");
+      } else if (responseArr[0].statusCode == 200) {
+        dataWrapperToast("success");
+      }
     } on ClientException {
       remindDkuNetwork();
       return;
