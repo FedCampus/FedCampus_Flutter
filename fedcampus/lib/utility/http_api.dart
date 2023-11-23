@@ -16,7 +16,7 @@ class HTTPApi {
 
   static const logoutURL = "${_host}auth/token/logout/";
 
-  static const data = "${_host}api/data";
+  static const data = "${_host}api/data_dp";
 
   static const dataDP = "${_host}api/data_dp";
 
