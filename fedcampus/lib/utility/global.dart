@@ -21,7 +21,7 @@ class Global {
 
   final ScreenTimeData screenTimeDataHandler = ScreenTimeData();
 
-  final version = "${Platform.isAndroid ? "android" : "ios"}1.0";
+  final version = "${Platform.isAndroid ? "android" : "ios"}1.0.1";
 
   Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
