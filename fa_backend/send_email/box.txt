@@ -1,0 +1,17 @@
+Dear %s,
+
+Thanks for your coming for picking up the watch and setting up our app.
+
+Your watch's serial number is %s. Please contact us if incorrect.
+
+Please note that you should keep the box we give you including everything inside.
+
+Also, please join in our group chat according to your phone type if you haven't done so today, https://docs.google.com/document/d/16tM63lhAlxP9AijzETLBkm21l7MB9i_cEJYGTMml3Uo/edit?usp=sharing . 
+
+As an active participant, please open our app everyday (at least 9 days in two weeks), go to "My Health" page, wait for the "success". 
+
+Enjoy the new watch.
+
+
+Sincerely,
+The FedCampus Team
