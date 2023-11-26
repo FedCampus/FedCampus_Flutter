@@ -46,9 +46,12 @@ class HTTPApi {
     prefs.setString("auth_token", token);
   }
 
-  static Future<http.Response> sendData(String dataJson) {
-    return HTTPApi.post(HTTPApi.data, <String, String>{},
-        jsonEncode({"data": dataJson, "version": userApi.version}));
+  static Future<http.Response> sendData(String dataJson, {dp = false}) {
+    return dp
+        ? HTTPApi.post(HTTPApi.dataDP, <String, String>{},
+            jsonEncode({"data": dataJson, "version": userApi.version}))
+        : HTTPApi.post(HTTPApi.data, <String, String>{},
+            jsonEncode({"data": dataJson, "version": userApi.version}));
   }
 
   static Future<http.Response> post(
