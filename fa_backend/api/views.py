@@ -144,7 +144,8 @@ class saveLogFile(APIView):
         return Response(None)
 
 
-FA_MODEL = RecordDP
+## TODO: change the FA model back to RecordDP
+FA_MODEL = Record
 
 
 class Status(APIView):
