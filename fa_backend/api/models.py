@@ -30,7 +30,6 @@ class RecordDP(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     startTime = models.IntegerField(null=True, blank=True)
     endTime = models.IntegerField(null=True, blank=True)
-    # data = models.JSONField(null=True, blank=True)
     dataType = models.CharField(max_length=10, null=True, blank=True)
     value = models.FloatField(null=True, blank=True)
     update = models.DateTimeField(auto_now=True)
@@ -85,6 +84,7 @@ class Customer(models.Model):
     student = models.SmallIntegerField(null=True, blank=True)
     male = models.BooleanField(null=True, blank=True)
     version = models.CharField(null=True, blank=True, max_length=20)
+    credit = models.IntegerField(default=3, blank=True, null=True)
 
     def __str__(self):
         return self.nickname

@@ -125,32 +125,6 @@ class Logout(APIView):
         pass
 
 
-class Account(APIView):
-    authentication_classes = [SessionAuthentication]
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def post(self, request):
-        nickname = request.data.get("nickname")
-        email = request.data.get("email")
-        logger.info(f"account received {nickname} , {email}")
-
-        user = request.user
-
-        # username is email
-        user.email = email
-        user.username = email
-
-        user.save()
-
-        customer = user.customer
-        customer.nickname = nickname
-        customer.save()
-
-        logger.info("change account information successfully")
-
-        return Response(None)
-
-
 class saveLogFile(APIView):
     def post(self, request):
         file = request.data.get("log")
@@ -168,12 +142,10 @@ class saveLogFile(APIView):
             pass
         Log.objects.create(user=request.user, file=file)
         return Response(None)
-        pass
-
-    pass
 
 
-FA_MODEL = RecordDP
+## TODO: change the FA model back to RecordDP
+FA_MODEL = Record
 
 
 class Status(APIView):
@@ -183,8 +155,6 @@ class Status(APIView):
         customer = request.user.customer
         cs = CustomerSerializer(customer)
         return Response(cs.data)
-
-    pass
 
 
 def getFilter(startTime, filtering=None):
@@ -241,7 +211,6 @@ class Rank(APIView):
 
     def post(self, request):
         querySet = getFilter(request.data.get("time"), request.data.get("filter"))
-
         return Response(
             dict(
                 [
@@ -283,8 +252,6 @@ class Rank(APIView):
             f"The real Percentage is {realPercentage}, and it is not in range 0-100"
         )
 
-    pass
-
 
 def getSimilarUser(querySet, index, length=1):
     ## get the similar user that is similar to the current user
@@ -292,13 +259,11 @@ def getSimilarUser(querySet, index, length=1):
     indexLength = querySet.count() - 1
     lowerBound = max(index - length, 0)
     upperBound = min(index + length, indexLength)
-
     for i in range(lowerBound, upperBound + 1):
         if i == index:
             continue
         user = querySet[i].user
         result.append(f"{user.customer.nickname}, {user.email}")
-
     return result
 
 

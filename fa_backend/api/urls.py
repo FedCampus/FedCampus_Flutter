@@ -10,7 +10,6 @@ urlpatterns = [
     path("data", views.Data.as_view(), name="exercisedata"),
     path("data_dp", views.DataDP.as_view(), name="exercisedata_dp"),
     path("logout", views.Logout.as_view(), name="logout"),
-    # path("account", views.Account.as_view(), name="account"),
     path("log", views.saveLogFile.as_view(), name="saveLogFile"),
     path("account", views.AccountSettings.as_view(), name="account"),
     path("status", views.Status.as_view(), name="status"),

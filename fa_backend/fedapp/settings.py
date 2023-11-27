@@ -74,7 +74,7 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.duke.edu"
 EMAIL_USE_TLS = False
 EMAIL_PORT = 25
-EMAIL_HOST_USER = "edge-intelligence-lab@dukekunshan.edu.cn"
+EMAIL_HOST_USER = "fedcampus@dukekunshan.edu.cn"
 AUTH_USER = "bz106@duke.edu"
 
 # Application definition
@@ -89,6 +89,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "api",
+    "backend",
     "djoser",
 ]
 
