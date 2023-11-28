@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/utility/log.dart';
+import 'package:fedcampus/view/me.dart';
 import 'package:fedcampus/view/me/preferences.dart';
 import 'package:flutter/material.dart';
 import '../../utility/http_api.dart';
@@ -112,7 +113,7 @@ class _AccountSettingsState extends State<AccountSettings> {
           WidgetListWithDivider(
             color: Theme.of(context).colorScheme.primary,
             children: [
-              SettingsDropDownMenu(
+              SettingsDropDownMenu2(
                 key: GlobalKey(),
                 text: "Role",
                 callback: (s) async {
@@ -124,7 +125,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                     .key),
               ),
               if (_status == 1)
-                SettingsDropDownMenu(
+                SettingsDropDownMenu2(
                   key: GlobalKey(),
                   text: "Grade",
                   callback: (s) async {
@@ -136,7 +137,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                       .firstWhere((entry) => entry.value == _grade)
                       .key),
                 ),
-              SettingsDropDownMenu(
+              SettingsDropDownMenu2(
                 key: GlobalKey(),
                 text: "Gender",
                 callback: (s) async {

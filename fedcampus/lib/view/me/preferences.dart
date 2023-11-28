@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fedcampus/main.dart';
 import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/utility/log.dart';
@@ -343,6 +344,124 @@ class _SettingsDropDownMenuState extends State<SettingsDropDownMenu> {
             },
           )
         ],
+      ),
+    );
+  }
+}
+
+class RadioTileList extends StatefulWidget {
+  const RadioTileList({
+    super.key,
+    required this.options,
+  });
+  final List<String> options;
+
+  @override
+  State<RadioTileList> createState() => _RadioTileListState();
+}
+
+class _RadioTileListState extends State<RadioTileList> {
+  String? _selectedValue = "";
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+        children: widget.options
+            .map((e) => RadioListTile<String>(
+                  title: Text(e),
+                  value: e,
+                  groupValue: _selectedValue,
+                  onChanged: (String? value) {
+                    setState(() {
+                      _selectedValue = value;
+                    });
+                  },
+                ))
+            .toList());
+  }
+}
+
+class SettingsDropDownMenu2 extends StatefulWidget {
+  const SettingsDropDownMenu2({
+    super.key,
+    required this.text,
+    required this.callback,
+    required this.options,
+    required this.defaultValue,
+  });
+
+  final String text;
+  final List<String> options;
+  final Future<void> Function(String) callback;
+  final String defaultValue;
+
+  @override
+  State<SettingsDropDownMenu2> createState() => _SettingsDropDownMenu2State();
+}
+
+class _SettingsDropDownMenu2State extends State<SettingsDropDownMenu2> {
+  String? dropdownValue = "";
+  late MyAppState appState;
+
+  @override
+  void initState() {
+    super.initState();
+    dropdownValue = widget.defaultValue;
+  }
+
+  Future<void> _splashDialog() async {
+    await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        double pixel = MediaQuery.of(context).size.width / 400;
+        return AlertDialog(
+          title: Text(widget.text),
+          contentPadding:
+              EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 13),
+          content: RadioTileList(options: widget.options),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
+    return Padding(
+      padding:
+          EdgeInsets.fromLTRB(50 * pixel, 0 * pixel, 50 * pixel, 0 * pixel),
+      child: TextButton(
+        onPressed: () {
+          _splashDialog();
+        },
+        style: const ButtonStyle(
+          alignment: Alignment.topLeft,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AutoSizeText(
+              widget.text,
+              style: TextStyle(
+                fontSize: pixel * 20,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+            AutoSizeText(
+              widget.defaultValue,
+              style: TextStyle(
+                fontSize: pixel * 18,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
