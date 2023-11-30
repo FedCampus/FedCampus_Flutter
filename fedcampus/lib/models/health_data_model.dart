@@ -119,7 +119,7 @@ class HealthDataModel extends ChangeNotifier {
             .add(const Duration(days: 1)));
 
     final data = Data(
-        name: "screen_time",
+        name: "total_time_foreground",
         value: res['total_time_foreground']!,
         startTime: int.parse(date),
         endTime: int.parse(date));

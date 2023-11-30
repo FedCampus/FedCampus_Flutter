@@ -286,11 +286,8 @@ String dataListJsonEncode(List<Data?> data) =>
     jsonEncode(data.map((e) => e!.toJson()).toList());
 
 Map<String, double> dataToMap(List<Data> data) {
-  var res = {"step_time": 0.0};
-  for (var d in data) {
-    res.addAll({d.name: d.value});
-  }
-  return res;
+  return data.fold<Map<String, double>>(
+      {}, (acc, entry) => {...acc, entry.name: entry.value});
 }
 
 const fiveSeconds = Duration(seconds: 5);
