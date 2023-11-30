@@ -15,7 +15,21 @@ import '../utility/my_exceptions.dart';
 
 class HealthDataModel extends ChangeNotifier {
   final Map<String, double> _healthData = HealthData.mapOf();
-  final Map<String, double> _screenData = ScreenData.mapOf();
+  final nameList = [
+    "step",
+    "calorie",
+    "distance",
+    "stress",
+    "rest_heart_rate",
+    "intensity",
+    "exercise_heart_rate",
+    "step_time",
+    "sleep_efficiency",
+    "query_time",
+    "total_time_foreground",
+    "sleep_duration",
+    "carbon_emission"
+  ];
   bool _loading = false;
   String _date = (DateTime.now().year * 10000 +
           DateTime.now().month * 100 +
@@ -34,98 +48,111 @@ class HealthDataModel extends ChangeNotifier {
   }
 
   Future<void> requestAllData({bool forcedRefresh = false}) async {
+    final List<Data> dataList;
     _loading = true;
     notifyListeners();
     // reset each entry to 0 whenever a new request is received.
-    for (var k in _healthData.keys) {
+    for (final k in _healthData.keys) {
       _healthData[k] = 0;
     }
+    // assert keys of _healthData do not change
+    assert(() {
+      final mapKeys = _healthData.keys.toSet();
+      final listElements = nameList.toSet();
+      return mapKeys.length == listElements.length &&
+          mapKeys.containsAll(listElements);
+    }());
 
-    late List<Data> dataList;
+    // get health data
     try {
       DataWrapper dw = DataWrapper();
-      dataList =
-          await dw.getDataList(DataWrapper.dataNameList, int.parse(_date));
+      dataList = await dw.getDataList(
+          DataWrapper.dataNameList, int.parse(_date),
+          forcedRefresh: forcedRefresh);
       logger.i("data  ${dataListJsonEncode(dataList)}");
-      _healthData.addAll(dataToMap(dataList));
     } on AuthenticationException catch (error) {
-      logger.e(error);
-      _notify();
-      bus.emit("toast_error", "Not authenticated.");
+      _logAndNotify(error, "Not authenticated.");
       await userApi.healthDataHandler.authenticate();
+      return;
     } on InternetConnectionException catch (error) {
-      logger.e(error);
-      _notify();
-      bus.emit("toast_error",
+      _logAndNotify(error,
           "Internet connection error, cannot connect to health data handler server.");
+      return;
     }
 
+    // get screen data on Android
     if (userApi.isAndroid) {
       try {
-        var data = await _getScreenData();
+        final data =
+            await _getScreenData(calendar.intToDateTime(int.parse(date)));
+        assert(data.name == "total_time_foreground");
         dataList.add(data);
-        _healthData.addAll(dataToMap([data]));
-      } catch (e) {
-        logger.e(e);
-        _notify();
-        bus.emit("app_usage_stats_error",
+      } on Exception catch (e) {
+        _logAndNotify(e,
             "You have not granted the permission to access phone usage, go to preferences of this application to redirect to system settings page");
+        await userApi.screenTimeDataHandler.authenticate();
       }
     }
+
+    // notify view to update data
+    _healthData.addAll(dataToMap(dataList));
     _notify();
 
     // send it to the server
     try {
-      final dataJson = dataListJsonEncode(dataList);
-      final dataFuzzJson = dataListJsonEncode(DataWrapper.fuzzData(dataList));
-      List<http.Response> responseArr = await Future.wait([
-        HTTPApi.sendData(dataJson),
-        HTTPApi.sendData(dataFuzzJson, dp: true)
-      ]).timeout(const Duration(seconds: 5));
-      logger.i("Data Status Code ${responseArr[0].statusCode} : $dataJson");
-      logger.i(
-          "Data DP Status Code ${responseArr[1].statusCode} : $dataFuzzJson");
-      if (responseArr[0].statusCode == 401) {
-        dataWrapperToast("Data sent failed, Please Log in!");
-      } else if (responseArr[0].statusCode == 200) {
-        dataWrapperToast("success");
-      }
-    } on ClientException {
-      remindDkuNetwork();
-      return;
-    } on TimeoutException {
-      logger.d("internet issue");
-      remindDkuNetwork();
-      return;
-    } on SocketException {
-      dataWrapperToast("Please connect to Network");
-      return;
-    } catch (err, stackTrace) {
+      await _sentToServer(dataList);
+    } on ClientException catch (e) {
+      _logAndNotify(e, "Please make sure you are connected to DKU network!");
+    } on TimeoutException catch (e) {
+      _logAndNotify(e, "Please make sure you are connected to DKU network!");
+    } on SocketException catch (e) {
+      _logAndNotify(e, "Please make sure you are connected to DKU network!");
+    } on Exception catch (err, stackTrace) {
       logger.e("$err\n$stackTrace");
-      dataWrapperToast("Unknown issue: $err. Please try again later.");
+      _logAndNotify(err, "Please make sure you are connected to DKU network!");
+    }
+  }
+
+  void _logAndNotify(Exception error, String message) {
+    logger.e(error);
+    _notify();
+    bus.emit("toast_error", message);
+  }
+
+  Future<void> _sentToServer(List<Data> dataList) async {
+    final dataJson = dataListJsonEncode(dataList);
+    final dataFuzzJson = dataListJsonEncode(DataWrapper.fuzzData(dataList));
+    List<http.Response> responseArr = await Future.wait([
+      HTTPApi.sendData(dataJson),
+      HTTPApi.sendData(dataFuzzJson, dp: true)
+    ]).timeout(const Duration(seconds: 5));
+    logger.i("Data Status Code ${responseArr[0].statusCode} : $dataJson");
+    logger
+        .i("Data DP Status Code ${responseArr[1].statusCode} : $dataFuzzJson");
+    if (responseArr[0].statusCode == 401) {
+      dataWrapperToast("Data sent failed, Please Log in!");
+    } else if (responseArr[0].statusCode == 200) {
+      dataWrapperToast("success");
     }
   }
 
   /// Only work on Android.
-  Future<Data> _getScreenData() async {
+  Future<Data> _getScreenData(DateTime date) async {
     // TODO: cache screen time in DB because the screen time data expires after several days
-    Map<String, double> res = {};
+    int dateCode = calendar.dateTimeToInt(date);
+    final Map<String, double> res =
+        await userApi.screenTimeDataHandler.getDataMap(
+      entry: [""],
+      startTime: date,
+      endTime: date.add(const Duration(days: 1)),
+    );
 
-    res = await userApi.screenTimeDataHandler.getDataMap(
-        entry: [""],
-        startTime: calendar.intToDateTime(int.parse(date)),
-        endTime: calendar
-            .intToDateTime(int.parse(date))
-            .add(const Duration(days: 1)));
-
-    final data = Data(
-        name: "total_time_foreground",
-        value: res['total_time_foreground']!,
-        startTime: int.parse(date),
-        endTime: int.parse(date));
-    _screenData.addAll(res);
-    logger.i(_screenData);
-    return data;
+    return Data(
+      name: "total_time_foreground",
+      value: res['total_time_foreground']!,
+      startTime: dateCode,
+      endTime: dateCode,
+    );
   }
 
   void _notify() {
