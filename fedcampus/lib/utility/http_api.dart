@@ -183,18 +183,11 @@ class HTTPApi {
     }
   }
 
-  static Future<void> accountSettings(int status, int grade, int gender) async {
-    bool isFaculty = status == 2;
-    bool isMale = gender == 1;
+  static Future<void> accountSettings(Map<String, dynamic> body) async {
     try {
-      var params = <String, dynamic>{
-        "faculty": isFaculty,
-        "student": grade,
-        "male": isMale,
-      };
-      logger.d(params);
+      logger.d(body);
       http.Response response = await HTTPApi.post(
-          HTTPApi.account, <String, String>{}, jsonEncode(params));
+          HTTPApi.account, <String, String>{}, jsonEncode(body));
       if (response.statusCode == 400) {
         logger.e('Bad Credentials, please try again');
         throw ClientException('Bad Credentials, please try again');

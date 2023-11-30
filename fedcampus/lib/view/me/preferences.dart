@@ -350,11 +350,14 @@ class _SettingsDropDownMenuState extends State<SettingsDropDownMenu> {
 }
 
 class RadioTileList extends StatefulWidget {
-  const RadioTileList({
-    super.key,
-    required this.options,
-  });
+  const RadioTileList(
+      {super.key,
+      required this.options,
+      required this.onChanged,
+      required this.initialValue});
   final List<String> options;
+  final Function(String s) onChanged;
+  final String initialValue;
 
   @override
   State<RadioTileList> createState() => _RadioTileListState();
@@ -366,52 +369,58 @@ class _RadioTileListState extends State<RadioTileList> {
   @override
   void initState() {
     super.initState();
+    _selectedValue = widget.initialValue;
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
-        children: widget.options
-            .map((e) => RadioListTile<String>(
-                  title: Text(e),
-                  value: e,
-                  groupValue: _selectedValue,
-                  onChanged: (String? value) {
-                    setState(() {
-                      _selectedValue = value;
-                    });
-                  },
-                ))
-            .toList());
+      mainAxisSize: MainAxisSize.min,
+      children: widget.options
+          .map((e) => RadioListTile<String>(
+                title: Text(e),
+                value: e,
+                groupValue: _selectedValue,
+                onChanged: (String? value) {
+                  setState(() {
+                    _selectedValue = value;
+                    widget.onChanged(_selectedValue!);
+                  });
+                },
+              ))
+          .toList(),
+    );
   }
 }
 
-class SettingsDropDownMenu2 extends StatefulWidget {
-  const SettingsDropDownMenu2({
+class SettingsMultipleChoiceTile extends StatefulWidget {
+  const SettingsMultipleChoiceTile({
     super.key,
     required this.text,
-    required this.callback,
+    required this.onChanged,
     required this.options,
-    required this.defaultValue,
+    required this.value,
   });
 
   final String text;
   final List<String> options;
-  final Future<void> Function(String) callback;
-  final String defaultValue;
+  final Function(String) onChanged;
+  final String value;
 
   @override
-  State<SettingsDropDownMenu2> createState() => _SettingsDropDownMenu2State();
+  State<SettingsMultipleChoiceTile> createState() =>
+      _SettingsMultipleChoiceTileState();
 }
 
-class _SettingsDropDownMenu2State extends State<SettingsDropDownMenu2> {
-  String? dropdownValue = "";
+class _SettingsMultipleChoiceTileState
+    extends State<SettingsMultipleChoiceTile> {
+  String dropdownValue = "";
   late MyAppState appState;
 
   @override
   void initState() {
     super.initState();
-    dropdownValue = widget.defaultValue;
+    dropdownValue = widget.value;
   }
 
   Future<void> _splashDialog() async {
@@ -423,7 +432,19 @@ class _SettingsDropDownMenu2State extends State<SettingsDropDownMenu2> {
           title: Text(widget.text),
           contentPadding:
               EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 13),
-          content: RadioTileList(options: widget.options),
+          content: RadioTileList(
+            options: widget.options,
+            onChanged: (s) => dropdownValue = s,
+            initialValue: widget.value,
+          ),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  widget.onChanged(dropdownValue);
+                },
+                child: const Text("Confirm"))
+          ],
         );
       },
     );
@@ -454,10 +475,10 @@ class _SettingsDropDownMenu2State extends State<SettingsDropDownMenu2> {
               ),
             ),
             AutoSizeText(
-              widget.defaultValue,
+              widget.value,
               style: TextStyle(
-                fontSize: pixel * 18,
-                color: Theme.of(context).colorScheme.primary,
+                fontSize: pixel * 16,
+                color: Theme.of(context).colorScheme.onSecondary,
               ),
             ),
           ],

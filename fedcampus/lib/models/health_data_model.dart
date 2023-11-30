@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:fedcampus/models/health_data.dart';
-import 'package:fedcampus/models/screen_data.dart';
 import 'package:fedcampus/pigeon/datawrapper.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
 import 'package:fedcampus/utility/log.dart';

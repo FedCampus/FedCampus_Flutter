@@ -1,8 +1,6 @@
 import 'dart:async';
 
 import 'package:fedcampus/utility/global.dart';
-import 'package:fedcampus/utility/log.dart';
-import 'package:fedcampus/view/me.dart';
 import 'package:fedcampus/view/me/preferences.dart';
 import 'package:flutter/material.dart';
 import '../../utility/http_api.dart';
@@ -22,8 +20,9 @@ class _AccountSettingsState extends State<AccountSettings> {
   int _status = userApi.prefs.getInt("status") ?? 1;
   int _grade = userApi.prefs.getInt("grade") ?? 2025;
   int _gender = userApi.prefs.getInt("gender") ?? 1; // 1 male, 2 female
+  late final Map<String, Future<void> Function(int)> accountSettingsStrategies;
 
-  Map<String, int> roles = {
+  Map<String, int> statuses = {
     "Student": 1,
     "Faculty": 2,
   };
@@ -43,38 +42,28 @@ class _AccountSettingsState extends State<AccountSettings> {
   @override
   void initState() {
     super.initState();
+    accountSettingsStrategies = {
+      "status": (int value) =>
+          HTTPApi.accountSettings({..._baseParams, "faculty": value == 2}),
+      "grade": (int value) =>
+          HTTPApi.accountSettings({..._baseParams, "student": value}),
+      "gender": (int value) =>
+          HTTPApi.accountSettings({..._baseParams, "male": value == 1}),
+    };
   }
 
-  void setRole(String role) {
-    logger.d(role);
-    setState(() {
-      _status = roles[role]!;
-    });
-  }
+  Map<String, dynamic> get _baseParams => {
+        "faculty": _status == 2,
+        "student": _grade,
+        "male": _gender == 1,
+      };
 
-  void setGrade(String grade) {
-    logger.d(grade);
-    _grade = grades[grade]!;
-  }
-
-  void setGender(String gender) {
-    logger.d(gender);
-    _gender = genders[gender]!;
-  }
-
-  Future<void> commitChanges(String s, String type) async {
-    if (type == "role") {
-    } else if (type == "grade") {
-      setGrade(s);
-    } else if (type == "gender") {
-      setGender(s);
-    }
-
+  Future<void> commitChanges(
+      Future<void> Function() accountSettingsStrategy) async {
     LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
     loadingDialog.showLoading();
     try {
-      await HTTPApi.accountSettings(_status, _grade, _gender)
-          .timeout(const Duration(seconds: 5));
+      await accountSettingsStrategy().timeout(const Duration(seconds: 5));
     } on TimeoutException catch (e) {
       loadingDialog.showIfDialogNotCancelled(
           e, "Please check your internet connection");
@@ -109,43 +98,48 @@ class _AccountSettingsState extends State<AccountSettings> {
         ),
       ),
       body: ListView(
+        padding: EdgeInsets.fromLTRB(0, 10 * pixel, 0, 0),
         children: [
           WidgetListWithDivider(
             color: Theme.of(context).colorScheme.primary,
             children: [
-              SettingsDropDownMenu2(
+              SettingsMultipleChoiceTile(
                 key: GlobalKey(),
                 text: "Role",
-                callback: (s) async {
-                  return commitChanges(s, "role").then((value) => setRole(s));
+                onChanged: (s) {
+                  commitChanges(() async =>
+                          accountSettingsStrategies["status"]!(statuses[s]!))
+                      .then((v) => setState(() => _status = statuses[s]!));
                 },
-                options: roles.keys.toList(),
-                defaultValue: (roles.entries
+                options: statuses.keys.toList(),
+                value: (statuses.entries
                     .firstWhere((entry) => entry.value == _status)
                     .key),
               ),
               if (_status == 1)
-                SettingsDropDownMenu2(
+                SettingsMultipleChoiceTile(
                   key: GlobalKey(),
                   text: "Grade",
-                  callback: (s) async {
-                    return commitChanges(s, "grade")
-                        .then((value) => setGrade(s));
+                  onChanged: (s) {
+                    commitChanges(() async =>
+                            accountSettingsStrategies["grade"]!(grades[s]!))
+                        .then((v) => setState(() => _grade = grades[s]!));
                   },
                   options: grades.keys.toList(),
-                  defaultValue: (grades.entries
+                  value: (grades.entries
                       .firstWhere((entry) => entry.value == _grade)
                       .key),
                 ),
-              SettingsDropDownMenu2(
+              SettingsMultipleChoiceTile(
                 key: GlobalKey(),
                 text: "Gender",
-                callback: (s) async {
-                  return commitChanges(s, "gender")
-                      .then((value) => setGender(s));
+                onChanged: (s) {
+                  commitChanges(() async =>
+                          accountSettingsStrategies["gender"]!(genders[s]!))
+                      .then((v) => setState(() => _gender = genders[s]!));
                 },
                 options: genders.keys.toList(),
-                defaultValue: (genders.entries
+                value: (genders.entries
                     .firstWhere((entry) => entry.value == _gender)
                     .key),
               ),
