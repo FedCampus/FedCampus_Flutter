@@ -138,7 +138,6 @@ class HealthDataModel extends ChangeNotifier {
   /// Only work on Android.
   Future<Data> _getScreenData(DateTime date) async {
     // TODO: cache screen time in DB because the screen time data expires after several days
-    int dateCode = calendar.dateTimeToInt(date);
     final Map<String, double> res =
         await userApi.screenTimeDataHandler.getDataMap(
       entry: [""],
@@ -149,8 +148,8 @@ class HealthDataModel extends ChangeNotifier {
     return Data(
       name: "total_time_foreground",
       value: res['total_time_foreground']!,
-      startTime: dateCode,
-      endTime: dateCode,
+      startTime: calendar.dateTimeToInt(date),
+      endTime: calendar.dateTimeToInt(date.add(const Duration(days: 1))),
     );
   }
 
