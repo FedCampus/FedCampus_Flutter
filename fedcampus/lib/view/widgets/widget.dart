@@ -234,7 +234,7 @@ class _SignInUpTextFieldState extends State<SignInUpTextField> {
   }
 }
 
-void showToastMessage(String msg, BuildContext context) {
+void showToastMessage(String msg, BuildContext context, {Color? color}) {
   FocusManager.instance.primaryFocus?.unfocus();
   double pixel = MediaQuery.of(context).size.width / 400;
   Fluttertoast.showToast(
@@ -242,7 +242,7 @@ void showToastMessage(String msg, BuildContext context) {
       toastLength: Toast.LENGTH_SHORT,
       gravity: ToastGravity.CENTER,
       timeInSecForIosWeb: 1,
-      backgroundColor: Colors.red,
+      backgroundColor: color ?? Colors.red,
       textColor: Colors.white,
       fontSize: pixel * 16.0);
 }

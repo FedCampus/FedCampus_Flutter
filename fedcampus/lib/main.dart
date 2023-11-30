@@ -109,6 +109,9 @@ class _MyAppState extends State<MyApp> {
     bus.on("toast_error", (arg) {
       showToastMessage(arg, context);
     });
+    bus.on("toast_success", (arg) {
+      showToastMessage(arg, context, color: Colors.green);
+    });
   }
 
   @override
