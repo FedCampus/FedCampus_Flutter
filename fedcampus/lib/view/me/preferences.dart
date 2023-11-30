@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fedcampus/main.dart';
 import 'package:fedcampus/utility/global.dart';
 import 'package:fedcampus/utility/log.dart';
@@ -343,6 +344,145 @@ class _SettingsDropDownMenuState extends State<SettingsDropDownMenu> {
             },
           )
         ],
+      ),
+    );
+  }
+}
+
+class RadioTileList extends StatefulWidget {
+  const RadioTileList(
+      {super.key,
+      required this.options,
+      required this.onChanged,
+      required this.initialValue});
+  final List<String> options;
+  final Function(String s) onChanged;
+  final String initialValue;
+
+  @override
+  State<RadioTileList> createState() => _RadioTileListState();
+}
+
+class _RadioTileListState extends State<RadioTileList> {
+  String? _selectedValue = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedValue = widget.initialValue;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: widget.options
+          .map((e) => RadioListTile<String>(
+                title: Text(e),
+                value: e,
+                groupValue: _selectedValue,
+                onChanged: (String? value) {
+                  setState(() {
+                    _selectedValue = value;
+                    widget.onChanged(_selectedValue!);
+                  });
+                },
+              ))
+          .toList(),
+    );
+  }
+}
+
+class SettingsMultipleChoiceTile extends StatefulWidget {
+  const SettingsMultipleChoiceTile({
+    super.key,
+    required this.text,
+    required this.onChanged,
+    required this.options,
+    required this.value,
+  });
+
+  final String text;
+  final List<String> options;
+  final Function(String) onChanged;
+  final String value;
+
+  @override
+  State<SettingsMultipleChoiceTile> createState() =>
+      _SettingsMultipleChoiceTileState();
+}
+
+class _SettingsMultipleChoiceTileState
+    extends State<SettingsMultipleChoiceTile> {
+  String dropdownValue = "";
+  late MyAppState appState;
+
+  @override
+  void initState() {
+    super.initState();
+    dropdownValue = widget.value;
+  }
+
+  Future<void> _splashDialog() async {
+    await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        double pixel = MediaQuery.of(context).size.width / 400;
+        return AlertDialog(
+          title: Text(widget.text),
+          contentPadding:
+              EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 13),
+          content: RadioTileList(
+            options: widget.options,
+            onChanged: (s) => dropdownValue = s,
+            initialValue: widget.value,
+          ),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  widget.onChanged(dropdownValue);
+                },
+                child: const Text("Confirm"))
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double pixel = MediaQuery.of(context).size.width / 400;
+    return Padding(
+      padding:
+          EdgeInsets.fromLTRB(50 * pixel, 0 * pixel, 50 * pixel, 0 * pixel),
+      child: TextButton(
+        onPressed: () {
+          _splashDialog();
+        },
+        style: const ButtonStyle(
+          alignment: Alignment.topLeft,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AutoSizeText(
+              widget.text,
+              style: TextStyle(
+                fontSize: pixel * 20,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+            AutoSizeText(
+              widget.value,
+              style: TextStyle(
+                fontSize: pixel * 16,
+                color: Theme.of(context).colorScheme.onSecondary,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

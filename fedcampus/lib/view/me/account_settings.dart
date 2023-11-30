@@ -1,11 +1,10 @@
 import 'dart:async';
 
-import 'package:fedcampus/utility/global.dart';
-import 'package:fedcampus/utility/log.dart';
+import 'package:fedcampus/models/user_model.dart';
+import 'package:fedcampus/utility/event_bus.dart';
 import 'package:fedcampus/view/me/preferences.dart';
 import 'package:flutter/material.dart';
-import '../../utility/http_api.dart';
-import '../../utility/my_exceptions.dart';
+import 'package:provider/provider.dart';
 import '../widgets/widget.dart';
 
 class AccountSettings extends StatefulWidget {
@@ -18,11 +17,7 @@ class AccountSettings extends StatefulWidget {
 }
 
 class _AccountSettingsState extends State<AccountSettings> {
-  int _status = userApi.prefs.getInt("status") ?? 1;
-  int _grade = userApi.prefs.getInt("grade") ?? 2025;
-  int _gender = userApi.prefs.getInt("gender") ?? 1; // 1 male, 2 female
-
-  Map<String, int> roles = {
+  Map<String, int> statuses = {
     "Student": 1,
     "Faculty": 2,
   };
@@ -39,59 +34,12 @@ class _AccountSettingsState extends State<AccountSettings> {
     "Female": 2,
   };
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  void setRole(String role) {
-    logger.d(role);
-    setState(() {
-      _status = roles[role]!;
-    });
-  }
-
-  void setGrade(String grade) {
-    logger.d(grade);
-    _grade = grades[grade]!;
-  }
-
-  void setGender(String gender) {
-    logger.d(gender);
-    _gender = genders[gender]!;
-  }
-
-  Future<void> commitChanges(String s, String type) async {
-    if (type == "role") {
-    } else if (type == "grade") {
-      setGrade(s);
-    } else if (type == "gender") {
-      setGender(s);
-    }
-
+  Future<void> showLoading() async {
     LoadingDialog loadingDialog = SmallLoadingDialog(context: context);
     loadingDialog.showLoading();
-    try {
-      await HTTPApi.accountSettings(_status, _grade, _gender)
-          .timeout(const Duration(seconds: 5));
-    } on TimeoutException catch (e) {
-      loadingDialog.showIfDialogNotCancelled(
-          e, "Please check your internet connection");
-      rethrow;
-    } on MyException catch (e) {
-      loadingDialog.showIfDialogNotCancelled(e, e.toString());
-      rethrow;
-    } on Exception catch (e) {
-      loadingDialog.showIfDialogNotCancelled(e, "Log in error");
-      rethrow;
-    }
-    if (mounted && !loadingDialog.cancelled) {
-      userApi.prefs.setInt("status", _status);
-      userApi.prefs.setInt("grade", _grade);
-      userApi.prefs.setInt("gender", _gender);
-      showToastMessage('Account setting success', context);
-    }
-    loadingDialog.cancel();
+    bus.on("loading_done", (arg) {
+      if (!loadingDialog.cancelled) loadingDialog.cancel();
+    });
   }
 
   @override
@@ -108,44 +56,53 @@ class _AccountSettingsState extends State<AccountSettings> {
         ),
       ),
       body: ListView(
+        padding: EdgeInsets.fromLTRB(0, 10 * pixel, 0, 0),
         children: [
           WidgetListWithDivider(
             color: Theme.of(context).colorScheme.primary,
             children: [
-              SettingsDropDownMenu(
+              SettingsMultipleChoiceTile(
                 key: GlobalKey(),
                 text: "Role",
-                callback: (s) async {
-                  return commitChanges(s, "role").then((value) => setRole(s));
+                onChanged: (s) {
+                  showLoading();
+                  Provider.of<UserModel>(context, listen: false)
+                      .myAccountSettings(status: statuses[s]);
                 },
-                options: roles.keys.toList(),
-                defaultValue: (roles.entries
-                    .firstWhere((entry) => entry.value == _status)
+                options: statuses.keys.toList(),
+                value: (statuses.entries
+                    .firstWhere((entry) =>
+                        entry.value == Provider.of<UserModel>(context).myStatus)
                     .key),
               ),
-              if (_status == 1)
-                SettingsDropDownMenu(
+              if (Provider.of<UserModel>(context).myStatus == 1)
+                SettingsMultipleChoiceTile(
                   key: GlobalKey(),
                   text: "Grade",
-                  callback: (s) async {
-                    return commitChanges(s, "grade")
-                        .then((value) => setGrade(s));
+                  onChanged: (s) {
+                    showLoading();
+                    Provider.of<UserModel>(context, listen: false)
+                        .myAccountSettings(grade: grades[s]);
                   },
                   options: grades.keys.toList(),
-                  defaultValue: (grades.entries
-                      .firstWhere((entry) => entry.value == _grade)
+                  value: (grades.entries
+                      .firstWhere((entry) =>
+                          entry.value ==
+                          Provider.of<UserModel>(context).myGrade)
                       .key),
                 ),
-              SettingsDropDownMenu(
+              SettingsMultipleChoiceTile(
                 key: GlobalKey(),
                 text: "Gender",
-                callback: (s) async {
-                  return commitChanges(s, "gender")
-                      .then((value) => setGender(s));
+                onChanged: (s) {
+                  showLoading();
+                  Provider.of<UserModel>(context, listen: false)
+                      .myAccountSettings(gender: genders[s]);
                 },
                 options: genders.keys.toList(),
-                defaultValue: (genders.entries
-                    .firstWhere((entry) => entry.value == _gender)
+                value: (genders.entries
+                    .firstWhere((entry) =>
+                        entry.value == Provider.of<UserModel>(context).myGender)
                     .key),
               ),
             ],

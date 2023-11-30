@@ -109,9 +109,8 @@ class _MyAppState extends State<MyApp> {
     bus.on("toast_error", (arg) {
       showToastMessage(arg, context);
     });
-    bus.on("app_usage_stats_error", (arg) {
-      userApi.screenTimeDataHandler.authenticate();
-      showToastMessage("You have not granted usage access permission", context);
+    bus.on("toast_success", (arg) {
+      showToastMessage(arg, context, color: Colors.green);
     });
   }
 
@@ -161,6 +160,7 @@ class _MyAppState extends State<MyApp> {
           onPrimaryContainer: const Color.fromARGB(255, 254, 232, 232),
           secondary: const Color.fromARGB(102, 0, 0, 0),
           surfaceTint: const Color.fromARGB(255, 249, 255, 231),
+          onSecondary: const Color.fromARGB(255, 82, 75, 75),
           secondaryContainer: const Color.fromARGB(255, 206, 229, 109),
           onSecondaryContainer: const Color.fromARGB(255, 176, 196, 93),
           tertiaryContainer: const Color.fromARGB(255, 174, 197, 242),
@@ -183,6 +183,7 @@ class _MyAppState extends State<MyApp> {
           onPrimaryContainer: Color.fromARGB(255, 53, 53, 60),
           surfaceTint: Color.fromARGB(255, 63, 63, 67),
           secondary: Color.fromARGB(255, 243, 219, 135),
+          onSecondary: Color.fromARGB(255, 174, 166, 166),
           secondaryContainer: Color.fromARGB(255, 206, 229, 109),
           onSecondaryContainer: Color.fromARGB(255, 176, 196, 93),
           tertiaryContainer: Color.fromARGB(255, 174, 197, 242),

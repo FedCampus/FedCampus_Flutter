@@ -1,20 +1,20 @@
 // feel free to migrate to json serializable classes such as json_model
 class HealthData {
-  static Map<String, double> mapOf(
-      {double step = 0,
-      double calorie = 0,
-      double distance = 0,
-      double stress = 0,
-      double restHeartRate = 0,
-      double intensity = 0,
-      double exerciseHeartRate = 0,
-      double stepTime = 0,
-      double sleepEfficiency = 0,
-      double queryTime = 0,
-      double totalTimeForeground = 0,
-      double sleepDuration = 0,
-      double carbonEmission = 0
-      }) {
+  static Map<String, double> mapOf({
+    double step = 0,
+    double calorie = 0,
+    double distance = 0,
+    double stress = 0,
+    double restHeartRate = 0,
+    double intensity = 0,
+    double exerciseHeartRate = 0,
+    double stepTime = 0,
+    double sleepEfficiency = 0,
+    double queryTime = 0,
+    double totalTimeForeground = 0,
+    double sleepDuration = 0,
+    double carbonEmission = 0,
+  }) {
     return {
       "step": step,
       "calorie": calorie,
@@ -28,7 +28,7 @@ class HealthData {
       "query_time": queryTime,
       "total_time_foreground": totalTimeForeground,
       "sleep_duration": sleepDuration,
-      "carbon_emission": carbonEmission
+      "carbon_emission": carbonEmission,
     };
   }
 }
