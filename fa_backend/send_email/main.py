@@ -13,9 +13,9 @@ def sendmail(
     content, netid, subject, from_email="fedcampus@dukekunshan.edu.cn", test=False
 ):
     if test:
-        # print("testing")
+        print("testing")
         netid = ["bt132", "sh623", "qz150", "lw337", "bz106", "bl291"]
-        # netid = ["bt132"]
+        content = content[: len(netid)]
     assert len(content) == len(netid)
     send_mass_mail(
         ((subject, c, from_email, [n + "@duke.edu"]) for c, n in zip(content, netid))
@@ -24,21 +24,27 @@ def sendmail(
 
 
 def main(args):
-    f = open("reminder.txt", "r").read()
-
-    p = pd.read_excel("FecCampus Watches.xlsx")
-    p = p[p["Watch Serial Number"].isnull()]
-    p = p[p["Checked"] != 0]
-    p = p[p["Name"].notnull()]
+    f = open("waitlist.txt", "r").read()
+    p = pd.read_excel("FecCampus Watches.xlsx", sheet_name="waitlist")
+    p = p[p["Grade"] != 2024]
+    p = p[p["Status"] == "student"]
     name = p["Name"]
+
+    # p = p[p["Watch Serial Number"].isnull()]
+    # p = p[p["Checked"] != 0]
+    # p = p[p["Name"].notnull()]
+    # name = p["Name"]
     netid = p["NetID"]
     messages = [f % s for s in name]
+    assert len(netid) == len(messages)
+    subject = "You are accepted to participate in FedCampus"
+
     if args.email:
         send = True if args.email == "send" else False
         sendmail(
             messages,
             netid,
-            "Last Chance to get your Huawei Watches!",
+            subject,
             test=not send,
         )
 
