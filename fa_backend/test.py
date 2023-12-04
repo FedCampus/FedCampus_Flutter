@@ -14,3 +14,6 @@ c = Customer.objects.get(user=u)
 print(c)
 
 print(Record.objects.filter(user=u).filter(startTime=20231115))
+
+startTime = 20231129
+endTime = 20231204

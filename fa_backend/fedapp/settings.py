@@ -43,10 +43,15 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "handlers": {
-        "file": {
+        "file_api": {
             "level": "INFO",
             "class": "logging.FileHandler",
             "filename": "log.log",
+        },
+        "file_backend": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": "log_backend.log",
         },
         "console": {
             "level": "INFO",
@@ -55,12 +60,17 @@ LOGGING = {
     },
     "loggers": {
         "django": {
-            "handlers": ["file", "console"],
+            "handlers": ["file_api", "console"],
             "level": "INFO",
             "propagate": True,
         },
         "api.views": {
-            "handlers": ["file", "console"],
+            "handlers": ["file_api", "console"],
+            "level": "INFO",
+            "propagate": True,
+        },
+        "backend.views": {
+            "handlers": ["file_backend", "console"],
             "level": "INFO",
             "propagate": True,
         },
