@@ -20,7 +20,7 @@ from django.contrib.auth.models import User
 ## Email Settings
 
 ## TODO: Whitelist users
-whitelist = ["js1139@duke.edu"]
+whitelist = ["js1139@duke.edu", "tl357@duke.edu"]
 
 
 def getTimeCST(record):

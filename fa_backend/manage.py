@@ -2,15 +2,11 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-import send_email.main as send_email
 
 
 def main():
     """Run administrative tasks."""
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "fedapp.settings")
-    if sys.argv[1] == "email":
-        send_email.main()
-        return
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
