@@ -65,8 +65,8 @@ class IOSHealth extends FedHealthData {
       required DateTime endTime}) async {
     if (entry == "sleep_time" || entry == "sleep_duration") {
       /// startTime of sleep has to be in the range of startTime and endTime
-      startTime = startTime.add(const Duration(hours: 8));
-      endTime = endTime.add(const Duration(hours: 8));
+      startTime = startTime.add(const Duration(hours: -16));
+      endTime = endTime.add(const Duration(hours: -16));
     }
     await authenticate();
     var res = await _health

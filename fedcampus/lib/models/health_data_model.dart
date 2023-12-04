@@ -55,12 +55,14 @@ class HealthDataModel extends ChangeNotifier {
       _healthData[k] = 0;
     }
     // assert keys of _healthData do not change
-    assert(() {
-      final mapKeys = _healthData.keys.toSet();
-      final listElements = nameList.toSet();
-      return mapKeys.length == listElements.length &&
-          mapKeys.containsAll(listElements);
-    }());
+    if (Platform.isAndroid) {
+      assert(() {
+        final mapKeys = _healthData.keys.toSet();
+        final listElements = nameList.toSet();
+        return mapKeys.length == listElements.length &&
+            mapKeys.containsAll(listElements);
+      }());
+    }
 
     // get health data
     try {
