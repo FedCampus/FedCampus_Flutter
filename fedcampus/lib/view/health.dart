@@ -335,7 +335,7 @@ class _DateState extends State<Date> {
           contentPadding:
               EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 0),
           content: SizedBox(
-            height: 271 * pixel,
+            height: 291 * pixel,
             width: 300 * pixel,
             child: CalendarDialog(
               onDateChange: _changeWidgetDate,
