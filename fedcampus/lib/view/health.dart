@@ -475,7 +475,7 @@ class Heart extends StatelessWidget {
       ),
       label: "Rest\nHeart Rate",
       labelMaxLines: 2,
-      unit: "bpm",
+      subvalue: "bpm",
       value: formatNum(
         Provider.of<HealthDataModel>(context).healthData['rest_heart_rate'],
         decimalPoints: 0,
@@ -490,15 +490,15 @@ class HealthCard extends StatelessWidget {
     super.key,
     required this.icon,
     required this.label,
-    required this.unit,
     required this.value,
+    required this.subvalue,
     this.labelMaxLines = 1,
     this.valueMaxLines = 1,
   });
 
   final SvgIcon icon;
   final String label;
-  final String unit;
+  final String subvalue;
   final String value;
   final int labelMaxLines;
   final int valueMaxLines;
@@ -542,7 +542,7 @@ class HealthCard extends StatelessWidget {
                       Theme.of(context).colorScheme.primaryContainer),
                 ),
                 AutoSizeText(
-                  unit,
+                  subvalue,
                   textAlign: TextAlign.center,
                   maxLines: 1,
                   style: montserratAlternatesTextStyle(pixel * 17,
@@ -645,7 +645,7 @@ class Distance extends StatelessWidget {
             Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
       ),
       label: "Distance",
-      unit: "m",
+      subvalue: "m",
       value: formatNum(
         Provider.of<HealthDataModel>(context).healthData['distance'],
         decimalPoints: 0,
@@ -669,7 +669,7 @@ class Stress extends StatelessWidget {
             Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
       ),
       label: "Stress",
-      unit: "stress",
+      subvalue: "stress",
       value: formatNum(
         Provider.of<HealthDataModel>(context).healthData['stress'],
         decimalPoints: 0,
@@ -693,7 +693,7 @@ class Step extends StatelessWidget {
             Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
       ),
       label: "Step",
-      unit: "steps",
+      subvalue: "steps",
       value: formatNum(
         Provider.of<HealthDataModel>(context).healthData['step'],
         decimalPoints: 0,
@@ -710,23 +710,40 @@ class StepTime extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return HealthCard(
-      icon: SvgIcon(
-        height: 58,
-        width: 58,
-        imagePath: 'assets/svg/step_time.svg',
-        colorFilter: ColorFilter.mode(
-            Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
-      ),
-      label: "Step\nTime",
-      labelMaxLines: 2,
-      unit: "min",
-      value: formatNum(
-        Provider.of<HealthDataModel>(context).healthData['step_time'],
+    final double originalValue =
+        Provider.of<HealthDataModel>(context).healthData['step_time']!;
+    partialHealthCard(String value, String subvalue) => HealthCard(
+          icon: SvgIcon(
+            height: 58,
+            width: 58,
+            imagePath: 'assets/svg/step_time.svg',
+            colorFilter: ColorFilter.mode(
+                Theme.of(context).colorScheme.primaryContainer,
+                BlendMode.srcIn),
+          ),
+          label: "Step\nTime",
+          labelMaxLines: 2,
+          value: value,
+          subvalue: subvalue,
+        );
+
+    if (originalValue < 60) {
+      return partialHealthCard(
+          formatNum(
+            originalValue,
+            decimalPoints: 0,
+            loading: Provider.of<HealthDataModel>(context).loading,
+          ),
+          "min");
+    } else {
+      String value, subvalue;
+      (value, subvalue) = formatHour(
+        originalValue,
         decimalPoints: 0,
         loading: Provider.of<HealthDataModel>(context).loading,
-      ),
-    );
+      );
+      return partialHealthCard("$value h", "$subvalue min");
+    }
   }
 }
 
@@ -744,7 +761,7 @@ class Calorie extends StatelessWidget {
             Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
       ),
       label: "Calorie",
-      unit: "kcal",
+      subvalue: "kcal",
       value: formatNum(
         Provider.of<HealthDataModel>(context).healthData['calorie'],
         decimalPoints: 1,
@@ -761,21 +778,38 @@ class IntenseExercise extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return HealthCard(
-      icon: SvgIcon(
-        imagePath: 'assets/svg/exercise.svg',
-        colorFilter: ColorFilter.mode(
-            Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
-      ),
-      label: "Intense \nExercise",
-      labelMaxLines: 2,
-      unit: "min",
-      value: formatNum(
-        Provider.of<HealthDataModel>(context).healthData['intensity'],
+    final double originalValue =
+        Provider.of<HealthDataModel>(context).healthData['intensity']!;
+    partialHealthCard(String value, String subvalue) => HealthCard(
+          icon: SvgIcon(
+            imagePath: 'assets/svg/exercise.svg',
+            colorFilter: ColorFilter.mode(
+                Theme.of(context).colorScheme.primaryContainer,
+                BlendMode.srcIn),
+          ),
+          label: "Intense \nExercise",
+          labelMaxLines: 2,
+          value: value,
+          subvalue: subvalue,
+        );
+
+    if (originalValue < 60) {
+      return partialHealthCard(
+          formatNum(
+            originalValue,
+            decimalPoints: 0,
+            loading: Provider.of<HealthDataModel>(context).loading,
+          ),
+          "min");
+    } else {
+      String value, subvalue;
+      (value, subvalue) = formatHour(
+        originalValue,
         decimalPoints: 0,
         loading: Provider.of<HealthDataModel>(context).loading,
-      ),
-    );
+      );
+      return partialHealthCard("$value h", "$subvalue min");
+    }
   }
 }
 
@@ -805,7 +839,7 @@ class Sleep extends StatelessWidget {
                   BlendMode.srcIn),
             ),
             label: "Sleep",
-            unit: "score",
+            subvalue: "score",
             value: formatNum(
               Provider.of<HealthDataModel>(context)
                   .healthData['sleep_efficiency'],
@@ -823,7 +857,7 @@ class Sleep extends StatelessWidget {
                   BlendMode.srcIn),
             ),
             label: "Sleep",
-            unit: "${formatNum(
+            subvalue: "${formatNum(
               _sleepMinuteToHour(Provider.of<HealthDataModel>(context)
                   .healthData['sleep_time'])[1],
               decimalPoints: 0,
@@ -860,7 +894,7 @@ class SleepDuration extends StatelessWidget {
             Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
       ),
       label: "Duration",
-      unit: "",
+      subvalue: "",
       value: _sleepDurationDoubleToString(
           Provider.of<HealthDataModel>(context).healthData['sleep_duration']),
       valueMaxLines: 2,
@@ -875,22 +909,38 @@ class ScreenTime extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return HealthCard(
-      icon: SvgIcon(
-        imagePath: 'assets/svg/phone_usage.svg',
-        colorFilter: ColorFilter.mode(
-            Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
-      ),
-      label: "Screen\nTime",
-      labelMaxLines: 2,
-      unit: "min",
-      value: formatNum(
-        Provider.of<HealthDataModel>(context)
-            .healthData['total_time_foreground'],
+    final double totalTimeForeground = Provider.of<HealthDataModel>(context)
+        .healthData['total_time_foreground']!;
+    partialHealthCard(String value, String subvalue) => HealthCard(
+          icon: SvgIcon(
+            imagePath: 'assets/svg/phone_usage.svg',
+            colorFilter: ColorFilter.mode(
+                Theme.of(context).colorScheme.primaryContainer,
+                BlendMode.srcIn),
+          ),
+          label: "Screen\nTime",
+          labelMaxLines: 2,
+          value: value,
+          subvalue: subvalue,
+        );
+
+    if (totalTimeForeground < 60) {
+      return partialHealthCard(
+          formatNum(
+            totalTimeForeground,
+            decimalPoints: 0,
+            loading: Provider.of<HealthDataModel>(context).loading,
+          ),
+          "min");
+    } else {
+      String value, subvalue;
+      (value, subvalue) = formatHour(
+        totalTimeForeground,
         decimalPoints: 0,
         loading: Provider.of<HealthDataModel>(context).loading,
-      ),
-    );
+      );
+      return partialHealthCard("$value h", "$subvalue min");
+    }
   }
 }
 
@@ -911,7 +961,7 @@ class CarbonEmission extends StatelessWidget {
       ),
       label: "Emission\nReductions",
       labelMaxLines: 2,
-      unit: "g",
+      subvalue: "g",
       // to choose the data resource based on platform
       value: formatNum(
         !userApi.isAndroid
@@ -931,6 +981,14 @@ String formatNum(double? num, {decimalPoints = 2, loading = false}) {
   if (loading || num == -1 || num == 0 || num == null) return '-';
   String s = num.toStringAsFixed(decimalPoints);
   return s;
+}
+
+(String, String) formatHour(double? num, {decimalPoints = 2, loading = false}) {
+  if (loading || num == -1 || num == 0 || num == null) return ('-', '-');
+  String s = (num ~/ 60).toStringAsFixed(decimalPoints);
+  String s2 = (num % 60).toStringAsFixed(decimalPoints);
+  logger.e(s);
+  return (s, s2);
 }
 
 TextStyle montserratAlternatesTextStyle(double fontSize, Color color) {
