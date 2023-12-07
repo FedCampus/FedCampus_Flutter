@@ -202,6 +202,8 @@ class Average(APIView):
             )
             if res == None:
                 continue
+            if f == "sleep_duration":
+                res = (res - 240) if res > 240 else (res + 1200)
             resArray.append((f, res))
         logger.info(f"[getAverage], res {resArray}")
         return Response(dict(resArray))
@@ -241,8 +243,11 @@ class Rank(APIView):
 
     def calculatePercentage(self, querySet, query):
         ranking = (
-            querySet.filter(value__gt=query.value).count() + 1
-        )  # ranking = index + 1
+            querySet.filter(value__lt=query.value).count() + 1
+            if query.dataType == "sleep_duration"
+            else querySet.filter(value__gt=query.value).count() + 1
+        )
+
         totalLength = querySet.count()
         realPercentage = ranking / totalLength * 100
         for i in range(1, 21):
