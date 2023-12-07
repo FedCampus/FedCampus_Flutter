@@ -101,11 +101,29 @@ class DataWrapper {
     List<double> error = truncatedNormalSample(data!.length, -10, 10, 0, 1);
     List<Data> res = List.empty(growable: true);
     for (var i = 0; i < data.length; i++) {
-      res.add(Data(
+      if (data[i]!.name == "sleep_duration") {
+        // adding noise to start and end part of duration
+        // e.g. 1500540.0 stands for 02:30 to 09:00
+        // adding a 5 min noise to both, it becomes 1550545.0
+        int start = data[i]!.value ~/ 10000;
+        int end = (data[i]!.value % 10000).toInt();
+        double fuzzedStart = start + error[i] * 10;
+        double fuzzedEnd = end + error[i] * 10;
+        double fuzzedSleepDuration = fuzzedStart * 10000 + fuzzedEnd;
+        res.add(Data(
+          name: data[i]!.name,
+          value: fuzzedSleepDuration,
+          startTime: data[i]!.startTime,
+          endTime: data[i]!.startTime,
+        ));
+      } else {
+        res.add(Data(
           name: data[i]!.name,
           value: data[i]!.value + error[i] * 10,
           startTime: data[i]!.startTime,
-          endTime: data[i]!.startTime));
+          endTime: data[i]!.startTime,
+        ));
+      }
     }
     return res;
   }
