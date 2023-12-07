@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:fedcampus/models/datahandler/health_handler.dart';
 import 'package:fedcampus/models/datahandler/health_factory.dart';
+// import 'package:fedcampus/models/datahandler/mock_health_data.dart';
 import 'package:fedcampus/models/datahandler/screen_time_data_handler.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,6 +33,7 @@ class Global {
         ? HealthDataHandlerFactory().creatHealthDataHandler(
             _prefs.getString("service_provider") ?? "huawei")
         : HealthDataHandlerFactory().creatHealthDataHandler("ios");
+    // healthDataHandler = MockHealthData();
   }
 
   SharedPreferences get prefs => _prefs;
