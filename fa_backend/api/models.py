@@ -47,13 +47,16 @@ def saveRecord(Model, user, data):
         logger.info(f"getting value -1 from {data}")
         return
 
+    value = data.get("value")
+    if data.get("name") == "sleep_duration":
+        value = str(round(data.get("value"))).rjust(8, "0")[:4]
     try:
         record = Model.objects.filter(
             Q(user=user)
             & Q(startTime=data.get("startTime"))
             & Q(dataType=data.get("name"))
         )[0]
-        record.value = float(data.get("value"))
+        record.value = value
         record.save()
         logger.info(f"rewrite record {data} for {Model}")
     except:
@@ -62,7 +65,7 @@ def saveRecord(Model, user, data):
             startTime=data.get("startTime"),
             endTime=data.get("endTime"),
             dataType=data.get("name"),
-            value=data.get("value"),
+            value=value,
         )
         logger.info(f"record created {data}")
     pass

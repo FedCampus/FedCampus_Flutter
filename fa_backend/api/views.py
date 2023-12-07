@@ -36,6 +36,7 @@ FA_DATA = [
     "step",
     "sleep_efficiency",
     "sleep_time",
+    "sleep_duration",
 ]
 
 
@@ -145,7 +146,7 @@ class saveLogFile(APIView):
 
 
 ## TODO: change the FA model back to RecordDP
-FA_MODEL = Record
+FA_MODEL = RecordDP
 
 
 class Status(APIView):
