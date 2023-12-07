@@ -54,7 +54,7 @@ class IOSHealth extends FedHealthData {
 
   double _sleepDurationToDouble(DateTime start, DateTime end) {
     var time =
-        (start.hour * 1e2 + start.minute) * 1e4 + end.hour * 1e2 + end.minute;
+        (start.hour * 60 + start.minute) * 1e4 + end.hour * 60 + end.minute;
     return time;
   }
 

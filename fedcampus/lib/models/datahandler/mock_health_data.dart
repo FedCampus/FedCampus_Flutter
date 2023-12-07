@@ -1,5 +1,6 @@
 import 'package:fedcampus/models/datahandler/health_handler.dart';
 import 'package:fedcampus/pigeon/generated.g.dart';
+import 'package:fedcampus/utility/log.dart';
 import '../../utility/calendar.dart' as calendar;
 
 class MockHealthData extends FedHealthData {
@@ -17,19 +18,21 @@ class MockHealthData extends FedHealthData {
   Future<void> cancelAuthentication() async {}
 
   final mockDataTable = {
-    "step": 999,
-    "calorie": 999,
-    "distance": 999,
-    "stress": 999,
-    "rest_heart_rate": 999,
-    "intensity": 999,
-    "exercise_heart_rate": 999,
-    "step_time": 999,
-    "sleep_efficiency": 999,
-    "query_time": 999,
-    "total_time_foreground": 999,
-    "sleep_duration": 999,
-    "carbon_emission": 999,
+    "step": 888.0,
+    "calorie": 888.0,
+    "distance": 888.0,
+    "stress": 888.0,
+    "rest_heart_rate": 888.0,
+    "avg_heart_rate": 888.0,
+    "intensity": 888.0,
+    "exercise_heart_rate": 888.0,
+    "step_time": 888.0,
+    "sleep_efficiency": 888.0,
+    "query_time": 888.0,
+    "total_time_foreground": 888.0,
+    "sleep_duration": 1500540.0,
+    "carbon_emission": 888.0,
+    "sleep_time": 888.0,
   };
 
   @override
@@ -38,9 +41,10 @@ class MockHealthData extends FedHealthData {
       required DateTime startTime,
       required DateTime endTime}) async {
     {
+      logger.e(entry);
       return Data(
           name: entry,
-          value: mockDataTable[entry] as double,
+          value: mockDataTable[entry]!,
           startTime: calendar.dateTimeToInt(startTime),
           endTime: calendar.dateTimeToInt(endTime),
           success: true);

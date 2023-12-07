@@ -874,13 +874,16 @@ class SleepDuration extends StatelessWidget {
     super.key,
   });
 
-  String _sleepDurationDoubleToString(double? sleepDuration) {
-    var s = formatNum(sleepDuration, decimalPoints: 0);
-    if (s == "-" || s == "0") {
-      return s;
-    }
-    s = s.padLeft(8, "0");
-    return "${s.substring(0, 2)}:${s.substring(2, 4)}\n${s.substring(4, 6)}:${s.substring(6, 8)}";
+  String _sleepDurationDoubleToString(double sleepDuration) {
+    logger.e(sleepDuration);
+    int start = sleepDuration ~/ 10000;
+    int end = (sleepDuration % 10000).toInt();
+    String startH = (start ~/ 60).toString().padLeft(2, "0");
+    String startM = (start % 60).toString().padLeft(2, "0");
+    String endH = (end ~/ 60).toString().padLeft(2, "0");
+    String endM = (end % 60).toString().padLeft(2, "0");
+
+    return "$startH:$startM\n$endH:$endM";
   }
 
   @override
@@ -896,7 +899,7 @@ class SleepDuration extends StatelessWidget {
       label: "Duration",
       subvalue: "",
       value: _sleepDurationDoubleToString(
-          Provider.of<HealthDataModel>(context).healthData['sleep_duration']),
+          Provider.of<HealthDataModel>(context).healthData['sleep_duration']!),
       valueMaxLines: 2,
     );
   }

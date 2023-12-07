@@ -55,7 +55,7 @@ class HealthDataModel extends ChangeNotifier {
       _healthData[k] = 0;
     }
     // assert keys of _healthData do not change
-    if (Platform.isAndroid) {
+    if (userApi.isAndroid) {
       assert(() {
         final mapKeys = _healthData.keys.toSet();
         final listElements = nameList.toSet();
