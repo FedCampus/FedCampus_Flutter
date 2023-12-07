@@ -84,7 +84,7 @@ class _CalendarDialogState extends State<CalendarDialog> {
           height: 12 * pixel,
         ),
         SizedBox(
-          height: 200 * pixel,
+          height: 220 * pixel,
           child: TableCalendar(
             daysOfWeekHeight: 22 * pixel,
             calendarBuilders: CalendarBuilders(

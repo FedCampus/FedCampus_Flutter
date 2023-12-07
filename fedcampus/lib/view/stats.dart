@@ -108,7 +108,15 @@ class _ActivityState extends State<Activity> {
             "img_scale": 1.2,
             "unit": "mins",
             "decimal_points": 0,
-          }
+          },
+          {
+            "entry_name": "sleep_duration",
+            "display_name": "Bedtime",
+            "icon_path": "assets/svg/sleep.svg",
+            "img_scale": 1.2,
+            "unit": "time",
+            "decimal_points": 0,
+          },
         ];
 
   late final int maxCount;
@@ -227,14 +235,30 @@ class _ActivityState extends State<Activity> {
             var currentEntry = entries[index - 2];
             // do not show value for FA if average is 0
 
+            final String entry = currentEntry['entry_name'] as String;
+
+            final String displayName =
+                (currentEntry["display_name"] as String? ??
+                    snakeCaseToCapitalSeparated(entry));
+
             final rank = Provider.of<ActivityDataModel>(context)
                 .activityData[currentEntry['entry_name']]["rank"]
                 .toStringAsFixed(0);
-            final average = Provider.of<ActivityDataModel>(context)
-                .activityData[currentEntry['entry_name']]["average"]
-                .toStringAsFixed(currentEntry['decimal_points']);
+            final String average;
 
+            if (entry == "sleep_duration") {
+              final double bedtime = Provider.of<ActivityDataModel>(context)
+                  .activityData[currentEntry['entry_name']]["average"];
+              String startH = (bedtime ~/ 60).toString().padLeft(2, "0");
+              String startM = (bedtime % 60).toInt().toString().padLeft(2, "0");
+              average = "$startH:$startM";
+            } else {
+              average = Provider.of<ActivityDataModel>(context)
+                  .activityData[currentEntry['entry_name']]["average"]
+                  .toStringAsFixed(currentEntry['decimal_points']);
+            }
             return ActivityCard(
+              displayName: displayName,
               rank: rank,
               value: average,
               unit: currentEntry['unit']?.toString() ?? "unit",
@@ -251,9 +275,18 @@ class _ActivityState extends State<Activity> {
   }
 }
 
+String snakeCaseToCapitalSeparated(String snakeCaseString) {
+  List<String> words = snakeCaseString.split('_');
+  String capitalSeparatedString = words.map((word) {
+    return word[0].toUpperCase() + word.substring(1);
+  }).join(' ');
+  return capitalSeparatedString;
+}
+
 class ActivityCard extends StatelessWidget {
   const ActivityCard({
     super.key,
+    required this.displayName,
     required this.rank,
     required this.value,
     required this.unit,
@@ -263,6 +296,7 @@ class ActivityCard extends StatelessWidget {
     this.isValidRank,
   });
 
+  final String displayName;
   final String rank;
   final String value;
   final String unit;
@@ -281,13 +315,26 @@ class ActivityCard extends StatelessWidget {
         // it is recommended to specify the image size (in order to avoid
         // widget size suddenly changes when the app just loads another page)
         Expanded(
-          flex: 4,
-          child: SvgIcon(
-            imagePath: iconPath,
-            height: pixel * 50 * (imgScale ?? 1),
-            colorFilter: ColorFilter.mode(
-                Theme.of(context).colorScheme.secondaryContainer,
-                BlendMode.srcIn),
+          flex: 5,
+          child: Column(
+            children: [
+              SvgIcon(
+                imagePath: iconPath,
+                height: pixel * 50 * (imgScale ?? 1),
+                colorFilter: ColorFilter.mode(
+                    Theme.of(context).colorScheme.secondaryContainer,
+                    BlendMode.srcIn),
+              ),
+              SizedBox(
+                height: 8 * pixel,
+              ),
+              AutoSizeText(
+                displayName,
+                textAlign: TextAlign.center,
+                style:
+                    TextStyle(color: Theme.of(context).colorScheme.secondary),
+              ),
+            ],
           ),
         ),
         Expanded(
@@ -638,7 +685,7 @@ class _DateState extends State<Date> {
             contentPadding:
                 EdgeInsets.fromLTRB(13 * pixel, 15 * pixel, 13 * pixel, 0),
             content: SizedBox(
-              height: 271 * pixel,
+              height: 291 * pixel,
               width: 300 * pixel,
               child: CalendarDialog(
                 onDateChange: _changeWidgetDate,
