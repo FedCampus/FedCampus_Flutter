@@ -67,6 +67,11 @@ class ActivityData {
               "rank": 0,
               "simliar_user": [],
             },
+            "sleep_duration": {
+              "average": 0,
+              "rank": 0,
+              "simliar_user": [],
+            },
             "carbon_emission": {
               "average": 0,
               "rank": 0,

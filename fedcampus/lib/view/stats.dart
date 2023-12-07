@@ -108,7 +108,14 @@ class _ActivityState extends State<Activity> {
             "img_scale": 1.2,
             "unit": "mins",
             "decimal_points": 0,
-          }
+          },
+          {
+            "entry_name": "sleep_duration",
+            "icon_path": "assets/svg/sleep.svg",
+            "img_scale": 1.2,
+            "unit": "mins",
+            "decimal_points": 0,
+          },
         ];
 
   late final int maxCount;
