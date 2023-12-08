@@ -150,7 +150,9 @@ FA_MODEL = RecordDP
 
 
 class Status(APIView):
-    permission_classes = permissions.IsAuthenticated
+    permission_classes = [
+        permissions.IsAuthenticated,
+    ]
 
     def get(self, request):
         customer = request.user.customer
