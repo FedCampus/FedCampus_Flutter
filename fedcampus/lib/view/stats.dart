@@ -106,7 +106,7 @@ class _ActivityState extends State<Activity> {
             "entry_name": "sleep_time",
             "icon_path": "assets/svg/sleep.svg",
             "img_scale": 1.2,
-            "unit": "mins",
+            "unit": "hours",
             "decimal_points": 0,
           },
           {
@@ -241,31 +241,42 @@ class _ActivityState extends State<Activity> {
                 (currentEntry["display_name"] as String? ??
                     snakeCaseToCapitalSeparated(entry));
 
+            final String value;
+            String? secondaryValue;
+            final String unit = currentEntry['unit']?.toString() ?? "unit";
+            String? secondaryUnit;
             final rank = Provider.of<ActivityDataModel>(context)
                 .activityData[currentEntry['entry_name']]["rank"]
                 .toStringAsFixed(0);
-            final String average;
+
+            final num rawAverage = Provider.of<ActivityDataModel>(context)
+                .activityData[currentEntry['entry_name']]["average"];
 
             if (entry == "sleep_duration") {
-              final double bedtime = Provider.of<ActivityDataModel>(context)
-                  .activityData[currentEntry['entry_name']]["average"];
-              String startH = (bedtime ~/ 60).toString().padLeft(2, "0");
-              String startM = (bedtime % 60).toInt().toString().padLeft(2, "0");
-              average = "$startH:$startM";
+              String startH = (rawAverage ~/ 60).toString().padLeft(2, "0");
+              String startM =
+                  (rawAverage % 60).toInt().toString().padLeft(2, "0");
+              value = "$startH:$startM";
+            } else if (entry == "sleep_time" && rawAverage > 60) {
+              value = (rawAverage ~/ 60).toString();
+              secondaryValue = (rawAverage % 60).toInt().toString();
+              secondaryUnit = "min";
             } else {
-              average = Provider.of<ActivityDataModel>(context)
-                  .activityData[currentEntry['entry_name']]["average"]
-                  .toStringAsFixed(currentEntry['decimal_points']);
+              value = rawAverage
+                  .toStringAsFixed(currentEntry['decimal_points'] as int);
             }
+
             return ActivityCard(
               displayName: displayName,
               rank: rank,
-              value: average,
-              unit: currentEntry['unit']?.toString() ?? "unit",
+              value: value,
+              secondaryValue: secondaryValue,
+              unit: unit,
+              secondaryUnit: secondaryUnit,
               iconPath: currentEntry['icon_path']?.toString() ??
                   "assets/svg/sleep.svg",
               imgScale: currentEntry["img_scale"] as double?,
-              isValidValue: average != "0" &&
+              isValidValue: value != "0" &&
                   !Provider.of<ActivityDataModel>(context).loading,
               isValidRank: rank != "0" &&
                   !Provider.of<ActivityDataModel>(context).loading,
@@ -289,7 +300,9 @@ class ActivityCard extends StatelessWidget {
     required this.displayName,
     required this.rank,
     required this.value,
+    this.secondaryValue,
     required this.unit,
+    this.secondaryUnit,
     required this.iconPath,
     this.imgScale,
     this.isValidValue,
@@ -299,7 +312,9 @@ class ActivityCard extends StatelessWidget {
   final String displayName;
   final String rank;
   final String value;
+  final String? secondaryValue;
   final String unit;
+  final String? secondaryUnit;
   final String iconPath;
   final double? imgScale;
   final bool? isValidValue;
@@ -339,49 +354,16 @@ class ActivityCard extends StatelessWidget {
         ),
         Expanded(
           flex: 9,
-          child: Column(
-            children: <Widget>[
-              Row(
-                children: [
-                  Expanded(
-                    flex: 5,
-                    child: AutoSizeText(
-                      isValidValue ?? false ? value : "-",
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      style: TextStyle(
-                          fontFamily: 'Montserrat Alternates',
-                          fontSize: value.length < 8
-                              ? pixel * 30
-                              : pixel * (200 / value.length),
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.primary),
-                    ),
-                  ),
-                  const Spacer(
-                    flex: 3,
-                  )
-                ],
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: AutoSizeText(
-                      unit,
-                      textAlign: TextAlign.end,
-                      maxLines: 1,
-                      style: TextStyle(
-                          fontFamily: 'Montserrat Alternates',
-                          fontSize: pixel * 20,
-                          fontWeight: FontWeight.bold,
-                          color:
-                              Theme.of(context).colorScheme.secondaryContainer),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+          child: (secondaryValue != null && secondaryUnit != null)
+              ? _twoDataRows(
+                  pixel,
+                  context,
+                  isValidValue ?? false ? value : "-",
+                  unit,
+                  isValidValue ?? false ? secondaryValue! : "-",
+                  secondaryUnit!)
+              : _oneDataRow(
+                  pixel, context, isValidValue ?? false ? value : "-", unit),
         ),
         Expanded(
           flex: 7,
@@ -442,6 +424,131 @@ class ActivityCard extends StatelessWidget {
         ),
       ],
     ));
+  }
+
+  Column _oneDataRow(double pixel, BuildContext context, String v1, String u1) {
+    return Column(
+      children: <Widget>[
+        Row(
+          children: [
+            Expanded(
+              flex: 5,
+              child: AutoSizeText(
+                v1,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                style: TextStyle(
+                    fontFamily: 'Montserrat Alternates',
+                    fontSize: value.length < 8
+                        ? pixel * 30
+                        : pixel * (200 / value.length),
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary),
+              ),
+            ),
+            const Spacer(
+              flex: 3,
+            )
+          ],
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: AutoSizeText(
+                u1,
+                textAlign: TextAlign.end,
+                maxLines: 1,
+                style: TextStyle(
+                    fontFamily: 'Montserrat Alternates',
+                    fontSize: pixel * 21,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.secondaryContainer),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _twoDataRows(double pixel, BuildContext context, String v1, String u1,
+      String v2, String u2) {
+    return Column(
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Expanded(
+              flex: 5,
+              child: AutoSizeText(
+                v1,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                style: TextStyle(
+                    fontFamily: 'Montserrat Alternates',
+                    fontSize: value.length < 8
+                        ? pixel * 30
+                        : pixel * (200 / value.length),
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary),
+              ),
+            ),
+            const Spacer(
+              flex: 1,
+            ),
+            Expanded(
+              flex: 3,
+              child: AutoSizeText(
+                u1,
+                textAlign: TextAlign.end,
+                maxLines: 1,
+                style: TextStyle(
+                    fontFamily: 'Montserrat Alternates',
+                    fontSize: pixel * 21,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.secondaryContainer),
+              ),
+            )
+          ],
+        ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Expanded(
+              flex: 5,
+              child: AutoSizeText(
+                v2,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                style: TextStyle(
+                    fontFamily: 'Montserrat Alternates',
+                    fontSize: value.length < 8
+                        ? pixel * 23
+                        : pixel * (200 / value.length),
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary),
+              ),
+            ),
+            const Spacer(
+              flex: 1,
+            ),
+            Expanded(
+              flex: 3,
+              child: AutoSizeText(
+                u2,
+                textAlign: TextAlign.end,
+                maxLines: 1,
+                style: TextStyle(
+                    fontFamily: 'Montserrat Alternates',
+                    fontSize: pixel * 17,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.secondaryContainer),
+              ),
+            )
+          ],
+        ),
+      ],
+    );
   }
 }
 
