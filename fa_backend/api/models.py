@@ -1,4 +1,5 @@
 import logging
+import math
 
 from django.db import models
 from django.db.models import Q
@@ -49,7 +50,8 @@ def saveRecord(Model, user, data):
 
     value = data.get("value")
     if data.get("name") == "sleep_duration":
-        value = str(round(data.get("value"))).rjust(8, "0")[:4]
+        value = math.floor(data.get("value") / 10000)
+        value = (value - 1200) if value > 1200 else (value + 240)
     try:
         record = Model.objects.filter(
             Q(user=user)
