@@ -54,14 +54,14 @@ class FedCard extends StatelessWidget {
 class ClickableFedCard extends StatelessWidget {
   const ClickableFedCard({
     super.key,
-    required this.widget,
+    required this.child,
     required this.callBack,
     this.left = 10,
     this.top = 17,
     this.right = 10,
     this.bottom = 14,
   });
-  final Widget widget;
+  final Widget child;
   final void Function() callBack;
   final double left;
   final double top;
@@ -102,7 +102,7 @@ class ClickableFedCard extends StatelessWidget {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(24 * pixel)),
         ),
-        child: widget,
+        child: child,
       ),
     );
   }

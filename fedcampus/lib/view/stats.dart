@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fedcampus/view/stats_chart.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fedcampus/models/activity_data_model.dart';
@@ -323,60 +324,77 @@ class ActivityCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
-    return FedCard(
+    return ClickableFedCard(
+        callBack: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const StatsCDF()),
+          );
+        },
         child: Row(
-      children: <Widget>[
-        // As stated in https://api.flutter.dev/flutter/widgets/Image/height.html,
-        // it is recommended to specify the image size (in order to avoid
-        // widget size suddenly changes when the app just loads another page)
-        Expanded(
-          flex: 5,
-          child: Column(
-            children: [
-              SvgIcon(
-                imagePath: iconPath,
-                height: pixel * 50 * (imgScale ?? 1),
-                colorFilter: ColorFilter.mode(
-                    Theme.of(context).colorScheme.secondaryContainer,
-                    BlendMode.srcIn),
+          children: <Widget>[
+            // As stated in https://api.flutter.dev/flutter/widgets/Image/height.html,
+            // it is recommended to specify the image size (in order to avoid
+            // widget size suddenly changes when the app just loads another page)
+            Expanded(
+              flex: 5,
+              child: Column(
+                children: [
+                  SvgIcon(
+                    imagePath: iconPath,
+                    height: pixel * 50 * (imgScale ?? 1),
+                    colorFilter: ColorFilter.mode(
+                        Theme.of(context).colorScheme.secondaryContainer,
+                        BlendMode.srcIn),
+                  ),
+                  SizedBox(
+                    height: 8 * pixel,
+                  ),
+                  AutoSizeText(
+                    displayName,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.secondary),
+                  ),
+                ],
               ),
-              SizedBox(
-                height: 8 * pixel,
-              ),
-              AutoSizeText(
-                displayName,
-                textAlign: TextAlign.center,
-                style:
-                    TextStyle(color: Theme.of(context).colorScheme.secondary),
-              ),
-            ],
-          ),
-        ),
-        Expanded(
-          flex: 9,
-          child: (secondaryValue != null && secondaryUnit != null)
-              ? _twoDataRows(
-                  pixel,
-                  context,
-                  isValidValue ?? false ? value : "-",
-                  unit,
-                  isValidValue ?? false ? secondaryValue! : "-",
-                  secondaryUnit!)
-              : _oneDataRow(
-                  pixel, context, isValidValue ?? false ? value : "-", unit),
-        ),
-        Expanded(
-          flex: 7,
-          child: isValidRank ?? false
-              ? RichText(
-                  textAlign: TextAlign.end,
-                  text: TextSpan(children: [
-                    WidgetSpan(
-                      child: Transform.translate(
-                        offset: const Offset(1, -4),
-                        child: Text(
-                          'top',
-                          textScaler: const TextScaler.linear(0.6),
+            ),
+            Expanded(
+              flex: 9,
+              child: (secondaryValue != null && secondaryUnit != null)
+                  ? _twoDataRows(
+                      pixel,
+                      context,
+                      isValidValue ?? false ? value : "-",
+                      unit,
+                      isValidValue ?? false ? secondaryValue! : "-",
+                      secondaryUnit!)
+                  : _oneDataRow(pixel, context,
+                      isValidValue ?? false ? value : "-", unit),
+            ),
+            Expanded(
+              flex: 7,
+              child: isValidRank ?? false
+                  ? RichText(
+                      textAlign: TextAlign.end,
+                      text: TextSpan(children: [
+                        WidgetSpan(
+                          child: Transform.translate(
+                            offset: const Offset(1, -4),
+                            child: Text(
+                              'top',
+                              textScaler: const TextScaler.linear(0.6),
+                              style: TextStyle(
+                                fontSize: pixel * 30,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSecondaryContainer,
+                              ),
+                            ),
+                          ),
+                        ),
+                        TextSpan(
+                          text: rank,
                           style: TextStyle(
                             fontSize: pixel * 30,
                             color: Theme.of(context)
@@ -384,46 +402,37 @@ class ActivityCard extends StatelessWidget {
                                 .onSecondaryContainer,
                           ),
                         ),
-                      ),
-                    ),
-                    TextSpan(
-                      text: rank,
+                        WidgetSpan(
+                          child: Transform.translate(
+                            offset: const Offset(-1, 0),
+                            child: Text(
+                              '%',
+                              textScaler: const TextScaler.linear(0.7),
+                              style: TextStyle(
+                                fontSize: pixel * 30,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSecondaryContainer,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ]),
+                    )
+                  : Text(
+                      "    -",
+                      textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: pixel * 30,
-                        color:
-                            Theme.of(context).colorScheme.onSecondaryContainer,
-                      ),
+                          fontFamily: 'Montserrat Alternates',
+                          fontSize: pixel * 30,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSecondaryContainer),
                     ),
-                    WidgetSpan(
-                      child: Transform.translate(
-                        offset: const Offset(-1, 0),
-                        child: Text(
-                          '%',
-                          textScaler: const TextScaler.linear(0.7),
-                          style: TextStyle(
-                            fontSize: pixel * 30,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSecondaryContainer,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ]),
-                )
-              : Text(
-                  "    -",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontFamily: 'Montserrat Alternates',
-                      fontSize: pixel * 30,
-                      fontWeight: FontWeight.bold,
-                      color:
-                          Theme.of(context).colorScheme.onSecondaryContainer),
-                ),
-        ),
-      ],
-    ));
+            ),
+          ],
+        ));
   }
 
   Column _oneDataRow(double pixel, BuildContext context, String v1, String u1) {

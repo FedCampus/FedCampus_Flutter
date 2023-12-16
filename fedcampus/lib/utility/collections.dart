@@ -41,6 +41,15 @@ List<List<T>> combinations<T>(List<T> items, int combinationLength) {
   return result;
 }
 
+Iterable<List<T>> zip<T>(Iterable<T> iterable1, Iterable<T> iterable2) sync* {
+  final iterator1 = iterable1.iterator;
+  final iterator2 = iterable2.iterator;
+
+  while (iterator1.moveNext() && iterator2.moveNext()) {
+    yield [iterator1.current, iterator2.current];
+  }
+}
+
 // test client
 void main() {
   List<int> numbers = [1, 2, 3, 4];
