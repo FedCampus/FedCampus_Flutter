@@ -328,7 +328,7 @@ class ActivityCard extends StatelessWidget {
         callBack: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const StatsCDF()),
+            MaterialPageRoute(builder: (context) => const StatsPDF()),
           );
         },
         child: Row(

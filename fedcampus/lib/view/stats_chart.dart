@@ -5,16 +5,16 @@ import 'package:flutter/material.dart';
 import '../utility/collections.dart';
 import '../utility/my_math.dart';
 
-class StatsCDF extends StatefulWidget {
-  const StatsCDF({
+class StatsPDF extends StatefulWidget {
+  const StatsPDF({
     super.key,
   });
 
   @override
-  State<StatsCDF> createState() => _StatsCDFState();
+  State<StatsPDF> createState() => _StatsPDFState();
 }
 
-class _StatsCDFState extends State<StatsCDF> {
+class _StatsPDFState extends State<StatsPDF> {
   List<BarChartGroupData> barGroupData = [];
 
   @override
