@@ -52,6 +52,7 @@ class ActivityDataModel extends ChangeNotifier {
         } else {
           activityData[key]['rank'] = value;
         }
+        // TODO: add data points here
       }
       //calculate the average value of carbon emission
       if (category == "average") {

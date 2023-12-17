@@ -233,7 +233,7 @@ class _ActivityState extends State<Activity> {
                 ),
               );
             }
-            var currentEntry = entries[index - 2];
+            final currentEntry = entries[index - 2];
             // do not show value for FA if average is 0
 
             final String entry = currentEntry['entry_name'] as String;
@@ -252,6 +252,9 @@ class _ActivityState extends State<Activity> {
 
             final num rawAverage = Provider.of<ActivityDataModel>(context)
                 .activityData[currentEntry['entry_name']]["average"];
+            final List<double> dataPoints = List<double>.from(
+                Provider.of<ActivityDataModel>(context)
+                    .activityData[currentEntry['entry_name']]["data_points"]);
 
             if (entry == "sleep_duration") {
               String startH = (rawAverage ~/ 60).toString().padLeft(2, "0");
@@ -281,6 +284,7 @@ class _ActivityState extends State<Activity> {
                   !Provider.of<ActivityDataModel>(context).loading,
               isValidRank: rank != "0" &&
                   !Provider.of<ActivityDataModel>(context).loading,
+              dataPoints: dataPoints,
             );
           }),
     );
@@ -308,7 +312,8 @@ class ActivityCard extends StatelessWidget {
     this.imgScale,
     this.isValidValue,
     this.isValidRank,
-  });
+    dataPoints,
+  }) : _dataPoints = dataPoints;
 
   final String displayName;
   final String rank;
@@ -320,81 +325,65 @@ class ActivityCard extends StatelessWidget {
   final double? imgScale;
   final bool? isValidValue;
   final bool? isValidRank;
+  final List<double>? _dataPoints;
 
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
-    return ClickableFedCard(
-        callBack: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const StatsPDF()),
-          );
-        },
-        child: Row(
-          children: <Widget>[
-            // As stated in https://api.flutter.dev/flutter/widgets/Image/height.html,
-            // it is recommended to specify the image size (in order to avoid
-            // widget size suddenly changes when the app just loads another page)
-            Expanded(
-              flex: 5,
-              child: Column(
-                children: [
-                  SvgIcon(
-                    imagePath: iconPath,
-                    height: pixel * 50 * (imgScale ?? 1),
-                    colorFilter: ColorFilter.mode(
-                        Theme.of(context).colorScheme.secondaryContainer,
-                        BlendMode.srcIn),
-                  ),
-                  SizedBox(
-                    height: 8 * pixel,
-                  ),
-                  AutoSizeText(
-                    displayName,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.secondary),
-                  ),
-                ],
+
+    Widget widget = Row(
+      children: <Widget>[
+        // As stated in https://api.flutter.dev/flutter/widgets/Image/height.html,
+        // it is recommended to specify the image size (in order to avoid
+        // widget size suddenly changes when the app just loads another page)
+        Expanded(
+          flex: 5,
+          child: Column(
+            children: [
+              SvgIcon(
+                imagePath: iconPath,
+                height: pixel * 50 * (imgScale ?? 1),
+                colorFilter: ColorFilter.mode(
+                    Theme.of(context).colorScheme.secondaryContainer,
+                    BlendMode.srcIn),
               ),
-            ),
-            Expanded(
-              flex: 9,
-              child: (secondaryValue != null && secondaryUnit != null)
-                  ? _twoDataRows(
-                      pixel,
-                      context,
-                      isValidValue ?? false ? value : "-",
-                      unit,
-                      isValidValue ?? false ? secondaryValue! : "-",
-                      secondaryUnit!)
-                  : _oneDataRow(pixel, context,
-                      isValidValue ?? false ? value : "-", unit),
-            ),
-            Expanded(
-              flex: 7,
-              child: isValidRank ?? false
-                  ? RichText(
-                      textAlign: TextAlign.end,
-                      text: TextSpan(children: [
-                        WidgetSpan(
-                          child: Transform.translate(
-                            offset: const Offset(1, -4),
-                            child: Text(
-                              'top',
-                              textScaler: const TextScaler.linear(0.6),
-                              style: TextStyle(
-                                fontSize: pixel * 30,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSecondaryContainer,
-                              ),
-                            ),
-                          ),
-                        ),
-                        TextSpan(
-                          text: rank,
+              SizedBox(
+                height: 8 * pixel,
+              ),
+              AutoSizeText(
+                displayName,
+                textAlign: TextAlign.center,
+                style:
+                    TextStyle(color: Theme.of(context).colorScheme.secondary),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          flex: 9,
+          child: (secondaryValue != null && secondaryUnit != null)
+              ? _twoDataRows(
+                  pixel,
+                  context,
+                  isValidValue ?? false ? value : "-",
+                  unit,
+                  isValidValue ?? false ? secondaryValue! : "-",
+                  secondaryUnit!)
+              : _oneDataRow(
+                  pixel, context, isValidValue ?? false ? value : "-", unit),
+        ),
+        Expanded(
+          flex: 7,
+          child: isValidRank ?? false
+              ? RichText(
+                  textAlign: TextAlign.end,
+                  text: TextSpan(children: [
+                    WidgetSpan(
+                      child: Transform.translate(
+                        offset: const Offset(1, -4),
+                        child: Text(
+                          'top',
+                          textScaler: const TextScaler.linear(0.6),
                           style: TextStyle(
                             fontSize: pixel * 30,
                             color: Theme.of(context)
@@ -402,37 +391,62 @@ class ActivityCard extends StatelessWidget {
                                 .onSecondaryContainer,
                           ),
                         ),
-                        WidgetSpan(
-                          child: Transform.translate(
-                            offset: const Offset(-1, 0),
-                            child: Text(
-                              '%',
-                              textScaler: const TextScaler.linear(0.7),
-                              style: TextStyle(
-                                fontSize: pixel * 30,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSecondaryContainer,
-                              ),
-                            ),
+                      ),
+                    ),
+                    TextSpan(
+                      text: rank,
+                      style: TextStyle(
+                        fontSize: pixel * 30,
+                        color:
+                            Theme.of(context).colorScheme.onSecondaryContainer,
+                      ),
+                    ),
+                    WidgetSpan(
+                      child: Transform.translate(
+                        offset: const Offset(-1, 0),
+                        child: Text(
+                          '%',
+                          textScaler: const TextScaler.linear(0.7),
+                          style: TextStyle(
+                            fontSize: pixel * 30,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSecondaryContainer,
                           ),
                         ),
-                      ]),
-                    )
-                  : Text(
-                      "    -",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontFamily: 'Montserrat Alternates',
-                          fontSize: pixel * 30,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSecondaryContainer),
+                      ),
                     ),
+                  ]),
+                )
+              : Text(
+                  "    -",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontFamily: 'Montserrat Alternates',
+                      fontSize: pixel * 30,
+                      fontWeight: FontWeight.bold,
+                      color:
+                          Theme.of(context).colorScheme.onSecondaryContainer),
+                ),
+        ),
+      ],
+    );
+
+    if (_dataPoints != null && _dataPoints.isNotEmpty) {
+      return ClickableFedCard(
+        child: widget,
+        callBack: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => StatsPDF(dataPoints: _dataPoints),
             ),
-          ],
-        ));
+          );
+        },
+      );
+    } else {
+      return FedCard(child: widget);
+    }
   }
 
   Column _oneDataRow(double pixel, BuildContext context, String v1, String u1) {

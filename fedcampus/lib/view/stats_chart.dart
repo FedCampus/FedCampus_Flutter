@@ -8,7 +8,10 @@ import '../utility/my_math.dart';
 class StatsPDF extends StatefulWidget {
   const StatsPDF({
     super.key,
+    required this.dataPoints,
   });
+
+  final List<double> dataPoints;
 
   @override
   State<StatsPDF> createState() => _StatsPDFState();
@@ -23,23 +26,9 @@ class _StatsPDFState extends State<StatsPDF> {
   }
 
   List<FlSpot> getFlSpots() {
-    final List<double> d = [
-      1.2,
-      1.1,
-      1.3,
-      1.3,
-      1.2,
-      2.3,
-      4.5,
-      4.6,
-      4.7,
-      5.2,
-      5.7,
-      7.5
-    ];
-
-    final x = linspace(d.reduce(min) - 1, d.reduce(max) + 1, 100);
-    final y = kernelSmoothing(x, d, 0.5);
+    final x = linspace(widget.dataPoints.reduce(min) - 1,
+        widget.dataPoints.reduce(max) + 1, 100);
+    final y = kernelSmoothing(x, widget.dataPoints, 0.5);
 
     return zip(x, y).map((e) => FlSpot(e.first, e.last)).toList();
   }
