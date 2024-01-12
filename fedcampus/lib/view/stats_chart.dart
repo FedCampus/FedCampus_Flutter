@@ -44,13 +44,35 @@ class _StatsPDFState extends State<StatsPDF> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(
+            Container(
               height: 450 * pixel,
+              padding: EdgeInsets.fromLTRB(
+                  18 * pixel, 5 * pixel, 18 * pixel, 5 * pixel),
               child: (widget.dataPoints.length > 5)
                   ? LineChart(
-                      LineChartData(lineBarsData: [
-                        LineChartBarData(spots: getFlSpots())
-                      ]),
+                      LineChartData(
+                        lineBarsData: [
+                          LineChartBarData(
+                            spots: getFlSpots(),
+                            dotData: const FlDotData(
+                              show: false,
+                            ),
+                          )
+                        ],
+                        lineTouchData: const LineTouchData(enabled: false),
+                        titlesData: const FlTitlesData(
+                          leftTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          topTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          rightTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                        ),
+                        minX: 0
+                      ),
                     )
                   : const Text(
                       "Too few data to show the distribution graph. Please wait other to upload data."),
