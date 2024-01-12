@@ -28,8 +28,8 @@ class _StatsPDFState extends State<StatsPDF> {
   List<FlSpot> getFlSpots() {
     final x = linspace(widget.dataPoints.reduce(min) - 1,
         widget.dataPoints.reduce(max) + 1, 100);
-    final y = kernelSmoothing(x, widget.dataPoints, 0.5);
-
+    final y = kernelSmoothing(
+        x, widget.dataPoints, silvermanBandwidth(widget.dataPoints));
     return zip(x, y).map((e) => FlSpot(e.first, e.last)).toList();
   }
 
@@ -42,13 +42,18 @@ class _StatsPDFState extends State<StatsPDF> {
       ),
       body: Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
               height: 450 * pixel,
-              child: LineChart(
-                LineChartData(
-                    lineBarsData: [LineChartBarData(spots: getFlSpots())]),
-              ),
+              child: (widget.dataPoints.length > 5)
+                  ? LineChart(
+                      LineChartData(lineBarsData: [
+                        LineChartBarData(spots: getFlSpots())
+                      ]),
+                    )
+                  : const Text(
+                      "Too few data to show the distribution graph. Please wait other to upload data."),
             ),
           ],
         ),

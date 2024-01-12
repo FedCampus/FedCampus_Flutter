@@ -49,8 +49,10 @@ class ActivityDataModel extends ChangeNotifier {
       if (activityData[key] != null) {
         if (category == "average") {
           activityData[key]['average'] = value;
-        } else {
+        } else if (category == "rank") {
           activityData[key]['rank'] = value;
+        } else if (category == "data_points") {
+          activityData[key]['data_points'] = value;
         }
         // TODO: add data points here
       }
@@ -95,6 +97,11 @@ class ActivityDataModel extends ChangeNotifier {
           jsonEncode({"time": dataNumber, "filter": filterParams}));
       logger.i("rank response ${res.body}");
       _setAndNotify(jsonDecode(res.body), "rank");
+
+      res = await HTTPApi.post(HTTPApi.dataPoints, <String, String>{},
+          jsonEncode({"time": dataNumber}));
+      logger.i("dataPoints ${res.body}");
+      _setAndNotify(jsonDecode(res.body), "data_points");
     } on PlatformException {
       _notify();
     } on TimeoutException {
