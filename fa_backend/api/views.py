@@ -262,7 +262,7 @@ class Rank(APIView):
 
 
 class DPDataPoints(APIView):
-    # permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
         # data_type = request.data.get("type", "step")
