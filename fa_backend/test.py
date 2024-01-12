@@ -13,7 +13,4 @@ print(u)
 c = Customer.objects.get(user=u)
 print(c)
 
-print(Record.objects.filter(user=u).filter(startTime=20231115))
-
-startTime = 20231129
-endTime = 20231204
+r = Record.objects.filter(startTime=20231212).filter(dataType="sleep_duration")
