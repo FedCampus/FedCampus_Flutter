@@ -50,7 +50,7 @@ def saveRecord(Model, user, data):
         
     if data.get("name") == "sleep_time":
         # if sleep hours less than 2 hours, delete
-        if data.get("value") <= 120:
+        if float(data.get("value")) <= 120:
             logger.info(f"sleep time from {data} is abnormal")
             return
 
