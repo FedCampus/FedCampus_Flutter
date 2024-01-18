@@ -56,10 +56,10 @@ class ClickableFedCard extends StatelessWidget {
     super.key,
     required this.child,
     required this.callBack,
-    this.left = 10,
-    this.top = 17,
-    this.right = 10,
-    this.bottom = 14,
+    this.left = 9,
+    this.top = 15,
+    this.right = 9,
+    this.bottom = 13,
   });
   final Widget child;
   final void Function() callBack;
@@ -98,7 +98,7 @@ class ClickableFedCard extends StatelessWidget {
         style: TextButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.onBackground,
           padding: EdgeInsets.fromLTRB(
-              14 * pixel, 18 * pixel, 14 * pixel, 17 * pixel),
+              left * pixel, top * pixel, right * pixel, bottom * pixel),
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(24 * pixel)),
         ),

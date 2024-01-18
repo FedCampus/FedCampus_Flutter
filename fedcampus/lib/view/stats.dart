@@ -359,8 +359,9 @@ class ActivityCard extends StatelessWidget {
               AutoSizeText(
                 displayName,
                 textAlign: TextAlign.center,
-                style:
-                    TextStyle(color: Theme.of(context).colorScheme.secondary),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
               ),
             ],
           ),
