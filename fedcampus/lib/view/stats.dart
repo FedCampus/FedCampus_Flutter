@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fedcampus/models/health_data_model.dart';
 import 'package:fedcampus/view/stats_chart.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -285,6 +286,8 @@ class _ActivityState extends State<Activity> {
               isValidRank: rank != "0" &&
                   !Provider.of<ActivityDataModel>(context).loading,
               dataPoints: dataPoints,
+              healthData:
+                  Provider.of<HealthDataModel>(context).healthData[entry],
             );
           }),
     );
@@ -313,7 +316,9 @@ class ActivityCard extends StatelessWidget {
     this.isValidValue,
     this.isValidRank,
     dataPoints,
-  }) : _dataPoints = dataPoints;
+    healthData,
+  })  : _dataPoints = dataPoints,
+        _healthData = healthData;
 
   final String displayName;
   final String rank;
@@ -326,6 +331,7 @@ class ActivityCard extends StatelessWidget {
   final bool? isValidValue;
   final bool? isValidRank;
   final List<double>? _dataPoints;
+  final double? _healthData;
 
   @override
   Widget build(BuildContext context) {
@@ -434,15 +440,26 @@ class ActivityCard extends StatelessWidget {
 
     if (_dataPoints != null && _dataPoints.isNotEmpty) {
       return ClickableFedCard(
+        callBack: () => showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text("Data distribution"),
+                content: IntrinsicHeight(
+                  child: StatsPDF(
+                    dataPoints: _dataPoints,
+                    userValue: _healthData,
+                  ),
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text("Close"),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              );
+            }),
         child: widget,
-        callBack: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => StatsPDF(dataPoints: _dataPoints),
-            ),
-          );
-        },
       );
     } else {
       return FedCard(child: widget);
