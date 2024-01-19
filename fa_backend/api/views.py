@@ -270,6 +270,20 @@ class Rank(APIView):
         )
 
 
+class DPDataPoints(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request):
+        # data_type = request.data.get("type", "step")
+        start_time = request.data.get("time", "20240110")
+        result = {}
+        for _ in FA_DATA:
+            data = FA_MODEL.objects.filter(startTime=start_time).filter(dataType=_)
+            data_points = list(map(lambda d: d.value, data))
+            result.update({_: data_points})
+        return Response(result)
+
+
 def getSimilarUser(querySet, index, length=1):
     ## get the similar user that is similar to the current user
     result = []

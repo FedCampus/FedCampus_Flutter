@@ -8,74 +8,88 @@ class ActivityData {
             "step": {
               "average": 0,
               "rank": 0,
-              "simliar_user": [],
+              // TODO: only testing functionality here
+              "data_points": [
+                1.2,
+                1.1,
+                1.3,
+                1.3,
+                1.2,
+                2.3,
+                4.5,
+                4.6,
+                4.7,
+                5.2,
+                5.7,
+                7.5
+              ],
             },
             "calorie": {
               "average": 0,
               "rank": 0,
-              "simliar_user": [],
+              "data_points": [],
             },
             "distance": {
               "average": 0,
               "rank": 0,
-              "simliar_user": [],
+              "data_points": [],
             },
             "stress": {
               "average": 0,
               "rank": 0,
-              "simliar_user": [],
+              "data_points": [],
             },
             "intensity": {
               "average": 0,
               "rank": 0,
-              "simliar_user": [],
+              "data_points": [],
             },
             "step_time": {
               "average": 0,
               "rank": 0,
-              "simliar_user": [],
+              "data_points": [],
             },
             "sleep_efficiency": {
               "average": 0,
               "rank": 0,
-              "simliar_user": [],
+              "data_points": [],
             },
             "carbon_emission": {
               "average": 0,
               "rank": 0,
-              "simliar_user": [],
+              "data_points": [],
             },
           }
         : {
             "step": {
               "average": 0,
               "rank": 0,
-              "simliar_user": [],
+              "data_points": [],
             },
             "distance": {
               "average": 0,
               "rank": 0,
-              "simliar_user": [],
+              "data_points": [],
             },
             "calorie": {
               "average": 0,
               "rank": 0,
-              "simliar_user": [],
+              "data_points": [],
             },
             "sleep_time": {
               "average": 0,
               "rank": 0,
-              "simliar_user": [],
+              "data_points": [],
             },
             "sleep_duration": {
               "average": 0,
               "rank": 0,
-              "simliar_user": [],
+              "data_points": [],
             },
             "carbon_emission": {
               "average": 0,
               "rank": 0,
-              "simliar_user": [],
+              "data_points": [],
             },
           };
   }

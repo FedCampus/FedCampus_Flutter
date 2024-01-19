@@ -32,6 +32,8 @@ class HTTPApi {
 
   static const rank = "${_host}api/rank";
 
+  static const dataPoints = "${_host}api/dp_datapoints";
+
   static var _checkToken = false;
 
   static var _token = "";

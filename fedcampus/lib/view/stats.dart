@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:fedcampus/models/health_data_model.dart';
+import 'package:fedcampus/view/stats_chart.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fedcampus/models/activity_data_model.dart';
@@ -232,7 +234,7 @@ class _ActivityState extends State<Activity> {
                 ),
               );
             }
-            var currentEntry = entries[index - 2];
+            final currentEntry = entries[index - 2];
             // do not show value for FA if average is 0
 
             final String entry = currentEntry['entry_name'] as String;
@@ -251,6 +253,9 @@ class _ActivityState extends State<Activity> {
 
             final num rawAverage = Provider.of<ActivityDataModel>(context)
                 .activityData[currentEntry['entry_name']]["average"];
+            final List<double> dataPoints = List<double>.from(
+                Provider.of<ActivityDataModel>(context)
+                    .activityData[currentEntry['entry_name']]["data_points"]);
 
             if (entry == "sleep_duration") {
               String startH = (rawAverage ~/ 60).toString().padLeft(2, "0");
@@ -280,6 +285,9 @@ class _ActivityState extends State<Activity> {
                   !Provider.of<ActivityDataModel>(context).loading,
               isValidRank: rank != "0" &&
                   !Provider.of<ActivityDataModel>(context).loading,
+              dataPoints: dataPoints,
+              healthData:
+                  Provider.of<HealthDataModel>(context).healthData[entry],
             );
           }),
     );
@@ -307,7 +315,10 @@ class ActivityCard extends StatelessWidget {
     this.imgScale,
     this.isValidValue,
     this.isValidRank,
-  });
+    dataPoints,
+    healthData,
+  })  : _dataPoints = dataPoints,
+        _healthData = healthData;
 
   final String displayName;
   final String rank;
@@ -319,12 +330,14 @@ class ActivityCard extends StatelessWidget {
   final double? imgScale;
   final bool? isValidValue;
   final bool? isValidRank;
+  final List<double>? _dataPoints;
+  final double? _healthData;
 
   @override
   Widget build(BuildContext context) {
     double pixel = MediaQuery.of(context).size.width / 400;
-    return FedCard(
-        child: Row(
+
+    Widget widget = Row(
       children: <Widget>[
         // As stated in https://api.flutter.dev/flutter/widgets/Image/height.html,
         // it is recommended to specify the image size (in order to avoid
@@ -346,8 +359,9 @@ class ActivityCard extends StatelessWidget {
               AutoSizeText(
                 displayName,
                 textAlign: TextAlign.center,
-                style:
-                    TextStyle(color: Theme.of(context).colorScheme.secondary),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
               ),
             ],
           ),
@@ -423,7 +437,34 @@ class ActivityCard extends StatelessWidget {
                 ),
         ),
       ],
-    ));
+    );
+
+    if (_dataPoints != null && _dataPoints.isNotEmpty) {
+      return ClickableFedCard(
+        callBack: () => showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text("Data distribution"),
+                content: IntrinsicHeight(
+                  child: StatsPDF(
+                    dataPoints: _dataPoints,
+                    userValue: _healthData,
+                  ),
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text("Close"),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              );
+            }),
+        child: widget,
+      );
+    } else {
+      return FedCard(child: widget);
+    }
   }
 
   Column _oneDataRow(double pixel, BuildContext context, String v1, String u1) {

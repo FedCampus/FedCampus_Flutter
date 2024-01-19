@@ -44,22 +44,28 @@ class ActivityDataModel extends ChangeNotifier {
   void _setAndNotify(dynamic jsonValue, String category) {
     /// Update the value based on the catetory
     /// category can be either "average" or "rank"
+    /// TODO: breaks Open–closed principle, needs refactor
     final jsonMap = jsonValue as Map<String, dynamic>;
     jsonMap.forEach((key, value) {
       if (activityData[key] != null) {
         if (category == "average") {
           activityData[key]['average'] = value;
-        } else {
+        } else if (category == "rank") {
           activityData[key]['rank'] = value;
+        } else if (category == "data_points") {
+          activityData[key]['data_points'] = value;
         }
       }
       //calculate the average value of carbon emission
       if (category == "average") {
         activityData['carbon_emission']['average'] =
             activityData['distance']['average'] / 1000 * 42;
-      } else {
+      } else if (category == "rank") {
         activityData['carbon_emission']['rank'] =
             activityData['distance']['rank'];
+      } else if (category == "data_points") {
+        activityData['carbon_emission']['data_points'] =
+            activityData['distance']['data_points'].map((e) => e / 1000 * 42);
       }
     });
     _notify();
@@ -94,6 +100,11 @@ class ActivityDataModel extends ChangeNotifier {
           jsonEncode({"time": dataNumber, "filter": filterParams}));
       logger.i("rank response ${res.body}");
       _setAndNotify(jsonDecode(res.body), "rank");
+
+      res = await HTTPApi.post(HTTPApi.dataPoints, <String, String>{},
+          jsonEncode({"time": dataNumber}));
+      logger.i("dataPoints ${res.body}");
+      _setAndNotify(jsonDecode(res.body), "data_points");
     } on PlatformException {
       _notify();
     } on TimeoutException {
