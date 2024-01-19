@@ -10,7 +10,7 @@ import 'package:fedcampus/utility/global.dart';
 
 class HTTPApi {
   // TODO: make the _host in the production mode
-  static const _host = "http://10.201.8.29:8005/";
+  static const _host = "http://10.201.8.29:8006/";
 
   static const login = "${_host}api/login";
 
