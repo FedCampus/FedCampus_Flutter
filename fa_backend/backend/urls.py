@@ -13,5 +13,10 @@ urlpatterns = [
         "active/recents",
         views.getRecentInactive,
         name="inactive_status"
+    ),
+    path(
+        "home",
+        views.mainPage,
+        name="backend_mainpage"
     )
 ]
