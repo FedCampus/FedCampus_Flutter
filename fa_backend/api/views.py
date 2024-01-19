@@ -203,7 +203,7 @@ class Average(APIView):
                 .order_by("-value")
                 .aggregate(Avg("value"))
                 .get("value__avg")
-                )
+            )
             else:
                 res = (
                     querySet.filter(Q(dataType=f))
