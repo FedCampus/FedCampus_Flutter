@@ -8,21 +8,7 @@ class ActivityData {
             "step": {
               "average": 0,
               "rank": 0,
-              // TODO: only testing functionality here
-              "data_points": [
-                1.2,
-                1.1,
-                1.3,
-                1.3,
-                1.2,
-                2.3,
-                4.5,
-                4.6,
-                4.7,
-                5.2,
-                5.7,
-                7.5
-              ],
+              "data_points": [],
             },
             "calorie": {
               "average": 0,

@@ -35,7 +35,7 @@ class HuaweiHealth extends FedHealthData {
     try {
       List<Data?> dataListOne = await host.getData(entry,
           calendar.dateTimeToInt(startTime), calendar.dateTimeToInt(endTime));
-      if (dataListOne.isEmpty) {
+      if (dataListOne.isEmpty || dataListOne[0]!.value == 0.0) {
         // the program does not go wrong, but no valid data, and thus should be omitted in FA
         return Data(
             name: entry,

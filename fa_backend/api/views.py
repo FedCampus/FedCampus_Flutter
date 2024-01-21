@@ -198,12 +198,12 @@ class Average(APIView):
         for f in FA_DATA:
             if f == "sleep_time":
                 res = (
-                querySet.filter(Q(dataType=f))
-                .exclude(value__lt=120)
-                .order_by("-value")
-                .aggregate(Avg("value"))
-                .get("value__avg")
-            )
+                    querySet.filter(Q(dataType=f))
+                    .exclude(value__lt=120)
+                    .order_by("-value")
+                    .aggregate(Avg("value"))
+                    .get("value__avg")
+                )
             else:
                 res = (
                     querySet.filter(Q(dataType=f))
