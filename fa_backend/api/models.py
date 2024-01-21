@@ -47,7 +47,7 @@ def saveRecord(Model, user, data):
     if float(data.get("value")) <= 0:
         logger.info(f"getting value -1 from {data}")
         return
-        
+
     if data.get("name") == "sleep_time":
         # if sleep hours less than 2 hours, delete
         if float(data.get("value")) <= 120:

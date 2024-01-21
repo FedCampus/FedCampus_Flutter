@@ -9,14 +9,6 @@ urlpatterns = [
         views.getActive,
         name="status",
     ),
-    path(
-        "active/recents",
-        views.getRecentInactive,
-        name="inactive_status"
-    ),
-    path(
-        "home",
-        views.mainPage,
-        name="backend_mainpage"
-    )
+    path("active/recents", views.getRecentInactive, name="inactive_status"),
+    path("home", views.mainPage, name="backend_mainpage"),
 ]

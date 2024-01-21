@@ -88,7 +88,7 @@ class _StatsPDFState extends State<StatsPDF> {
                           sideTitles: SideTitles(showTitles: false),
                         ),
                         topTitles: const AxisTitles(
-                          sideTitles: const SideTitles(showTitles: false),
+                          sideTitles: SideTitles(showTitles: false),
                         ),
                         rightTitles: const AxisTitles(
                           sideTitles: SideTitles(showTitles: false),

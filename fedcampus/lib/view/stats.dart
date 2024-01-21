@@ -317,7 +317,7 @@ class _ActivityState extends State<Activity> {
                 Provider.of<ActivityDataModel>(context)
                     .activityData[currentEntry['entry_name']]["data_points"]);
 
-            final boolIsValidValue;
+            final bool boolIsValidValue;
 
             (boolIsValidValue, value, secondaryValue, unit, secondaryUnit) =
                 valueStrategy[entry]!(rawAverage, currentEntry);

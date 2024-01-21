@@ -17,10 +17,13 @@ print(c)
 # r = Record.objects.filter(startTime=20231212).filter(dataType="sleep_duration")
 
 
-temp_res =RecordDP.objects.filter(startTime=20240113).filter(dataType="sleep_time") \
-                .exclude(value__lt=120) \
-                .order_by("-value") \
-                .aggregate(Avg("value")) \
-                .get("value__avg") 
-            
+temp_res = (
+    RecordDP.objects.filter(startTime=20240113)
+    .filter(dataType="sleep_time")
+    .exclude(value__lt=120)
+    .order_by("-value")
+    .aggregate(Avg("value"))
+    .get("value__avg")
+)
+
 print(temp_res)
