@@ -25,7 +25,7 @@ class Activity extends StatefulWidget {
   State<Activity> createState() => _ActivityState();
 }
 
-typedef ValueStrategy = (String, String?, String, String?) Function(
+typedef ValueStrategy = (bool, String, String?, String, String?) Function(
     num, Map<String, dynamic>);
 
 class _ActivityState extends State<Activity> {
@@ -174,6 +174,7 @@ class _ActivityState extends State<Activity> {
     final Map<String, ValueStrategy> strategy = {};
 
     baseStrategy(num rawAverage, Map<String, dynamic> entryConfig) => (
+          rawAverage != 0,
           rawAverage.toStringAsFixed(entryConfig['decimal_points'] as int),
           null,
           entryConfig['unit']?.toString() ?? "unit",
@@ -185,17 +186,19 @@ class _ActivityState extends State<Activity> {
       String? secondaryValue;
       String unit;
       String? secondaryUnit;
+      bool isValid;
       if (rawAverage > 60) {
         value = (rawAverage ~/ 60).toString();
         secondaryValue = (rawAverage % 60).toInt().toString();
         unit = entryConfig['unit']?.toString() ?? "unit";
         secondaryUnit = "min";
+        isValid = rawAverage != 0;
       } else {
-        (value, secondaryValue, unit, secondaryUnit) =
+        (isValid, value, secondaryValue, unit, secondaryUnit) =
             baseStrategy(rawAverage, entryConfig);
       }
 
-      return (value, secondaryValue, unit, secondaryUnit);
+      return (isValid, value, secondaryValue, unit, secondaryUnit);
     }
 
     sleepDurationStrategy(rawAverage, Map<String, dynamic> entryConfig) {
@@ -203,7 +206,7 @@ class _ActivityState extends State<Activity> {
       String startM = (rawAverage % 60).toInt().toString().padLeft(2, "0");
       String value = "$startH:$startM";
       String unit = entryConfig['unit']?.toString() ?? "unit";
-      return (value, null, unit, null);
+      return (rawAverage != 0, value, null, unit, null);
     }
 
     strategy.addAll({
@@ -314,7 +317,9 @@ class _ActivityState extends State<Activity> {
                 Provider.of<ActivityDataModel>(context)
                     .activityData[currentEntry['entry_name']]["data_points"]);
 
-            (value, secondaryValue, unit, secondaryUnit) =
+            final boolIsValidValue;
+
+            (boolIsValidValue, value, secondaryValue, unit, secondaryUnit) =
                 valueStrategy[entry]!(rawAverage, currentEntry);
 
             return ActivityCard(
@@ -327,7 +332,7 @@ class _ActivityState extends State<Activity> {
               iconPath: currentEntry['icon_path']?.toString() ??
                   "assets/svg/sleep.svg",
               imgScale: currentEntry["img_scale"] as double?,
-              isValidValue: value != "0" &&
+              isValidValue: boolIsValidValue &&
                   !Provider.of<ActivityDataModel>(context).loading,
               isValidRank: rank != "0" &&
                   !Provider.of<ActivityDataModel>(context).loading,
