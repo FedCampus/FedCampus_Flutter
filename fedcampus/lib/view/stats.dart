@@ -497,10 +497,13 @@ class ActivityCard extends StatelessWidget {
             builder: (BuildContext context) {
               return AlertDialog(
                 title: const Text("Data distribution"),
-                content: IntrinsicHeight(
-                  child: StatsPDF(
-                    dataPoints: _dataPoints,
-                    userValue: _healthData,
+                content: SizedBox(
+                  width: 350 * pixel,
+                  child: IntrinsicHeight(
+                    child: StatsPDF(
+                      dataPoints: _dataPoints,
+                      userValue: _healthData,
+                    ),
                   ),
                 ),
                 actions: <Widget>[
