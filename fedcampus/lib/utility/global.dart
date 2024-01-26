@@ -6,6 +6,7 @@ import 'package:fedcampus/models/datahandler/health_factory.dart';
 import 'package:fedcampus/models/datahandler/screen_time_data_handler.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 Global get userApi => Global.instance;
 
@@ -22,7 +23,7 @@ class Global {
 
   final ScreenTimeData screenTimeDataHandler = ScreenTimeData();
 
-  final version = "${Platform.isAndroid ? "android" : "ios"}1.0.1";
+  late final String version;
 
   Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
@@ -34,6 +35,8 @@ class Global {
             _prefs.getString("service_provider") ?? "huawei")
         : HealthDataHandlerFactory().creatHealthDataHandler("ios");
     // healthDataHandler = MockHealthData();
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    version = "${Platform.isAndroid ? "android" : "ios"}${packageInfo.version}";
   }
 
   SharedPreferences get prefs => _prefs;
