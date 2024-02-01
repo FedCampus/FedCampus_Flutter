@@ -2,6 +2,9 @@ import logging
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from backend.serializers import CreditSerializer
+from rest_framework import generics
+from rest_framework import mixins
 from django.db.models import Q
 from django.shortcuts import render
 
@@ -148,3 +151,16 @@ def mainPage(request):
         "activeUsersFig": template_activeUserFig,
     }
     return render(request, "main.html", context)
+
+class CreditManagementView(mixins.ListModelMixin, 
+                           mixins.UpdateModelMixin, 
+                           generics.GenericAPIView):
+    queryset = Customer.objects.all()
+    serializer_class = CreditSerializer
+    lookup_field = "netid"
+    
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+    
+    def put(self, request, *args, **kwargs):
+        return self.put(request, *args, **kwargs)

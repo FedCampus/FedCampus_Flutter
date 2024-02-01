@@ -11,4 +11,5 @@ urlpatterns = [
     ),
     path("active/recents", views.getRecentInactive, name="inactive_status"),
     path("home", views.mainPage, name="backend_mainpage"),
+    path("credit", views.CreditManagementView.as_view(), name="credit_management")
 ]
