@@ -52,6 +52,7 @@ def getActive(request, startTime: int, endTime: int):
         }
     )
 
+
 @api_view(["GET"])
 def getRecentActive(request):
     # Get the start/stop timestamp for the recent 14 days
@@ -74,13 +75,16 @@ def getRecentActive(request):
     active_users = {}
     for user, record in res.items():
         logins = len(record)
-        active_users[user] = logins  # A dictionary with inactive users and total uploads
+        active_users[user] = (
+            logins  # A dictionary with inactive users and total uploads
+        )
 
     return Response(
         {
             "res": active_users,
         }
     )
+
 
 # A django view for rendering the mainpage/use this instead
 def mainPage(request):
@@ -121,9 +125,9 @@ def mainPage(request):
         # 1
         logins = len(record)
         if logins < 10:
-            inactive_users[
-                user
-            ] = logins  # A dictionary with inactive users and total uploads
+            inactive_users[user] = (
+                logins  # A dictionary with inactive users and total uploads
+            )
         # 2
         for date in record:
             active_users[date] += 1
@@ -148,22 +152,25 @@ def mainPage(request):
     }
     return render(request, "main.html", context)
 
-#/backend/credit - view and update credit for users
-class CreditManagementView(mixins.ListModelMixin, 
-                           mixins.UpdateModelMixin, 
-                           generics.GenericAPIView):
+
+# /backend/credit - view and update credit for users
+class CreditManagementView(
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    generics.GenericAPIView,
+):
     queryset = Customer.objects.all()
     serializer_class = CreditSerializer
     lookup_field = "netid"
-    #TODO: Fix authentication
+    # TODO: Fix authentication
     permission_classes = (permissions.IsAuthenticated,)
-    authentication_classes = [
-        SessionAuthentication,
-        TokenAuthentication
-    ]
-    
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
     def get(self, request, *args, **kwargs):
+        if "netid" in kwargs:
+            return self.retrieve(request, *args, **kwargs)
         return self.list(request, *args, **kwargs)
-    
+
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
