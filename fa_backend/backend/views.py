@@ -2,6 +2,11 @@ import logging
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import permissions
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from backend.serializers import CreditSerializer
+from rest_framework import generics
+from rest_framework import mixins
 from django.db.models import Q
 from django.shortcuts import render
 
@@ -49,16 +54,15 @@ def getActive(request, startTime: int, endTime: int):
 
 
 @api_view(["GET"])
-def getRecentInactive(request):
+def getRecentActive(request):
     # Get the start/stop timestamp for the recent 14 days
-    current_dt = datetime(
-        (datetime.now().year), datetime.now().month, datetime.now().day, 0, 0, 0, 0
-    )
-    endTime = current_dt.strftime("%Y%m%d")
-    start_dt = current_dt - timedelta(days=14)  # 14days earlier
+    tempCurrent = datetime.now()
+    end_dt = tempCurrent - timedelta(days=1)  # Counting from yesterday
+    endTime = end_dt.strftime("%Y%m%d")
+    start_dt = tempCurrent - timedelta(days=14)  # 14days earlier
     startTime = start_dt.strftime("%Y%m%d")
-
     # Fliter all records within the time period
+
     r = Record.objects.filter(Q(startTime__gte=startTime) & Q(startTime__lte=endTime))
 
     res = {}
@@ -68,17 +72,16 @@ def getRecentInactive(request):
             for i in list(r.filter(user=c.user).values("startTime").distinct())
         ]
 
-    inactive_users = {}
+    active_users = {}
     for user, record in res.items():
         logins = len(record)
-        if logins <= 10:
-            inactive_users[
-                user
-            ] = logins  # A dictionary with inactive users and total uploads
+        active_users[user] = (
+            logins  # A dictionary with inactive users and total uploads
+        )
 
     return Response(
         {
-            "res": inactive_users,
+            "res": active_users,
         }
     )
 
@@ -122,9 +125,9 @@ def mainPage(request):
         # 1
         logins = len(record)
         if logins < 10:
-            inactive_users[
-                user
-            ] = logins  # A dictionary with inactive users and total uploads
+            inactive_users[user] = (
+                logins  # A dictionary with inactive users and total uploads
+            )
         # 2
         for date in record:
             active_users[date] += 1
@@ -148,3 +151,26 @@ def mainPage(request):
         "activeUsersFig": template_activeUserFig,
     }
     return render(request, "main.html", context)
+
+
+# /backend/credit - view and update credit for users
+class CreditManagementView(
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    generics.GenericAPIView,
+):
+    queryset = Customer.objects.all()
+    serializer_class = CreditSerializer
+    lookup_field = "netid"
+    # TODO: Fix authentication
+    permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get(self, request, *args, **kwargs):
+        if "netid" in kwargs:
+            return self.retrieve(request, *args, **kwargs)
+        return self.list(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
