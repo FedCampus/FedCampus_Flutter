@@ -9,7 +9,7 @@ urlpatterns = [
         views.getActive,
         name="status",
     ),
-    path("active/recents", views.getRecentInactive, name="inactive_status"),
+    path("active/recents", views.getRecentActive, name="inactive_status"),
     path("home", views.mainPage, name="backend_mainpage"),
     path("credit", views.CreditManagementView.as_view(), name="credit_management"),
     path("credit/<str:netid>/update", views.CreditManagementView.as_view(), name="credit_management")

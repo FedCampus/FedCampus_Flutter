@@ -2,6 +2,8 @@ import logging
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import permissions
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from backend.serializers import CreditSerializer
 from rest_framework import generics
 from rest_framework import mixins
@@ -50,9 +52,8 @@ def getActive(request, startTime: int, endTime: int):
         }
     )
 
-#Modified: returned the login count for all users - will be used for credit management
 @api_view(["GET"])
-def getRecentInactive(request):
+def getRecentActive(request):
     # Get the start/stop timestamp for the recent 14 days
     tempCurrent = datetime.now()
     end_dt = tempCurrent - timedelta(days=1)  # Counting from yesterday
@@ -154,6 +155,12 @@ class CreditManagementView(mixins.ListModelMixin,
     queryset = Customer.objects.all()
     serializer_class = CreditSerializer
     lookup_field = "netid"
+    #TODO: Fix authentication
+    permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = [
+        SessionAuthentication,
+        TokenAuthentication
+    ]
     
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
