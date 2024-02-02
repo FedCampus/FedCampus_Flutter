@@ -163,4 +163,4 @@ class CreditManagementView(mixins.ListModelMixin,
         return self.list(request, *args, **kwargs)
     
     def put(self, request, *args, **kwargs):
-        return self.put(request, *args, **kwargs)
+        return self.update(request, *args, **kwargs)
