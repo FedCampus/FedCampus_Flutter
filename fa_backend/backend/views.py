@@ -157,7 +157,6 @@ class CreditManagementView(mixins.ListModelMixin,
                            generics.GenericAPIView):
     queryset = Customer.objects.all()
     serializer_class = CreditSerializer
-    lookup_field = "netid"
     
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
