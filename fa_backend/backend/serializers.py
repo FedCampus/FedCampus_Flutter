@@ -6,5 +6,3 @@ class CreditSerializer(serializers.ModelSerializer):
         model = Customer
         fields = ['netid','credit']
  
-    
-        

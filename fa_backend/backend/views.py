@@ -50,18 +50,17 @@ def getActive(request, startTime: int, endTime: int):
         }
     )
 
-
+#Modified: returned the login count for all users - will be used for credit management
 @api_view(["GET"])
 def getRecentInactive(request):
     # Get the start/stop timestamp for the recent 14 days
-    current_dt = datetime(
-        (datetime.now().year), datetime.now().month, datetime.now().day, 0, 0, 0, 0
-    )
-    endTime = current_dt.strftime("%Y%m%d")
-    start_dt = current_dt - timedelta(days=14)  # 14days earlier
+    tempCurrent = datetime.now()
+    end_dt = tempCurrent - timedelta(days=1)  # Counting from yesterday
+    endTime = end_dt.strftime("%Y%m%d")
+    start_dt = tempCurrent - timedelta(days=14)  # 14days earlier
     startTime = start_dt.strftime("%Y%m%d")
-
     # Fliter all records within the time period
+
     r = Record.objects.filter(Q(startTime__gte=startTime) & Q(startTime__lte=endTime))
 
     res = {}
@@ -71,20 +70,16 @@ def getRecentInactive(request):
             for i in list(r.filter(user=c.user).values("startTime").distinct())
         ]
 
-    inactive_users = {}
+    active_users = {}
     for user, record in res.items():
         logins = len(record)
-        if logins <= 10:
-            inactive_users[
-                user
-            ] = logins  # A dictionary with inactive users and total uploads
+        active_users[user] = logins  # A dictionary with inactive users and total uploads
 
     return Response(
         {
-            "res": inactive_users,
+            "res": active_users,
         }
     )
-
 
 # A django view for rendering the mainpage/use this instead
 def mainPage(request):
@@ -152,6 +147,7 @@ def mainPage(request):
     }
     return render(request, "main.html", context)
 
+#/backend/credit - view and update credit for users
 class CreditManagementView(mixins.ListModelMixin, 
                            mixins.UpdateModelMixin, 
                            generics.GenericAPIView):
