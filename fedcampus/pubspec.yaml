@@ -112,6 +112,8 @@ flutter:
     - assets/images/guide/health_step_card.jpg
     - assets/images/guide/stats_filter.jpg
     - assets/images/guide/stats_fa_card.jpg
+    - doc/android_user_guide.md
+    - doc/ios_user_guide.md
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
