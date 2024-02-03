@@ -11,9 +11,11 @@ import 'package:fedcampus/view/widgets/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../utility/event_bus.dart';
 import '../utility/global.dart';
+import '../utility/http_api.dart';
 
 final healthEntries = userApi.isAndroid
     ? [
@@ -121,9 +123,61 @@ class _HealthState extends State<Health> {
     super.initState();
     dateTime = DateTime.parse(
         Provider.of<HealthDataModel>(context, listen: false).date);
+
+    init();
+  }
+
+  init() async {
+    await checkVersion();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       refresh();
     });
+  }
+
+  checkVersion() async {
+    try {
+      await HTTPApi.checkVersion();
+    } catch (e) {
+      logger.e(e);
+
+      if (mounted) {
+        final Uri url = Uri.parse(
+            'http://10.201.8.29:8006/media/android/app-arm64-v8a-release.apk');
+
+        await showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return PopScope(
+              canPop: false,
+              child: AlertDialog(
+                title: const Text("Version check"),
+                content: SizedBox(
+                  width: 350,
+                  child: IntrinsicHeight(
+                    child: Column(
+                      children: [
+                        Text(e.toString()),
+                        Text(userApi.isAndroid
+                            ? "Please download the latest version."
+                            : "Please update in TestFlight.")
+                      ],
+                    ),
+                  ),
+                ),
+                actions: <Widget>[
+                  if (userApi.isAndroid)
+                    TextButton(
+                      child: const Text("Download"),
+                      onPressed: () async => await launchUrl(url),
+                    ),
+                ],
+              ),
+            );
+          },
+        );
+      }
+    }
   }
 
   (List<Widget>, List<Widget>) _splitEntriesRecursiveThreshold(

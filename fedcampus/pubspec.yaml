@@ -61,6 +61,8 @@ dependencies:
   flutter_local_notifications: ^15.1.1
   flutter_markdown: ^0.6.17+2
   fl_chart: ^0.63.0
+  url_launcher: ^6.2.4
+
   flutter_localizations:
     sdk: flutter
 
