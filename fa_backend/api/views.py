@@ -274,13 +274,16 @@ class DPDataPoints(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
-        # data_type = request.data.get("type", "step")
         start_time = request.data.get("time", "20240110")
         result = {}
-        for _ in FA_DATA:
-            data = FA_MODEL.objects.filter(startTime=start_time).filter(dataType=_)
-            data_points = list(map(lambda d: d.value, data))
-            result.update({_: data_points})
+        for data_type in FA_DATA:
+            data_points = (
+                FA_MODEL.objects.filter(startTime=start_time)
+                .filter(dataType=data_type)
+                .values_list("value", flat=True)
+            )
+            result[data_type] = list(data_points)
+
         return Response(result)
 
 
