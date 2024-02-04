@@ -8,3 +8,7 @@
 
 - Use new icon
 - Android application rename
+
+### Version 1.1.1 - 4 Feb 2024
+
+- Add version check when launching the app
