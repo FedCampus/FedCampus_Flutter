@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import re
 
 from .models import Record
 from .models import RecordDP
@@ -19,7 +20,7 @@ from .serializers import CustomerSerializer
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import permissions
+from rest_framework import permissions, status
 from rest_framework.authentication import SessionAuthentication
 
 
@@ -274,14 +275,63 @@ class DPDataPoints(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
-        # data_type = request.data.get("type", "step")
         start_time = request.data.get("time", "20240110")
         result = {}
-        for _ in FA_DATA:
-            data = FA_MODEL.objects.filter(startTime=start_time).filter(dataType=_)
-            data_points = list(map(lambda d: d.value, data))
-            result.update({_: data_points})
+        for data_type in FA_DATA:
+            data_points = (
+                FA_MODEL.objects.filter(startTime=start_time)
+                .filter(dataType=data_type)
+                .values_list("value", flat=True)
+            )
+            result[data_type] = list(data_points)
+
         return Response(result)
+
+
+MIN_VERSION = "1.1.1"
+
+
+class VersionCheck(APIView):
+    def post(self, request):
+        version_string = request.data.get("version")
+        if not version_string:
+            return Response(
+                "No version number provided.", status=status.HTTP_400_BAD_REQUEST
+            )
+
+        match = re.search(r"\b([a-zA-Z]+)(.*)$", version_string)
+        if not match:
+            return Response(
+                "Invalid version number format.", status=status.HTTP_400_BAD_REQUEST
+            )
+
+        version_number = match.group(2)
+        if compare_versions(version_number, MIN_VERSION) >= 0:
+            return Response("Client valid version")
+        else:
+            return Response("Outdated version.", status=status.HTTP_400_BAD_REQUEST)
+
+
+def compare_versions(version1, version2):
+    v1_components = list(map(int, version1.split(".")))
+    v2_components = list(map(int, version2.split(".")))
+
+    while len(v1_components) < len(v2_components):
+        v1_components.append(0)
+    while len(v2_components) < len(v1_components):
+        v2_components.append(0)
+
+    for i in range(len(v1_components)):
+        if v1_components[i] > v2_components[i]:
+            return 1
+        elif v1_components[i] < v2_components[i]:
+            return -1
+
+    return 0
+
+
+class VersionCheckLoggedIn(APIView):
+    pass
 
 
 def getSimilarUser(querySet, index, length=1):

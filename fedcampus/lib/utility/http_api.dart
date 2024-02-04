@@ -26,6 +26,8 @@ class HTTPApi {
 
   static const account = "${_host}api/account";
 
+  static const version = "${_host}api/version_check";
+
   static const status = "${_host}api/status";
 
   static const average = "${_host}api/avg";
@@ -198,6 +200,27 @@ class HTTPApi {
     } catch (e) {
       logger.e(e);
       rethrow;
+    }
+  }
+
+  static Future<void> checkVersion() async {
+    final http.Response response;
+    try {
+      response = await HTTPApi.post(HTTPApi.version, <String, String>{},
+          jsonEncode({"version": userApi.version}));
+    } catch (e) {
+      logger.e(e);
+      throw ClientException('Failed to check version.');
+    }
+    logger.e(response.statusCode);
+    if (response.statusCode == 400) {
+      logger.e('Invalid client version.');
+      throw ClientException('Outdated version.');
+    } else if (response.statusCode == 200) {
+      logger.i("Valid Client version");
+    } else {
+      logger.e("Wrong response");
+      throw MyException('Wrong response.');
     }
   }
 }

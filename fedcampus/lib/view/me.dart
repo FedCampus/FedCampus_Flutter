@@ -16,6 +16,8 @@ import 'package:fedcampus/view/me/preferences.dart';
 import 'package:fedcampus/utility/log.dart';
 import 'package:fedcampus/view/me/signin.dart';
 
+import 'me/help.dart';
+
 class Me extends StatefulWidget {
   const Me({
     super.key,
@@ -129,26 +131,24 @@ class _MeState extends State<Me> with AutomaticKeepAliveClientMixin<Me> {
               ),
             MeText(
               text: 'About',
-              callback: () => {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const About()),
-                )
-              },
+              callback: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const About()),
+              ),
             ),
             MeText(
-              text: 'Help & feedback',
-              callback: () => {},
+              text: 'Help & Feedback',
+              callback: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const Help()),
+              ),
             ),
             MeText(
               text: 'Log Output',
-              callback: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const TrainingDetail()),
-                );
-              },
+              callback: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const TrainingDetail()),
+              ),
             ),
             if (context.watch<UserModel>().isLogin)
               MeText(

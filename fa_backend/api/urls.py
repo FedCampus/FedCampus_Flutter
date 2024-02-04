@@ -16,4 +16,5 @@ urlpatterns = [
     path("avg", views.Average.as_view(), name="average"),
     path("rank", views.Rank.as_view(), name="rank"),
     path("dp_datapoints", views.DPDataPoints.as_view(), name="dp_datapoints"),
+    path("version_check", views.VersionCheck.as_view(), name="version_check"),
 ]
