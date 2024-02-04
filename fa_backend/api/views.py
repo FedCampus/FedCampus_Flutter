@@ -288,7 +288,7 @@ class DPDataPoints(APIView):
         return Response(result)
 
 
-MIN_VERSION = "1.0.1"
+MIN_VERSION = "1.1.1"
 
 
 class VersionCheck(APIView):
