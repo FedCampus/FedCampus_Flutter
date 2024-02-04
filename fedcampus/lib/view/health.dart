@@ -141,9 +141,6 @@ class _HealthState extends State<Health> {
       logger.e(e);
 
       if (mounted) {
-        final Uri url = Uri.parse(
-            'http://10.201.8.29:8006/media/android/app-arm64-v8a-release.apk');
-
         await showDialog(
           context: context,
           barrierDismissible: false,
@@ -169,7 +166,11 @@ class _HealthState extends State<Health> {
                   if (userApi.isAndroid)
                     TextButton(
                       child: const Text("Download"),
-                      onPressed: () async => await launchUrl(url),
+                      onPressed: () async {
+                        final Uri url = Uri.parse(
+                            'http://10.201.8.29:8006/media/android/app-arm64-v8a-release.apk');
+                        await launchUrl(url);
+                      },
                     ),
                 ],
               ),
