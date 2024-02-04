@@ -131,7 +131,7 @@ class saveLogFile(APIView):
     def post(self, request):
         file = request.data.get("log")
 
-        ## TODO : change the max count of the log file for each user
+        # TODO : change the max count of the log file for each user
         temp_max_count = 2
 
         if (
@@ -146,7 +146,7 @@ class saveLogFile(APIView):
         return Response(None)
 
 
-## TODO: change the FA model back to RecordDP
+# For easily switching between Record and RecordDP since they share the same schema
 FA_MODEL = RecordDP
 
 
@@ -335,7 +335,7 @@ class VersionCheckLoggedIn(APIView):
 
 
 def getSimilarUser(querySet, index, length=1):
-    ## get the similar user that is similar to the current user
+    # get the similar user that is similar to the current user
     result = []
     indexLength = querySet.count() - 1
     lowerBound = max(index - length, 0)
