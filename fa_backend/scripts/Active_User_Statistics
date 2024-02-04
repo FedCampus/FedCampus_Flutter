@@ -1,0 +1,37 @@
+import pandas as pd
+from api.models import *
+from datetime import datetime, timedelta
+from django.db.models import Q
+
+def getRecentActive(request):
+    # Get the start/stop timestamp for the recent 14 days
+    tempCurrent = datetime.now()
+    end_dt = tempCurrent - timedelta(days=1)  # Counting from yesterday
+    endTime = end_dt.strftime("%Y%m%d")
+    start_dt = tempCurrent - timedelta(days=14)  # 14days earlier
+    startTime = start_dt.strftime("%Y%m%d")
+    # Fliter all records within the time period
+
+    r = Record.objects.filter(Q(startTime__gte=startTime) & Q(startTime__lte=endTime))
+
+    res = {}
+    for c in Customer.objects.all():
+        res[c.netid] = [
+            i["startTime"]
+            for i in list(r.filter(user=c.user).values("startTime").distinct())
+        ]
+
+    active_users = {}
+    for user, record in res.items():
+        logins = len(record)
+        active_users[user] = (
+            logins  # A dictionary with inactive users and total uploads
+        )
+
+    df = pd.DataFrame(list(active_users.items()), columns=['User', 'Logins'])
+
+    # Export the DataFrame to an Excel file
+    excel_path = 'active_users.xlsx'  
+    df.to_excel(excel_path, index=False) 
+
+    return excel_path
