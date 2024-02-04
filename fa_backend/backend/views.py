@@ -130,7 +130,7 @@ def mainPage(request):
             )
         # 2
         for date in record:
-            active_users[date] += 1
+            active_users[str(date)] += 1
 
     # Create visualizations
     df = pd.DataFrame(
