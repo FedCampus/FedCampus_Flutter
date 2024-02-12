@@ -10,4 +10,4 @@ class CreditSerializer(serializers.ModelSerializer):
 class VisualizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecordDP
-        fields = ["startTime", "endTime", "dataType", "value"]
+        fields = ["user","startTime", "endTime", "dataType", "value"]
