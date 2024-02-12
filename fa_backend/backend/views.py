@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
-from backend.serializers import CreditSerializer
+from backend.serializers import CreditSerializer, VisualizationSerializer
 from rest_framework import generics
 from rest_framework import mixins
 from django.db.models import Q
@@ -12,6 +12,7 @@ from django.shortcuts import render
 
 from api.models import Customer
 from api.models import Record
+from api.models import RecordDP
 
 from datetime import datetime, timedelta
 
@@ -174,3 +175,16 @@ class CreditManagementView(
 
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
+    
+# /backend/vis - retrieve data for creating visualizations
+class VisualizationView(
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    generics.GenericAPIView,
+):
+    queryset = RecordDP.objects.all()
+    serializer_class = VisualizationSerializer
+    # TODO: Fix authentication
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
