@@ -22,4 +22,5 @@ urlpatterns = [
         views.CreditManagementView.as_view(),
         name="credit_management",
     ),
+    path("visualization", views.VisualizationView.as_view(), name="visualization")
 ]
