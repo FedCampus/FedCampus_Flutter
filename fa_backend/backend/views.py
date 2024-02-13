@@ -50,6 +50,7 @@ CUSTOMER_TYPE = [
     "Female",
 ]
 
+
 @api_view(["GET"])
 def getActive(request, startTime: int, endTime: int):
     """
@@ -200,17 +201,18 @@ class CreditManagementView(
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
 
+
 class VisualsView(APIView):
-    #Returns all data points for visualization
+    # Returns all data points for visualization
 
     def post(self, request):
-        start_time = request.data.get("date") # pass in a date string("20240110")
-        customer_type = request.data.get("customer_type") # pass in customer type(list)
+        start_time = request.data.get("date")  # pass in a date string("20240110")
+        customer_type = request.data.get("customer_type")  # pass in customer type(list)
         print(customer_type)
         if not start_time:
             start_time = (datetime.now() - timedelta(days=1)).strftime("%Y%m%d")
         if not customer_type:
-            customer_type = list() #TODO：Add classification
+            customer_type = list()  # TODO：Add classification
             customer_type.append("all")
         else:
             customer_type = [item for item in customer_type if item in CUSTOMER_TYPE]
@@ -227,8 +229,8 @@ class VisualsView(APIView):
                     .values_list("value", flat=True)
                 )
                 result[data_type] = list(data_points)
-            
+
             return Response(result)
         else:
-            #TODO: Return data in accordance with filters
+            # TODO: Return data in accordance with filters
             return Response(result)
