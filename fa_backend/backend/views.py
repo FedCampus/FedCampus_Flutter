@@ -2,6 +2,7 @@ import logging
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework import permissions
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from backend.serializers import CreditSerializer
@@ -11,7 +12,7 @@ from django.db.models import Q
 from django.shortcuts import render
 
 from api.models import Customer
-from api.models import Record
+from api.models import Record, RecordDP
 
 from datetime import datetime, timedelta
 
@@ -23,6 +24,31 @@ import plotly.express as px
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+FA_MODEL = RecordDP
+
+FA_DATA = [
+    "step_time",
+    "distance",
+    "calorie",
+    "intensity",
+    "stress",
+    "step",
+    "sleep_efficiency",
+    "sleep_time",
+    "sleep_duration",
+]
+
+CUSTOMER_TYPE = [
+    "Faculty",
+    "2023",
+    "2024",
+    "2025",
+    "2026",
+    "2027",
+    "Male",
+    "Female",
+]
 
 
 @api_view(["GET"])
@@ -174,3 +200,37 @@ class CreditManagementView(
 
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
+
+
+class VisualsView(APIView):
+    # Returns all data points for visualization
+
+    def post(self, request):
+        start_time = request.data.get("date")  # pass in a date string("20240110")
+        customer_type = request.data.get("customer_type")  # pass in customer type(list)
+        print(customer_type)
+        if not start_time:
+            start_time = (datetime.now() - timedelta(days=1)).strftime("%Y%m%d")
+        if not customer_type:
+            customer_type = list()  # TODO：Add classification
+            customer_type.append("all")
+        else:
+            customer_type = [item for item in customer_type if item in CUSTOMER_TYPE]
+            if not customer_type:
+                customer_type = list()
+                customer_type.append("all")
+
+        result = {"filter": customer_type, "date": start_time}
+        if customer_type[0] == "all":
+            for data_type in FA_DATA:
+                data_points = (
+                    FA_MODEL.objects.filter(startTime=start_time)
+                    .filter(dataType=data_type)
+                    .values_list("value", flat=True)
+                )
+                result[data_type] = list(data_points)
+
+            return Response(result)
+        else:
+            # TODO: Return data in accordance with filters
+            return Response(result)
