@@ -46,6 +46,9 @@ CUSTOMER_TYPE = [
     "2025",
     "2026",
     "2027",
+]
+
+CUSTOMER_GENDER = [
     "Male",
     "Female",
 ]
@@ -208,9 +211,10 @@ class VisualsView(APIView):
     def post(self, request):
         start_time = request.data.get("date")  # pass in a date string("20240110")
         customer_type = request.data.get("customer_type")  # pass in customer type(list)
-        print(customer_type)
+        customer_gender = request.data.get("customer_gender")
         if not start_time:
             start_time = (datetime.now() - timedelta(days=1)).strftime("%Y%m%d")
+        #Category one: Faculty, Student + Year
         if not customer_type:
             customer_type = list()  # TODO：Add classification
             customer_type.append("all")
@@ -219,9 +223,20 @@ class VisualsView(APIView):
             if not customer_type:
                 customer_type = list()
                 customer_type.append("all")
+        #Category two: Gender
+        if not customer_gender:
+            customer_gender = list()
+            customer_gender.append("all")
+        else:
+            customer_gender = [item for item in customer_gender if item in CUSTOMER_GENDER]
+            if not customer_gender:
+                customer_gender = list()
+                customer_gender.append("all")
 
-        result = {"filter": customer_type, "date": start_time}
-        if customer_type[0] == "all":
+        result = {"filter_type": customer_type, "filter_gender": customer_gender, "date": start_time}
+        
+        print(customer_type, customer_gender)
+        if customer_type[0] == "all" and customer_gender[0] == "all":
             for data_type in FA_DATA:
                 data_points = (
                     FA_MODEL.objects.filter(startTime=start_time)
@@ -231,6 +246,36 @@ class VisualsView(APIView):
                 result[data_type] = list(data_points)
 
             return Response(result)
-        else:
+        
+        print(customer_type, customer_gender)
+        users = set() #We use the intersection of the filters
+        if customer_type[0] != "all":
             # TODO: Return data in accordance with filters
-            return Response(result)
+            # Check the filters of user type
+            for field in customer_type: 
+                try:
+                    year = int(field)
+                    temp_users = Customer.objects.filter(student=year).values('user')
+                    users = users | {dic["user"] for dic in list(temp_users)}
+                except ValueError: #field == Faculty
+                    temp_users = Customer.objects.filter(faulty=True).values('user')
+                    users = users | {dic["user"] for dic in list(temp_users)}
+                except:
+                    raise
+        
+        if customer_gender[0] != "all":
+            for field in customer_gender:
+                if field == "Male":
+                    temp_users = Customer.objects.filter(male=True).values('user')
+                temp_users = Customer.objects.filter(male=True).values('user')
+                users = users & {dic["user"] for dic in temp_users}
+
+        for data_type in FA_DATA:
+            data_points = ()
+            for user in users:
+                data_points += (
+                    FA_MODEL.objects.filter(data_type).get(user)
+                )
+            result[data_type] = data_points
+        
+        return Response(result)
