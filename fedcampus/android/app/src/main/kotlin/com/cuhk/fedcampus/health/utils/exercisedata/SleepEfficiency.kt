@@ -38,44 +38,22 @@ fun extractMinutes(timestamp: Long): Double {
     return (timestamp / (60 * 1000) % 1440).toDouble()
 }
 
-suspend fun getSleepData(dataDype: String, context: Context, start: Int, end: Int): List<Data> {
+suspend fun getSleepData(dataType: String, context: Context, start: Int, end: Int): List<Data> {
     var healthRecordList = buildHealthRecordList(context, start, end)
-    val data = mutableListOf<Data>()
-    for (healthRecord in healthRecordList) {
-        when (dataDype) {
-            "sleep_efficiency" -> {
-                when (healthRecord.getFieldValue(Field.SLEEP_TYPE).asIntValue()) {
-                    1 -> {
-                        var value: Double =
-                            convertionMap["sleep_efficiency"]!!.invoke(
-                                healthRecord.getFieldValue(fieldMap[dataDype])
-                            )
-                        data.add(
-                            Data(
-                                dataDype,
-                                value,
-                                healthRecord.getStartTime(TimeUnit.SECONDS),
-                                healthRecord.getEndTime(TimeUnit.SECONDS)
-                            )
-                        )
-                    }
-                }
-            }
-            else -> {
-                var value: Double =
-                    convertionMap[dataDype]!!.invoke(healthRecord.getFieldValue(fieldMap[dataDype]))
-                data.add(
-                    Data(
-                        dataDype,
-                        value,
-                        healthRecord.getStartTime(TimeUnit.SECONDS),
-                        healthRecord.getEndTime(TimeUnit.SECONDS)
-                    )
-                )
-            }
+    // SLEEP_SCORE only available when SLEEP_TYPE is 1 (TruSleep)
+    // https://developer.huawei.com/consumer/en/doc/HMSCore-Guides/sleep-record-0000001135051288
+    if (dataType == "sleep_efficiency")
+        healthRecordList =
+            healthRecordList.filter { it.getFieldValue(Field.SLEEP_TYPE).asIntValue() == 1 }
+    val data =
+        healthRecordList.map {
+            Data(
+                dataType,
+                convertionMap[dataType]!!.invoke(it.getFieldValue(fieldMap[dataType])),
+                it.getStartTime(TimeUnit.SECONDS),
+                it.getEndTime(TimeUnit.SECONDS)
+            )
         }
-    }
-
     return data
 }
 
