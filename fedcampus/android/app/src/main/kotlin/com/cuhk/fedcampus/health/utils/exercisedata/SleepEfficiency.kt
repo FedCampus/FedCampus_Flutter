@@ -9,6 +9,8 @@ import com.huawei.hms.hihealth.HuaweiHiHealth
 import com.huawei.hms.hihealth.data.DataType
 import com.huawei.hms.hihealth.data.Field
 import com.huawei.hms.hihealth.data.HealthDataTypes
+import com.huawei.hms.hihealth.data.HealthRecord
+import com.huawei.hms.hihealth.data.Value
 import com.huawei.hms.hihealth.options.HealthRecordReadOptions
 import com.huawei.hms.hihealth.result.HealthRecordReply
 import java.text.SimpleDateFormat
@@ -17,6 +19,95 @@ import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+
+val fieldMap: Map<String, Field> =
+    mapOf(
+        "bedtime" to Field.FALL_ASLEEP_TIME,
+        "sleep_time" to Field.ALL_SLEEP_TIME,
+        "sleep_efficiency" to Field.SLEEP_SCORE
+    )
+
+val convertionMap: Map<String, (Value) -> Double> =
+    mapOf(
+        "bedtime" to { x -> extractMinutes(x.asLongValue()) },
+        "sleep_time" to { x -> x.asIntValue().toDouble() },
+        "sleep_efficiency" to { x -> x.asIntValue().toDouble() }
+    )
+
+fun extractMinutes(timestamp: Long): Double {
+    return (timestamp / (60 * 1000) % 1440).toDouble()
+}
+
+suspend fun getSleepData(dataDype: String, context: Context, start: Int, end: Int): List<Data> {
+    var healthRecordList = buildHealthRecordList(context, start, end)
+    val data = mutableListOf<Data>()
+    for (healthRecord in healthRecordList) {
+        when (dataDype) {
+            "sleep_efficiency" -> {
+                when (healthRecord.getFieldValue(Field.SLEEP_TYPE).asIntValue()) {
+                    1 -> {
+                        var value: Double =
+                            convertionMap["sleep_efficiency"]!!.invoke(
+                                healthRecord.getFieldValue(fieldMap[dataDype])
+                            )
+                        data.add(
+                            Data(
+                                dataDype,
+                                value,
+                                healthRecord.getStartTime(TimeUnit.SECONDS),
+                                healthRecord.getEndTime(TimeUnit.SECONDS)
+                            )
+                        )
+                    }
+                }
+            }
+            else -> {
+                var value: Double =
+                    convertionMap[dataDype]!!.invoke(healthRecord.getFieldValue(fieldMap[dataDype]))
+                data.add(
+                    Data(
+                        dataDype,
+                        value,
+                        healthRecord.getStartTime(TimeUnit.SECONDS),
+                        healthRecord.getEndTime(TimeUnit.SECONDS)
+                    )
+                )
+            }
+        }
+    }
+
+    return data
+}
+
+suspend fun buildHealthRecordList(context: Context, start: Int, end: Int): List<HealthRecord> {
+    /**
+     * the sleep time is a bit troublesome to specify The date passed to the function, for example,
+     * 20230720, will get the sleep time from 20230719 19:00 - 20230720 19:00
+     */
+    val dateFormat = SimpleDateFormat("yyyyMMddHH:mm:ss")
+
+    val startDate = dateFormat.parse((start).toString() + "19:00:00") as Date
+    val endDate = dateFormat.parse(end.toString() + "19:00:00") as Date
+
+    val healthRecordController: HealthRecordController =
+        HuaweiHiHealth.getHealthRecordController(context)
+
+    val subDataTypeList: MutableList<DataType> = ArrayList()
+    subDataTypeList.add(DataType.DT_CONTINUOUS_SLEEP)
+    val healthRecordReadOptions: HealthRecordReadOptions =
+        HealthRecordReadOptions.Builder()
+            .setTimeInterval(startDate.time, endDate.time, TimeUnit.MILLISECONDS)
+            .readHealthRecordsFromAllApps()
+            .readByDataType(HealthDataTypes.DT_HEALTH_RECORD_SLEEP)
+            .setSubDataTypeList(subDataTypeList)
+            .build()
+
+    val task: Task<HealthRecordReply> =
+        healthRecordController.getHealthRecord(healthRecordReadOptions)
+    val healthRecordList = readSleepScore(task)
+
+    return healthRecordList
+}
 
 @SuppressLint("SimpleDateFormat")
 @Throws
@@ -28,9 +119,8 @@ suspend fun getSleepEfficiencyData(
     end: Int
 ): List<Data> {
     /**
-     *
-     * the sleep time is a bit troublesome to specify
-     * The date passed to the function, for example, 20230720, will get the sleep time from 20230719 19:00 - 20230720 19:00
+     * the sleep time is a bit troublesome to specify The date passed to the function, for example,
+     * 20230720, will get the sleep time from 20230719 19:00 - 20230720 19:00
      */
     val dateFormat = SimpleDateFormat("yyyyMMddHH:mm:ss")
 
@@ -77,9 +167,7 @@ suspend fun getSleepEfficiencyData(
 @Throws
 private suspend fun readSleepScore(readReplyTask: Task<HealthRecordReply>) =
     suspendCoroutine { continuation ->
-        readReplyTask.addOnSuccessListener { it ->
-            continuation.resume(it.healthRecords)
-        }.addOnFailureListener {
-            continuation.resumeWithException(it)
-        }
+        readReplyTask
+            .addOnSuccessListener { it -> continuation.resume(it.healthRecords) }
+            .addOnFailureListener { continuation.resumeWithException(it) }
     }
