@@ -41,7 +41,7 @@ class RegisterTestCase(APITestCase):
         response = self.view(request)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
-            str(response.data["error"][0]), "user already exists!")
+            str(response.data["error"][0]), "user already exists")
 
     def test_user_already_exists_incorrect_password(self):
         User.objects.create_user(

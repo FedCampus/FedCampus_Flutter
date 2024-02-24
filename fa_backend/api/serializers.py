@@ -67,24 +67,14 @@ class RegisterSerializer(serializers.Serializer):
         password = data.get("password")
         netid = data.get("netid")
 
-        if email is None or password is None or netid is None:
-            raise serializers.ValidationError({"error": "missing field"})
+        try:
+            user = User.objects.create_user(
+                username=email, password=password, email=email
+            )
+        except IntegrityError:
+            raise serializers.ValidationError({"error": "user already exists"})
 
-        user = authenticate(username=email, password=password)
-        if user is None:
-            # create a new user
-            try:
-                user = User.objects.create_user(
-                    username=email, password=password, email=email
-                )
-            except IntegrityError:
-                raise serializers.ValidationError({"error": "user already exists"})
-
-            Customer.objects.create(user=user, nickname=netid, netid=netid)
-            token = Token.objects.get_or_create(user=user)
-            data["auth_token"] = token[0].key
-            return data
-        else:
-            raise serializers.ValidationError({"error": "user already exists!"})
-
-        pass
+        Customer.objects.create(user=user, nickname=netid, netid=netid)
+        token = Token.objects.get_or_create(user=user)
+        data["auth_token"] = token[0].key
+        return data
