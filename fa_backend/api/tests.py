@@ -10,11 +10,8 @@ from .models import Customer, Record, RecordDP
 from .views import Login, Register, Data, DataDP, Logout
 
 
-class LoginTestCase(APITestCase):
-    def setUp(self):
-        self.factory = APIRequestFactory()
-        self.view = Login.as_view()
-        self.uri = "/login/"
+class UserTestCase(APITestCase):
+    def setUpUser(self):
         self.user_data = {
             "username": "test@duke.edu",
             "password": "password",
@@ -25,7 +22,17 @@ class LoginTestCase(APITestCase):
             email=self.user_data["username"],
         )
         netid = "ts123"
-        Customer.objects.create(user=self.user, nickname=netid, netid=netid)
+        self.customer = Customer.objects.create(
+            user=self.user, nickname=netid, netid=netid
+        )
+
+
+class LoginTestCase(UserTestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.view = Login.as_view()
+        self.uri = "/login/"
+        self.setUpUser()
 
     def test_valid(self):
         request = self.factory.post(self.uri, self.user_data, format="json")
@@ -81,7 +88,6 @@ class RegisterTestCase(APITestCase):
             "password": "password",
             "netid": "ts123",
         }
-        pass
 
     def test_valid(self):
         request = self.factory.post(self.uri, self.user_data, format="json")
@@ -122,22 +128,10 @@ class RegisterTestCase(APITestCase):
         self.assertEqual(str(response.data["error"][0]), "user already exists")
 
 
-class DataAndDataDPTestCase(APITestCase):
+class DataAndDataDPTestCase(UserTestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
-        self.user_data = {
-            "username": "test@duke.edu",
-            "password": "password",
-        }
-        self.user = User.objects.create_user(
-            username=self.user_data["username"],
-            password=self.user_data["password"],
-            email=self.user_data["username"],
-        )
-        netid = "ts123"
-        self.customer = Customer.objects.create(
-            user=self.user, nickname=netid, netid=netid
-        )
+        self.setUpUser()
 
     def test_both(func):
         """Make a test method test both Data and DataDP"""
@@ -308,25 +302,12 @@ class DataAndDataDPTestCase(APITestCase):
         self.assertEqual(record.value, 1440.0)
 
 
-class LogoutTestCase(APITestCase):
+class LogoutTestCase(UserTestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
         self.view = Logout.as_view()
         self.uri = reverse("api:logout")
-        self.user_data = {
-            "username": "test@duke.edu",
-            "password": "password",
-        }
-        self.user = User.objects.create_user(
-            username=self.user_data["username"],
-            password=self.user_data["password"],
-            email=self.user_data["username"],
-        )
-        netid = "ts123"
-        self.customer = Customer.objects.create(
-            user=self.user, nickname=netid, netid=netid
-        )
-        self.token = Token.objects.create(user=self.user)
+        self.setUpUser()
 
     def test_logout(self):
         self.client.login(**self.user_data)
