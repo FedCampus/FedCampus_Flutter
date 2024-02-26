@@ -2,12 +2,13 @@ import json
 
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory, force_authenticate
 from rest_framework.authtoken.models import Token
 
-from .models import Customer, Record, RecordDP
-from .views import Login, Register, Data, DataDP, Logout
+from .models import Customer, Record, RecordDP, Log
+from .views import Login, Register, Data, DataDP, Logout, saveLogFile
 
 
 class UserTestCase(APITestCase):
@@ -341,3 +342,22 @@ class LogoutTestCase(UserTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         self.assertNotIn("_auth_user_id", self.client.session)
+
+
+class SaveLogFileTestCase(UserTestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.view = saveLogFile.as_view()
+        self.uri = "/log/"
+        self.setUpUser()
+
+    def test_save_log_file(self):
+        file_content = b"Test log content"
+        file = SimpleUploadedFile("test_log.txt", file_content)
+        data = {"log": file}
+        request = self.factory.post(self.uri, data, format="multipart")
+        force_authenticate(request, user=self.user)
+        response = self.view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertTrue(Log.objects.filter(user=self.user).exists())
