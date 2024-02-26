@@ -42,8 +42,7 @@ class RecordDP(models.Model):
 
 
 def saveRecord(Model, user, data):
-    ## judge if it is sleep efficiency?
-
+    # it is actually checking for non-positive value instead of -1
     if float(data.get("value")) <= 0:
         logger.info(f"getting value -1 from {data}")
         return
@@ -56,8 +55,15 @@ def saveRecord(Model, user, data):
 
     value = data.get("value")
     if data.get("name") == "sleep_duration":
+        # XXX: clarification needed for the intention of the two lines below
+        # it seems to get the start of the sleep duration in minutes
+        # (SleepDuration is stored as start_minutes * 10000 + end_minutes in the frontend)
         value = math.floor(data.get("value") / 10000)
+        # minus 20 hours if the start of the sleep duration is more than 20 hours, else add 4 minutes
         value = (value - 1200) if value > 1200 else (value + 240)
+
+    # rewrite the record if it is of the same type and has the same start time,
+    # else create a new record
     try:
         record = Model.objects.filter(
             Q(user=user)
@@ -76,7 +82,6 @@ def saveRecord(Model, user, data):
             value=value,
         )
         logger.info(f"record created {data}")
-    pass
 
 
 class SleepTime(models.Model):
