@@ -1,7 +1,7 @@
 import json
 
 from django.urls import reverse
-from django.contrib.auth.models import User, auth
+from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory, force_authenticate
 from rest_framework.authtoken.models import Token
@@ -14,7 +14,7 @@ class LoginTestCase(APITestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
         self.view = Login.as_view()
-        self.uri = "/login"
+        self.uri = "/login/"
         self.user_data = {
             "username": "test@duke.edu",
             "password": "password",
@@ -75,7 +75,7 @@ class RegisterTestCase(APITestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
         self.view = Register.as_view()
-        self.uri = "/register"
+        self.uri = "/register/"
         self.user_data = {
             "email": "test@duke.edu",
             "password": "password",
@@ -144,12 +144,12 @@ class DataAndDataDPTestCase(APITestCase):
 
         def wrapper_test_both(self):
             self.view = Data.as_view()
-            self.uri = "/data"
+            self.uri = "/data/"
             self.Model = Record
             func(self)
 
             self.view = DataDP.as_view()
-            self.uri = "/data_dp"
+            self.uri = "/data_dp/"
             self.Model = RecordDP
             func(self)
 
@@ -333,4 +333,4 @@ class LogoutTestCase(APITestCase):
         response = self.client.get(self.uri)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        self.assertFalse(auth.get_user(self.client).is_authenticated)
+        self.assertNotIn("_auth_user_id", self.client.session)
