@@ -11,6 +11,8 @@ from .views import Login, Register, Data, DataDP, Logout
 
 
 class UserTestCase(APITestCase):
+    """TestCase where a User and its respective Customer need to be created."""
+
     def setUpUser(self):
         self.user_data = {
             "username": "test@duke.edu",
@@ -128,29 +130,10 @@ class RegisterTestCase(APITestCase):
         self.assertEqual(str(response.data["error"][0]), "user already exists")
 
 
-class DataAndDataDPTestCase(UserTestCase):
-    def setUp(self):
-        self.factory = APIRequestFactory()
-        self.setUpUser()
+class DataTestCaseBase(UserTestCase):
+    "Base TestCase that contains all tests shared by Data and DataDP."
 
-    def test_both(func):
-        """Make a test method test both Data and DataDP"""
-
-        def wrapper_test_both(self):
-            self.view = Data.as_view()
-            self.uri = "/data/"
-            self.Model = Record
-            func(self)
-
-            self.view = DataDP.as_view()
-            self.uri = "/data_dp/"
-            self.Model = RecordDP
-            func(self)
-
-        return wrapper_test_both
-
-    @test_both
-    def test_create_sleep_time_valid(self):
+    def create_sleep_time_valid(self):
         old_record = self.Model.objects.create(
             user=self.user,
             startTime=0,
@@ -186,8 +169,7 @@ class DataAndDataDPTestCase(UserTestCase):
         )
         self.assertEqual(record.value, 888.0)
 
-    @test_both
-    def test_update_sleep_time_valid(self):
+    def update_sleep_time_valid(self):
         self.Model.objects.create(
             user=self.user,
             startTime=0,
@@ -222,8 +204,7 @@ class DataAndDataDPTestCase(UserTestCase):
         )
         self.assertEqual(record.value, 888.0)
 
-    @test_both
-    def test_create_sleep_time_invalid(self):
+    def create_sleep_time_invalid(self):
         data = {
             "version": "1.0",
             "data": json.dumps(
@@ -249,8 +230,7 @@ class DataAndDataDPTestCase(UserTestCase):
             self.Model.objects.filter(user=self.user, dataType="sleep_time").exists()
         )
 
-    @test_both
-    def test_create_sleep_duration_greater_than_1200(self):
+    def create_sleep_duration_greater_than_1200(self):
         data = {
             "version": "1.0",
             "data": json.dumps(
@@ -275,8 +255,7 @@ class DataAndDataDPTestCase(UserTestCase):
         record = self.Model.objects.get(user=self.user, dataType="sleep_duration")
         self.assertEqual(record.value, 1.0)
 
-    @test_both
-    def test_create_sleep_duration_less_than_or_equal_to_1200(self):
+    def create_sleep_duration_less_than_or_equal_to_1200(self):
         data = {
             "version": "1.0",
             "data": json.dumps(
@@ -300,6 +279,54 @@ class DataAndDataDPTestCase(UserTestCase):
 
         record = self.Model.objects.get(user=self.user, dataType="sleep_duration")
         self.assertEqual(record.value, 1440.0)
+
+
+class DataTestCase(DataTestCaseBase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.setUpUser()
+        self.view = Data.as_view()
+        self.uri = "/data/"
+        self.Model = Record
+
+    def test_create_sleep_time_valid(self):
+        self.create_sleep_time_valid()
+
+    def test_update_sleep_time_valid(self):
+        self.update_sleep_time_valid()
+
+    def test_create_sleep_time_invalid(self):
+        self.create_sleep_time_invalid()
+
+    def test_create_sleep_duration_greater_than_1200(self):
+        self.create_sleep_duration_greater_than_1200()
+
+    def test_create_sleep_duration_less_than_or_equal_to_1200(self):
+        self.create_sleep_duration_less_than_or_equal_to_1200()
+
+
+class DataDPTestCase(DataTestCaseBase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.setUpUser()
+        self.view = DataDP.as_view()
+        self.uri = "/data_dp/"
+        self.Model = RecordDP
+
+    def test_create_sleep_time_valid(self):
+        self.create_sleep_time_valid()
+
+    def test_update_sleep_time_valid(self):
+        self.update_sleep_time_valid()
+
+    def test_create_sleep_time_invalid(self):
+        self.create_sleep_time_invalid()
+
+    def test_create_sleep_duration_greater_than_1200(self):
+        self.create_sleep_duration_greater_than_1200()
+
+    def test_create_sleep_duration_less_than_or_equal_to_1200(self):
+        self.create_sleep_duration_less_than_or_equal_to_1200()
 
 
 class LogoutTestCase(UserTestCase):
