@@ -331,7 +331,6 @@ class DataDPTestCase(DataTestCaseBase):
 
 class LogoutTestCase(UserTestCase):
     def setUp(self):
-        self.factory = APIRequestFactory()
         self.view = Logout.as_view()
         self.uri = reverse("api:logout")
         self.setUpUser()
