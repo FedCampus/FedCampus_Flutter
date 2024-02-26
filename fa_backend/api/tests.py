@@ -1,12 +1,13 @@
 import json
 
-from django.contrib.auth.models import User
+from django.urls import reverse
+from django.contrib.auth.models import User, auth
 from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory, force_authenticate
 from rest_framework.authtoken.models import Token
 
 from .models import Customer, Record, RecordDP
-from .views import Login, Register, Data, DataDP
+from .views import Login, Register, Data, DataDP, Logout
 
 
 class LoginTestCase(APITestCase):
@@ -305,3 +306,31 @@ class DataAndDataDPTestCase(APITestCase):
 
         record = self.Model.objects.get(user=self.user, dataType="sleep_duration")
         self.assertEqual(record.value, 1440.0)
+
+
+class LogoutTestCase(APITestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.view = Logout.as_view()
+        self.uri = reverse("api:logout")
+        self.user_data = {
+            "username": "test@duke.edu",
+            "password": "password",
+        }
+        self.user = User.objects.create_user(
+            username=self.user_data["username"],
+            password=self.user_data["password"],
+            email=self.user_data["username"],
+        )
+        netid = "ts123"
+        self.customer = Customer.objects.create(
+            user=self.user, nickname=netid, netid=netid
+        )
+        self.token = Token.objects.create(user=self.user)
+
+    def test_logout(self):
+        self.client.login(**self.user_data)
+        response = self.client.get(self.uri)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertFalse(auth.get_user(self.client).is_authenticated)
