@@ -8,7 +8,7 @@ from rest_framework.test import APITestCase, APIRequestFactory, force_authentica
 from rest_framework.authtoken.models import Token
 
 from .models import Customer, Record, RecordDP, Log
-from .views import Login, Register, Data, DataDP, Logout, saveLogFile
+from .views import Login, Register, Data, DataDP, Logout, saveLogFile, Status
 
 
 class UserTestCase(APITestCase):
@@ -361,3 +361,21 @@ class SaveLogFileTestCase(UserTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         self.assertTrue(Log.objects.filter(user=self.user).exists())
+
+
+class StatusTestCase(UserTestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.view = Status.as_view()
+        self.uri = "/status/"
+        self.setUpUser()
+
+    def test_status(self):
+        request = self.factory.get(self.uri)
+        force_authenticate(request, user=self.user)
+        response = self.view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertIn("faculty", response.data)
+        self.assertIn("student", response.data)
+        self.assertIn("male", response.data)
