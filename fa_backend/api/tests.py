@@ -1,10 +1,12 @@
+import json
+
 from django.contrib.auth.models import User
 from rest_framework import status
-from rest_framework.test import APITestCase, APIRequestFactory
+from rest_framework.test import APITestCase, APIRequestFactory, force_authenticate
 from rest_framework.authtoken.models import Token
 
-from .models import Customer
-from .views import Login, Register
+from .models import Customer, Record, RecordDP
+from .views import Login, Register, Data, DataDP
 
 
 class LoginTestCase(APITestCase):
@@ -117,3 +119,189 @@ class RegisterTestCase(APITestCase):
         response = self.view(request)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(str(response.data["error"][0]), "user already exists")
+
+
+class DataAndDataDPTestCase(APITestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.user_data = {
+            "username": "test@duke.edu",
+            "password": "password",
+        }
+        self.user = User.objects.create_user(
+            username=self.user_data["username"],
+            password=self.user_data["password"],
+            email=self.user_data["username"],
+        )
+        netid = "ts123"
+        self.customer = Customer.objects.create(
+            user=self.user, nickname=netid, netid=netid
+        )
+
+    def test_both(func):
+        """Make a test method test both Data and DataDP"""
+
+        def wrapper_test_both(self):
+            self.view = Data.as_view()
+            self.uri = "/data"
+            self.Model = Record
+            func(self)
+
+            self.view = DataDP.as_view()
+            self.uri = "/data_dp"
+            self.Model = RecordDP
+            func(self)
+
+        return wrapper_test_both
+
+    @test_both
+    def test_create_sleep_time_valid(self):
+        old_record = self.Model.objects.create(
+            user=self.user,
+            startTime=0,
+            endTime=1,
+            dataType="sleep_time",
+            value=887.0,
+        )
+
+        data = {
+            "version": "1.0",
+            "data": json.dumps(
+                [
+                    {
+                        "startTime": 1,
+                        "endTime": 2,
+                        "name": "sleep_time",
+                        "value": 888.0,
+                    },
+                ]
+            ),
+        }
+        request = self.factory.post(self.uri, data, format="json")
+        force_authenticate(request, user=self.user)
+        response = self.view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.customer.refresh_from_db()
+        self.assertEqual(self.customer.version, data["version"])
+
+        self.assertTrue(self.Model.objects.filter(id=old_record.id).exists())
+        record = self.Model.objects.get(
+            user=self.user, dataType="sleep_time", startTime=1
+        )
+        self.assertEqual(record.value, 888.0)
+
+    @test_both
+    def test_update_sleep_time_valid(self):
+        self.Model.objects.create(
+            user=self.user,
+            startTime=0,
+            endTime=1,
+            dataType="sleep_time",
+            value=887.0,
+        )
+
+        data = {
+            "version": "1.0",
+            "data": json.dumps(
+                [
+                    {
+                        "startTime": 0,
+                        "endTime": 1,
+                        "name": "sleep_time",
+                        "value": 888.0,
+                    },
+                ]
+            ),
+        }
+        request = self.factory.post(self.uri, data, format="json")
+        force_authenticate(request, user=self.user)
+        response = self.view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.customer.refresh_from_db()
+        self.assertEqual(self.customer.version, data["version"])
+
+        record = self.Model.objects.get(
+            user=self.user, dataType="sleep_time", startTime=0
+        )
+        self.assertEqual(record.value, 888.0)
+
+    @test_both
+    def test_create_sleep_time_invalid(self):
+        data = {
+            "version": "1.0",
+            "data": json.dumps(
+                [
+                    {
+                        "startTime": 1,
+                        "endTime": 2,
+                        "name": "sleep_time",
+                        "value": 120.0,
+                    },
+                ]
+            ),
+        }
+        request = self.factory.post(self.uri, data, format="json")
+        force_authenticate(request, user=self.user)
+        response = self.view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.customer.refresh_from_db()
+        self.assertEqual(self.customer.version, data["version"])
+
+        self.assertFalse(
+            self.Model.objects.filter(user=self.user, dataType="sleep_time").exists()
+        )
+
+    @test_both
+    def test_create_sleep_duration_greater_than_1200(self):
+        data = {
+            "version": "1.0",
+            "data": json.dumps(
+                [
+                    {
+                        "startTime": 1,
+                        "endTime": 2,
+                        "name": "sleep_duration",
+                        "value": 12019999.0,
+                    },
+                ]
+            ),
+        }
+        request = self.factory.post(self.uri, data, format="json")
+        force_authenticate(request, user=self.user)
+        response = self.view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.customer.refresh_from_db()
+        self.assertEqual(self.customer.version, data["version"])
+
+        record = self.Model.objects.get(user=self.user, dataType="sleep_duration")
+        self.assertEqual(record.value, 1.0)
+
+    @test_both
+    def test_create_sleep_duration_less_than_or_equal_to_1200(self):
+        data = {
+            "version": "1.0",
+            "data": json.dumps(
+                [
+                    {
+                        "startTime": 1,
+                        "endTime": 2,
+                        "name": "sleep_duration",
+                        "value": 12009999.0,
+                    },
+                ]
+            ),
+        }
+        request = self.factory.post(self.uri, data, format="json")
+        force_authenticate(request, user=self.user)
+        response = self.view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.customer.refresh_from_db()
+        self.assertEqual(self.customer.version, data["version"])
+
+        record = self.Model.objects.get(user=self.user, dataType="sleep_duration")
+        self.assertEqual(record.value, 1440.0)
