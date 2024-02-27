@@ -56,7 +56,16 @@ def saveRecord(Model, user, data):
 
     value = data.get("value")
     if data.get("name") == "sleep_duration":
+        # sleep duration is stored as start_minutes * 10000 + end_minutes;
+        # both variables represent time in a day (minutes after last midnight);
+        # the value of start_minutes (bed time) is first extracted
         value = math.floor(data.get("value") / 10000)
+
+        # to facilitate averaging and ranking for differential privacy,
+        # a fixed starting time of 20:00 (1200 minutes) is chosen;
+        # start_minutes is therefore subtracted by 1200 minutes (20 hours)
+        # if it is greater than 1200 (after 20:00 and before midnight),
+        # and otherwise added by 240 (4 hours)
         value = (value - 1200) if value > 1200 else (value + 240)
     try:
         record = Model.objects.filter(
