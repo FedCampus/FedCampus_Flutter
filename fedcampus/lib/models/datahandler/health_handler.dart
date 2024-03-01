@@ -126,7 +126,9 @@ class FedHealthData {
         .getDataListInterval(
             entry: dirtyDataList,
             startTime: DateTime(dateTime.year, dateTime.month, dateTime.day),
-            endTime: DateTime(dateTime.year, dateTime.month, dateTime.day + 1));
+            endTime: userApi.isAndroid
+                ? DateTime(dateTime.year, dateTime.month, dateTime.day)
+                : DateTime(dateTime.year, dateTime.month, dateTime.day + 1));
 
     // write newly queried data into DB
     for (final e in dirtyHealthData) {
