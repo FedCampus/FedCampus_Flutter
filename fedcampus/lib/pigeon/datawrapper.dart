@@ -28,7 +28,9 @@ class DataWrapper {
           "step_time",
           "sleep_efficiency",
           "sleep_time",
-          "sleep_duration"
+          "sleep_duration",
+          "fall_asleep_time",
+          "wakeup_time",
         ]
       : [
           "step",
@@ -38,7 +40,7 @@ class DataWrapper {
           "calorie",
           "sleep_time",
           "sleep_duration",
-          "carbon_emission"
+          "carbon_emission",
         ];
 
   ///Get all the data given the list of tag on the specific datetime number.

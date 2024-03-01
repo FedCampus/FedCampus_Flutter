@@ -14,7 +14,9 @@ import com.huawei.hms.hihealth.data.Value
 import com.huawei.hms.hihealth.options.HealthRecordReadOptions
 import com.huawei.hms.hihealth.result.HealthRecordReply
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
@@ -31,14 +33,27 @@ val fieldMap: Map<String, Field> =
 
 val convertionMap: Map<String, (Value) -> Double> =
     mapOf(
-        "fall_asleep_time" to { x -> extractMinutes(x.asLongValue()) },
-        "wakeup_time" to { x -> extractMinutes(x.asLongValue()) },
+        "fall_asleep_time" to
+            { x ->
+                extractMinutes(UTCTimeStampToLocalTimeStamp(x.asLongValue()))
+            },
+        "wakeup_time" to { x -> extractMinutes(UTCTimeStampToLocalTimeStamp(x.asLongValue())) },
         "sleep_time" to { x -> x.asIntValue().toDouble() },
         "sleep_efficiency" to { x -> x.asIntValue().toDouble() }
     )
 
 fun extractMinutes(timestamp: Long): Double {
     return (timestamp / (60 * 1000) % 1440).toDouble()
+}
+
+fun UTCTimeStampToLocalTimeStamp(UTCTimeStampMillisecond: Long): Long {
+    return UTCTimeStampMillisecond + getTimeZoneShiftSeconds() * 1000
+}
+
+fun getTimeZoneShiftSeconds(): Int {
+    val zoneId = ZoneId.systemDefault()
+    val offset = zoneId.rules.getOffset(Instant.now())
+    return offset.totalSeconds
 }
 
 fun intDateOneDayPrev(date: Int): Int {
