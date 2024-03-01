@@ -40,6 +40,16 @@ class ActivityData {
               "rank": 0,
               "data_points": [],
             },
+            "sleep_time": {
+              "average": 0,
+              "rank": 0,
+              "data_points": [],
+            },
+            "sleep_duration": {
+              "average": 0,
+              "rank": 0,
+              "data_points": [],
+            },
             "carbon_emission": {
               "average": 0,
               "rank": 0,

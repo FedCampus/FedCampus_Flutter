@@ -78,7 +78,22 @@ class _ActivityState extends State<Activity> {
             "entry_name": "sleep_efficiency",
             "icon_path": "assets/svg/sleep.svg",
             "img_scale": 1.2,
-            "unit": "effi",
+            "unit": "score",
+            "decimal_points": 0,
+          },
+          {
+            "entry_name": "sleep_time",
+            "icon_path": "assets/svg/sleep.svg",
+            "img_scale": 1.2,
+            "unit": "hours",
+            "decimal_points": 0,
+          },
+          {
+            "entry_name": "sleep_duration",
+            "display_name": "Bedtime",
+            "icon_path": "assets/svg/sleep.svg",
+            "img_scale": 1.2,
+            "unit": "time",
             "decimal_points": 0,
           },
         ]
