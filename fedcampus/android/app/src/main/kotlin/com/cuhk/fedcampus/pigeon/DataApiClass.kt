@@ -35,7 +35,7 @@ class DataApiClass(context: Context) : DataApi {
     ) {
         //check if it is sleep
         val scope = MainScope()
-        val sleepNames = listOf("bedtime", "sleep_time", "sleep_efficiency")
+        val sleepNames = listOf("sleep_duration", "sleep_time", "sleep_efficiency")
         if (name in sleepNames) {
             scope.launch {
                 try {

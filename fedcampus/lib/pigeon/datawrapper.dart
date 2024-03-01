@@ -26,7 +26,9 @@ class DataWrapper {
           "intensity",
           "exercise_heart_rate",
           "step_time",
-          "sleep_efficiency"
+          "sleep_efficiency",
+          "sleep_time",
+          "sleep_duration"
         ]
       : [
           "step",
