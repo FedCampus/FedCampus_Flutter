@@ -206,28 +206,40 @@ class VisualsView(APIView):
 
     def post(self, request):
         start_time = request.data.get("date")  # pass in a date string("20240110")
-        customer_gender = request.data.get("customer_gender")  # pass in customer gender (str: "Male"/"Female")
-        customer_status = request.data.get("customer_status")  # pass in status (list: ["2023", "Faculty"])
+        customer_gender = request.data.get(
+            "customer_gender"
+        )  # pass in customer gender (str: "Male"/"Female")
+        customer_status = request.data.get(
+            "customer_status"
+        )  # pass in status (list: ["2023", "Faculty"])
         if not start_time:
             start_time = (datetime.now() - timedelta(days=1)).strftime("%Y%m%d")
-        if not customer_gender or (customer_gender != "Male" and customer_gender != "Female"):
+        if not customer_gender or (
+            customer_gender != "Male" and customer_gender != "Female"
+        ):
             customer_gender = "all"
         if not customer_status:
             customer_status = list()
             customer_status.append("all")
         else:
-            customer_status = [item for item in customer_status if item in CUSTOMER_TYPE]
+            customer_status = [
+                item for item in customer_status if item in CUSTOMER_TYPE
+            ]
             if not customer_status:
                 customer_status = list()
                 customer_status.append("all")
 
-        result = {"filter_status": customer_status, "filter_gender": customer_gender,"date": start_time}
+        result = {
+            "filter_status": customer_status,
+            "filter_gender": customer_gender,
+            "date": start_time,
+        }
         if customer_status[0] == "all" and customer_gender == "all":
             for data_type in FA_DATA:
                 data_points = (
                     FA_MODEL.objects.filter(startTime=start_time)
                     .filter(dataType=data_type)
-                    .values_list("value", flat=True) #Returns iteratable
+                    .values_list("value", flat=True)  # Returns iteratable
                 )
                 result[data_type] = list(data_points)
 
@@ -240,18 +252,24 @@ class VisualsView(APIView):
                 users_with_status = Customer.objects.all()
             else:
                 for status in customer_status:
-                    try: 
+                    try:
                         status = int(status)
                         if not users_with_status:
                             users_with_status = Customer.objects.filter(student=status)
                         else:
-                            users_with_status = users_with_status | Customer.objects.filter(student=status)
+                            users_with_status = (
+                                users_with_status
+                                | Customer.objects.filter(student=status)
+                            )
                     except ValueError:
                         if not users_with_status:
                             users_with_status = Customer.objects.filter(faculty=True)
                         else:
-                            users_with_status = users_with_status | Customer.objects.filter(faculty=True)
-            
+                            users_with_status = (
+                                users_with_status
+                                | Customer.objects.filter(faculty=True)
+                            )
+
             if customer_gender == "all":
                 users_with_gender = Customer.objects.all()
             elif customer_gender == "Male":
@@ -259,14 +277,16 @@ class VisualsView(APIView):
             else:
                 users_with_gender = Customer.objects.filter(male=False)
 
-            users_with_filter = users_with_gender & users_with_status #All objects of Customer that satisfies the filter
+            users_with_filter = (
+                users_with_gender & users_with_status
+            )  # All objects of Customer that satisfies the filter
             django_users_with_filter = [c.user for c in users_with_filter]
             for data_type in FA_DATA:
                 data_points = (
                     FA_MODEL.objects.filter(user__in=django_users_with_filter)
                     .filter(startTime=start_time)
                     .filter(dataType=data_type)
-                    .values_list("value", flat=True) #Returns iteratable
+                    .values_list("value", flat=True)  # Returns iteratable
                 )
                 result[data_type] = list(data_points)
 
