@@ -275,7 +275,7 @@ class VisualsView(APIView):
             elif customer_gender == "Male":
                 users_with_gender = Customer.objects.filter(male=True)
             else:
-                users_with_gender = Customer.objects.filter(male=False)
+                users_with_gender = Customer.objects.exclude(male=True)
 
             users_with_filter = (
                 users_with_gender & users_with_status
