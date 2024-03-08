@@ -252,7 +252,7 @@ class VisualsView(APIView):
                 users_with_status = Customer.objects.all()
             else:
                 for status in customer_status:
-                    try:
+                    if status != "Faculty":
                         status = int(status)
                         if not users_with_status:
                             users_with_status = Customer.objects.filter(student=status)
@@ -261,7 +261,7 @@ class VisualsView(APIView):
                                 users_with_status
                                 | Customer.objects.filter(student=status)
                             )
-                    except ValueError:
+                    else:
                         if not users_with_status:
                             users_with_status = Customer.objects.filter(faculty=True)
                         else:
