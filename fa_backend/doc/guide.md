@@ -23,6 +23,18 @@ Provides REST Api endpoints.
 - `LoginSerializer`: The login authentication logic is implemented in the `validate` function of this serializer.
 - `RegisterSerializer`: This serializer includes field checks and validations in the `validate` function.
 
+## Local setup
+
+- Install Python 3.8, 3.9, 3.10, 3.11, or 3.12; install Python package virtualenv.
+
+- Then, execute the following in the `fa_backend` directory:
+```bash
+python3 -m venv .venv
+source .venv/bin/activate # For Unix-like operating systems
+.venv\bin\activate.bat    # For Windows
+pip install -e .
+```
+
 ## Others
 
 ### Email notification
