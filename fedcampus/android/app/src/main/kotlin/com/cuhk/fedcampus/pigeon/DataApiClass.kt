@@ -12,7 +12,7 @@ import com.cuhk.fedcampus.health.utils.exercisedata.REST_HEART_RATE
 import com.cuhk.fedcampus.health.utils.exercisedata.STEP
 import com.cuhk.fedcampus.health.utils.exercisedata.STRESS
 import com.cuhk.fedcampus.health.utils.exercisedata.getExerciseData
-import com.cuhk.fedcampus.health.utils.exercisedata.getSleepEfficiencyData
+import com.cuhk.fedcampus.health.utils.exercisedata.getSleepData
 import com.cuhk.fedcampus.health.utils.exercisedata.getStepTimeData
 import com.huawei.hms.hihealth.DataController
 import com.huawei.hms.hihealth.HuaweiHiHealth
@@ -35,11 +35,12 @@ class DataApiClass(context: Context) : DataApi {
     ) {
         //check if it is sleep
         val scope = MainScope()
-        if (name == "sleep_efficiency") {
+        val sleepNames = listOf("sleep_duration", "sleep_time", "sleep_efficiency", "fall_asleep_time", "wakeup_time")
+        if (name in sleepNames) {
             scope.launch {
                 try {
-                    val data = getSleepEfficiencyData(
-                        "sleep_efficiency",
+                    val data = getSleepData(
+                        name,
                         context,
                         startTime.toInt(),
                         DateCalender.add(endTime.toInt(), 1)
