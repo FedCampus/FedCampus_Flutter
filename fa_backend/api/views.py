@@ -164,7 +164,7 @@ class Status(APIView):
 def getFilter(startTime, filtering=None):
     """
     Get the filtering querySet with respect to the filtering dictionary and the current day
-    Filter value > 0
+    Filter value >= 0
     """
     queryAll = FA_MODEL.objects.filter(startTime=startTime).filter(value__gte=0)
     if not filtering == None:
@@ -198,6 +198,7 @@ class Average(APIView):
         resArray = []
         for f in FA_DATA:
             if f == "sleep_time":
+                # NOTE: sleep_time < 120 is excluded here, while sleep_time <= 120 is excluded in models.SaveRecord()
                 res = (
                     querySet.filter(Q(dataType=f))
                     .exclude(value__lt=120)

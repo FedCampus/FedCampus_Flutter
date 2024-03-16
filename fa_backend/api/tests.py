@@ -1,5 +1,4 @@
 import json
-
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -8,7 +7,17 @@ from rest_framework.test import APITestCase, APIRequestFactory, force_authentica
 from rest_framework.authtoken.models import Token
 
 from .models import Customer, Record, RecordDP, Log
-from .views import Login, Register, Data, DataDP, Logout, saveLogFile, Status
+from .views import (
+    Login,
+    Register,
+    Data,
+    DataDP,
+    Logout,
+    saveLogFile,
+    Status,
+    Average,
+    FA_MODEL,
+)
 
 
 class UserTestCase(APITestCase):
@@ -379,3 +388,122 @@ class StatusTestCase(UserTestCase):
         self.assertIn("faculty", response.data)
         self.assertIn("student", response.data)
         self.assertIn("male", response.data)
+
+
+class AverageTestCase(UserTestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.view = Average.as_view()
+        self.uri = "/average/"
+        self.setUpUser()
+
+        alice = User.objects.create_user(
+            username="alice", password="password", email="test@duke.edu"
+        )
+        Customer.objects.create(
+            user=alice, nickname="a123", netid="a123", male=False, faculty=True
+        )
+        FA_MODEL.objects.create(
+            user=alice, startTime=0, endTime=1, dataType="distance", value=-1
+        )
+        FA_MODEL.objects.create(
+            user=alice, startTime=0, endTime=1, dataType="distance", value=0
+        )
+        FA_MODEL.objects.create(
+            user=alice, startTime=0, endTime=1, dataType="sleep_time", value=119
+        )
+        FA_MODEL.objects.create(
+            user=alice, startTime=0, endTime=1, dataType="sleep_time", value=120
+        )
+        FA_MODEL.objects.create(
+            user=alice, startTime=0, endTime=1, dataType="sleep_duration", value=241
+        )
+        FA_MODEL.objects.create(
+            user=alice, startTime=1, endTime=2, dataType="sleep_time", value=888
+        )
+        FA_MODEL.objects.create(
+            user=alice, startTime=1, endTime=2, dataType="sleep_duration", value=888
+        )
+
+        bob = User.objects.create_user(
+            username="bob", password="password", email="test@duke.edu"
+        )
+        Customer.objects.create(
+            user=bob, nickname="b123", netid="b123", male=True, faculty=False, student=0
+        )
+        FA_MODEL.objects.create(
+            user=bob, startTime=0, endTime=1, dataType="sleep_time", value=240
+        )
+        FA_MODEL.objects.create(
+            user=bob, startTime=0, endTime=1, dataType="sleep_duration", value=1
+        )
+
+        eve = User.objects.create_user(
+            username="eve", password="password", email="test@duke.edu"
+        )
+        Customer.objects.create(
+            user=eve,
+            nickname="e123",
+            netid="e123",
+            male=False,
+            faculty=False,
+            student=1,
+        )
+        FA_MODEL.objects.create(
+            user=eve, startTime=0, endTime=1, dataType="sleep_time", value=300
+        )
+        FA_MODEL.objects.create(
+            user=eve, startTime=0, endTime=1, dataType="sleep_duration", value=1440
+        )
+
+    def test_time_0_all(self):
+        data = {"time": 0, "filter": {"status": "all"}}
+        request = self.factory.post(self.uri, data, format="json")
+        force_authenticate(request, user=self.user)
+        response = self.view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertAlmostEqual(response.data["distance"], 0.0)
+        self.assertAlmostEqual(response.data["sleep_time"], 220.0)
+        self.assertAlmostEqual(response.data["sleep_duration"], 320.66666666666663)
+
+    def test_time_1_all(self):
+        data = {"time": 1, "filter": {"status": "all"}}
+        request = self.factory.post(self.uri, data, format="json")
+        force_authenticate(request, user=self.user)
+        response = self.view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertAlmostEqual(response.data["sleep_time"], 888.0)
+        self.assertAlmostEqual(response.data["sleep_duration"], 648.0)
+
+    def test_male_student(self):
+        data = {"time": 0, "filter": {"gender": "male", "status": "student"}}
+        request = self.factory.post(self.uri, data, format="json")
+        force_authenticate(request, user=self.user)
+        response = self.view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertAlmostEqual(response.data["sleep_time"], 240.0)
+        self.assertAlmostEqual(response.data["sleep_duration"], 1201.0)
+
+    def test_female_faculty(self):
+        data = {"time": 0, "filter": {"gender": "female", "status": "faculty"}}
+        request = self.factory.post(self.uri, data, format="json")
+        force_authenticate(request, user=self.user)
+        response = self.view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertAlmostEqual(response.data["distance"], 0.0)
+        self.assertAlmostEqual(response.data["sleep_time"], 120.0)
+        self.assertAlmostEqual(response.data["sleep_duration"], 1.0)
+
+    def test_all_student_1(self):
+        data = {"time": 0, "filter": {"status": "1"}}
+        request = self.factory.post(self.uri, data, format="json")
+        force_authenticate(request, user=self.user)
+        response = self.view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertAlmostEqual(response.data["sleep_time"], 300.0)
+        self.assertAlmostEqual(response.data["sleep_duration"], 1200.0)
