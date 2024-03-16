@@ -371,5 +371,3 @@ class AccountSettings(APIView):
         customer.male = data.get("male")
         customer.save()
         return Response(None)
-
-    pass

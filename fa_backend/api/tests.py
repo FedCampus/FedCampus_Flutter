@@ -22,6 +22,7 @@ from .views import (
     DPDataPoints,
     VersionCheck,
     VersionCheckLoggedIn,
+    AccountSettings,
 )
 
 
@@ -695,3 +696,34 @@ class VersionCheckLoggedInTestCase(APITestCase):
         self.factory = APIRequestFactory()
         self.view = VersionCheckLoggedIn.as_view()
         self.uri = "/versioncheckloggedin/"
+
+
+class AccountSettingsTestCase(UserTestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.view = AccountSettings.as_view()
+        self.uri = "/accountsettings/"
+        self.setUpUser()
+
+    def test_faculty_male(self):
+        data = {"faculty": True, "male": True}
+        request = self.factory.post(self.uri, data, format="json")
+        force_authenticate(request, user=self.user)
+        response = self.view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.customer.refresh_from_db()
+        self.assertEqual(self.customer.faculty, True)
+        self.assertEqual(self.customer.male, True)
+
+    def test_student_female(self):
+        data = {"student": 1, "male": False}
+        request = self.factory.post(self.uri, data, format="json")
+        force_authenticate(request, user=self.user)
+        response = self.view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.customer.refresh_from_db()
+        self.assertEqual(self.customer.faculty, False)
+        self.assertEqual(self.customer.student, 1)
+        self.assertEqual(self.customer.male, False)
