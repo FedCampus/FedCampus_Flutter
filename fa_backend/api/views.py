@@ -255,6 +255,10 @@ class Rank(APIView):
             return self.calculatePercentage(querySet, query)
 
     def calculatePercentage(self, querySet, query):
+        # NOTE: `sleep_duration` (which in fact is the bedtime) is ranked from early to late,
+        # while the other metrics are ranked from high to low,
+        # which might not make sense, for example, for `stress`,
+        # as I suppose that higher rank means healthier?
         ranking = (
             querySet.filter(value__lt=query.value).count() + 1
             if query.dataType == "sleep_duration"

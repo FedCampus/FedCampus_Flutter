@@ -1,3 +1,4 @@
+import math
 import json
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -8,6 +9,7 @@ from rest_framework.authtoken.models import Token
 
 from .models import Customer, Record, RecordDP, Log
 from .views import (
+    FA_MODEL,
     Login,
     Register,
     Data,
@@ -16,7 +18,7 @@ from .views import (
     saveLogFile,
     Status,
     Average,
-    FA_MODEL,
+    Rank,
 )
 
 
@@ -507,3 +509,63 @@ class AverageTestCase(UserTestCase):
 
         self.assertAlmostEqual(response.data["sleep_time"], 300.0)
         self.assertAlmostEqual(response.data["sleep_duration"], 1200.0)
+
+
+class RankTestCase(APITestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.view = Rank.as_view()
+        self.uri = "/rank/"
+
+        self.user_num = 25
+        self.users = []
+        for i in range(self.user_num):
+            self.users.append(
+                User.objects.create_user(
+                    username=str(i), password="password", email="test@duke.edu"
+                )
+            )
+            Customer.objects.create(user=self.users[-1], nickname=str(i), netid=str(i))
+
+            FA_MODEL.objects.create(
+                user=self.users[-1],
+                startTime=0,
+                endTime=1,
+                dataType="distance",
+                value=i + 1,
+            )
+            FA_MODEL.objects.create(
+                user=self.users[-1],
+                startTime=0,
+                endTime=1,
+                dataType="sleep_duration",
+                value=i + 1,
+            )
+
+    def test_distance(self):
+        data = {"time": 0, "filter": {"status": "all"}}
+
+        for i, user in enumerate(self.users):
+            request = self.factory.post(self.uri, data, format="json")
+            force_authenticate(request, user=user)
+            response = self.view(request)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+            self.assertEqual(
+                response.data["distance"],
+                math.ceil((self.user_num - i) / self.user_num / 0.05) * 5,
+            )
+
+    def test_sleep_duration(self):
+        data = {"time": 0, "filter": {"status": "all"}}
+
+        for i, user in enumerate(self.users):
+            request = self.factory.post(self.uri, data, format="json")
+            force_authenticate(request, user=user)
+            response = self.view(request)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+            self.assertEqual(
+                response.data["sleep_duration"],
+                math.ceil((i + 1) / self.user_num / 0.05) * 5,
+            )
