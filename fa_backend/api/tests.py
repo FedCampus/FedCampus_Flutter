@@ -21,6 +21,7 @@ from .views import (
     Rank,
     DPDataPoints,
     VersionCheck,
+    VersionCheckLoggedIn,
 )
 
 
@@ -685,3 +686,12 @@ class VersionCheckTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         self.assertEqual(response.data, "Outdated version.")
+
+
+class VersionCheckLoggedInTestCase(APITestCase):
+    """this is just a placeholder, as the view is not implemented yet"""
+
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.view = VersionCheckLoggedIn.as_view()
+        self.uri = "/versioncheckloggedin/"
