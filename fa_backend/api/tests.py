@@ -19,6 +19,7 @@ from .views import (
     Status,
     Average,
     Rank,
+    DPDataPoints,
 )
 
 
@@ -569,3 +570,76 @@ class RankTestCase(APITestCase):
                 response.data["sleep_duration"],
                 math.ceil((i + 1) / self.user_num / 0.05) * 5,
             )
+
+
+class DPDataPointsTestCase(UserTestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.view = DPDataPoints.as_view()
+        self.uri = "/dpdatapoints/"
+        self.setUpUser()
+
+        alice = User.objects.create_user(
+            username="alice", password="password", email="test@duke.edu"
+        )
+        Customer.objects.create(user=alice, nickname="a123", netid="a123")
+
+        FA_MODEL.objects.create(
+            user=alice, startTime=0, endTime=1, dataType="distance", value=0
+        )
+        FA_MODEL.objects.create(
+            user=alice, startTime=0, endTime=1, dataType="sleep_time", value=120
+        )
+        FA_MODEL.objects.create(
+            user=alice, startTime=0, endTime=1, dataType="sleep_duration", value=241
+        )
+        FA_MODEL.objects.create(
+            user=alice, startTime=1, endTime=2, dataType="sleep_time", value=888
+        )
+        FA_MODEL.objects.create(
+            user=alice, startTime=1, endTime=2, dataType="sleep_duration", value=888
+        )
+
+    def test_time_0(self):
+        data = {"time": 0}
+        request = self.factory.post(self.uri, data, format="json")
+        force_authenticate(request, user=self.user)
+        response = self.view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(
+            response.data,
+            {
+                "step_time": [],
+                "distance": [0.0],
+                "calorie": [],
+                "intensity": [],
+                "stress": [],
+                "step": [],
+                "sleep_efficiency": [],
+                "sleep_time": [120.0],
+                "sleep_duration": [241.0],
+            },
+        )
+
+    def test_time_1(self):
+        data = {"time": 1}
+        request = self.factory.post(self.uri, data, format="json")
+        force_authenticate(request, user=self.user)
+        response = self.view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(
+            response.data,
+            {
+                "step_time": [],
+                "distance": [],
+                "calorie": [],
+                "intensity": [],
+                "stress": [],
+                "step": [],
+                "sleep_efficiency": [],
+                "sleep_time": [888.0],
+                "sleep_duration": [888.0],
+            },
+        )
