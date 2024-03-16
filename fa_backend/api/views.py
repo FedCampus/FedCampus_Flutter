@@ -304,6 +304,8 @@ class VersionCheck(APIView):
                 "No version number provided.", status=status.HTTP_400_BAD_REQUEST
             )
 
+        # NOTE: this means that `1.0` is not valid, while `v1.0` is valid,
+        # and it would simply fail if you pass in goofy things like `v1v`
         match = re.search(r"\b([a-zA-Z]+)(.*)$", version_string)
         if not match:
             return Response(
@@ -314,6 +316,8 @@ class VersionCheck(APIView):
         if compare_versions(version_number, MIN_VERSION) >= 0:
             return Response("Client valid version")
         else:
+            # NOTE: I do not think having an outdated version means the request itself is bad,
+            # but this is just how it goes...
             return Response("Outdated version.", status=status.HTTP_400_BAD_REQUEST)
 
 

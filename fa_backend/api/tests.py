@@ -20,6 +20,7 @@ from .views import (
     Average,
     Rank,
     DPDataPoints,
+    VersionCheck,
 )
 
 
@@ -643,3 +644,44 @@ class DPDataPointsTestCase(UserTestCase):
                 "sleep_duration": [888.0],
             },
         )
+
+
+class VersionCheckTestCase(APITestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.view = VersionCheck.as_view()
+        self.uri = "/versioncheck/"
+
+    def test_no_version_number(self):
+        data = {}
+        request = self.factory.post(self.uri, data, format="json")
+        response = self.view(request)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        self.assertEqual(response.data, "No version number provided.")
+
+    def test_invalid_format(self):
+        data = {"version": "1"}
+        request = self.factory.post(self.uri, data, format="json")
+        response = self.view(request)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        self.assertEqual(response.data, "Invalid version number format.")
+
+    def test_valid_version(self):
+        # NOTE: Update this if our version got this ridiculously high
+        data = {"version": "v999999999.9.9"}
+        request = self.factory.post(self.uri, data, format="json")
+        response = self.view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(response.data, "Client valid version")
+
+    def test_outdated_version(self):
+        # NOTE: I assume that we are always above version 0
+        data = {"version": "v0.0"}
+        request = self.factory.post(self.uri, data, format="json")
+        response = self.view(request)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        self.assertEqual(response.data, "Outdated version.")
