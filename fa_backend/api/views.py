@@ -164,7 +164,7 @@ class Status(APIView):
 def getFilter(startTime, filtering=None):
     """
     Get the filtering querySet with respect to the filtering dictionary and the current day
-    Filter value > 0
+    Filter value >= 0
     """
     queryAll = FA_MODEL.objects.filter(startTime=startTime).filter(value__gte=0)
     if not filtering == None:
@@ -198,6 +198,7 @@ class Average(APIView):
         resArray = []
         for f in FA_DATA:
             if f == "sleep_time":
+                # NOTE: sleep_time < 120 is excluded here, while sleep_time <= 120 is excluded in models.SaveRecord()
                 res = (
                     querySet.filter(Q(dataType=f))
                     .exclude(value__lt=120)
@@ -254,6 +255,10 @@ class Rank(APIView):
             return self.calculatePercentage(querySet, query)
 
     def calculatePercentage(self, querySet, query):
+        # NOTE: `sleep_duration` (which in fact is the bedtime) is ranked from early to late,
+        # while the other metrics are ranked from high to low,
+        # which might not make sense, for example, for `stress`,
+        # as I suppose that higher rank means healthier?
         ranking = (
             querySet.filter(value__lt=query.value).count() + 1
             if query.dataType == "sleep_duration"
@@ -299,6 +304,8 @@ class VersionCheck(APIView):
                 "No version number provided.", status=status.HTTP_400_BAD_REQUEST
             )
 
+        # NOTE: this means that `1.0` is not valid, while `v1.0` is valid,
+        # and it would simply fail if you pass in goofy things like `v1v`
         match = re.search(r"\b([a-zA-Z]+)(.*)$", version_string)
         if not match:
             return Response(
@@ -309,6 +316,8 @@ class VersionCheck(APIView):
         if compare_versions(version_number, MIN_VERSION) >= 0:
             return Response("Client valid version")
         else:
+            # NOTE: I do not think having an outdated version means the request itself is bad,
+            # but this is just how it goes...
             return Response("Outdated version.", status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -362,5 +371,3 @@ class AccountSettings(APIView):
         customer.male = data.get("male")
         customer.save()
         return Response(None)
-
-    pass

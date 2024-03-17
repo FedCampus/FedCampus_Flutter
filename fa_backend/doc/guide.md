@@ -41,6 +41,25 @@ pip install -e '.[dev]'
 pip install -e .
 ```
 
+## Testing
+
+- To run tests, execute:
+```bash
+./manage.py test [app_to_test]
+```
+- To get code coverage, first run the tests with:
+```bash
+coverage run --source='.' manage.py [app_to_test]
+```
+- Then get the coverage report:
+```bash
+coverage report
+```
+- Or, generate a detailed HTML report you can open in the browser that shows which lines are covered:
+```bash
+coverage html
+```
+
 ## Others
 
 ### Email notification

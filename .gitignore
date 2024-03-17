@@ -30,6 +30,7 @@ fa_backend/config/email.json
 **.venv/
 **build/
 **.egg-info/
+**.coverage
 
 # Auxiliary files
 **.bak
