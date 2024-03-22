@@ -32,7 +32,8 @@ class _HelpState extends State<Help> {
         builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
           if (snapshot.hasData) {
             return Markdown(
-              styleSheet: MarkdownStyleSheet(textScaleFactor: 1.2),
+              styleSheet:
+                  MarkdownStyleSheet(textScaler: const TextScaler.linear(1.2)),
               data: snapshot.data!,
             );
           } else if (snapshot.hasError) {
