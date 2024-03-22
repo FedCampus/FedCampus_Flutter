@@ -908,11 +908,15 @@ class SleepTime extends StatelessWidget {
     super.key,
   });
 
-  List<double> _sleepMinuteToHour(double? sleepTime) {
-    if (sleepTime == null || sleepTime == -1) {
-      return [-1, -1];
+  (String, String) _sleepMinutesToHourMinutePair(double? sleepTime) {
+    logger.e(sleepTime);
+    if (sleepTime == null || sleepTime == -1 || sleepTime == 0) {
+      return ("-", "-");
     } else {
-      return [((sleepTime) ~/ 60).toDouble(), ((sleepTime) % 60)];
+      return (
+        ((sleepTime) ~/ 60).toString(),
+        ((sleepTime) % 60).toStringAsFixed(0)
+      );
     }
   }
 
@@ -927,14 +931,10 @@ class SleepTime extends StatelessWidget {
             Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
       ),
       label: "Sleep",
-      subvalue: "${formatNum(
-        _sleepMinuteToHour(
-            Provider.of<HealthDataModel>(context).healthData['sleep_time'])[1],
-        decimalPoints: 0,
-        loading: Provider.of<HealthDataModel>(context).loading,
-      )} min",
+      subvalue:
+          "${_sleepMinutesToHourMinutePair(Provider.of<HealthDataModel>(context).healthData['sleep_time']).$2} min",
       value:
-          "${formatNum(_sleepMinuteToHour(Provider.of<HealthDataModel>(context).healthData['sleep_time'])[0], loading: Provider.of<HealthDataModel>(context).loading, decimalPoints: 0)} h",
+          "${_sleepMinutesToHourMinutePair(Provider.of<HealthDataModel>(context).healthData['sleep_time']).$1} h",
     );
   }
 }
