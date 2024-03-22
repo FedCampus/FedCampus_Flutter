@@ -1,28 +1,30 @@
-import math
 import json
-from django.urls import reverse
+import math
+
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase, APIRequestFactory, force_authenticate
 from rest_framework.authtoken.models import Token
+from rest_framework.test import APIRequestFactory, APITestCase, force_authenticate
 
-from .models import Customer, Record, RecordDP, Log
+from .models import Customer, Log, Record, RecordDP
 from .views import (
     FA_MODEL,
-    Login,
-    Register,
+    AccountSettings,
+    Average,
     Data,
     DataDP,
-    Logout,
-    saveLogFile,
-    Status,
-    Average,
-    Rank,
     DPDataPoints,
+    Login,
+    Logout,
+    Rank,
+    Register,
+    Status,
     VersionCheck,
     VersionCheckLoggedIn,
-    AccountSettings,
+    check_semver,
+    saveLogFile,
 )
 
 
@@ -654,6 +656,30 @@ class VersionCheckTestCase(APITestCase):
         self.view = VersionCheck.as_view()
         self.uri = "/versioncheck/"
 
+    def test_semver(self):
+        self.assertTrue(check_semver("1.2.3"))
+
+    def test_semver_zero(self):
+        self.assertTrue(check_semver("0.2.3"))
+
+    def test_semver_incomplete(self):
+        self.assertFalse(check_semver("2.3"))
+
+    def test_semver_too_much(self):
+        self.assertFalse(check_semver("2.3.4.5"))
+
+    def test_semver_leading_zero_1(self):
+        self.assertFalse(check_semver("02.3.9"))
+
+    def test_semver_leading_zero_2(self):
+        self.assertFalse(check_semver("3.06.9"))
+
+    def test_semver_leading_zero_3(self):
+        self.assertFalse(check_semver("2.5.07"))
+
+    def test_semver_letter(self):
+        self.assertFalse(check_semver("a.b.c"))
+
     def test_no_version_number(self):
         data = {}
         request = self.factory.post(self.uri, data, format="json")
@@ -681,7 +707,7 @@ class VersionCheckTestCase(APITestCase):
 
     def test_outdated_version(self):
         # NOTE: I assume that we are always above version 0
-        data = {"version": "v0.0"}
+        data = {"version": "v0.0.1"}
         request = self.factory.post(self.uri, data, format="json")
         response = self.view(request)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

@@ -299,20 +299,19 @@ MIN_VERSION = "1.1.1"
 class VersionCheck(APIView):
     def post(self, request):
         version_string = request.data.get("version")
-        if not version_string:
+
+        if not isinstance(version_string, str):
             return Response(
                 "No version number provided.", status=status.HTTP_400_BAD_REQUEST
             )
 
-        # NOTE: this means that `1.0` is not valid, while `v1.0` is valid,
-        # and it would simply fail if you pass in goofy things like `v1v`
-        match = re.search(r"\b([a-zA-Z]+)(.*)$", version_string)
-        if not match:
+        try:
+            version_number = extract_version_string(version_string)
+        except:
             return Response(
                 "Invalid version number format.", status=status.HTTP_400_BAD_REQUEST
             )
 
-        version_number = match.group(2)
         if compare_versions(version_number, MIN_VERSION) >= 0:
             return Response("Client valid version")
         else:
@@ -321,7 +320,36 @@ class VersionCheck(APIView):
             return Response("Outdated version.", status=status.HTTP_400_BAD_REQUEST)
 
 
-def compare_versions(version1, version2):
+def extract_version_string(full_version_string: str) -> str:
+    """
+    `full_version_string` is of format "<platform>semver", e.g. "Android1.0.1", "iOS1.2.3"
+    This function extracts and checks the semantic version string of `full_version_string`
+    """
+    # NOTE: this means that `1.0` is not valid, while `v1.0` is valid,
+    # and it would simply fail if you pass in goofy things like `v1v`
+    re_match = re.search(r"\b([a-zA-Z]+)(.*)$", full_version_string)
+    if not re_match:
+        raise Exception("Invalid version number format.")
+
+    semver = re_match.group(2)
+    if not check_semver(semver):
+        raise Exception("Invalid version number format.")
+
+    return semver
+
+
+def check_semver(version_string: str) -> bool:
+    """
+    Test version_string against semantic versioning in the format MAJOR.MINOR.PATCH.
+    Note that this check does not allow labels for pre-release and build metadata as extensions to the MAJOR.MINOR.PATCH format.
+    """
+    pattern = r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$"
+    re_match = re.match(pattern, version_string)
+
+    return bool(re_match)
+
+
+def compare_versions(version1: str, version2: str):
     v1_components = list(map(int, version1.split(".")))
     v2_components = list(map(int, version2.split(".")))
 
