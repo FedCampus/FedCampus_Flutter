@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from .models import Record, RecordDP, Customer, Log, SleepTime
+from .models import Record, RecordDP, Customer, Log, SleepTime, saveRecord
 from django.utils import timezone
 
 class ModelCreationTest(TestCase):
@@ -9,11 +9,11 @@ class ModelCreationTest(TestCase):
         
     def test_record_creation(self):
         record = Record.objects.create(user=self.user, startTime=123456789, endTime=123456999, dataType="testType", value=1.23)
-        self.assertEqual(str(record), "123456789 testType john")
+        self.assertEqual(str(record), "123456789 testType TestGuy")
 
     def test_record_dp_creation(self):
         record_dp = RecordDP.objects.create(user=self.user, startTime=123456789, endTime=123456999, dataType="testTypeDP", value=1.23)
-        self.assertEqual(str(record_dp), "12345678 testTypeDP john")
+        self.assertEqual(str(record_dp), "12345678 testTypeDP TestGuy")
 
 class SaveRecordTest(TestCase):
     def setUp(self):
@@ -30,10 +30,10 @@ class SaveRecordTest(TestCase):
         self.assertEqual(Record.objects.count(), 0)
 
     def test_sleep_duration_conversion(self):
-        data = {"name": "sleep_duration", "value": 121000, "startTime": 3000, "endTime": 3100} # 1210 as start time in minutes
+        data = {"name": "sleep_duration", "value": 12100000, "startTime": 3000, "endTime": 3100} # 1210 as start time in minutes
         saveRecord(Record, self.user, data)
         record = Record.objects.first()
         self.assertIsNotNone(record)
-        expected_value = 10 # Calculated based on your conversion logic
+        expected_value = 10 
         self.assertEqual(record.value, expected_value)
 
