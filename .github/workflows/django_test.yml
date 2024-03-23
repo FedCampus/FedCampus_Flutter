@@ -1,0 +1,21 @@
+on:
+  push:
+    paths:
+      - '.github/workflows/django_test.yml'
+      - 'fa_backend/**.py'
+      - 'fa_backend/pyproject.toml'
+      - 'fa_backend/setup.cfg'
+jobs:
+  Black:
+    name: Django Backend Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - run: |
+          cd fa_backend
+          python -m pip install --upgrade pip
+          pip install -e '.[dev]'
+          python manage.py test

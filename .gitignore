@@ -1,5 +1,3 @@
-
-**__pycache__/
 **.DS_Store
 **.csv
 **.ico
@@ -9,9 +7,7 @@
 **.settings/
 **.sqlite3*
 **.webp
-**build/
 **desktop.ini
-**.venv/
 
 log.log
 
@@ -20,6 +16,7 @@ fa_backend/media/android/
 
 **gradlew
 **gradlew.bat
+fa_backend/api/log_backend.log
 fa_backend/fa_backend.sock
 fa_backend/static
 # private email information
@@ -30,7 +27,10 @@ fa_backend/config/email.json
 # Artifacts
 **__pycache__/
 **.ipynb_checkpoints/
+**.venv/
 **build/
+**.egg-info/
+**.coverage
 
 # Auxiliary files
 **.bak
@@ -83,3 +83,14 @@ fa_backend/config/email.json
 **.webp
 **.xbm
 
+# Vim swap
+[._]*.s[a-v][a-z]
+!*.svg  # comment out if you don't need vector files
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+
+# Vim session
+Session.vim
+Sessionx.vim

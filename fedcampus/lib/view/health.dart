@@ -59,6 +59,14 @@ final healthEntries = userApi.isAndroid
           "entry_name": "carbon_emission",
           "height": 1.1,
         },
+        {
+          "entry_name": "sleep_duration",
+          "height": 1.0,
+        },
+        {
+          "entry_name": "sleep_time",
+          "height": 1.0,
+        },
       ]
     : [
         {
@@ -82,7 +90,7 @@ final healthEntries = userApi.isAndroid
           "height": 1.0,
         },
         {
-          "entry_name": "sleep",
+          "entry_name": "sleep_time",
           "height": 1.1,
         },
         {
@@ -111,11 +119,11 @@ class _HealthState extends State<Health> {
     "step": const Step(),
     "calorie": const Calorie(),
     "intense_exercise": const IntenseExercise(),
-    "sleep_efficiency": const Sleep(),
+    "sleep_efficiency": const SleepEfficiency(),
     "screen_time": const ScreenTime(),
     "carbon_emission": const CarbonEmission(),
     "sleep_duration": const SleepDuration(),
-    "sleep": const Sleep(),
+    "sleep_time": const SleepTime(),
   };
 
   @override
@@ -868,59 +876,66 @@ class IntenseExercise extends StatelessWidget {
   }
 }
 
-class Sleep extends StatelessWidget {
-  const Sleep({
+class SleepEfficiency extends StatelessWidget {
+  const SleepEfficiency({
     super.key,
   });
 
-  List<double> _sleepMinuteToHour(double? sleepTime) {
-    if (sleepTime == null || sleepTime == -1) {
-      return [-1, -1];
+  @override
+  Widget build(BuildContext context) {
+    return HealthCard(
+      icon: SvgIcon(
+        imagePath: 'assets/svg/sleep.svg',
+        width: 58,
+        height: 58,
+        colorFilter: ColorFilter.mode(
+            Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
+      ),
+      label: "Sleep\nEfficiency",
+      labelMaxLines: 2,
+      subvalue: "score",
+      value: formatNum(
+        Provider.of<HealthDataModel>(context).healthData['sleep_efficiency'],
+        decimalPoints: 0,
+        loading: Provider.of<HealthDataModel>(context).loading,
+      ),
+    );
+  }
+}
+
+class SleepTime extends StatelessWidget {
+  const SleepTime({
+    super.key,
+  });
+
+  (String, String) _sleepMinutesToHourMinutePair(double? sleepTime) {
+    logger.e(sleepTime);
+    if (sleepTime == null || sleepTime == -1 || sleepTime == 0) {
+      return ("-", "-");
     } else {
-      return [((sleepTime) ~/ 60).toDouble(), ((sleepTime) % 60)];
+      return (
+        ((sleepTime) ~/ 60).toString(),
+        ((sleepTime) % 60).toStringAsFixed(0)
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return userApi.isAndroid
-        ? HealthCard(
-            icon: SvgIcon(
-              imagePath: 'assets/svg/sleep.svg',
-              width: 58,
-              height: 58,
-              colorFilter: ColorFilter.mode(
-                  Theme.of(context).colorScheme.primaryContainer,
-                  BlendMode.srcIn),
-            ),
-            label: "Sleep",
-            subvalue: "score",
-            value: formatNum(
-              Provider.of<HealthDataModel>(context)
-                  .healthData['sleep_efficiency'],
-              decimalPoints: 0,
-              loading: Provider.of<HealthDataModel>(context).loading,
-            ),
-          )
-        : HealthCard(
-            icon: SvgIcon(
-              imagePath: 'assets/svg/sleep.svg',
-              width: 58,
-              height: 58,
-              colorFilter: ColorFilter.mode(
-                  Theme.of(context).colorScheme.primaryContainer,
-                  BlendMode.srcIn),
-            ),
-            label: "Sleep",
-            subvalue: "${formatNum(
-              _sleepMinuteToHour(Provider.of<HealthDataModel>(context)
-                  .healthData['sleep_time'])[1],
-              decimalPoints: 0,
-              loading: Provider.of<HealthDataModel>(context).loading,
-            )} min",
-            value:
-                "${formatNum(_sleepMinuteToHour(Provider.of<HealthDataModel>(context).healthData['sleep_time'])[0], loading: Provider.of<HealthDataModel>(context).loading, decimalPoints: 0)} h",
-          );
+    return HealthCard(
+      icon: SvgIcon(
+        imagePath: 'assets/svg/sleep.svg',
+        width: 58,
+        height: 58,
+        colorFilter: ColorFilter.mode(
+            Theme.of(context).colorScheme.primaryContainer, BlendMode.srcIn),
+      ),
+      label: "Sleep",
+      subvalue:
+          "${_sleepMinutesToHourMinutePair(Provider.of<HealthDataModel>(context).healthData['sleep_time']).$2} min",
+      value:
+          "${_sleepMinutesToHourMinutePair(Provider.of<HealthDataModel>(context).healthData['sleep_time']).$1} h",
+    );
   }
 }
 
@@ -930,7 +945,9 @@ class SleepDuration extends StatelessWidget {
   });
 
   String _sleepDurationDoubleToString(double sleepDuration) {
-    logger.e(sleepDuration);
+    if (sleepDuration == 0) {
+      return " - \n - ";
+    }
     int start = sleepDuration ~/ 10000;
     int end = (sleepDuration % 10000).toInt();
     String startH = (start ~/ 60).toString().padLeft(2, "0");

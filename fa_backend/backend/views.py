@@ -2,6 +2,7 @@ import logging
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework import permissions
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from backend.serializers import CreditSerializer
@@ -11,7 +12,8 @@ from django.db.models import Q
 from django.shortcuts import render
 
 from api.models import Customer
-from api.models import Record
+from api.models import Record, RecordDP
+from django.contrib.auth.models import User
 
 from datetime import datetime, timedelta
 
@@ -23,6 +25,29 @@ import plotly.express as px
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+FA_MODEL = RecordDP
+
+FA_DATA = [
+    "step_time",
+    "distance",
+    "calorie",
+    "intensity",
+    "stress",
+    "step",
+    "sleep_efficiency",
+    "sleep_time",
+    "sleep_duration",
+]
+
+CUSTOMER_TYPE = [
+    "Faculty",
+    "2023",
+    "2024",
+    "2025",
+    "2026",
+    "2027",
+]
 
 
 @api_view(["GET"])
@@ -130,7 +155,7 @@ def mainPage(request):
             )
         # 2
         for date in record:
-            active_users[date] += 1
+            active_users[str(date)] += 1
 
     # Create visualizations
     df = pd.DataFrame(
@@ -174,3 +199,95 @@ class CreditManagementView(
 
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
+
+
+class VisualsView(APIView):
+    # Returns all data points for visualization
+
+    def post(self, request):
+        start_time = request.data.get("date")  # pass in a date string("20240110")
+        customer_gender = request.data.get(
+            "customer_gender"
+        )  # pass in customer gender (str: "Male"/"Female")
+        customer_status = request.data.get(
+            "customer_status"
+        )  # pass in status (list: ["2023", "Faculty"])
+        if not start_time:
+            start_time = (datetime.now() - timedelta(days=1)).strftime("%Y%m%d")
+        if not customer_gender or (
+            customer_gender != "Male" and customer_gender != "Female"
+        ):
+            customer_gender = "all"
+        if not customer_status:
+            customer_status = list()
+            customer_status.append("all")
+        else:
+            customer_status = [
+                item for item in customer_status if item in CUSTOMER_TYPE
+            ]
+            if not customer_status:
+                customer_status = list()
+                customer_status.append("all")
+
+        result = {
+            "filter_status": customer_status,
+            "filter_gender": customer_gender,
+            "date": start_time,
+        }
+        if customer_status[0] == "all" and customer_gender == "all":
+            for data_type in FA_DATA:
+                data_points = (
+                    FA_MODEL.objects.filter(startTime=start_time)
+                    .filter(dataType=data_type)
+                    .values_list("value", flat=True)  # Returns iteratable
+                )
+                result[data_type] = list(data_points)
+
+            return Response(result)
+        else:
+            # TODO: Return data in accordance with filters
+            users_with_status = None
+            users_with_gender = None
+            if customer_status[0] == "all":
+                users_with_status = Customer.objects.all()
+            else:
+                for status in customer_status:
+                    if status != "Faculty":
+                        status = int(status)
+                        if not users_with_status:
+                            users_with_status = Customer.objects.filter(student=status)
+                        else:
+                            users_with_status = (
+                                users_with_status
+                                | Customer.objects.filter(student=status)
+                            )
+                    else:
+                        if not users_with_status:
+                            users_with_status = Customer.objects.filter(faculty=True)
+                        else:
+                            users_with_status = (
+                                users_with_status
+                                | Customer.objects.filter(faculty=True)
+                            )
+
+            if customer_gender == "all":
+                users_with_gender = Customer.objects.all()
+            elif customer_gender == "Male":
+                users_with_gender = Customer.objects.filter(male=True)
+            else:
+                users_with_gender = Customer.objects.filter(male=False)
+
+            users_with_filter = (
+                users_with_gender & users_with_status
+            )  # All objects of Customer that satisfies the filter
+            django_users_with_filter = [c.user for c in users_with_filter]
+            for data_type in FA_DATA:
+                data_points = (
+                    FA_MODEL.objects.filter(user__in=django_users_with_filter)
+                    .filter(startTime=start_time)
+                    .filter(dataType=data_type)
+                    .values_list("value", flat=True)  # Returns iteratable
+                )
+                result[data_type] = list(data_points)
+
+            return Response(result)

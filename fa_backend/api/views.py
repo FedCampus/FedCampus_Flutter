@@ -131,7 +131,7 @@ class saveLogFile(APIView):
     def post(self, request):
         file = request.data.get("log")
 
-        ## TODO : change the max count of the log file for each user
+        # TODO : change the max count of the log file for each user
         temp_max_count = 2
 
         if (
@@ -146,7 +146,7 @@ class saveLogFile(APIView):
         return Response(None)
 
 
-## TODO: change the FA model back to RecordDP
+# For easily switching between Record and RecordDP since they share the same schema
 FA_MODEL = RecordDP
 
 
@@ -164,7 +164,7 @@ class Status(APIView):
 def getFilter(startTime, filtering=None):
     """
     Get the filtering querySet with respect to the filtering dictionary and the current day
-    Filter value > 0
+    Filter value >= 0
     """
     queryAll = FA_MODEL.objects.filter(startTime=startTime).filter(value__gte=0)
     if not filtering == None:
@@ -198,6 +198,7 @@ class Average(APIView):
         resArray = []
         for f in FA_DATA:
             if f == "sleep_time":
+                # NOTE: sleep_time < 120 is excluded here, while sleep_time <= 120 is excluded in models.SaveRecord()
                 res = (
                     querySet.filter(Q(dataType=f))
                     .exclude(value__lt=120)
@@ -254,6 +255,10 @@ class Rank(APIView):
             return self.calculatePercentage(querySet, query)
 
     def calculatePercentage(self, querySet, query):
+        # NOTE: `sleep_duration` (which in fact is the bedtime) is ranked from early to late,
+        # while the other metrics are ranked from high to low,
+        # which might not make sense, for example, for `stress`,
+        # as I suppose that higher rank means healthier?
         ranking = (
             querySet.filter(value__lt=query.value).count() + 1
             if query.dataType == "sleep_duration"
@@ -294,25 +299,57 @@ MIN_VERSION = "1.1.1"
 class VersionCheck(APIView):
     def post(self, request):
         version_string = request.data.get("version")
-        if not version_string:
+
+        if not isinstance(version_string, str):
             return Response(
                 "No version number provided.", status=status.HTTP_400_BAD_REQUEST
             )
 
-        match = re.search(r"\b([a-zA-Z]+)(.*)$", version_string)
-        if not match:
+        try:
+            version_number = extract_version_string(version_string)
+        except:
             return Response(
                 "Invalid version number format.", status=status.HTTP_400_BAD_REQUEST
             )
 
-        version_number = match.group(2)
         if compare_versions(version_number, MIN_VERSION) >= 0:
             return Response("Client valid version")
         else:
+            # NOTE: I do not think having an outdated version means the request itself is bad,
+            # but this is just how it goes...
             return Response("Outdated version.", status=status.HTTP_400_BAD_REQUEST)
 
 
-def compare_versions(version1, version2):
+def extract_version_string(full_version_string: str) -> str:
+    """
+    `full_version_string` is of format "<platform>semver", e.g. "Android1.0.1", "iOS1.2.3"
+    This function extracts and checks the semantic version string of `full_version_string`
+    """
+    # NOTE: this means that `1.0` is not valid, while `v1.0` is valid,
+    # and it would simply fail if you pass in goofy things like `v1v`
+    re_match = re.search(r"\b([a-zA-Z]+)(.*)$", full_version_string)
+    if not re_match:
+        raise Exception("Invalid version number format.")
+
+    semver = re_match.group(2)
+    if not check_semver(semver):
+        raise Exception("Invalid version number format.")
+
+    return semver
+
+
+def check_semver(version_string: str) -> bool:
+    """
+    Test version_string against semantic versioning in the format MAJOR.MINOR.PATCH.
+    Note that this check does not allow labels for pre-release and build metadata as extensions to the MAJOR.MINOR.PATCH format.
+    """
+    pattern = r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$"
+    re_match = re.match(pattern, version_string)
+
+    return bool(re_match)
+
+
+def compare_versions(version1: str, version2: str):
     v1_components = list(map(int, version1.split(".")))
     v2_components = list(map(int, version2.split(".")))
 
@@ -335,7 +372,7 @@ class VersionCheckLoggedIn(APIView):
 
 
 def getSimilarUser(querySet, index, length=1):
-    ## get the similar user that is similar to the current user
+    # get the similar user that is similar to the current user
     result = []
     indexLength = querySet.count() - 1
     lowerBound = max(index - length, 0)
@@ -362,5 +399,3 @@ class AccountSettings(APIView):
         customer.male = data.get("male")
         customer.save()
         return Response(None)
-
-    pass

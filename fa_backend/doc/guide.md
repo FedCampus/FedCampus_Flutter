@@ -23,6 +23,43 @@ Provides REST Api endpoints.
 - `LoginSerializer`: The login authentication logic is implemented in the `validate` function of this serializer.
 - `RegisterSerializer`: This serializer includes field checks and validations in the `validate` function.
 
+## Local setup
+
+- Install Python 3.8, 3.9, 3.10, 3.11, or 3.12; install Python package virtualenv.
+- Enter the `fa_backend` directory, then create and active the virtual environment:
+```bash
+python3 -m venv .venv
+source .venv/bin/activate # For Unix-like operating systems
+.venv\bin\activate.bat    # For Windows
+```
+- Next, do an editable install with pip that includes all the development dependencies (with linter and code formatter):
+```bash
+pip install -e '.[dev]'
+```
+- Or, if you prefer not to include these dependencies (e.g. in a release environment):
+```bash
+pip install -e .
+```
+
+## Testing
+
+- To run tests, execute:
+```bash
+./manage.py test [app_to_test]
+```
+- To get code coverage, first run the tests with:
+```bash
+coverage run --source='.' manage.py [app_to_test]
+```
+- Then get the coverage report:
+```bash
+coverage report
+```
+- Or, generate a detailed HTML report you can open in the browser that shows which lines are covered:
+```bash
+coverage html
+```
+
 ## Others
 
 ### Email notification

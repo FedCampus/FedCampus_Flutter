@@ -81,7 +81,7 @@ class _MyAppState extends State<MyApp> {
     // receives all toast error message from the beginning of the app
     initEventBus(context);
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (!mounted) return;
+    if (!context.mounted) return;
     MyAppState myAppState = Provider.of<MyAppState>(context, listen: false);
     // dark mode settings:
     // if dark mode is not set in shared preferences, default to systemwide preferences

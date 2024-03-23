@@ -17,7 +17,8 @@ class _AboutState extends State<About> {
         ),
         resizeToAvoidBottomInset: false,
         body: Markdown(
-          styleSheet: MarkdownStyleSheet(textScaleFactor: 1.2),
+          styleSheet:
+              MarkdownStyleSheet(textScaler: const TextScaler.linear(1.2)),
           data: """
 ## Federated Learning: Using Differential Privacy algorithms to Analyze Privacy-Preserving Health Data Collected on Smartwatches
 ### Project Team: Duke Kunshan University undergraduates

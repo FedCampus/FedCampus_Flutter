@@ -17,7 +17,8 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
         ),
         resizeToAvoidBottomInset: false,
         body: Markdown(
-          styleSheet: MarkdownStyleSheet(textScaleFactor: 1.2),
+          styleSheet:
+              MarkdownStyleSheet(textScaler: const TextScaler.linear(1.2)),
           data: """
 ## Data Collection
 The project will collect health data from smartwatches worn by participants. 
