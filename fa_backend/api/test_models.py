@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from .models import Record, RecordDP, Customer, Log, SleepTime, saveRecord
 from django.utils import timezone
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 class ModelCreationTest(TestCase):
     def setUp(self):
@@ -36,4 +37,46 @@ class SaveRecordTest(TestCase):
         self.assertIsNotNone(record)
         expected_value = 10 
         self.assertEqual(record.value, expected_value)
+
+class CustomerLogModelTest(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(username='TestGuy', password='password')
+        self.customer = Customer.objects.create(
+            user=self.user,
+            nickname='TestNickname',
+            netid='TestNetID',
+            faculty=True,
+            student=1,
+            male=True,
+            version='1.0',
+            credit=5
+        )
+        
+        dummy_file = SimpleUploadedFile("file.txt", b"file_content")
+        self.log = Log.objects.create(
+            user=self.user,
+            file=dummy_file
+        )
+
+    def test_customer_creation(self):
+        self.assertEqual(self.customer.user.username, 'TestGuy')
+        self.assertEqual(self.customer.nickname, 'TestNickname')
+        self.assertEqual(self.customer.netid, 'TestNetID')
+        self.assertTrue(self.customer.faculty)
+        self.assertEqual(self.customer.student, 1)
+        self.assertTrue(self.customer.male)
+        self.assertEqual(self.customer.version, '1.0')
+        self.assertEqual(self.customer.credit, 5)
+
+    def test_customer_str(self):
+        self.assertEqual(self.customer.__str__(), 'TestNickname')
+
+    def test_log_creation(self):
+        self.assertEqual(self.log.user.username, 'TestGuy')
+        self.assertTrue(self.log.file.name.startswith('logs/TestGuy-'))
+
+    def test_log_str(self):
+        self.assertIn('TestGuy', self.log.__str__())
+        self.assertIn(timezone.localtime(self.log.time).strftime('%Y-%m-%d %H:%M:%S'), self.log.__str__())
 
