@@ -6,18 +6,14 @@ build-backend = "setuptools.build_meta"
 name = "fa_backend"
 version = "1.0.0"
 authors = [
-    { name="Yuxiang Lin", email="yuxiang.lin@dukekunshan.edu.cn" },
-    { name="Shanruo Xu", email="shanruo.xu@dukekunshan.edu.cn" },
-    { name="Isaac Yang", email="isaac.yang@dukekunshan.edu.cn" },
-	{ name="Luyao Wang", email="lywlywly@gmail.com" },
-	{ name="Beilong-Tang", email="bt132@duke.edu" },
-	{ name="Steven Hé (Sīchàng)", email="sichang.he@dukekunshan.edu.cn" },
-	{ name="Qingning", email="65934646+addw1@users.noreply.github.com" },
-	{ name="addw1", email="614639560@qq.com" },
-	{ name="ToothlessOS", email="anthony.13661499167@gmail.com" },
-	{ name="Cody Qin", email="125537769+CodyQin@users.noreply.github.com" },
-	{ name="Yuxiang Lin", email="theta.lin@yandex.com" },
-	{ name="ynyxxx", email="157872959+ynyxxx@users.noreply.github.com" },
+    { name="Luyao Wang", email="lywlywly@gmail.com" },
+    { name="Beilong-Tang", email="bt132@duke.edu" },
+    { name="Steven Hé (Sīchàng)", email="sichang.he@dukekunshan.edu.cn" },
+    { name="Qingning", email="614639560@qq.com" },
+    { name="ToothlessOS", email="anthony.13661499167@gmail.com" },
+    { name="Cody Qin" },
+    { name="Yuxiang Lin", email="theta.lin@yandex.com" },
+    { name="ynyxxx" },
 ]
 description = "Django backend of FedCampus_Flutter"
 readme = "doc/guide.md"
@@ -25,26 +21,26 @@ requires-python = ">=3.8"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
-	"Environment :: Web Environment",
+    "Environment :: Web Environment",
     "Framework :: Django",
 ]
 
 dependencies = [
-	"Django==4.2.3",
-	"djangorestframework==3.14.0",
-	"djoser==2.2.0",
-	"pandas==2.1.2",
-	"Pillow==10.0.0",
-	"plotly==5.18.0",
+    "Django==4.2.3",
+    "djangorestframework==3.14.0",
+    "djoser==2.2.0",
+    "pandas==2.1.2",
+    "Pillow==10.0.0",
+    "plotly==5.18.0",
 ]
 
 [project.optional-dependencies]
 dev = [
-	"black==24.2.0",
-	"flake8==6.1.0",
-	"flake8-django==1.4",
-	"flake8-bugbear==24.2.6",
-	"coverage==7.4.4",
+    "black==24.2.0",
+    "flake8==6.1.0",
+    "flake8-django==1.4",
+    "flake8-bugbear==24.2.6",
+    "coverage==7.4.4",
 ]
 
 [project.urls]
