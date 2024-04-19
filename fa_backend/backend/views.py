@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import permissions
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication, BasicAuthentication
 from backend.serializers import CreditSerializer
 from rest_framework import generics
 from rest_framework import mixins
@@ -190,7 +190,7 @@ class CreditManagementView(
     lookup_field = "netid"
     # TODO: Fix authentication
     permission_classes = (permissions.IsAuthenticated,)
-    authentication_classes = [SessionAuthentication, TokenAuthentication]
+    authentication_classes = [SessionAuthentication, TokenAuthentication, BasicAuthentication]
 
     def get(self, request, *args, **kwargs):
         if "netid" in kwargs:
