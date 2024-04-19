@@ -1,6 +1,5 @@
 import time
 from email_helper import app
-from send_email.main import *
 
 @app.task()
 def loginAlert():

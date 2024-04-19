@@ -1,8 +1,12 @@
 import time
 import json
+import os
 import requests
 from email_helper import app
-from send_email import main as email
+
+import sys
+sys.path.append("~/Program/FedCampus_Flutter/fa_backend/send_email")
+import main as email
 
 #Issue: Authentication for /backend/credit endpoint
 #Issue: How to access email services
