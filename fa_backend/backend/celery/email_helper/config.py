@@ -21,7 +21,7 @@ CELERYBEAT_SCHEDULE = {
     },
     'creditAlert':{
         'task':'email_helper.creditAlert.creditAlert',
-        'schedule': timedelta(seconds=60),
+        'schedule': crontab(hour=15, minute=30, day_of_week=5),
         #'args': ('50000')
     },
 }

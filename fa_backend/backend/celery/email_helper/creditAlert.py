@@ -23,7 +23,7 @@ def creditAlert(test=False):
                 content_list = list()
                 for netid, value in login_data['res'].items():
                     if value < 9:
-                        netid_list.append("sc927") #for testing only, replace with var: netid
+                        netid_list.append(netid) #for testing only, replace with var: netid
                         #Deduct the credit
                         content_list.append(f"""<Login Reminder>: You ({netid}) have logged in {value} times in 14 days, while the minimun according to the agreement is 9 \n
                                             If you have encountered any technical difficulty, please reach out for support in the FedCampus user wechat group \n
