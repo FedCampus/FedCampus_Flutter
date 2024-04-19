@@ -30,4 +30,4 @@ def creditAlert(test=True):
             email.sendmail(content, "sc927", "FedCampus Login Reminder")
 
     except:
-        return "Unknown Error"
+        raise
