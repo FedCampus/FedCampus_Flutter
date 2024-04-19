@@ -12,7 +12,7 @@ import main as email #Import the sendemail func
 #Issue: Authentication for /backend/credit endpoint
 #Issue: How to access email services
 @app.task()
-def creditAlert(test=True):
+def creditAlert(test=False):
     try:
         if test == False:
             # Get login data from backend api
