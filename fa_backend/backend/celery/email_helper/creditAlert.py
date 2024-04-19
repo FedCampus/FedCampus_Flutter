@@ -6,6 +6,7 @@ from email_helper import app
 
 import sys
 sys.path.append("/root/program/FedCampus_Flutter/fa_backend/send_email")
+sys.path.append("/root/program/FedCampus_Flutter/fa_backend")
 import main as email #Import the sendemail func
 
 #Issue: Authentication for /backend/credit endpoint
