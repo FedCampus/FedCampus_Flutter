@@ -24,14 +24,17 @@ def creditAlert(test=True):
                 for netid, value in login_data['res'].items():
                     if value < 9:
                         netid_list.append(netid)
-                        content_list.append(f"<Testing>: {netid} have logged in {value} times in 14 days.")
-                        email.sendmail(content, netid, "FedCampus Login Reminder")
+                        #Deduct the credit
+                        content_list.append(f"""<Login Reminder>: You ({netid}) have logged in {value} times in 14 days, while the minimun according to the agreement is 9 \n
+                                            If you have encountered any technical difficulty, please reach out for support in the FedCampus user wechat group \n
+                                            Please be reminded that your watch will be retrieved for continuous violation of policy.""")
+                        email.sendmail(content, "sc927", "FedCampus Login Reminder")
                 return "Task Completed"
             else:
                 return f"Http Error: {response.status_code}"
         else:
             content = ["<Testing> Hello World"]
             email.sendmail(content, ["sc927"], "FedCampus Login Reminder")
-
+            return "Task Completed"
     except:
         raise
