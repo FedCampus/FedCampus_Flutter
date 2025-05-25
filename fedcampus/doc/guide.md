@@ -60,7 +60,6 @@ When implementing support for a new platform, it is important to follow the exis
 
 - Federated learning
   - `FedKit`, which is a depenency of `FedCampus_Flutter`
-  - Currently not enabled
 - Federated analytics
   - The application employs federated analytics using a differential privacy.
   - Adding Noise to Raw Data: In the `getDayDataAndSendAndTrain` function within the `datawrapper.dart` file, the application introduces noise to the raw data before transmitting it to the backend server.
