@@ -5,6 +5,9 @@
 [![Watch the Demo](https://img.shields.io/badge/YouTube-Demo-red)](https://youtu.be/k5iu46IjA38)
 [Flutter App Guide](fedcampus/doc/guide.md) | [Django Backend Guide](fa_backend/doc/guide.md) | [Changelog](fedcampus/doc/changelog.md)
 
+![fedcampus](https://github.com/user-attachments/assets/d4f76017-fe65-4edf-8ba3-ab0418adde8f)
+
+
 ## 🚀 Overview
 
 FedCampus is an open-source, cross-platform mobile application that brings **federated learning (FL)** and **federated analytics (FA)** into real-world smart campus scenarios. Developed and deployed at **Duke Kunshan University**, FedCampus empowers privacy-preserving applications like sleep tracking, physical activity monitoring, and personalized health recommendations — all without centralizing user data.
@@ -26,7 +29,8 @@ FedCampus consists of:
 * **Huawei Health Kit** integration for smartwatch data
 * **Custom FL/FA APIs** for encrypted data processing and model lifecycle management
 
-![System Overview](https://github.com/FedCampus/FedCampus_Flutter/raw/main/fedcampus/doc/figures/system_architecture.png)
+![fedcampus_workflow](https://github.com/user-attachments/assets/27e937ae-698b-4ca1-9405-ff970561382b)
+
 
 > For a detailed breakdown, see our [Demo Paper at MobiHoc 2024](https://dl.acm.org/doi/10.1145/3641512.3690630).
 
